@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
+namespace GraphQL.AspNet.Logging.SubscriptionServerLogEntries
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
@@ -56,10 +56,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
             private set => this.SetProperty(SubscriptionLogPropertyNames.SCHEMA_SUBSCRIPTION_ROUTE_PATH, value);
         }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"Subscription Route Registered | Schema Type: '{_schemaTypeShortName}', Route: '{this.SchemaSubscriptionRoutePath}' ";

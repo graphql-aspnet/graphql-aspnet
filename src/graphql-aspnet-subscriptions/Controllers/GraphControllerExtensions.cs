@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Controllers
 
             if (!eventsCollectionFound)
             {
-                listObject = new List<SubscriptionEventProxy>();
+                listObject = new List<SubscriptionEventProxy>(1);
                 contextData.TryAdd(
                     SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION,
                     listObject);

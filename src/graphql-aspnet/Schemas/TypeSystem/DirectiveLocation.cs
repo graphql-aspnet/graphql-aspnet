@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// The possible locations a directive can be applied.

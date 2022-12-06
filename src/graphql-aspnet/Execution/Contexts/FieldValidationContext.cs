@@ -15,9 +15,9 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
+    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
 
     /// <summary>

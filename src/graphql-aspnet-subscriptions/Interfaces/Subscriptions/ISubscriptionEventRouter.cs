@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
 
     /// <summary>
@@ -35,21 +36,22 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <summary>
         /// Instructs the router to raise any events of the supplied name to the given receiver.
         /// </summary>
-        /// <param name="receiver">The receiver to receive the event data.</param>
+        /// <param name="client">The subscriptiobn client that needs to receive the event.</param>
         /// <param name="eventName">Name of the event to listen for.</param>
-        void AddReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName);
+        void AddClient(ISubscriptionClientProxy client, SubscriptionEventName eventName);
 
         /// <summary>
         /// Removes the receiver from being notified of the given event.
         /// </summary>
-        /// <param name="receiver">The receiver to drop.</param>
+        /// <param name="client">The subscriptiobn client that needs to no longer receive
+        /// the event.</param>
         /// <param name="eventName">Name of the event to stop listening for.</param>
-        void RemoveReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName);
+        void RemoveClient(ISubscriptionClientProxy client, SubscriptionEventName eventName);
 
-         /// <summary>
+        /// <summary>
         /// Removes the receiver from being notified of ALL events that it may be registered to.
         /// </summary>
-        /// <param name="receiver">The receiver to remove.</param>
-        void RemoveReceiver(ISubscriptionEventReceiver receiver);
+        /// <param name="client">The client to unsubscribe from ALL events.</param>
+        void RemoveClient(ISubscriptionClientProxy client);
     }
 }

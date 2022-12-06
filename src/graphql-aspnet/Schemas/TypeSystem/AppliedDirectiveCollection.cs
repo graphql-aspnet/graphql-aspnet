@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A collection of directives applied to some <see cref="ISchemaItem"/>.

@@ -90,23 +90,39 @@ namespace GraphQL.AspNet.Logging
         public const string CLIENT_PROTOCOL = "clientProtocol";
 
         /// <summary>
-        /// The 'type' field of an GraphqlWsLegacy message.
+        /// The 'type' field of an message.
         /// </summary>
-        public const string MESSAGE_TYPE = "GraphqlWsLegacyMessageType";
+        public const string MESSAGE_TYPE = "messageType";
 
         /// <summary>
-        /// The 'id' field of an GraphqlWsLegacy message.
+        /// The 'id' field of an message.
         /// </summary>
-        public const string MESSAGE_ID = "GraphqlWsLegacyMessageId";
+        public const string MESSAGE_ID = "messageId";
 
         /// <summary>
         /// The client supplied identifer assigned to the subscription.
         /// </summary>
-        public const string SUBSCRIPTION_ID = "GraphqlWsLegacySubscriptionId";
+        public const string SUBSCRIPTION_ID = "subscriptionId";
 
         /// <summary>
         /// A collection of subscription ids being reported on.
         /// </summary>
         public const string SUBSCRIPTION_IDS = "subscriptionIds";
+
+        /// <summary>
+        /// The specific event threshold, in number of events, that must be queued
+        /// for the event to be raised.
+        /// </summary>
+        public const string SUBSCRIPTION_DISPATCH_QUEUE_THRESHOLD_LEVEL = "eventQueueThresholdLevel";
+
+        /// <summary>
+        /// The exact count of messages in the queue at the time the event was raised.
+        /// </summary>
+        public const string SUBSCRIPTION_DISPATCH_QUEUE_COUNT = "eventQueueCount";
+
+        /// <summary>
+        /// A custom configured message carried along with the raised event. May be null.
+        /// </summary>
+        public const string SUBSCRIPTION_DISPATCH_QUEUE_THRESHOLD_MESSAGE = "eventQueueThresholdMessage";
     }
 }

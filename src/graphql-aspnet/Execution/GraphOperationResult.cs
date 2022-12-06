@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
 
     /// <summary>
     /// The default implementation of the object returned at the end of a graph operation.
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="metrics">The metrics package that was filled during the operation execution.</param>
         public GraphOperationResult(
             IGraphOperationRequest originalRequest,
-            IEnumerable<IGraphMessage> messages = null,
+            IGraphMessageCollection messages = null,
             IResponseFieldSet dataItem = null,
             IGraphQueryExecutionMetrics metrics = null)
         {

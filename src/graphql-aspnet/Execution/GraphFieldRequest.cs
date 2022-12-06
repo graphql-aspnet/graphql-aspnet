@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// The default implementation of <see cref="IGraphFieldRequest"/>. Provides a container
@@ -39,24 +39,24 @@ namespace GraphQL.AspNet.Execution
             IGraphOperationRequest parentOperationRequest,
             IGraphFieldInvocationContext invocationContext,
             GraphDataContainer dataSource,
-            SourceOrigin origin = null)
+            SourceOrigin origin = default)
         {
             this.OperationRequest = Validation.ThrowIfNullOrReturn(parentOperationRequest, nameof(parentOperationRequest));
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.InvocationContext = Validation.ThrowIfNullOrReturn(invocationContext, nameof(invocationContext));
             this.Data = dataSource;
             this.Items = parentOperationRequest.Items;
 
             // this may be different than the source indicated by teh parent operation request
             // do to child item resolution on arrays
-            this.Origin = origin ?? SourceOrigin.None;
+            this.Origin = origin;
         }
 
         /// <inheritdoc />
         public IGraphOperationRequest OperationRequest { get; }
 
         /// <inheritdoc />
-        public string Id { get; }
+        public Guid Id { get; }
 
         /// <inheritdoc />
         public MetaDataCollection Items { get; }

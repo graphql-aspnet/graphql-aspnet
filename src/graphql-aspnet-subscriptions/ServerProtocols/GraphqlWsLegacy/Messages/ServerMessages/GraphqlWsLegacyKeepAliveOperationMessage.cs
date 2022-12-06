@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages
 {
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Payloads;
 
     /// <summary>
     /// A keep alive message sent periodically by the server to keep the connection

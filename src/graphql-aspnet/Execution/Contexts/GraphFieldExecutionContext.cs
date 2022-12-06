@@ -16,8 +16,8 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A middleware context targeting the field execution pipeline.
@@ -34,19 +34,26 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="defaultFieldSources">A collection of objects to use
         /// when attempting to resolve source objects for any down stream fields.</param>
         /// <param name="user">The user data used to process the execution request, if any.</param>
+        /// <param name="resultCapacity">The initial capacity
+        /// of the list that will contain the results from executing this context.</param>
         public GraphFieldExecutionContext(
             IGraphExecutionContext parentContext,
             IGraphFieldRequest fieldRequest,
             IResolvedVariableCollection variableData,
             FieldSourceCollection defaultFieldSources = null,
-            ClaimsPrincipal user = null)
+            ClaimsPrincipal user = null,
+            int? resultCapacity = null)
              : base(parentContext)
         {
             this.Request = Validation.ThrowIfNullOrReturn(fieldRequest, nameof(fieldRequest));
             this.VariableData = variableData;
-            this.ResolvedSourceItems = new List<GraphDataItem>();
             this.DefaultFieldSources = defaultFieldSources ?? new FieldSourceCollection();
             this.User = user;
+
+            if (resultCapacity.HasValue)
+                this.ResolvedSourceItems = new List<GraphDataItem>(resultCapacity.Value);
+            else
+                this.ResolvedSourceItems = new List<GraphDataItem>();
         }
 
         /// <summary>

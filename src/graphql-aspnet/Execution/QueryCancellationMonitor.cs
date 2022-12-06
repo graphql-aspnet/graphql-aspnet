@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Execution
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>
     /// A helper class to manage the various external pressures on the execution of query context.
@@ -36,7 +37,6 @@ namespace GraphQL.AspNet.Execution
         private CancellationTokenSource _timeoutTaskCancelSource;
         private CancellationTokenSource _combinedCancelSource;
 
-        private Task _delayTask;
         private MonitorState _state;
         private bool _isDisposed;
 
@@ -52,6 +52,8 @@ namespace GraphQL.AspNet.Execution
             _locker = new object();
             _state = MonitorState.Incomplete;
             _externalCancelToken = externalToken;
+            _publicTimeoutTaskSource = new TaskCompletionSource<int>();
+            this.MonitorTask = _publicTimeoutTaskSource.Task;
         }
 
         /// <summary>
@@ -66,41 +68,27 @@ namespace GraphQL.AspNet.Execution
             if (_state != MonitorState.Incomplete)
                 return;
 
-            _publicTimeoutTaskSource = new TaskCompletionSource<int>();
-
             // when a timeout is specified
             // combine a timeout specific token
             // with the original, external token
             if (_timeoutPeriod != Timeout.InfiniteTimeSpan)
             {
-                _timeoutTaskCancelSource = new CancellationTokenSource();
+                _timeoutTaskCancelSource = new CancellationTokenSource(_timeoutPeriod);
+                _timeoutTaskCancelSource.Token.Register(() =>
+                {
+                    this.SetState(MonitorState.Timeout);
+                });
+
                 _combinedCancelSource = CancellationTokenSource.CreateLinkedTokenSource(
                     _externalCancelToken,
                     _timeoutTaskCancelSource.Token);
-
-                // start the delay timer ticking, but stop it
-                // if the context token fires
-                _delayTask = Task.Delay(_timeoutPeriod, _timeoutTaskCancelSource.Token)
-                .ContinueWith(task =>
-                {
-                    if (task.IsCompleted && !task.IsFaulted && !task.IsCanceled && !_isDisposed)
-                    {
-                        // if the internal timeout task finishes normally
-                        // the monitor has timed out
-                        this.SetState(MonitorState.Timeout);
-                    }
-                });
             }
-
-            this.MonitorTask = _publicTimeoutTaskSource.Task;
 
             if (_externalCancelToken != default)
                 _externalCancelToken.Register(this.ExternalToken_Cancelled);
 
             // publish the appropriate cancel token
-            this.CancellationToken = _timeoutPeriod == Timeout.InfiniteTimeSpan
-                ? _externalCancelToken
-                : _combinedCancelSource.Token;
+            this.CancellationToken = _combinedCancelSource?.Token ?? _externalCancelToken;
         }
 
         private void ExternalToken_Cancelled()
@@ -165,13 +153,8 @@ namespace GraphQL.AspNet.Execution
 
                     _combinedCancelSource?.Dispose();
 
-                    if (_publicTimeoutTaskSource?.Task != null)
-                    {
-                        if (!_publicTimeoutTaskSource.Task.IsCompleted)
-                            _publicTimeoutTaskSource.TrySetCanceled();
-
-                        _publicTimeoutTaskSource.Task.Dispose();
-                    }
+                    if (!_publicTimeoutTaskSource.Task.IsCompleted)
+                        _publicTimeoutTaskSource.TrySetCanceled();
                 }
 
                 _isDisposed = true;

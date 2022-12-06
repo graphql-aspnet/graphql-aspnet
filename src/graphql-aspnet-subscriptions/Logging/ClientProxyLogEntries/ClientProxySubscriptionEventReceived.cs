@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
     using GraphQL.AspNet.Schemas.Structural;
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
             this.SubscriptionPath = fieldPath?.Path;
             this.SubscriptionCount = subscriptionsToReceive?.Count;
             this.SubscriptionIds = subscriptionsToReceive?.Select(x => x.Id).ToList();
-            this.ClientId = client?.Id;
+            this.ClientId = client?.Id.ToString();
         }
 
         /// <summary>

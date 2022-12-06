@@ -10,6 +10,9 @@
 namespace GraphQL.AspNet
 {
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Internal.Interfaces;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// A set of constants related to the configuration and processing of subscriptions
@@ -21,7 +24,34 @@ namespace GraphQL.AspNet
         /// The default number of concurrent recievers that the event router will send a
         /// received event to at one time.
         /// </summary>
-        public const int DEFAULT_MAX_CONCURRENT_SUBSCRIPTION_RECEIVERS = 50;
+        public const int DEFAULT_MAX_CONCURRENT_SUBSCRIPTION_RECEIVERS = 500;
+
+        /// <summary>
+        /// A collection of default settings related to alerts raised by the subscription server.
+        /// </summary>
+        public static class Alerts
+        {
+            /// <summary>
+            /// Gets the default dispatch queue alert settings used if none are provided by
+            /// the user.
+            /// </summary>
+            /// <value>The default alert settings for the dispatch queue.</value>
+            public static ISubscriptionClientDispatchQueueAlertSettings DefaultDispatchQueueAlertSettings { get; }
+
+            /// <summary>
+            /// Initializes static members of the <see cref="Alerts"/> class.
+            /// </summary>
+            static Alerts()
+            {
+                var settings = new SubscriptionClientDispatchQueueAlertSettings();
+                settings.AddThreshold(
+                    LogLevel.Critical,
+                    10_000,
+                    System.TimeSpan.FromMinutes(5));
+
+                DefaultDispatchQueueAlertSettings = settings;
+            }
+        }
 
         /// <summary>
         /// A collection of constants related to subscription routing.

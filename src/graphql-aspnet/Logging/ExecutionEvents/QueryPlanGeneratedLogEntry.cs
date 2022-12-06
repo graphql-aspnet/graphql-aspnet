@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Logging.Common;
 
@@ -31,8 +32,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             this.QueryPlanIsValid = queryPlan?.IsValid;
             this.QueryPlanEstimatedComplexity = queryPlan?.EstimatedComplexity;
             this.QueryPlanOperationName = queryPlan?.OperationName;
-            this.QueryPlanMaxDepth = queryPlan?.MaxDepth;
-            this.QueryPlanId = queryPlan?.Id;
+            this.QueryPlanId = queryPlan?.Id.ToString();
         }
 
         /// <summary>

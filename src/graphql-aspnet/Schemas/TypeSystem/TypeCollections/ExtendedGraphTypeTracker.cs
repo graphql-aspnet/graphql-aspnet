@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// <para>A entity responsible for ensuring continuity between interface graph types

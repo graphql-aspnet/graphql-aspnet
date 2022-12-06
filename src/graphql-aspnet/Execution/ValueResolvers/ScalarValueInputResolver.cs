@@ -11,8 +11,8 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
     /// A resolver that operates in context of a field input value that can generate a qualified .NET object for the

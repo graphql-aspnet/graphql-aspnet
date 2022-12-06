@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Web
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Web;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;

@@ -13,11 +13,11 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;

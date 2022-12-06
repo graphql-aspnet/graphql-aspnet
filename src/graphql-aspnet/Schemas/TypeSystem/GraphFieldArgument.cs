@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>

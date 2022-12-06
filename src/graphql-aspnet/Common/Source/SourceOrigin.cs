@@ -14,41 +14,25 @@ namespace GraphQL.AspNet.Common.Source
     /// <summary>
     /// A complete origin represention of a location within the source text.
     /// </summary>
-    [Serializable]
-    public class SourceOrigin
+    public readonly struct SourceOrigin
     {
         /// <summary>
         /// Gets a singleton origin point representing no point on an graph query.
         /// </summary>
         /// <value>The none.</value>
-        public static SourceOrigin None { get; } = new SourceOrigin();
+        public static SourceOrigin None { get; } = new SourceOrigin(SourceLocation.None, SourcePath.None);
 
         /// <summary>
-        /// Initializes static members of the <see cref="SourceOrigin"/> class.
-        /// </summary>
-        static SourceOrigin()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SourceOrigin"/> class.
-        /// </summary>
-        public SourceOrigin()
-            : this(null, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SourceOrigin"/> class.
+        /// Initializes a new instance of the <see cref="SourceOrigin"/> struct.
         /// </summary>
         /// <param name="path">the field path int he source text represented by this origin location.</param>
         public SourceOrigin(SourcePath path)
-            : this(null, path)
+            : this(SourceLocation.None, path)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SourceOrigin"/> class.
+        /// Initializes a new instance of the <see cref="SourceOrigin"/> struct.
         /// </summary>
         /// <param name="location">the indexed location in the source text represented by this origin..</param>
         public SourceOrigin(SourceLocation location)
@@ -57,13 +41,13 @@ namespace GraphQL.AspNet.Common.Source
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SourceOrigin" /> class.
+        /// Initializes a new instance of the <see cref="SourceOrigin" /> struct.
         /// </summary>
-        /// <param name="location">The location.</param>
-        /// <param name="path">The path.</param>
+        /// <param name="location">the indexed location in the source text represented by this origin..</param>
+        /// <param name="path">the field path int he source text represented by this origin location.</param>
         public SourceOrigin(SourceLocation location, SourcePath path)
         {
-            this.Location = location ?? SourceLocation.None;
+            this.Location = location;
             this.Path = path ?? SourcePath.None;
         }
 

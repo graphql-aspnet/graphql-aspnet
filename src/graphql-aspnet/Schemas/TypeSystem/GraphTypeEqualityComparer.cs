@@ -9,7 +9,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// Compares two <see cref="IGraphType" /> for equality.

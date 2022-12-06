@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An interface describing aclass that can calulate a complexity metric score for a given
@@ -22,8 +22,8 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <summary>
         /// Inspects the operation and determines a final complexity score.
         /// </summary>
-        /// <param name="operation">The complexity score for the given operations.</param>
-        /// <returns>System.Single.</returns>
+        /// <param name="operation">The operation to inspect.</param>
+        /// <returns>The complexity score for the given operation.</returns>
         float Calculate(IGraphFieldExecutableOperation operation);
     }
 }

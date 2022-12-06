@@ -15,11 +15,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.Variables;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// Validates that for a chosen operation, the supplied, external variable values can be coerced into
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                              "The resolved variable value of <null> is not valid for non-nullable variable " +
                              $"'{resolvedVariable.Name}'",
                              Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
-                             context.Operation.Node.Location.AsOrigin());
+                             context.Operation.SourceLocation.AsOrigin());
                     }
                 }
             }
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 context.Messages.Critical(
                    svce.Message,
                    Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
-                   context.Operation.Node.Location.AsOrigin(),
+                   context.Operation.SourceLocation.AsOrigin(),
                    exceptionThrown: svce.InnerException);
             }
         }

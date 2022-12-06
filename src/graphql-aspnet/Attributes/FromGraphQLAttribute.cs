@@ -19,14 +19,11 @@ namespace GraphQL.AspNet.Attributes
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class FromGraphQLAttribute : BaseGraphAttribute
     {
-        private MetaGraphTypes[] _typeWrappers;
-        private TypeExpressions? _typeModifiers;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FromGraphQLAttribute"/> class.
-        /// </summary>/// <param name="typeExpression">The type expression to apply to this value.</param>
-        public FromGraphQLAttribute(TypeExpressions typeExpression)
-            : this(Constants.Routing.PARAMETER_META_NAME, typeExpression)
+        /// </summary>
+        public FromGraphQLAttribute()
+            : this(Constants.Routing.PARAMETER_META_NAME)
         {
         }
 
@@ -35,19 +32,8 @@ namespace GraphQL.AspNet.Attributes
         /// </summary>
         /// <param name="argumentName">The name of the input argument to extract the value from.</param>
         public FromGraphQLAttribute(string argumentName)
-            : this(argumentName, TypeExpressions.Auto)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FromGraphQLAttribute"/> class.
-        /// </summary>
-        /// <param name="argumentName">The name of the input argument to extract the value from.</param>
-        /// <param name="typeExpression">The type expression to apply to this value.</param>
-        public FromGraphQLAttribute(string argumentName, TypeExpressions typeExpression)
         {
             this.ArgumentName = argumentName?.Trim();
-            this.TypeExpression = typeExpression;
         }
 
         /// <summary>
@@ -57,46 +43,22 @@ namespace GraphQL.AspNet.Attributes
         public string ArgumentName { get; }
 
         /// <summary>
-        /// Gets or sets a short cut value to expression the set of wrappers required to to declare this graph field.
-        /// For more complex list/nullability requirements use <see cref="TypeDefinition"/>.
+        /// Gets or sets a type expression, in graphql's syntax language, that defines
+        /// the meta types for this argument (e.g. <c>"[Type]!"</c>, <c>"Type!"</c> etc.).
         /// </summary>
-        /// <value>The options.</value>
-        public TypeExpressions TypeExpression
-        {
-            get => _typeModifiers ?? TypeExpressions.Auto;
-            set
-            {
-                if (value == TypeExpressions.Auto)
-                {
-                    _typeModifiers = null;
-                    _typeWrappers = null;
-                    return;
-                }
-
-                // ensure that if the developer declared this shouldnt be a nullable list that the flag for being a list in the
-                // first place was also set (the null check doesnt make sense without the list check).
-                if (value.HasFlag(TypeExpressions.IsNotNullList) && !value.HasFlag(TypeExpressions.IsList))
-                    value |= TypeExpressions.IsList;
-
-                _typeModifiers = value;
-                _typeWrappers = value.ToTypeWrapperSet();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the actual type wrappers used to generate a type expression for this field.
-        /// Setting this value overrides <see cref="TypeExpression"/>. This list represents the type requirements
-        /// of the field.
-        /// </summary>
-        /// <value>The custom wrappers.</value>
-        public MetaGraphTypes[] TypeDefinition
-        {
-            get => _typeWrappers;
-            set
-            {
-                _typeWrappers = value;
-                _typeModifiers = TypeExpressions.Auto;
-            }
-        }
+        /// <remarks>
+        /// <para>
+        /// The supplied type name is a placeholder; it is replaced at runtime with the
+        /// actual type name of this argument as its declared in the target schema.
+        /// <br />
+        /// For Example, <c>"[Type!]"</c>, <c>"[Song!]"</c> and
+        /// <c>"[Donut!]"</c> are all equivilant values for this property. (Default: <c>null</c>).
+        /// </para>
+        /// <para>
+        /// When <c>null</c>, the type expression extracted from source code is used.
+        /// </para>
+        /// </remarks>
+        /// <value>The type expression to assign to this argument.</value>
+        public string TypeExpression { get; set; }
     }
 }

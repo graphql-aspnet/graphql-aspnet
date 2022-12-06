@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Middleware.FieldExecution.Components;
     using GraphQL.AspNet.Security;
 

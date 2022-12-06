@@ -9,12 +9,10 @@
 
 namespace GraphQL.AspNet.ServerProtocols.Common
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A result encapsulating the execution of graph query that could be a subscription.
@@ -71,7 +69,9 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <param name="subscriptionId">The subscription id that was executed.</param>
         /// <param name="messages">The messages that were generated during the failure.</param>
         /// <returns>SubscriptionDataExecutionResult&lt;TSchema&gt;.</returns>
-        public static SubscriptionDataExecutionResult<TSchema> OperationFailure(string subscriptionId, IEnumerable<IGraphMessage> messages)
+        public static SubscriptionDataExecutionResult<TSchema> OperationFailure(
+            string subscriptionId,
+            IGraphMessageCollection messages)
         {
             var result = new SubscriptionDataExecutionResult<TSchema>();
             result.SubscriptionId = subscriptionId;
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             result.Status = SubscriptionOperationResultType.OperationFailure;
 
             var messageSet = new GraphMessageCollection();
-            messageSet.AddRange(messages ?? Enumerable.Empty<IGraphMessage>());
+            messageSet.AddRange(messages);
             result.Messages = messageSet;
 
             return result;
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
         /// <summary>
         /// Generates a result indicating that the subscription enabled query was
-        /// successfully executed a single query and no subscription was created.
+        /// successfully executed and no subscription was created.
         /// </summary>
         /// <param name="subscriptionId">The subscription id that was executed.</param>
         /// <param name="operationResult">The completed query operation result.</param>

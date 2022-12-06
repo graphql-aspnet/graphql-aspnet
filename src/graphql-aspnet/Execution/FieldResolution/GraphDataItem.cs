@@ -19,12 +19,12 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Interfaces.Response;
-    using GraphQL.AspNet.Response;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// An ecapsulation of a piece of source data submitted for processing by the field execution pipeline.
@@ -49,9 +49,14 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             this.SourceData = sourceData;
             this.FieldContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
             this.Status = FieldItemResolutionStatus.NotStarted;
-            this.Origin = new SourceOrigin(context.Origin.Location, path);
+            this.Origin = new SourceOrigin(context.Location, path);
             this.TypeExpression = context.Field.TypeExpression;
             this.Schema = Validation.ThrowIfNullOrReturn(context.Schema, nameof(context.Schema));
+
+            if (context.Field.Mode == FieldResolutionMode.Batch)
+                _expectedChildFieldCount = 1;
+            else
+                _expectedChildFieldCount = context.ChildContexts.Count;
         }
 
         /// <summary>
@@ -69,7 +74,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                     "a list of items, a child field context cannot be directly added to it.");
             }
 
-            _childFields = _childFields ?? new List<GraphDataItem>();
+            _childFields = _childFields ?? new List<GraphDataItem>(_expectedChildFieldCount);
 
             var path = this.Origin.Path.Clone();
             path.AddFieldName(childInvocationContext.Field.Name);
@@ -304,6 +309,8 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// <value>The schema.</value>
         public ISchema Schema { get; }
 
+        private readonly int _expectedChildFieldCount;
+
         /// <summary>
         /// Gets the list items of this instance that were generated from resolved data, if any.
         /// </summary>
@@ -472,8 +479,10 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             // this instance represents a set of key/value pair fields
             // create a dictionary of those kvps as the result
             var fieldSet = new ResponseFieldSet();
-            foreach (var field in _childFields)
+
+            for (var i = 0; i < _childFields.Count; i++)
             {
+                var field = _childFields[i];
                 var includeChildResult = field.GenerateResult(out var childResult);
                 includeResult = includeResult || includeChildResult;
                 if (includeChildResult)
@@ -487,9 +496,10 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                             $"for target type '{field.FieldContext.ExpectedSourceType?.FriendlyName() ?? "-all-"}' when the field " +
                             "name was already present in the output dictionary.",
                             this.Origin,
-                            new InvalidOperationException($"The source object '{this.SourceData}' successfully resolved a field name of '{field.Name}' more than once when it shouldn't. This may occur if a source " +
-                                                                          "object type is referenced to to multiple target graph types in fragment references. Ensure that your source data uniquely maps to one fragment per field collection " +
-                                                                          "or that the fragments do not share property names."));
+                            new InvalidOperationException(
+                                $"The source object '{this.SourceData}' successfully resolved a field name of '{field.Name}' more than once when it shouldn't. This may occur if a source " +
+                                "object type is referenced to to multiple target graph types in fragment references. Ensure that your source data uniquely maps to one fragment per field collection " +
+                                "or that the fragments do not share property names."));
                     }
 
                     fieldSet.Add(field.FieldContext.Name, childResult);

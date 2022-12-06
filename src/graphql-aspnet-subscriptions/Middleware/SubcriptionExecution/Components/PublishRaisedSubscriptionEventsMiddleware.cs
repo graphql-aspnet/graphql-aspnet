@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// Standard middleware component that pulls any raised events off the field execution context
@@ -53,7 +53,10 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
             GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next,
             CancellationToken cancelToken)
         {
-            if (context?.Session?.Items != null && context.IsValid && !context.IsCancelled)
+            if (context?.Session?.Items != null
+                && context.Session.Items.Count > 0
+                && context.IsValid
+                && !context.IsCancelled)
             {
                 // if a context item for the subscription event key was added by one of the extension methods
                 // inspect it to try and find the events that were registered
@@ -75,10 +78,10 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
                             var eventData = new SubscriptionEvent()
                             {
                                 Id = Guid.NewGuid().ToString(),
+                                EventName = proxy.EventName?.Trim(),
                                 SchemaTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(typeof(TSchema)),
                                 Data = proxy.DataObject,
                                 DataTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(proxy.DataObject?.GetType()),
-                                EventName = proxy.EventName?.Trim(),
                             };
 
                             _eventQueue.Enqueue(eventData);

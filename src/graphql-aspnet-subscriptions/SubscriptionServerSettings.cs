@@ -9,6 +9,8 @@
 
 namespace GraphQL.AspNet
 {
+    using System;
+
     /// <summary>
     /// "Server level" subscription and connection settings that govern all schemas registered
     /// to this server instance. These values rarely need to be changed, howver; any changes should be made prior to
@@ -35,7 +37,7 @@ namespace GraphQL.AspNet
         /// event exceeds this amount, the overflow will be queued until resources are made available.
         /// </summary>
         /// <remarks>
-        /// (Default: 50, Minimum: 1).
+        /// (Default: 500, Minimum: 1).
         /// </remarks>
         /// <value>The maximum concurrent receiver count.</value>
         public static int MaxConcurrentSubscriptionReceiverCount

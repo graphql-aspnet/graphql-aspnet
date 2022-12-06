@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 {
     /// <summary>
-    /// A set of constants related to GraphqlWsLegacy server.
+    /// A set of constants related to GraphqlWsLegacy protocol.
     /// </summary>
     public static class GraphqlWsLegacyConstants
     {
@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         public const string ALTERNATE_PROTOCOL_NAME = "subscription-transport-ws";
 
         /// <summary>
-        /// A set of constants relating to GraphqlWsLegacy's messaging protocol.
+        /// A set of constants relating to GraphqlWsLegacy's message set.
         /// </summary>
         public static class Messaging
         {

@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
@@ -31,12 +31,12 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         public GraphQueryExecutionPlan()
         {
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.Messages = new GraphMessageCollection();
         }
 
         /// <inheritdoc />
-        public string Id { get; protected set; }
+        public Guid Id { get; protected set; }
 
         /// <inheritdoc />
         public IGraphMessageCollection Messages { get; }
@@ -49,9 +49,6 @@ namespace GraphQL.AspNet.Execution
 
         /// <inheritdoc />
         public float EstimatedComplexity { get; set; }
-
-        /// <inheritdoc />
-        public int MaxDepth { get; set; }
 
         /// <inheritdoc />
         public Type SchemaType => typeof(TSchema);

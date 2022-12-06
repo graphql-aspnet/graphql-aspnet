@@ -32,7 +32,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     [DebuggerDisplay("{Name} (Type: {FriendlyObjectTypeName})")]
     public class GraphArgumentTemplate : IGraphArgumentTemplate
     {
-        private FromGraphQLAttribute _fieldDeclaration;
+        private FromGraphQLAttribute _argDeclaration;
+        private bool _invalidTypeExpression;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphArgumentTemplate" /> class.
@@ -57,10 +58,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();
 
             // set the name
-            _fieldDeclaration = this.Parameter.SingleAttributeOrDefault<FromGraphQLAttribute>();
+            _argDeclaration = this.Parameter.SingleAttributeOrDefault<FromGraphQLAttribute>();
             string name = null;
-            if (_fieldDeclaration != null)
-                name = _fieldDeclaration?.ArgumentName?.Trim();
+            if (_argDeclaration != null)
+                name = _argDeclaration?.ArgumentName?.Trim();
 
             if (string.IsNullOrWhiteSpace(name))
                 name = Constants.Routing.PARAMETER_META_NAME;
@@ -69,6 +70,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Route = new GraphArgumentFieldPath(this.Parent.Route, name);
 
             this.Description = this.Parameter.SingleAttributeOrDefault<DescriptionAttribute>()?.Description?.Trim();
+
+            if (_argDeclaration?.TypeExpression == null)
+            {
+                this.DeclaredTypeWrappers = null;
+            }
+            else
+            {
+                var expression = GraphTypeExpression.FromDeclaration(_argDeclaration.TypeExpression);
+                if (!expression.IsValid)
+                {
+                    _invalidTypeExpression = true;
+                }
+                else
+                {
+                    this.DeclaredTypeWrappers = expression.Wrappers;
+                }
+            }
 
             this.HasDefaultValue = this.Parameter.HasDefaultValue;
             this.DefaultValue = null;
@@ -186,6 +204,28 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             GraphValidation.EnsureGraphNameOrThrow(this.InternalFullName, this.Name);
 
+            if (_invalidTypeExpression)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' that " +
+                    $"defines an invalid {nameof(FromGraphQLAttribute.TypeExpression)} (Value = '{_argDeclaration.TypeExpression}'). " +
+                    $"The provided type expression must be a valid query language type expression or null.");
+            }
+
+            // if the user declared a custom type expression it must be compatiable with the
+            // actual expected type expression of the C# code provided
+            var actualTypeExpression = GraphTypeExpression
+                .FromType(this.DeclaredArgumentType)
+                .CloneTo(GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT));
+
+            if (!GraphTypeExpression.AreTypesCompatiable(actualTypeExpression, this.TypeExpression))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' that " +
+                    $"defines a {nameof(FromGraphQLAttribute.TypeExpression)} that is incompatiable with the " +
+                    $".NET parameter. (Declared '{this.TypeExpression}' is incompatiable with '{actualTypeExpression}') ");
+            }
+
             if (!this.ArgumentModifiers.IsInternalParameter() && this.ObjectType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
@@ -243,7 +283,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public string DeclaredArgumentName => this.Parameter.Name;
 
         /// <inheritdoc />
-        public MetaGraphTypes[] DeclaredTypeWrappers => _fieldDeclaration?.TypeDefinition;
+        public MetaGraphTypes[] DeclaredTypeWrappers { get; private set; }
 
         /// <inheritdoc />
         public ICustomAttributeProvider AttributeProvider => this.Parameter;

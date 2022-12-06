@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public RequestCancelledLogEntry(GraphQueryExecutionContext context)
             : base(LogEventIds.RequestCancelled)
         {
-            this.OperationRequestId = context?.OperationRequest?.Id;
+            this.OperationRequestId = context?.OperationRequest?.Id.ToString();
 
             this.TotalExecutionMs = 0;
             if (context?.OperationRequest?.StartTimeUTC != null)

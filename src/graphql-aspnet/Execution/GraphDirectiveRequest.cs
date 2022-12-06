@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A request, resolved by a <see cref="GraphDirective"/> to perform some augmented
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Execution
             DirectiveInvocationPhase invocationPhase,
             object targetData)
         {
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.InvocationContext = Validation.ThrowIfNullOrReturn(invocationContext, nameof(invocationContext));
             this.DirectivePhase = invocationPhase;
             this.DirectiveTarget = targetData;
@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <inheritdoc />
-        public string Id { get; private set; }
+        public Guid Id { get; private set; }
 
         /// <inheritdoc />
         public IDirectiveInvocationContext InvocationContext { get; }

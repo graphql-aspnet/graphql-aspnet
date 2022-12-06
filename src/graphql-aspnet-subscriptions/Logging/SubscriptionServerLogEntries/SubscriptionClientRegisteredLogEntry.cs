@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
+namespace GraphQL.AspNet.Logging.SubscriptionServerLogEntries
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
             this.ClientTypeName = client?.GetType().FriendlyName(true);
             this.ClientProtocol = client?.Protocol;
-            this.ClientId = client?.Id;
+            this.ClientId = client?.Id.ToString();
         }
 
         /// <summary>
@@ -81,10 +81,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
             private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_CLIENT_ID, value);
         }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             var idTruncated = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;

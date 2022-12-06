@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution.Contexts
 {
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A base set of options used by all resolution-scoped contexts in the library.

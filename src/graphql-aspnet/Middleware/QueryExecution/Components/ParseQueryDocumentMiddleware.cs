@@ -14,13 +14,15 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Metrics;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Interfaces.Engine;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
+    using GraphQLSyntaxException2 = GraphQL.AspNet.Execution.Parsing.Exceptions.GraphQLSyntaxException;
 
     /// <summary>
     /// Attempts to generate a valid syntax tree for the incoming query text when needed. Skipped if a query plan was pulled
@@ -58,15 +60,27 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 try
                 {
                     // parse the text into an AST
-                    var syntaxTree = _parser.ParseQueryDocument(context.OperationRequest.QueryText?.AsMemory() ?? ReadOnlyMemory<char>.Empty);
+                    var text = ReadOnlySpan<char>.Empty;
+                    if (context.OperationRequest.QueryText != null)
+                        text = context.OperationRequest.QueryText.AsSpan();
 
-                    // convert the AST into a functional document
-                    // matched against the target schema
-                    var document = _documentGenerator.CreateDocument(syntaxTree);
-                    context.QueryDocument = document;
-                    context.Messages.AddRange(document.Messages);
+                    var sourceText = new SourceText(text);
+                    var syntaxTree = _parser.ParseQueryDocument(ref sourceText);
+
+                    try
+                    {
+                        // convert the AST into a functional document
+                        // matched against the target schema
+                        var document = _documentGenerator.CreateDocument(sourceText, syntaxTree);
+                        context.QueryDocument = document;
+                        context.Messages.AddRange(document.Messages);
+                    }
+                    finally
+                    {
+                        SyntaxTreeOperations.Release(ref syntaxTree);
+                    }
                 }
-                catch (GraphQLSyntaxException syntaxException)
+                catch (GraphQLSyntaxException2 syntaxException)
                 {
                     // expose syntax exception messages to the client
                     // the parser is self contained and ensures its exception messages are

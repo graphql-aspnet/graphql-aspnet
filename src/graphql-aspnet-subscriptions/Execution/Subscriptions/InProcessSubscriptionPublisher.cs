@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
     /// <summary>
     /// A subscription server proxy that executes in process and will raise events directly to the

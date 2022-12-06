@@ -14,9 +14,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Response;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
 
     /// <summary>
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
                 _responseWriter.Write(
                        writer,
                        value.Payload,
-                       new GraphQLResponseOptions()
+                       new ResponseOptions()
                        {
                            ExposeExceptions = _schema.Configuration.ResponseOptions.ExposeExceptions,
                            ExposeMetrics = _schema.Configuration.ResponseOptions.ExposeMetrics,

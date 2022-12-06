@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A piece of middleware that can execute on a request to process

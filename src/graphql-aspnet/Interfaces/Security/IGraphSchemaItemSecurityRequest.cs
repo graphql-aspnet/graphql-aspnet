@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Security
 {
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An request to authentication and authorize a user to a schema item.
@@ -21,6 +21,6 @@ namespace GraphQL.AspNet.Interfaces.Security
         /// Gets the secured schema item being checked with this request.
         /// </summary>
         /// <value>The field.</value>
-        ISecureSchemaItem SecureSchemaItem { get; }
+        ISecurableSchemaItem SecureSchemaItem { get; }
     }
 }

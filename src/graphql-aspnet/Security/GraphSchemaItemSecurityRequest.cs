@@ -12,17 +12,16 @@ namespace GraphQL.AspNet.Security
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A request to authorize and authenticate given user security context against
     /// a secured schema item.
     /// </summary>
-    public class GraphSchemaItemSecurityRequest : IGraphSchemaItemSecurityRequest
+    public sealed class GraphSchemaItemSecurityRequest : IGraphSchemaItemSecurityRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityRequest"/> class.
@@ -56,7 +55,7 @@ namespace GraphQL.AspNet.Security
         public GraphSchemaItemSecurityRequest(IGraphFieldInvocationContext invocationContext)
         {
             Validation.ThrowIfNull(invocationContext, nameof(invocationContext));
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.SecureSchemaItem = invocationContext.Field;
             this.Origin = invocationContext.Origin;
         }
@@ -66,25 +65,25 @@ namespace GraphQL.AspNet.Security
         /// </summary>
         /// <param name="securedDocumentPart">The secured document part that must
         /// be authorized.</param>
-        public GraphSchemaItemSecurityRequest(ISecureDocumentPart securedDocumentPart)
+        public GraphSchemaItemSecurityRequest(ISecurableDocumentPart securedDocumentPart)
         {
             Validation.ThrowIfNull(securedDocumentPart, nameof(securedDocumentPart));
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.SecureSchemaItem = securedDocumentPart.SecureItem;
-            this.Origin = securedDocumentPart.Node.Location.AsOrigin();
+            this.Origin = securedDocumentPart.SourceLocation.AsOrigin();
         }
 
         /// <summary>
         /// Gets the globally unique Id assigned to this individual field request.
         /// </summary>
         /// <value>The identifier.</value>
-        public string Id { get; }
+        public Guid Id { get; }
 
         /// <summary>
         /// Gets the secured item being checked with this request.
         /// </summary>
         /// <value>The field.</value>
-        public ISecureSchemaItem SecureSchemaItem { get; }
+        public ISecurableSchemaItem SecureSchemaItem { get; }
 
         /// <summary>
         /// Gets the origin point in the source text where this request was generated.

@@ -29,6 +29,12 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IGraphMessage Add(IGraphMessage message);
 
         /// <summary>
+        /// Adds all the messages of the provided collection to this collection.
+        /// </summary>
+        /// <param name="messagesToAdd">The messages to add.</param>
+        void AddRange(IGraphMessageCollection messagesToAdd);
+
+        /// <summary>
         /// Adds the message to the collection.
         /// </summary>
         /// <param name="severity">The severity of this new message.</param>
@@ -37,7 +43,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Add(GraphMessageSeverity severity, string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Add(GraphMessageSeverity severity, string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Adds the critical message to the collection.
@@ -47,7 +53,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Critical(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Critical(string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Adds the warning message to the collection.
@@ -57,7 +63,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Warn(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Warn(string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Adds the info message to the collection.
@@ -67,7 +73,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Info(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Info(string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Adds the debug message to the collection.
@@ -77,7 +83,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Debug(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Debug(string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Adds the trace message to the collection.
@@ -87,13 +93,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Trace(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
-
-        /// <summary>
-        /// Adds the set of messages to the collection.
-        /// </summary>
-        /// <param name="messages">The messages.</param>
-        void AddRange(IEnumerable<IGraphMessage> messages);
+        IGraphMessage Trace(string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Gets the highest level severity of all the messages tracked in this collection.
@@ -106,10 +106,5 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value><c>true</c> if this instance is success; otherwise, <c>false</c>.</value>
         bool IsSucessful { get; }
-
-        /// <summary>
-        /// Clears all the messages in this instance.
-        /// </summary>
-        void Clear();
     }
 }

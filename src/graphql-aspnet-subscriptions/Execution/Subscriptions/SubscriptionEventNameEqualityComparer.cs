@@ -45,7 +45,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <returns>true if the specified objects are equal; otherwise, false.</returns>
         public bool Equals(SubscriptionEventName x, SubscriptionEventName y)
         {
-            return x == y;
+            return x.EventName == y.EventName
+                && x.OwnerSchemaType == y.OwnerSchemaType;
         }
 
         /// <summary>

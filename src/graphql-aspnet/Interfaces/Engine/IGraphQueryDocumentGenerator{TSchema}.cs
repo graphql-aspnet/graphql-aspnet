@@ -9,10 +9,10 @@
 
 namespace GraphQL.AspNet.Interfaces.Engine
 {
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// Called by the runtime to convert an AST into an unvalidated query document
@@ -26,9 +26,10 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// Interpretes the syntax tree and generates a contextual document that can be transformed into
         /// a query plan.
         /// </summary>
-        /// <param name="syntaxTree">The syntax tree to create a document for.</param>
+        /// <param name="sourceText">The source text from which to generate a document.</param>
+        /// <param name="syntaxTree">The syntax tree describing the structure of the provided <paramref name="sourceText"/>.</param>
         /// <returns>IGraphQueryDocument.</returns>
-        IGraphQueryDocument CreateDocument(ISyntaxTree syntaxTree);
+        IGraphQueryDocument CreateDocument(SourceText sourceText, SyntaxTree syntaxTree);
 
         /// <summary>
         /// Validates a query document as being valid against the given <typeparamref name="TSchema"/>.

@@ -14,9 +14,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Introspection.Fields;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields;
 
     /// <summary>
     /// An implementation of a metadata container for the interface graphtype.

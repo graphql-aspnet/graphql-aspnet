@@ -6,15 +6,16 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

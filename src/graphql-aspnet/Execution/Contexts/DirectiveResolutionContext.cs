@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System.Diagnostics;
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A context passed to a directive resolver to complete its resolution task for the field its attached to.

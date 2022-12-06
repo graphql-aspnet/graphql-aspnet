@@ -17,7 +17,7 @@ namespace GraphQL.AspNet
     /// <para>spec: https://graphql.github.io/graphql-spec/October2021/#sec-ID .</para>
     /// </summary>
     [DebuggerDisplay("{Value}")]
-    public struct GraphId : IEquatable<GraphId>
+    public readonly struct GraphId : IEquatable<GraphId>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphId" /> struct.

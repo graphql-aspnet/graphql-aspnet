@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using System.Collections;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>

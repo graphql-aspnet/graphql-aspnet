@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
@@ -150,6 +150,17 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override string InternalName => this.Property.Name;
 
         /// <inheritdoc />
-        public MetaGraphTypes[] DeclaredTypeWrappers => _fieldDeclaration?.TypeDefinition;
+        public MetaGraphTypes[] DeclaredTypeWrappers
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_fieldDeclaration?.TypeExpression))
+                    return null;
+
+                return GraphTypeExpression
+                    .FromDeclaration(_fieldDeclaration.TypeExpression)
+                    .Wrappers;
+            }
+        }
     }
 }

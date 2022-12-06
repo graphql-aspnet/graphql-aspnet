@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.Execution
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
     /// A context object representing a single request, by a single requestor, to use through the query execution process.
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="queryData">The query data.</param>
         public GraphOperationRequest(GraphQueryData queryData)
         {
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.OperationName = queryData.OperationName?.Trim();
             this.QueryText = queryData.Query;
             this.VariableData = queryData.Variables ?? new InputVariableCollection();
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Execution
         public IInputVariableCollection VariableData { get; set; }
 
         /// <inheritdoc />
-        public string Id { get; }
+        public Guid Id { get; }
 
         /// <summary>
         /// Gets the length of the <see cref="QueryText"/>.

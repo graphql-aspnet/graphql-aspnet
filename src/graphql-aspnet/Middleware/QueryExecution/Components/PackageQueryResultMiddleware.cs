@@ -14,9 +14,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.Response;
-    using GraphQL.AspNet.Response;
 
     /// <summary>
     /// Compiles the final graphql result from the individually resolved fields. This result can then be serialized.
@@ -39,10 +39,10 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         /// <summary>
-        /// Convert the data items that were generated pushing their results into a final top level dictionary
+        /// Convert the data items that were generated, pushing their results into a final top level dictionary
         /// to be returned as the graph projection. Takes care of an final messaging in case one of the tasks failed.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The execution context to extract reponse info from.</param>
         /// <returns>GraphQL.AspNet.Interfaces.Response.IResponseFieldSet.</returns>
         private IResponseFieldSet CreateFinalDictionary(GraphQueryExecutionContext context)
         {

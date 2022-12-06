@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -42,11 +42,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             if (context.IsValid && context.Operation != null)
             {
-                var anyFieldFailed = await this.AuthorizeOperation(context, cancelToken).ConfigureAwait(false);
-                if (anyFieldFailed)
-                {
+                var isAuthorized = await this.AuthorizeOperation(context, cancelToken).ConfigureAwait(false);
+                if (!isAuthorized)
                     context.Cancel();
-                }
             }
 
             await next(context, cancelToken).ConfigureAwait(false);
@@ -62,9 +60,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         private async Task<bool> AuthorizeOperation(GraphQueryExecutionContext context, CancellationToken cancelToken)
         {
             var authTasks = new List<Task>();
-            bool anyFieldFailed = false;
-            foreach (var securePart in context.Operation.SecureItems)
+            bool isAuthorized = true;
+            for (var i = 0; i < context.Operation.SecureItems.Count; i++)
             {
+                var securePart = context.Operation.SecureItems[i];
+
                 // should be caught by validation but just in case prevent an auth
                 if (securePart?.SecureItem == null)
                     continue;
@@ -86,8 +86,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                                 context.Messages.Critical(
                                     $"Access Denied to {securePart.SecureItem.Route.Path}",
                                     Constants.ErrorCodes.ACCESS_DENIED,
-                                    securePart.Node.Location.AsOrigin());
-                                anyFieldFailed = true;
+                                    securePart.SourceLocation.AsOrigin());
+                                isAuthorized = false;
                             }
                         }, cancelToken);
 
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             }
 
             await Task.WhenAll(authTasks).ConfigureAwait(false);
-            return anyFieldFailed;
+            return isAuthorized;
         }
     }
 }

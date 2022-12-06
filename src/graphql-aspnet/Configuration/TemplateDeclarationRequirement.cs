@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A set of potential requirements enforcing template field declarations

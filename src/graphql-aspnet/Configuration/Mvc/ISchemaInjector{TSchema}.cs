@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Configuration.Mvc
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An interface used by the injector to expose its useschema method across

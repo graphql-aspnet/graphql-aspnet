@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Attributes
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A decorator for a controller method to alter its behavior to be part of a concrete type represented on the object graph

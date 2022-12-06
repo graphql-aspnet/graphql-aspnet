@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             // fields made from controller route parameters have no policies directly unto themselves
             // any controller class level policies are individually added to fields they declare
-            this.SecurityGroups = Enumerable.Empty<AppliedSecurityPolicyGroup>();
+            this.SecurityGroups = new AppliedSecurityPolicyGroups();
             this.Complexity = 1;
             this.Mode = FieldResolutionMode.PerSourceItem;
 
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public string DeprecationReason { get; set; }
 
         /// <inheritdoc />
-        public IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
+        public IAppliedSecurityPolicyGroups SecurityGroups { get; }
 
         /// <inheritdoc />
         public float? Complexity { get; set; }

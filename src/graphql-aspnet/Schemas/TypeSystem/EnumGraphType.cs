@@ -10,13 +10,12 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.ValueResolvers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -26,6 +25,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("ENUM {Name}")]
     public class EnumGraphType : IEnumGraphType
     {
+        private EnumValueCollection _options;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumGraphType" /> class.
         /// </summary>
@@ -120,8 +121,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
-
-        private EnumValueCollection _options;
 
         /// <inheritdoc />
         public SchemaItemPath Route { get; }

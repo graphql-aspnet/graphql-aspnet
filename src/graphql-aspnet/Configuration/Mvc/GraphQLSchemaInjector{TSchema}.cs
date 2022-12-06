@@ -14,21 +14,21 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Middleware.DirectiveExecution;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.SchemaItemSecurity;
-    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
@@ -155,7 +155,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
         {
             // "per schema" engine components
             _options.ServiceCollection.TryAddSingleton<IQueryOperationComplexityCalculator<TSchema>, DefaultOperationComplexityCalculator<TSchema>>();
-            _options.ServiceCollection.TryAddSingleton<IGraphResponseWriter<TSchema>, DefaultResponseWriter<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IQueryOperationDepthCalculator<TSchema>, DefaultOperationDepthCalculator<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IGraphQueryResponseWriter<TSchema>, DefaultQueryResponseWriter<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IGraphQueryDocumentGenerator<TSchema>, DefaultGraphQueryDocumentGenerator<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IGraphQueryPlanGenerator<TSchema>, DefaultGraphQueryPlanGenerator<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IGraphQueryExecutionMetricsFactory<TSchema>, DefaultGraphQueryExecutionMetricsFactory<TSchema>>();

@@ -14,11 +14,11 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.InputArguments;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// The default concrete representation of a field execution context.
@@ -36,22 +36,19 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="name">The name to apply to this data set once resolution is complete.</param>
         /// <param name="field">The field.</param>
         /// <param name="fieldPart">The field document part which declared the field to be resolved.</param>
-        /// <param name="origin">The origin, in the source text, that this context was generated from.</param>
         public FieldInvocationContext(
             ISchema schema,
             Type expectedSourceType,
             string name,
             IGraphField field,
-            IFieldDocumentPart fieldPart,
-            SourceOrigin origin)
+            IFieldDocumentPart fieldPart)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.Field = Validation.ThrowIfNullOrReturn(field, nameof(field));
             this.FieldDocumentPart = Validation.ThrowIfNullOrReturn(fieldPart, nameof(fieldPart));
             this.ExpectedSourceType = expectedSourceType;
-            this.Origin = origin;
             this.ChildContexts = new FieldInvocationContextCollection();
-            this.Arguments = new InputArgumentCollection();
+            this.Arguments = new InputArgumentCollection(fieldPart.Arguments.Count);
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
@@ -89,6 +86,9 @@ namespace GraphQL.AspNet.Execution.Contexts
         public IFieldInvocationContextCollection ChildContexts { get; }
 
         /// <inheritdoc />
-        public SourceOrigin Origin { get; }
+        public SourceLocation Location => this.FieldDocumentPart.SourceLocation;
+
+        /// <inheritdoc />
+        public SourceOrigin Origin => this.FieldDocumentPart.Origin;
     }
 }

@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		styles.ruleset = styles.ruleset
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-benchmarks", "tests\graphql-aspnet-benchmarks\graphql-aspnet-benchmarks.csproj", "{43E5D3A6-9CE0-4C40-8152-8A729F25AE98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-benchmarks", "ancillary-projects\benchmarking\graphql-aspnet-benchmarks\graphql-aspnet-benchmarks.csproj", "{43E5D3A6-9CE0-4C40-8152-8A729F25AE98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

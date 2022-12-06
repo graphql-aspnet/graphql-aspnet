@@ -20,14 +20,13 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.InputArguments;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Security.Web;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -213,7 +212,7 @@ namespace GraphQL.AspNet.Execution
 
         private IInputArgumentCollection GatherInputArguments(IDirective targetDirective, object[] arguments)
         {
-            var argCollection = new InputArgumentCollection();
+            var argCollection = new InputArgumentCollection(targetDirective.Arguments.Count);
             for (var i = 0; i < targetDirective.Arguments.Count; i++)
             {
                 if (arguments.Length <= i)

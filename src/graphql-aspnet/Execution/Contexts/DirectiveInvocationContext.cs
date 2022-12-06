@@ -11,10 +11,10 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.InputArguments;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <inheritdoc cref="IDirectiveInvocationContext" />
@@ -33,10 +33,10 @@ namespace GraphQL.AspNet.Execution.Contexts
         public DirectiveInvocationContext(
             IDirective directiveType,
             DirectiveLocation location,
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             IInputArgumentCollection args = null)
         {
-            this.Origin = origin ?? SourceOrigin.None;
+            this.Origin = origin;
             this.Location = location;
             this.Directive = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
             this.Arguments = args ?? new InputArgumentCollection();

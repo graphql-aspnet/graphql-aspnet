@@ -10,10 +10,9 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
+    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// Helper methods for the <see cref="DirectiveLocation"/> enumeration.
@@ -72,32 +71,31 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Determines the directive location corrisponding with this syntax node in the AST representing
         /// a query document. (Execution Locations).
         /// </summary>
-        /// <param name="node">The node to inspect.</param>
+        /// <param name="docPart">The document part to inspect.</param>
         /// <returns>DirectiveLocation.</returns>
-        public static DirectiveLocation AsDirectiveLocation(this SyntaxNode node)
+        public static DirectiveLocation AsDirectiveLocation(this IDocumentPart docPart)
         {
             // all syntax nodes (those parsed on a document) will be
             // "execution phase" locations.
-            switch (node)
+            switch (docPart)
             {
-                case NamedFragmentNode _:
+                case DocumentNamedFragment _:
                     return DirectiveLocation.FRAGMENT_DEFINITION;
 
-                case FragmentSpreadNode _:
+                case DocumentFragmentSpread _:
                     return DirectiveLocation.FRAGMENT_SPREAD;
 
-                case InlineFragmentNode _:
+                case DocumentInlineFragment _:
                     return DirectiveLocation.INLINE_FRAGMENT;
 
-                case FieldNode _:
+                case DocumentField _:
                     return DirectiveLocation.FIELD;
 
-                case VariableNode _:
+                case DocumentVariable _:
                     return DirectiveLocation.VARIABLE_DEFINITION;
 
-                case OperationNode otn:
-                    var operationType = Constants.ReservedNames.FindOperationTypeByKeyword(otn.OperationType.ToString());
-                    switch (operationType)
+                case DocumentOperation otn:
+                    switch (otn.OperationType)
                     {
                         case GraphOperationType.Query:
                             return DirectiveLocation.QUERY;

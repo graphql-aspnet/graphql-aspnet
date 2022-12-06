@@ -20,16 +20,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Metrics;
+    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Engine;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.PlanGeneration.InputArguments;
-    using GraphQL.AspNet.Variables;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// For the chosen operation to execute, applies any directives to elements and fragments
@@ -106,8 +104,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // fragments may be spread more than once in a single operation
             // but we dont want to execute the directives of the fragment more than once
             var includedFragments = new HashSet<string>();
-            foreach (var spread in context.Operation.FragmentSpreads)
+            for (var i = 0; i < context.Operation.FragmentSpreads.Count; i++)
             {
+                var spread = context.Operation.FragmentSpreads[i];
                 if (string.IsNullOrWhiteSpace(spread.Fragment?.Name))
                     continue;
 
@@ -167,7 +166,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
                 throw new GraphExecutionException(
                     failureMessage,
-                    targetDocumentPart.Node.Location.AsOrigin());
+                    targetDocumentPart.SourceLocation.AsOrigin());
             }
 
             var inputArgs = this.GatherInputArguments(
@@ -180,7 +179,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             var invocationContext = new DirectiveInvocationContext(
                 targetDirective,
                 directiveDocumentPart.Location,
-                targetDocumentPart.Node.Location.AsOrigin(),
+                targetDocumentPart.SourceLocation.AsOrigin(),
                 inputArgs);
 
             var request = new GraphDirectiveRequest(
@@ -223,7 +222,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     $"The request was cancelled while applying the execution directive '{targetDirective.Name}' to the query document. " +
                     (causalException != null ? "See inner exception(s) for details." : string.Empty),
                     Constants.ErrorCodes.REQUEST_ABORTED,
-                    targetDocumentPart.Node.Location.AsOrigin(),
+                    targetDocumentPart.SourceLocation.AsOrigin(),
                     exceptionThrown: causalException);
 
                 queryContext.Cancel();
@@ -240,9 +239,10 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             var argGenerator = new ArgumentGenerator(_schema, directivePart.Arguments);
 
-            var collection = new InputArgumentCollection();
-            foreach (var directiveArg in targetDirective.Arguments)
+            var collection = new InputArgumentCollection(targetDirective.Arguments.Count);
+            for (var i = 0; i < targetDirective.Arguments.Count; i++)
             {
+                var directiveArg = targetDirective.Arguments[i];
                 var argResult = argGenerator.CreateInputArgument(directiveArg);
                 if (argResult.IsValid)
                     collection.Add(new InputArgument(directiveArg, argResult.Argument));

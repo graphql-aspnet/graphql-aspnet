@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -55,13 +55,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
         }
 
-        /// <summary>
-        /// Invokes this middleware component allowing it to perform its work against the supplied context.
-        /// </summary>
-        /// <param name="context">The context containing the request passed through the pipeline.</param>
-        /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task InvokeAsync(GraphFieldExecutionContext context, GraphMiddlewareInvocationDelegate<GraphFieldExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.IsValid && context.Result != null && !context.IsCancelled)
@@ -126,12 +120,14 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // all the child field contexts that need to execute
             var executableChildContexts = new SortedFieldExecutionContextList();
 
-            foreach (var childInvocationContext in context.InvocationContext.ChildContexts)
+            for (var i = 0; i < context.InvocationContext.ChildContexts.Count; i++)
             {
+                var childInvocationContext = context.InvocationContext.ChildContexts[i];
+
                 // Step 1A
                 // ----------------------------
                 // figure out which child items need to be processed through it
-                IEnumerable<GraphDataItem> sourceItemsToInclude;
+                IReadOnlyList<GraphDataItem> sourceItemsToInclude;
                 if (childInvocationContext.ExpectedSourceType == null)
                 {
                     sourceItemsToInclude = allSourceItems;
@@ -153,13 +149,12 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 // on the context for the field in question
                 if (context.DefaultFieldSources.TryRetrieveSource(childInvocationContext.Field, out var defaultSource))
                 {
-                    sourceItemsToInclude = sourceItemsToInclude.Select((currentValue) =>
+                    for (var j = 0; j < sourceItemsToInclude.Count; j++)
                     {
-                        if (currentValue.ResultData is VirtualResolvedObject)
-                            currentValue.AssignResult(defaultSource);
-
-                        return currentValue;
-                    });
+                        var current = sourceItemsToInclude[j];
+                        if (current.ResultData is VirtualResolvedObject)
+                            current.AssignResult(defaultSource);
+                    }
                 }
 
                 // Step 2
@@ -280,7 +275,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     foreach (var item in allSourceItems)
                     {
                         if (!dic.ContainsKey(item.GetType()))
-                            dic.Add(item.GetType(), new List<GraphDataItem>());
+                            dic.Add(item.GetType(), new List<GraphDataItem>(1));
 
                         dic[item.GetType()].Add(item);
                     }
@@ -302,7 +297,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 if (result.ExactMatchFound)
                 {
                     if (!dic.ContainsKey(result.FoundTypes[0]))
-                        dic.Add(result.FoundTypes[0], new List<GraphDataItem>());
+                        dic.Add(result.FoundTypes[0], new List<GraphDataItem>(1));
 
                     dic[result.FoundTypes[0]].Add(dataItem);
                 }
@@ -326,7 +321,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         private IEnumerable<GraphFieldExecutionContext> CreateChildExecutionContexts(
             GraphFieldExecutionContext parentContext,
             IGraphFieldInvocationContext childInvocationContext,
-            IEnumerable<GraphDataItem> sourceItemsToInclude)
+            IReadOnlyList<GraphDataItem> sourceItemsToInclude)
         {
             if (childInvocationContext.Field.Mode == FieldResolutionMode.PerSourceItem)
             {
@@ -345,7 +340,8 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                         parentContext,
                         request,
                         parentContext.VariableData,
-                        parentContext.DefaultFieldSources);
+                        parentContext.DefaultFieldSources,
+                        resultCapacity: 1); // one source item yields exactly 1 result
                 }
             }
             else if (childInvocationContext.Field.Mode == FieldResolutionMode.Batch)
@@ -367,11 +363,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 // this is the IEnumerable<T> required as an input to any batch resolver
                 var sourceArgumentType = childInvocationContext.Field.Arguments.SourceDataArgument?.ObjectType ?? typeof(object);
                 var sourceListType = typeof(List<>).MakeGenericType(sourceArgumentType);
-                var sourceDataList = InstanceFactory.CreateInstance(sourceListType) as IList;
+                var sourceDataList = InstanceFactory.CreateInstance(sourceListType, sourceItemsToInclude.Count) as IList;
 
                 // create a list of all the GraphDataItems representing the field
                 // being resolved per input item
-                var sourceItemList = new List<GraphDataItem>();
+                var sourceItemList = new List<GraphDataItem>(sourceItemsToInclude.Count);
 
                 foreach (var item in sourceItemsToInclude)
                 {
@@ -395,7 +391,8 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     parentContext,
                     request,
                     parentContext.VariableData,
-                    parentContext.DefaultFieldSources);
+                    parentContext.DefaultFieldSources,
+                    resultCapacity: sourceItemList.Count);
             }
             else
             {

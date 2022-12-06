@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Internal.Interfaces
 {
     using System;
-    using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Engine.TypeMakers;
 
     /// <summary>
     /// An object that can create a specific graph type from its associated concrete type according to a set of rules

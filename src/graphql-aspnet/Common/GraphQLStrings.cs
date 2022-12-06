@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Common
     using System;
     using System.Text;
     using System.Text.RegularExpressions;
-    using GraphQL.AspNet.Parsing;
+    using GraphQL.AspNet.Execution.Parsing;
 
     /// <summary>
     /// Helper methods for serializing and deserialzing strings according to graphql standards.

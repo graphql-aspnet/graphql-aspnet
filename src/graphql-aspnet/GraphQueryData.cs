@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet
 {
-    using GraphQL.AspNet.Variables;
+    using GraphQL.AspNet.Execution.Variables;
 
     /// <summary>
     /// A raw data package representing the various inputs to the graphql runtime.
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet
         /// <summary>
         /// Gets or sets the variables being supplied on the request, if any.
         /// </summary>
-        /// <value>The variables.</value>
+        /// <value>The variables provided on the request.</value>
         public InputVariableCollection Variables { get; set; }
     }
 }

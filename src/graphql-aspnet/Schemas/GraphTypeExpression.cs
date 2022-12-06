@@ -6,21 +6,21 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Schemas
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Text;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A declaration of the usage of a single graph type (with appropriate wrappers).
     /// This is an object represention of the field and variable declaration
-    /// schema syntax (e.g. '[SomeType]!').
+    /// syntax used by GraphQL (e.g. '[SomeType]!').
     /// </summary>
     [Serializable]
     public partial class GraphTypeExpression
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Schemas
         public GraphTypeExpression(string typeName, IEnumerable<MetaGraphTypes> wrappers)
         {
             this.TypeName = typeName;
-            Wrappers = wrappers?.ToArray() ?? new MetaGraphTypes[0];
+            this.Wrappers = wrappers?.ToArray() ?? new MetaGraphTypes[0];
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Schemas
         public GraphTypeExpression(string typeName, params MetaGraphTypes[] wrappers)
         {
             this.TypeName = typeName;
-            Wrappers = wrappers?.ToArray() ?? new MetaGraphTypes[0];
+            this.Wrappers = wrappers?.ToArray() ?? new MetaGraphTypes[0];
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Schemas
         public GraphTypeExpression WrapExpression(MetaGraphTypes wrapper)
         {
             var newArray = new MetaGraphTypes[Wrappers.Length + 1];
-            Wrappers.CopyTo(newArray, 1);
+            this.Wrappers.CopyTo(newArray, 1);
             newArray[0] = wrapper;
             return new GraphTypeExpression(this.TypeName, newArray);
         }

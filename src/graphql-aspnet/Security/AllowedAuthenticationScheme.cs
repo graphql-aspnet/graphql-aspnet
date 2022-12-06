@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Security
     /// An instance of an allowed authentication scheme.
     /// </summary>
     [DebuggerDisplay("{AuthScheme}")]
-    public class AllowedAuthenticationScheme
+    public sealed class AllowedAuthenticationScheme
     {
         /// <summary>
         /// The default equality comparer for this object.

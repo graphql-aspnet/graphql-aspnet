@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

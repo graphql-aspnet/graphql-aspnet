@@ -14,8 +14,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A class representing the application of a <see cref="GraphDirective"/>

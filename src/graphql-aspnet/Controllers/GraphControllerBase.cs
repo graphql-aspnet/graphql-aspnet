@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>

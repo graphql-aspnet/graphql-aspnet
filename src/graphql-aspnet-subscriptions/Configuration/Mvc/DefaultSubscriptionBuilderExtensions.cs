@@ -10,13 +10,14 @@
 namespace GraphQL.AspNet.Configuration.Mvc
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -61,16 +62,21 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             var publishingExtension = new SubscriptionPublisherSchemaExtension<TSchema>();
 
-            // register the in-process publisher to the service collection before
-            // if one is not already registered
-            var defaultPublisher = CreateDefaultSubscriptionPublisherDescriptor();
-            schemaBuilder.Options.ServiceCollection.TryAdd(defaultPublisher);
-
             // register the internal queueing mechanism that will asyncrounously transfer
             // raised events from controller methods to the registered subscription publisher
             schemaBuilder.Options.ServiceCollection.AddSingleton<SubscriptionEventPublishingQueue>();
             schemaBuilder.Options.ServiceCollection.AddHostedService<SubscriptionPublicationService>();
-            schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
+
+            // register the in-process publisher (and related services) to the service collection before
+            // if one is not already registered. The in process publisher relies on the
+            // dispatch queue
+            var registeredPublisherDescriptor = schemaBuilder.Options.ServiceCollection.FirstOrDefault(x => x.ServiceType == typeof(ISubscriptionEventPublisher));
+            if (registeredPublisherDescriptor == null)
+            {
+                var defaultPublisher = CreateDefaultSubscriptionPublisherDescriptor();
+                schemaBuilder.Options.ServiceCollection.TryAdd(defaultPublisher);
+                schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
+            }
 
             schemaBuilder.Options.RegisterExtension(publishingExtension);
             schemaBuilder.QueryExecutionPipeline.AddMiddleware<PublishRaisedSubscriptionEventsMiddleware<TSchema>>(
@@ -111,18 +117,16 @@ namespace GraphQL.AspNet.Configuration.Mvc
         {
             return new ServiceDescriptor(
                 typeof(ISubscriptionEventRouter),
-                (sp) =>
-                        {
-                            var logger = sp.CreateScope().ServiceProvider.GetService<IGraphEventLogger>();
-                            return new DefaultSubscriptionEventRouter(logger);
-                        },
+                typeof(DefaultSubscriptionEventRouter),
                 ServiceLifetime.Singleton);
         }
 
         private static ServiceDescriptor CreateDefaultSubscriptionPublisherDescriptor()
         {
             return new ServiceDescriptor(
-                 typeof(ISubscriptionEventPublisher), typeof(InProcessSubscriptionPublisher), ServiceLifetime.Scoped);
+                 typeof(ISubscriptionEventPublisher),
+                 typeof(InProcessSubscriptionPublisher),
+                 ServiceLifetime.Scoped);
         }
     }
 }

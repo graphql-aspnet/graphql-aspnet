@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Security
     /// A formal definition of policy enforced against an entity.
     /// </summary>
     [DebuggerDisplay("{Name}")]
-    public class EnforcedSecurityPolicy
+    public sealed class EnforcedSecurityPolicy
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EnforcedSecurityPolicy" /> class.

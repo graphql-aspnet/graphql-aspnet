@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.Web
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Response;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Web
 
         private readonly IGraphOperationResult _result;
         private readonly IGraphQueryResponseWriter _documentWriter;
-        private readonly GraphQLResponseOptions _options;
+        private readonly ResponseOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLHttpResponseWriter" /> class.
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Web
         {
             _result = result;
             _documentWriter = documentWriter;
-            _options = new GraphQLResponseOptions()
+            _options = new ResponseOptions()
             {
                 ExposeExceptions = exposeExceptions,
                 ExposeMetrics = exposeMetrics,

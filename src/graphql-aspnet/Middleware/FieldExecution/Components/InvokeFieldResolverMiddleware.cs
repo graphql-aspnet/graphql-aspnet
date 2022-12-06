@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 {
     using System;
     using System.Collections.Generic;
+    using System.Security.Cryptography;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -18,9 +19,9 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.RulesEngine;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A middleware component to create a <see cref="GraphController" /> and invoke an action method.
@@ -30,6 +31,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
+        private readonly FieldCompletionRuleProcessor _completionProcessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InvokeFieldResolverMiddleware{TSchema}" /> class.
@@ -39,23 +41,23 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             TSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            _completionProcessor = new FieldCompletionRuleProcessor();
         }
 
-        /// <summary>
-        /// Invoke the action item as an asyncronous operation.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="next">The next.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task InvokeAsync(GraphFieldExecutionContext context, GraphMiddlewareInvocationDelegate<GraphFieldExecutionContext> next, CancellationToken cancelToken = default)
         {
             // create a set of validation contexts for every incoming source graph item
             // to capture and validate every item regardless of it being successfully resolved or failed
             var validationContexts = new List<FieldValidationContext>(context.Request.Data.Items.Count);
-            foreach (var dataItem in context.Request.Data.Items)
+            for (var i = 0; i < context.Request.Data.Items.Count; i++)
             {
-                var validationContext = new FieldValidationContext(_schema, dataItem, context.Messages);
+                var dataItem = context.Request.Data.Items[i];
+                var validationContext = new FieldValidationContext(
+                    _schema,
+                    dataItem,
+                    context.Messages);
+
                 validationContexts.Add(validationContext);
             }
 
@@ -68,12 +70,15 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             if (!continueExecution)
             {
                 context.Cancel();
-                context.Request.Data.Items.ForEach(x => x.Cancel());
+                for (var i = 0; i < context.Request.Data.Items.Count; i++)
+                {
+                    context.Request.Data.Items[i].Cancel();
+                }
             }
 
-            // validate the resolution of the field in whatever manner that means for its current state
-            var completionProcessor = new FieldCompletionRuleProcessor();
-            completionProcessor.Execute(validationContexts);
+            // validate the resolution of the field in whatever manner is necessary
+            // for its current state
+            _completionProcessor.Execute(validationContexts);
 
             // end profiling of this single field of data
             context.Metrics?.EndFieldResolution(context);
@@ -110,7 +115,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             await task.ConfigureAwait(false);
             context.Messages.AddRange(resolutionContext.Messages);
 
-            await this.OnFieldResolutionComplete(context, resolutionContext, cancelToken);
+            await this.CompletePostFieldResolutionWork(context, resolutionContext, cancelToken);
 
             context.Logger?.FieldResolutionCompleted(resolutionContext);
 
@@ -130,7 +135,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// that was just resolved.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task OnFieldResolutionComplete(
+        protected virtual async Task CompletePostFieldResolutionWork(
             GraphFieldExecutionContext fieldExecutionContext,
             FieldResolutionContext fieldResolutionContext,
             CancellationToken cancelToken)
@@ -146,8 +151,9 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// <summary>
         /// Assigns the results of resolving the field to the items on the execution context.
         /// </summary>
-        /// <param name="executionContext">The execution context.</param>
-        /// <param name="resolutionContext">The resolution context.</param>
+        /// <param name="executionContext">The field execution context governing the field resolution.</param>
+        /// <param name="resolutionContext">The resolution context that just completed processing
+        /// a field resolver.</param>
         private void AssignResults(GraphFieldExecutionContext executionContext, FieldResolutionContext resolutionContext)
         {
             // transfer the result to the execution context

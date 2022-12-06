@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded when an GraphqlWsLegacy client proxy receives a new message from its connected client.
+    /// Recorded when an client proxy receives a new message from its connected client.
     /// </summary>
     public class ClientProxyMessageReceivedLogEntry : GraphLogEntry
     {
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
         public ClientProxyMessageReceivedLogEntry(ISubscriptionClientProxy client, ILoggableClientProxyMessage message)
             : base(SubscriptionLogEventIds.ClientMessageReceived)
         {
-            this.ClientId = client?.Id;
+            this.ClientId = client?.Id.ToString();
             this.MessageType = message?.Type;
             this.MessageId = message?.Id;
         }
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
         }
 
         /// <summary>
-        /// Gets the id that was supplied by the client with the GraphqlWsLegacy message, if any.
+        /// Gets the id that was supplied by the client with the message, if any.
         /// </summary>
         /// <value>The message identifier.</value>
         public string MessageId

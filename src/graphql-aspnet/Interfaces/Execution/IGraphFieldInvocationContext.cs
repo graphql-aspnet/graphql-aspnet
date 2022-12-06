@@ -11,9 +11,9 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A context, containing all the requisite information to properly resolve a field
@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Places a restriction on this context such that it will only be executed if the provided
         /// source item can be successfully cast to the provided type. Pass null to indicate no restrictions.
         /// </summary>
-        /// <param name="restrictToType">A .NEt type to restrict this invocation to.</param>
+        /// <param name="restrictToType">A .NET type to restrict this invocation to.</param>
         void Restrict(Type restrictToType);
 
         /// <summary>
@@ -66,10 +66,16 @@ namespace GraphQL.AspNet.Interfaces.Execution
         ISchema Schema { get; }
 
         /// <summary>
-        /// Gets the origin location, in the source document, that coorisponds to this field context.
+        /// Gets the qualified origin location, in the source document, that coorisponds to this field context.
         /// </summary>
         /// <value>The location.</value>
         SourceOrigin Origin { get; }
+
+        /// <summary>
+        /// Gets the location, in the source text, that coorisponds to this field context.
+        /// </summary>
+        /// <value>The location.</value>
+        SourceLocation Location { get; }
 
         /// <summary>
         /// Gets the source type, if any, that the source object (when this field is executed) must be castable to

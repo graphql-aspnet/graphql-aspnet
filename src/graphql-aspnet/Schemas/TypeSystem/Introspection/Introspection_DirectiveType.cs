@@ -1,0 +1,79 @@
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
+{
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
+
+    /// <summary>
+    /// Represents the meta-type called "__Directive".
+    /// </summary>
+    [DebuggerDisplay("INTROSPECTION TYPE __Directive")]
+    internal class Introspection_DirectiveType : BaseIntrospectionObjectType
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Introspection_DirectiveType"/> class.
+        /// </summary>
+        public Introspection_DirectiveType()
+            : base(Constants.ReservedNames.DIRECTIVE_TYPE)
+        {
+            // "__Directive" type definition
+            // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
+            // -------------------------------------------------------------------------
+            this.GraphFieldCollection.AddField<IntrospectedDirective, string>(
+                "name",
+                new GraphTypeExpression(
+                    Constants.ScalarNames.STRING,
+                    GraphTypeExpression.RequiredSingleItem),
+                new IntrospectedRoutePath(GraphCollection.Types, this.Name, "name"),
+                (directive) => directive.Name.AsCompletedTask(),
+                "The case-sensitive name of this directive as it should appear in a query.");
+
+            this.GraphFieldCollection.AddField<IntrospectedDirective, string>(
+                "description",
+                new GraphTypeExpression(Constants.ScalarNames.STRING),
+                new IntrospectedRoutePath(GraphCollection.Types, this.Name, "description"),
+                (directive) => directive.Description.AsCompletedTask(),
+                "A human-friendly description of the directive and how it functions.");
+
+            this.GraphFieldCollection.AddField<IntrospectedDirective, IReadOnlyList<DirectiveLocation>>(
+                "locations",
+                new GraphTypeExpression(
+                    Constants.ReservedNames.DIRECTIVE_LOCATION_ENUM,
+                    GraphTypeExpression.RequiredListRequiredItem),
+                new IntrospectedRoutePath(GraphCollection.Types, this.Name, "locations"),
+                (directive) => directive.Locations.AsCompletedTask(),
+                "A collection of locations where this directive can be used.");
+
+            this.GraphFieldCollection.AddField<IntrospectedDirective, IReadOnlyList<IntrospectedInputValueType>>(
+                "args",
+                new GraphTypeExpression(
+                    Constants.ReservedNames.INPUT_VALUE_TYPE,
+                    GraphTypeExpression.RequiredListRequiredItem),
+                new IntrospectedRoutePath(GraphCollection.Types, this.Name, "args"),
+                (directive) => directive.Arguments.AsCompletedTask(),
+                "A collection of input values provided to the directive in order to properly invoke it.");
+
+            this.GraphFieldCollection.AddField<IntrospectedDirective, bool>(
+                "isRepeatable",
+                new GraphTypeExpression(
+                    Constants.ScalarNames.BOOLEAN,
+                    GraphTypeExpression.RequiredSingleItem),
+                new IntrospectedRoutePath(GraphCollection.Types, this.Name, "isRepeatable"),
+                (directive) => directive.IsRepeatable.AsCompletedTask(),
+                "A value indicating if the directive is repeatable on its target entity.");
+        }
+    }
+}

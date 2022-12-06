@@ -17,10 +17,10 @@ namespace GraphQL.AspNet.Middleware.Common
     using GraphQL.AspNet.Interfaces.Middleware;
 
     /// <summary>
-    /// An internal object for encapsulating a <see cref="Func{TResult}" /> supplied by an end user
+    /// An internal object for encapsulating an anonymous function supplied by an end user
     /// as a piece of middleware.
     /// </summary>
-    /// <typeparam name="TContext">The type of context this pipeline handles.</typeparam>
+    /// <typeparam name="TContext">The type of context this middleware component handles.</typeparam>
     internal class SingleFunctionMiddleware<TContext> : IGraphMiddlewareComponent<TContext>
         where TContext : class, IGraphExecutionContext
     {

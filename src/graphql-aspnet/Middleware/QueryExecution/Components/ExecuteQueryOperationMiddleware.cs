@@ -23,10 +23,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Variables;
 
     /// <summary>
     /// Begins executing the top level fields, of the operation on the context, through the field execution pipeline.
@@ -83,9 +82,15 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // on the context as well as the configured timeout for the schema
             using var monitor = new QueryCancellationMonitor(context.CancellationToken, _queryTimeout);
 
+            var expectedTopLevelFieldCount = context
+                .QueryPlan
+                .Operation
+                .FieldContexts
+                .Count;
+
             var operation = context.QueryPlan.Operation;
-            var fieldInvocations = new List<FieldPipelineInvocation>();
-            var fieldInvocationTasks = new List<Task>();
+            var fieldInvocations = new List<FieldPipelineInvocation>(expectedTopLevelFieldCount);
+            var fieldInvocationTasks = new List<Task>(expectedTopLevelFieldCount);
 
             monitor.Start();
             context.CancellationToken = monitor.CancellationToken;
@@ -152,7 +157,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     context,
                     fieldRequest,
                     context.ResolvedVariables,
-                    context.DefaultFieldSources);
+                    context.DefaultFieldSources,
+                    resultCapacity: 1);
 
                 var fieldTask = _fieldExecutionPipeline.InvokeAsync(
                     fieldContext,

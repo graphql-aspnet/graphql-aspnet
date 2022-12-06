@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -19,11 +18,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.ServerProtocols.Common;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
@@ -31,6 +31,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// This object wraps a connected websocket to characterize it and provide
@@ -41,8 +42,21 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     public class GraphqlWsLegacyClientProxy<TSchema> : SubscriptionClientProxyBase<TSchema, GraphqlWsLegacyMessage>
         where TSchema : class, ISchema
     {
+        private static readonly JsonSerializerOptions _deserializeOptions;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="GraphqlWsLegacyClientProxy{TSchema}"/> class.
+        /// </summary>
+        static GraphqlWsLegacyClientProxy()
+        {
+            _deserializeOptions = new JsonSerializerOptions();
+            _deserializeOptions.PropertyNameCaseInsensitive = true;
+            _deserializeOptions.AllowTrailingCommas = true;
+            _deserializeOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+        }
+
         private readonly bool _enableMetrics;
-        private readonly GraphqlWsLegacyMessageConverterFactory<TSchema> _messageConverterFactory;
+        private readonly JsonSerializerOptions _serializeOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyClientProxy{TSchema}" /> class.
@@ -51,6 +65,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         /// <param name="clientConnection">The underlying client connection that this proxy communicates with.</param>
         /// <param name="router">The router component that will send this client event data.</param>
         /// <param name="protocolName">Name of the protocol this client presents as.</param>
+        /// <param name="responseWriter">A response writer instance that can generate
+        /// query responses for any outbound messages this proxy generates.</param>
         /// <param name="logger">The primary logger object to record events to.</param>
         /// <param name="enableMetrics">if set to <c>true</c> any queries this client
         /// executes will have metrics attached.</param>
@@ -59,41 +75,79 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             IClientConnection clientConnection,
             ISubscriptionEventRouter router,
             string protocolName,
+            IGraphQueryResponseWriter<TSchema> responseWriter,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
-            : base(Guid.NewGuid().ToString(), schema, clientConnection, router, logger)
+            : base(SubscriptionClientId.NewClientId(), schema, clientConnection, router, logger)
         {
             this.Protocol = Validation.ThrowIfNullWhiteSpaceOrReturn(protocolName, nameof(protocolName));
 
-            _messageConverterFactory = new GraphqlWsLegacyMessageConverterFactory<TSchema>(clientConnection?.ServiceProvider);
+            Validation.ThrowIfNull(responseWriter, nameof(responseWriter));
+
             _enableMetrics = enableMetrics;
+
+            _serializeOptions = new JsonSerializerOptions();
+            _serializeOptions.Converters.Add(new GraphqlWsLegacyServerDataMessageConverter(schema, responseWriter));
+            _serializeOptions.Converters.Add(new GraphqlWsLegacyServerCompleteMessageConverter());
+            _serializeOptions.Converters.Add(new GraphqlWsLegacyServerErrorMessageConverter(schema));
         }
 
         /// <inheritdoc />
-        protected override GraphqlWsLegacyMessage DeserializeMessage(Stream stream)
+        protected override async Task<GraphqlWsLegacyMessage> DeserializeMessage(Stream stream, CancellationToken cancelToken = default)
         {
-            using var reader = new StreamReader(stream, Encoding.UTF8);
-            var text = reader.ReadToEnd();
-
-            var options = new JsonSerializerOptions();
-            options.PropertyNameCaseInsensitive = true;
-            options.AllowTrailingCommas = true;
-            options.ReadCommentHandling = JsonCommentHandling.Skip;
-
             GraphqlWsLegacyMessage recievedMessage;
 
             try
             {
-                var partialMessage = JsonSerializer.Deserialize<GraphqlWsLegacyClientPartialMessage>(text, options);
+                var partialMessage = await JsonSerializer.DeserializeAsync<GraphqlWsLegacyClientPartialMessage>(stream, _deserializeOptions, cancelToken);
                 recievedMessage = partialMessage.Convert();
             }
             catch (Exception ex)
             {
                 this.Logger.EventLogger?.UnhandledExceptionEvent(ex);
+
+                string text = "~unreadable~";
+                try
+                {
+                    if (stream.CanSeek)
+                    {
+                        stream.Seek(0, SeekOrigin.Begin);
+                        using (var reader = new StreamReader(stream, Encoding.UTF8))
+                            text = reader.ReadToEnd();
+                    }
+                }
+                catch
+                {
+                }
+
                 recievedMessage = new GraphqlWsLegacyUnknownMessage(text);
             }
 
             return recievedMessage;
+        }
+
+        /// <inheritdoc />
+        protected override byte[] SerializeMessage(GraphqlWsLegacyMessage message)
+        {
+            // Does the message need any specialized serialization handling?
+            Type asType = typeof(GraphqlWsLegacyMessage);
+            switch (message.Type)
+            {
+                case GraphqlWsLegacyMessageType.DATA:
+                    asType = typeof(GraphqlWsLegacyServerDataMessage);
+                    break;
+
+                case GraphqlWsLegacyMessageType.COMPLETE:
+                    asType = typeof(GraphqlWsLegacyServerCompleteMessage);
+                    break;
+
+                case GraphqlWsLegacyMessageType.ERROR:
+                    asType = typeof(GraphqlWsLegacyServerErrorMessage);
+                    break;
+            }
+
+            // graphql is defined to communcate in UTF-8, serialize the result to that
+            return JsonSerializer.SerializeToUtf8Bytes(message, asType, _serializeOptions);
         }
 
         /// <summary>
@@ -195,6 +249,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             switch (result.Status)
             {
                 case SubscriptionOperationResultType.SubscriptionRegistered:
+
                     // nothing to do in this case
                     break;
 
@@ -254,18 +309,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         protected override async Task ClientMessageReceived(GraphqlWsLegacyMessage message, CancellationToken cancelToken = default)
         {
             await this.ProcessMessage(message);
-        }
-
-        /// <inheritdoc />
-        protected override byte[] SerializeMessage(GraphqlWsLegacyMessage message)
-        {
-            // create and register the proper serializer for this message
-            var options = new JsonSerializerOptions();
-            (var converter, var asType) = _messageConverterFactory.CreateConverter(message);
-            options.Converters.Add(converter);
-
-            // graphql is defined to communcate in UTF-8, serialize the result to that
-            return JsonSerializer.SerializeToUtf8Bytes(message, asType, options);
         }
 
         /// <inheritdoc />

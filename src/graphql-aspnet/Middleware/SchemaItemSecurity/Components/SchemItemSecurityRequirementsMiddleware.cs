@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Security;
     using Microsoft.AspNetCore.Authorization;
 
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         private const string DEFAULT_POLICY_NAME = "{6134DC1E-7B4C-4C9A-A410-D7322FE42D5C}";
 
         private readonly IAuthorizationPolicyProvider _policyProvider;
-        private readonly ConcurrentDictionary<ISecureSchemaItem, CachedRequirements> _cachedRequirements;
+        private readonly ConcurrentDictionary<ISecurableSchemaItem, CachedRequirements> _cachedRequirements;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemItemSecurityRequirementsMiddleware"/> class.
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         public SchemItemSecurityRequirementsMiddleware(IAuthorizationPolicyProvider policyProvider = null)
         {
             _policyProvider = policyProvider;
-            _cachedRequirements = new ConcurrentDictionary<ISecureSchemaItem, CachedRequirements>();
+            _cachedRequirements = new ConcurrentDictionary<ISecurableSchemaItem, CachedRequirements>();
         }
 
         /// <inheritdoc />
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             await next.Invoke(context, cancelToken);
         }
 
-        private async Task<CachedRequirements> RetrieveSecurityRequirements(ISecureSchemaItem schemaItem)
+        private async Task<CachedRequirements> RetrieveSecurityRequirements(ISecurableSchemaItem schemaItem)
         {
             if (_cachedRequirements.TryGetValue(schemaItem, out var requirementSet))
                 return requirementSet;
@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             return requirementSet;
         }
 
-        private async Task<CachedRequirements> CreateSecurityRequirements(ISecureSchemaItem schemaItem)
+        private async Task<CachedRequirements> CreateSecurityRequirements(ISecurableSchemaItem schemaItem)
         {
             if (schemaItem?.SecurityGroups == null)
             {

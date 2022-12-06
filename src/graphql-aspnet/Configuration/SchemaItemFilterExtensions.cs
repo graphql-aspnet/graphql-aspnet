@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

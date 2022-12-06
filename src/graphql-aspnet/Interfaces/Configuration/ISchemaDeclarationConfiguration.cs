@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

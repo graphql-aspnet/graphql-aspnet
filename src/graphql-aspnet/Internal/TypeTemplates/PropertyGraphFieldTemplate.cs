@@ -12,13 +12,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas.Structural;
@@ -41,6 +42,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             : base(parent, propInfo)
         {
             this.Property = Validation.ThrowIfNullOrReturn(propInfo, nameof(propInfo));
+            this.Method = this.Property.GetGetMethod();
+            this.Parameters = this.Method?.GetParameters().ToList() ?? new List<ParameterInfo>();
             this.OwnerTypeKind = ownerKind;
         }
 
@@ -117,7 +120,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         private PropertyInfo Property { get; }
 
         /// <inheritdoc />
-        public MethodInfo Method => this.Property.GetGetMethod();
+        public MethodInfo Method { get; }
+
+        /// <inheritdoc />
+        public IReadOnlyList<ParameterInfo> Parameters { get; }
 
         /// <inheritdoc />
         public override IReadOnlyList<IGraphArgumentTemplate> Arguments { get; } = new List<IGraphArgumentTemplate>();

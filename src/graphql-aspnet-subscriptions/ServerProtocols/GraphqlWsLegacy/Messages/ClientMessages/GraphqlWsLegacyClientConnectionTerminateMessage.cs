@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ClientMessages
 {
     using System.Diagnostics;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Payloads;
 
     /// <summary>
     /// A message recieved from the client when it is notfiying the server that its dropping

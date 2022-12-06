@@ -14,14 +14,14 @@ namespace GraphQL.AspNet.Schemas
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A declaration of the usage of a single graph type (with appropriate wrappers).
     /// This is an object represention of the field and variable declaration
-    /// schema syntax (e.g. '[SomeType]!').
+    /// syntax used by GraphQL (e.g. '[SomeType]!').
     /// </summary>
     public partial class GraphTypeExpression
     {

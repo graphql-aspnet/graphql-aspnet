@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
-    using GraphQL.AspNet.Interfaces.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
 
     /// <summary>
     /// A result to completing the execution of an operation in a graphql query.

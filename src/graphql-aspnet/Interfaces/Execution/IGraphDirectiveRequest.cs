@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using GraphQL.AspNet.Directives;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A request to perform some augmented or conditional processing

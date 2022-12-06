@@ -11,9 +11,10 @@ namespace GraphQL.AspNet.Logging
 {
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging.SubscriptionEventLogEntries;
+    using GraphQL.AspNet.Logging.SubscriptionServerLogEntries;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -78,12 +79,56 @@ namespace GraphQL.AspNet.Logging
         /// <param name="logger">The logger doing the logging.</param>
         /// <param name="eventData">The event data that was received from a data source.</param>
         public static void SubscriptionEventReceived(
-            this IGraphEventLogger logger,
+            this ILogger logger,
             SubscriptionEvent eventData)
         {
+            if (!logger.IsEnabled(LogLevel.Debug))
+                return;
+
+            // note this event is ILogger not IGraphEventLogger
+            // its consumed from a global singleton (IGraphEventLogger is a scoped service due to the scope id property)
+            var data = new SubscriptionEventReceivedLogEntry(eventData);
             logger.Log(
                 LogLevel.Debug,
-                () => new SubscriptionEventReceivedLogEntry(eventData));
+                SubscriptionLogEventIds.GlobalEventReceived,
+                data,
+                null,
+                (s, e) => s.ToString());
+        }
+
+        /// <summary>
+        /// Recorded by this instance's <see cref="ISubscriptionEventRouter" /> when it receives a new subscription event from
+        /// an externally connected source such as a message queue or service or bus. For single server configurations this event
+        /// is recorded when an event is passed from the internal publishing queue directly to the <see cref="ISubscriptionEventRouter" />.
+        /// </summary>
+        /// <param name="logger">The logger doing the logging.</param>
+        /// <param name="eventCount">The current event count of the dispatch queue.</param>
+        /// <param name="queueCountThreshold">The threshold configuration object that caused
+        /// this event to be raised.</param>
+        public static void SubscriptionEventDispatchQueueThresholdReached(
+            this ILogger logger,
+            int eventCount,
+            SubscriptionEventAlertThreshold queueCountThreshold)
+        {
+            if (queueCountThreshold == null)
+                return;
+
+            if (!logger.IsEnabled(queueCountThreshold.LogLevel))
+                return;
+
+            // note this event is ILogger not IGraphEventLogger
+            // its consumed from a global singleton (IGraphEventLogger is a scoped service due to the scope id property)
+            var alertMessage = new SubscriptionEventDispatchQueueAlertLogEntry(
+                queueCountThreshold.SubscriptionEventCountThreshold,
+                eventCount,
+                queueCountThreshold.CustomMessage);
+
+            logger.Log(
+                    queueCountThreshold.LogLevel,
+                    SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
+                    alertMessage,
+                    null,
+                    (s, e) => s.ToString());
         }
 
         /// <summary>

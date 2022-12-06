@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A graph type reprsenting a 64-bit, unsigned integer.

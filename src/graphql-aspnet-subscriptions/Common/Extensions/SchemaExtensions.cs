@@ -10,13 +10,24 @@
 namespace GraphQL.AspNet.Common.Extensions
 {
     using System;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using System.Collections.Concurrent;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// Extension methods for working with <see cref="ISchema"/>.
     /// </summary>
     public static class SchemaExtensions
     {
+        private static readonly ConcurrentDictionary<Type, string> _assemblyQualifiedNameCache;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="SchemaExtensions"/> class.
+        /// </summary>
+        static SchemaExtensions()
+        {
+            _assemblyQualifiedNameCache = new ConcurrentDictionary<Type, string>();
+        }
+
         /// <summary>
         /// Returns the value of the given schema used to uniquely qualify it amongst all other
         /// schema type's that may exist in a set of registered subscription events.
@@ -25,10 +36,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <returns>System.String.</returns>
         public static string FullyQualifiedSchemaTypeName(this ISchema schema)
         {
-            if (schema == null)
-                return null;
-
-            return RetrieveFullyQualifiedTypeName(schema.GetType());
+            return RetrieveFullyQualifiedTypeName(schema?.GetType());
         }
 
         /// <summary>
@@ -41,7 +49,21 @@ namespace GraphQL.AspNet.Common.Extensions
             if (dataObjectType == null)
                 return null;
 
-            return dataObjectType.AssemblyQualifiedName;
+            // the 'Type.AssemblyQualifiedName' property allocates a new
+            // string on each invocation of the property instead of using an interned
+            // or static value "because reasons"
+            //
+            // in a high volume subscription server this produces A LOT
+            // of unecessary strings and adds a lot of GC pressure unecessarily.
+            //
+            // Cache the results to prevent this.
+            if (!_assemblyQualifiedNameCache.TryGetValue(dataObjectType, out var typeName))
+            {
+                typeName = dataObjectType.AssemblyQualifiedName;
+                _assemblyQualifiedNameCache.TryAdd(dataObjectType, typeName);
+            }
+
+            return typeName;
         }
     }
 }

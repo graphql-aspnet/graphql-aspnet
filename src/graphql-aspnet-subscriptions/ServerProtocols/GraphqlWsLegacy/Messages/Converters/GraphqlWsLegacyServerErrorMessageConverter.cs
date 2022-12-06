@@ -14,10 +14,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Response;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// A json converter for the <see cref="GraphqlWsLegacyServerErrorMessage"/> type.
@@ -63,7 +64,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters
                 messageWriter.WriteSingleMessage(
                     writer,
                     value.Payload,
-                    new GraphQLResponseOptions()
+                    new ResponseOptions()
                     {
                         ExposeExceptions = _schema.Configuration.ResponseOptions.ExposeExceptions,
                         ExposeMetrics = _schema.Configuration.ResponseOptions.ExposeMetrics,
@@ -96,7 +97,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters
             /// <param name="message">The message to serialize.</param>
             /// <param name="options">The options to use to govern the exposure of message level
             /// metadata.</param>
-            public void WriteSingleMessage(Utf8JsonWriter writer, IGraphMessage message, GraphQLResponseOptions options)
+            public void WriteSingleMessage(Utf8JsonWriter writer, IGraphMessage message, ResponseOptions options)
             {
                 this.WriteMessage(writer, message, options);
             }

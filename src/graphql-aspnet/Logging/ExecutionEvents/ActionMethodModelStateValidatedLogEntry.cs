@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             InputModelStateDictionary modelState)
             : base(LogEventIds.ControllerModelValidated)
         {
-            this.PipelineRequestId = request?.Id;
+            this.PipelineRequestId = request?.Id.ToString();
             this.ControllerName = method?.Parent?.ObjectType?.FriendlyName(true) ?? method?.Parent?.Name;
             this.ActionName = method?.Name;
             this.FieldPath = method?.Route?.Path;

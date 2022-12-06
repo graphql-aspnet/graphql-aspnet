@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A constructor manager for dynamically building instances of graph schemas

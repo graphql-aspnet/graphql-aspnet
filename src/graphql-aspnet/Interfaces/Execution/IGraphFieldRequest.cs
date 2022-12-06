@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A request passed to a field resolver to complete a custom operation in an effort to generate

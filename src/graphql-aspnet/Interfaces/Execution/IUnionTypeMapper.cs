@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An object that can inspect a type, usually returned by a resolver, and determine which type in the target

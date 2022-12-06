@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Middleware
 {
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A schema targeted, context-specific pipeline that can be invoked on behalf of a target schema to

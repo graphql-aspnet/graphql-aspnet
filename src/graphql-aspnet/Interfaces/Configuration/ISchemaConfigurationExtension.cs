@@ -8,7 +8,7 @@
 // *************************************************************
 namespace GraphQL.AspNet.Interfaces.Configuration
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An object that needs to apply some configuration or setup to the schema

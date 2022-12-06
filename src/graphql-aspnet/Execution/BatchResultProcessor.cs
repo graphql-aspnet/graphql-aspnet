@@ -19,13 +19,13 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;
 
     /// <summary>
     /// A data processor that handles internal batch operations for items being processed through a graph query.
     /// </summary>
-    public class BatchResultProcessor
+    internal sealed class BatchResultProcessor
     {
         private readonly SourceOrigin _origin;
         private readonly IGraphField _field;

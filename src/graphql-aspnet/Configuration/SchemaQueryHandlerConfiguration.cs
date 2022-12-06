@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.Configuration
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Web;
     using Microsoft.Extensions.DependencyInjection;
 

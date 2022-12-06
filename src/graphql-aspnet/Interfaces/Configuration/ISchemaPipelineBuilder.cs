@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Middleware;
     using Microsoft.Extensions.DependencyInjection;
 

@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
 
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
             this.IsRepeatable = isRepeatable;
-            this.SecurityGroups = securityGroups ?? Enumerable.Empty<AppliedSecurityPolicyGroup>();
+            this.SecurityGroups = new AppliedSecurityPolicyGroups(securityGroups);
         }
 
         /// <inheritdoc />
@@ -108,6 +108,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public bool IsRepeatable { get; set; }
 
         /// <inheritdoc />
-        public IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; private set; }
+        public IAppliedSecurityPolicyGroups SecurityGroups { get; private set; }
     }
 }

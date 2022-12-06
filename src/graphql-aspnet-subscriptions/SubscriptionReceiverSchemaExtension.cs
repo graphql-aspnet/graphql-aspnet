@@ -12,13 +12,15 @@ namespace GraphQL.AspNet
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Exceptions;
+    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
+    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
@@ -35,7 +37,7 @@ namespace GraphQL.AspNet
     /// subscription events for those clients.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this extension is built for.</typeparam>
-    public class SubscriptionReceiverSchemaExtension<TSchema> : IGraphQLServerExtension
+    public sealed class SubscriptionReceiverSchemaExtension<TSchema> : IGraphQLServerExtension
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -65,7 +67,7 @@ namespace GraphQL.AspNet
         /// service collection before being incorporated with the DI container.
         /// </summary>
         /// <param name="options">The parent options which owns this extension.</param>
-        public virtual void Configure(SchemaOptions options)
+        public void Configure(SchemaOptions options)
         {
             _primaryOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);
@@ -130,14 +132,6 @@ namespace GraphQL.AspNet
             _schemaBuilder.Options.ServiceCollection.AddGraphqlWsLegacysProtocol();
             _schemaBuilder.Options.ServiceCollection.AddGqltwsProtocol();
 
-            // register the global counter that imposes limits on the number of connected
-            // clients supported by this server instance
-            _schemaBuilder.Options.ServiceCollection.TryAdd(
-                new ServiceDescriptor(
-                typeof(GlobalConnectedSubscriptionClientCounter),
-                (sp) => new GlobalConnectedSubscriptionClientCounter(SubscriptionServerSettings.MaxConnectedClientCount),
-                ServiceLifetime.Singleton));
-
             // register the primary factory that will generate client proxies for the
             // supported messaging protocols
             _schemaBuilder.Options.ServiceCollection.TryAdd(
@@ -145,6 +139,18 @@ namespace GraphQL.AspNet
                  typeof(ISubscriptionServerClientFactory),
                  typeof(DefaultSubscriptionServerClientFactory),
                  ServiceLifetime.Singleton));
+
+            // register the global collection of active client proxies
+            _schemaBuilder.Options.ServiceCollection.TryAdd(
+             new ServiceDescriptor(
+                 typeof(IGlobalSubscriptionClientProxyCollection),
+                 (sp) => new DefaultGlobalSubscriptionClientProxyCollection(SubscriptionServerSettings.MaxConnectedClientCount),
+                 ServiceLifetime.Singleton));
+
+            _schemaBuilder.Options.ServiceCollection.TryAddSingleton<ISubscriptionEventDispatchQueue, SubscriptionClientDispatchQueue>();
+
+            // add the dispatch service for distributing events to clients
+            _schemaBuilder.Options.ServiceCollection.AddHostedService<SubscriptionClientDispatchService>();
         }
 
         /// <summary>

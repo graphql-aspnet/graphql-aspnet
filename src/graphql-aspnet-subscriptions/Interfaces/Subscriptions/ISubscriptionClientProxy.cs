@@ -12,14 +12,32 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// An interface representing an established connection to a client that can process
     /// subscription data from the server.
     /// </summary>
-    public interface ISubscriptionClientProxy : ISubscriptionEventReceiver, IDisposable
+    public interface ISubscriptionClientProxy : IDisposable
     {
+        /// <summary>
+        /// Gets the globally unique id assigned to this instance.
+        /// </summary>
+        /// <value>The instance's unique id.</value>
+        SubscriptionClientId Id { get; }
+
+        /// <summary>
+        /// Called by an outside source, typically an <see cref="ISubscriptionEventRouter" />,
+        /// when an event was raised that this receiver requested.
+        /// </summary>
+        /// <param name="eventData">The data package representing a raised subscription
+        /// event.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task.</returns>
+        ValueTask ReceiveEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default);
+
         /// <summary>
         /// Instructs the proxy to perform the initial setup of the client proxy and
         /// begins brokering data between the client and the graphql runtime for its lifetime.

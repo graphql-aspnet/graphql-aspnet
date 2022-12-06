@@ -13,7 +13,8 @@ namespace GraphQL.AspNet.Security
     using System.Linq;
 
     /// <summary>
-    /// An ojbect indicating what authentication methods are allowed for a particular entity.
+    /// An object indicating what authentication methods are allowed
+    /// for a particular entity.
     /// </summary>
     internal class AuthenticationDigest
     {

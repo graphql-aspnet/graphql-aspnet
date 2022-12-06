@@ -11,10 +11,10 @@ namespace GraphQL.AspNet
 {
     using System;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.AspNetCore.Builder;
 
@@ -23,7 +23,7 @@ namespace GraphQL.AspNet
     /// query and mutation operations.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this extension is built for.</typeparam>
-    public class SubscriptionPublisherSchemaExtension<TSchema> : IGraphQLServerExtension
+    public sealed class SubscriptionPublisherSchemaExtension<TSchema> : IGraphQLServerExtension
         where TSchema : class, ISchema
     {
         private SchemaOptions _primaryOptions;
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet
         /// service collection before being incorporated with the DI container.
         /// </summary>
         /// <param name="options">The parent options which owns this extension.</param>
-        public virtual void Configure(SchemaOptions options)
+        public void Configure(SchemaOptions options)
         {
             _primaryOptions = options;
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);
