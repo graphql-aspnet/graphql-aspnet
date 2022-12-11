@@ -16,8 +16,8 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A decorator attribute to identify a method as being attached directly to the mutation graph root,
-    /// as apposed to being nested under its controller.
+    /// A decorator attribute to identify a controller method as being attached directly
+    /// to the root mutation operation, as apposed to being nested under its controller field.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class MutationRootAttribute : GraphFieldAttribute

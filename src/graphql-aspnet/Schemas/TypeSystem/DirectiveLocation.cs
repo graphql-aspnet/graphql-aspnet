@@ -7,20 +7,20 @@
 // License:  MIT
 // *************************************************************
 
-#pragma warning disable SA1025 // Code should not contain multiple whitespace in a row
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// The possible locations a directive can be applied.
+    /// The possible locations a directive can be applied within a schema or query document.
     /// </summary>
     [Flags]
     [GraphType(Constants.ReservedNames.DIRECTIVE_LOCATION_ENUM)]
-    [Description("An enumeration of the various declared locations within the schema or a query document.")]
+    [Description("An enumeration of the named locations within a schema or a query document.")]
     public enum DirectiveLocation
     {
         [GraphSkip]
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         INPUT_FIELD_DEFINITION      = 1 << 18,
 
         /// <summary>
-        /// All locations that target an executable query document.
+        /// All locations that target an <see cref="IDocumentPart"/>.
         /// </summary>
         [GraphSkip]
         AllExecutionLocations =

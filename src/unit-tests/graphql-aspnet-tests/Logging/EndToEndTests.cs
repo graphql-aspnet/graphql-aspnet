@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using Microsoft.Extensions.Logging;
     using NUnit.Framework;
     using GraphQL.AspNet.Configuration.Mvc;
+    using GraphQL.AspNet.Configuration;
 
     [TestFixture]
     public class EndToEndTests

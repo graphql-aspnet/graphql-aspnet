@@ -13,10 +13,14 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Execution;
 
     /// <summary>
-    /// A decorator for a controller method to alter its behavior to be part of a concrete type represented on the object graph (instead of as a query or mutation field).
-    /// This attribute indicates that the method should be invoked in a "batch" format, being executed once, regardless of the number of
-    /// data items being resolved. See documentation for further details.
+    /// A decorator for a controller method to declare it as an extension of another
+    /// graph type instead of as a query or mutation field. This attribute indicates that the
+    /// method should be invoked in a "batch" format, being executed once, regardless of
+    /// the number of data items being resolved.
     /// </summary>
+    /// <remarks>
+    /// See documentation for further details.
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Method)]
     public class BatchTypeExtensionAttribute : TypeExtensionAttribute
     {

@@ -16,9 +16,12 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A decorator for a controller method to alter its behavior to be part of a concrete type represented on the object graph
-    /// (instead of as a query or mutation field). See documentation for further details.
+    /// A decorator for a controller method declare it as an extension of another
+    /// graph type (instead of as a query or mutation field).
     /// </summary>
+    /// <remarks>
+    /// See documentation for further details.
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Method)]
     public class TypeExtensionAttribute : GraphFieldAttribute
     {

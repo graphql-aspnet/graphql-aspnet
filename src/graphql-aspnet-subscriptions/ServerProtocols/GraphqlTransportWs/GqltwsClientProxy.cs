@@ -46,6 +46,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         where TSchema : class, ISchema
     {
         private static readonly JsonSerializerOptions _deserializerOptions;
+        private bool _isDisposed;
 
         /// <summary>
         /// Initializes static members of the <see cref="GqltwsClientProxy{TSchema}"/> class.
@@ -404,11 +405,17 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!_isDisposed)
             {
-                _initSyncLock?.Dispose();
-                _initSyncLock = null;
+                if (disposing)
+                {
+                    _initSyncLock?.Dispose();
+                    _initSyncLock = null;
+                    _isDisposed = true;
+                }
             }
+
+            base.Dispose(disposing);
         }
 
         /// <inheritdoc />

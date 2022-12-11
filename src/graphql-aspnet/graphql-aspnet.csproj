@@ -6,6 +6,7 @@
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;IDE0019;IDE0017;RCS1146;RCS1194;</NoWarn>
     <RootNamespace>GraphQL.AspNet</RootNamespace>
     <AssemblyName>GraphQL.AspNet</AssemblyName>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Company>GraphQL ASP.NET</Company>
     <Title>GraphQL ASP.NET</Title>
     <Product>GraphQL ASP.NET</Product>
@@ -37,6 +38,11 @@
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" />
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\build\graphql-aspnet-sn.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Contexts;

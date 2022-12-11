@@ -14,8 +14,9 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Directives.Global;
 
     /// <summary>
-    /// Indicates that the graph field is depreciated and should not be used for any future query creation.
-    /// Depreciated fields are likely to removed at a future date.
+    /// Indicates that the graph field is depreciated and should not be
+    /// used for any future query creation. This information will be exposed on any
+    /// introspection queries targeting the field.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
     [DebuggerDisplay("{Reason}")]

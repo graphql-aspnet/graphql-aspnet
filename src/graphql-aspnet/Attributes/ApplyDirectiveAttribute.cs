@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// When applied to a graph type, field or argument the directive
-    /// is called during schema creation and may alter the <see cref="ISchemaItem"/>
+    /// When applied to a graph type, field or argument the directive indicated
+    /// is called during schema creation and may alter the associated <see cref="ISchemaItem"/>
     /// definition before it is added to the schema.
     /// </summary>
     [AttributeUsage(

@@ -50,16 +50,13 @@ jobs:
         shell: pwsh
         
       # ---------------------------------------        
-      # Restore, Build and Test
+      # Restore and Build 
       # ---------------------------------------
       - name: Nuget Restore
         run: dotnet restore ${{env.SLN_PATH}}
 
       - name: Build Solution
         run: dotnet build ${{env.SLN_PATH}} --configuration ${{env.BUILD_CONFIG}} --no-restore --verbosity normal
-
-      - name: Test Solution
-        run: dotnet test ${{env.SLN_PATH}} --configuration ${{env.BUILD_CONFIG}}  --no-restore --no-build 
 
       # ---------------------------------------        
       # Preflight Checks and Packaging
@@ -70,7 +67,7 @@ jobs:
           ./build/pre-package-checks.ps1 -csProjFile "${{env.SUBSCRIPTIONS_LIB_PATH}}" -versionNumber ${{inputs.version-number}} -versionSuffix "${{inputs.version-suffix}}"
         shell: pwsh
 
-      - name: Package Contents
+      - name: Package Libraries
         run: |
           dotnet pack "${{env.PRIMARY_LIB_PATH}}"       --configuration ${{env.BUILD_CONFIG}} --no-restore --include-symbols --output ${{env.OUTPUT_DIR}} /p:VersionPrefix=${{inputs.version-number}} /p:VersionSuffix="${{inputs.version-suffix}}"
           dotnet pack "${{env.SUBSCRIPTIONS_LIB_PATH}}" --configuration ${{env.BUILD_CONFIG}} --no-restore --include-symbols --output ${{env.OUTPUT_DIR}} /p:VersionPrefix=${{inputs.version-number}} /p:VersionSuffix="${{inputs.version-suffix}}"

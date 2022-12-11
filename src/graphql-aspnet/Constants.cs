@@ -404,12 +404,12 @@ namespace GraphQL.AspNet
             public const string DEFAULT_HTTP_ROUTE = "/graphql";
 
             /// <summary>
-            /// A phrase that will be subsituted to the actual class name of the controller at run time.
+            /// A phrase that will be subsituted with the actual class name of the controller at run time.
             /// </summary>
             public const string CONTOLLER_META_NAME = "[controller]";
 
             /// <summary>
-            /// A phrase that will be subsituted to the actual class name of the object at run time.
+            /// A phrase that will be subsituted with the actual class name of the object at run time.
             /// </summary>
             public const string CLASS_META_NAME = "[class]";
 

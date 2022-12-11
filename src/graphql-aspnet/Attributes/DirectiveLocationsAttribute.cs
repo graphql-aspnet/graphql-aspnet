@@ -13,7 +13,8 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// For a given directive, defines where the directive is allowed to be applied.
+    /// When applied to a directive action method,
+    /// defines where the directive is allowed to be applied.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class DirectiveLocationsAttribute : BaseGraphAttribute

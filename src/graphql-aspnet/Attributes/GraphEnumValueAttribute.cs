@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Attributes
     using System;
 
     /// <summary>
-    /// An attribute that can be applied to an enum value to denote its name in the object graph. This
+    /// When applied to an enum value, denotes its name in the graph. This
     /// name is subject to any name formatting rules for enumerations of the target schema.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]

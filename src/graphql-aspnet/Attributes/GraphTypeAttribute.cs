@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Configuration;
 
     /// <summary>
-    /// A marker interface that can be applied to any class to indicate that the class is a graphql object
-    /// and should be included in a schema. This attribute is optional depending on your schema configuration and
-    /// naming preferences.
+    /// This attribute can be applied to any class, interface or enum to indicate that the
+    /// item should be treated as a graph type and included in a schema. This attribute is
+    /// optional depending on your schema configuration and naming preferences.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Enum)]
     public class GraphTypeAttribute : BaseGraphAttribute

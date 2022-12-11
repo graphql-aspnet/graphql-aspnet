@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Execution;
 
     /// <summary>
-    /// An attribute used to mark a property as being a graph field that should appear in the object graph.
+    /// Marks a property or method of a class as being a field in the object graph.
     /// </summary>
     [DebuggerDisplay("{Template}")]
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Attributes
 
     /// <summary>
     /// A decorator attribute to identify a method as a field on the query graph root. The
-    /// field will be nested inside a field or set of fields field(s) representing the controller that
+    /// field will be nested inside a field or set of fields representing the controller that
     /// defines the method.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]

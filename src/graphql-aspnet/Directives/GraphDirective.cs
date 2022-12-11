@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Directives
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A base class from which all directives mush inherit.
+    /// A base class from which all Execution and Type System directives must inherit.
     /// </summary>
     public abstract partial class GraphDirective : GraphControllerBase<IGraphDirectiveRequest>
     {

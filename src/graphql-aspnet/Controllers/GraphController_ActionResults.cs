@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
-    /// A base class to provide common functionality for register mutation functions in a graph query.
+    /// A base class from which all graph controllers must inherit.
     /// </summary>
     public abstract partial class GraphController
     {

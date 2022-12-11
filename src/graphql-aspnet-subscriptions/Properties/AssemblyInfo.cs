@@ -7,6 +7,13 @@
 // License:  MIT
 // *************************************************************
 
+
+#if DEBUG
+
 using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("graphql-aspnet-subscriptions-tests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+[assembly: InternalsVisibleTo("graphql-aspnet-testframework")]
+[assembly: InternalsVisibleTo("graphql-aspnet-subscriptions-tests")]
+
+#endif

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.StarWarsAPI6X
 {
     using System;
     using GraphQL.AspNet;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
@@ -79,6 +80,7 @@ namespace GraphQL.AspNet.StarWarsAPI6X
 
                 options.ExecutionOptions.EnableMetrics = true;
                 options.ResponseOptions.ExposeMetrics = true;
+
 
                 var assembly = typeof(StarWarsDataRepository).Assembly;
                 options.AddAssembly(assembly);

@@ -22,14 +22,15 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// A base object providing common method used by invocable method containers authored by developers.
+    /// A base object providing common methods used by invocable containers
+    /// authored by developers.
     /// </summary>
-    /// <typeparam name="TRequest">The type of the request this controller item is expected to process.</typeparam>
+    /// <typeparam name="TRequest">The type of the request this controller item is
+    /// expected to process.</typeparam>
     public abstract class GraphControllerBase<TRequest>
         where TRequest : class, IDataRequest
     {
@@ -43,7 +44,7 @@ namespace GraphQL.AspNet.Controllers
         /// <param name="schemaItemContext">The invocation context to process.</param>
         /// <returns>Task&lt;System.Object&gt;.</returns>
         [GraphSkip]
-        internal async virtual Task<object> InvokeActionAsync(
+        internal virtual async Task<object> InvokeActionAsync(
             IGraphMethod actionToInvoke,
             SchemaItemResolutionContext<TRequest> schemaItemContext)
         {
@@ -126,6 +127,7 @@ namespace GraphQL.AspNet.Controllers
                         return new RouteNotFoundGraphActionResult(_action, ex);
 
                     default:
+
                         // total failure by the user's action code.
                         // record and bubble
                         _schemaItemContext.Logger?.ActionMethodUnhandledException(_action, this.Request, ex);
