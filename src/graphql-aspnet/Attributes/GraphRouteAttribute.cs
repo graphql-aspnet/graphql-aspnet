@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Attributes
     /// <summary>
     /// An attribute applied to controllers to denote the route path to the instance within the resultant object graph.
     /// </summary>
-    ///<remarks>
+    /// <remarks>
     /// Note: Conditional specifications using curly braces (e.g. 'path/{variable}') are not permitted on graph routes.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Class)]

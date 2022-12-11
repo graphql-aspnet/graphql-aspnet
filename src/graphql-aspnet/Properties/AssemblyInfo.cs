@@ -7,7 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-
 #if DEBUG
 using System.Runtime.CompilerServices;
 
