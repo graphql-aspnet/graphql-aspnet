@@ -97,6 +97,17 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
+        /// Returns an error indicating that something could not be resolved correctly
+        /// with the information provided.
+        /// </summary>
+        /// <param name="message">The message indicating what was not found.</param>
+        /// <returns>IGraphActionResult.</returns>
+        protected virtual IGraphActionResult NotFound(string message)
+        {
+            return new RouteNotFoundGraphActionResult(message);
+        }
+
+        /// <summary>
         /// Returns an negative result, indicating the data supplied on the request was bad or
         /// otherwise not usable by the controller method.
         /// </summary>
