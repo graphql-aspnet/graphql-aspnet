@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     public interface IGraphMessage
     {
         /// <summary>
-        /// Gets the time stamp when this message was created.
+        /// Gets the time stamp (in UTC-0) when this message was created.
         /// </summary>
         /// <value>The time stamp.</value>
         DateTimeOffset TimeStamp { get; }

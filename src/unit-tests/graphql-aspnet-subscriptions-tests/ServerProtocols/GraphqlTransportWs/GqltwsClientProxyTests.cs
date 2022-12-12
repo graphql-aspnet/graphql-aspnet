@@ -83,7 +83,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             // execute the connection sequence
             connection.QueueConnectionClosedByClient();
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             connection.AssertClientClosedConnection();
             graphqlWsClient.Dispose();
@@ -102,14 +102,14 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             Assert.AreEqual(2, connection.QueuedMessageCount);
 
             // execute the connection sequence
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             Assert.AreEqual(0, connection.QueuedMessageCount);
 
             // attempt to restart the closed connection
             Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await graphqlWsClient.StartConnection();
+                await graphqlWsClient.StartConnectionAsync();
             });
 
             graphqlWsClient.Dispose();
@@ -127,7 +127,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             Assert.AreEqual(2, connection.QueuedMessageCount);
 
             // execute the connection sequence
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             Assert.AreEqual(0, connection.QueuedMessageCount);
             graphqlWsClient.Dispose();
@@ -153,7 +153,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             router.Verify(x => x.AddClient(graphqlWsClient, It.IsAny<SubscriptionEventName>()), Times.Once());
             graphqlWsClient.Dispose();
@@ -178,7 +178,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             };
 
             await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
-            await graphqlWsClient.ProcessMessage(startMessage);
+            await graphqlWsClient.ProcessMessageAsync(startMessage);
 
             connection.AssertGqltwsResponse(
                   GqltwsMessageType.NEXT,
@@ -214,7 +214,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             };
 
             await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
-            await graphqlWsClient.ProcessMessage(startMessage);
+            await graphqlWsClient.ProcessMessageAsync(startMessage);
 
             connection.AssertGqltwsResponse(GqltwsMessageType.ERROR, "abc");
             connection.AssertConnectionIsOpen();
@@ -237,7 +237,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             };
 
             await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
-            await graphqlWsClient.ProcessMessage(startMessage);
+            await graphqlWsClient.ProcessMessageAsync(startMessage);
 
             // mimic new data for the registered subscription being processed by some
             // other mutation
@@ -254,7 +254,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 SchemaTypeName = new GraphSchema().FullyQualifiedSchemaTypeName(),
             };
 
-            await graphqlWsClient.ReceiveEvent(evt);
+            await graphqlWsClient.ReceiveEventAsync(evt);
 
             // the connection should receive a data package
             connection.AssertGqltwsResponse(
@@ -292,7 +292,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 SchemaTypeName = nameof(GraphSchema),
             };
 
-            await graphqlWsClient.ReceiveEvent(evt);
+            await graphqlWsClient.ReceiveEventAsync(evt);
 
             // nothing should have been sent to the connection
             Assert.AreEqual(0, connection.ResponseMessageCount);
@@ -314,7 +314,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 },
             };
 
-            await graphqlWsClient.ProcessMessage(startMessage);
+            await graphqlWsClient.ProcessMessageAsync(startMessage);
 
             // fire an event against a route not tracked, ensure the client skips it.
             var evt = new SubscriptionEvent()
@@ -357,7 +357,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
             graphqlWsClient.Dispose();
         }
 
@@ -388,7 +388,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
             graphqlWsClient.Dispose();
         }
 
@@ -419,7 +419,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
             connection.AssertGqltwsResponse(GqltwsMessageType.ERROR);
@@ -442,7 +442,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             });
 
             connection.QueueConnectionClosedByClient();
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
             connection.AssertGqltwsResponse(
@@ -467,7 +467,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
 
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             // a response to the first message should have been transmitted
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
@@ -485,7 +485,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            await graphqlWsClient.StartConnection(initializationTimeout: TimeSpan.FromMilliseconds(5));
+            await graphqlWsClient.StartConnectionAsync(initializationTimeout: TimeSpan.FromMilliseconds(5));
 
             // no response should ever have been given
             // and the connection should have been closed from the server
@@ -506,7 +506,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueClientMessage((object)new GqltwsPingMessage());
             connection.QueueConnectionClosedByClient();
 
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             // no response should ever have been given
             // and the connection should have been closed from the server
@@ -554,7 +554,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             // close out
             connection.QueueConnectionClosedByClient();
 
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
             connection.AssertClientClosedConnection();
@@ -576,7 +576,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new FakeGqltwsMessage());
 
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
             connection.AssertServerClosedConnection();
@@ -599,7 +599,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueClientMessage((object)new GqltwsPingMessage());
             connection.QueueConnectionClosedByClient();
 
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
             connection.AssertGqltwsResponse(GqltwsMessageType.PONG);
@@ -624,7 +624,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await graphqlWsClient.StartConnection();
+            await graphqlWsClient.StartConnectionAsync();
 
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
             Assert.AreEqual(0, connection.ResponseMessageCount);
@@ -647,7 +647,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             };
 
             await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
-            await graphqlWsClient.ProcessMessage(startMessage);
+            await graphqlWsClient.ProcessMessageAsync(startMessage);
 
             // mimic new data for the registered subscription being processed by some
             // other mutation
@@ -664,7 +664,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 SchemaTypeName = new GraphSchema().FullyQualifiedSchemaTypeName(),
             };
 
-            await graphqlWsClient.ReceiveEvent(evt);
+            await graphqlWsClient.ReceiveEventAsync(evt);
 
             // the connection should receive a data package
             connection.AssertGqltwsResponse(
@@ -702,7 +702,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             };
 
             await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
-            await graphqlWsClient.ProcessMessage(startMessage);
+            await graphqlWsClient.ProcessMessageAsync(startMessage);
 
             // mimic new data for the registered subscription being processed by some
             // other mutation
@@ -719,7 +719,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 SchemaTypeName = new GraphSchema().FullyQualifiedSchemaTypeName(),
             };
 
-            await graphqlWsClient.ReceiveEvent(evt);
+            await graphqlWsClient.ReceiveEventAsync(evt);
 
             // the connection should NOT receive a data package
             // the connection should receive the complete message

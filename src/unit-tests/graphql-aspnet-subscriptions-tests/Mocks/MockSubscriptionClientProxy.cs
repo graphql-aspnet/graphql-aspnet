@@ -55,20 +55,20 @@ namespace GraphQL.Subscriptions.Tests.Mock
         }
 
         /// <inheritdoc />
-        public Task CloseConnection(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default)
+        public Task CloseConnectionAsync(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default)
         {
             return Task.CompletedTask;
         }
 
         /// <inheritdoc />
-        public ValueTask ReceiveEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default)
+        public ValueTask ReceiveEventAsync(SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             this.ReceivedEvents.Add(eventData);
             return default;
         }
 
         /// <inheritdoc />
-        public Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)
+        public Task StartConnectionAsync(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)
         {
             return Task.CompletedTask;
         }

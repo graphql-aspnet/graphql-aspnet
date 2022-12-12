@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Execution
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// A query plan detailing the field data requested by an end user and the order in which

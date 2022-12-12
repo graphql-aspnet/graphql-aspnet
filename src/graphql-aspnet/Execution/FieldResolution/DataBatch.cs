@@ -15,7 +15,8 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Schemas;
 
     /// <summary>
-    /// A data batch capable of issueing data in a manner consistant with what a field expects for resolved data.
+    /// A data batch capable of issueing data in a manner consistant with what a
+    /// field expects for resolved data.
     /// </summary>
     [DebuggerDisplay("Count = {_dictionary.Count}")]
     internal class DataBatch

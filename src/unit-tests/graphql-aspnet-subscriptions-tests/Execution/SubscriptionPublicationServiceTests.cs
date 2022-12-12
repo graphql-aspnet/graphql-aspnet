@@ -32,7 +32,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             logger.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<SubscriptionEventPublishedLogEntry>>()));
 
             var publisher = new Mock<ISubscriptionEventPublisher>();
-            publisher.Setup(x => x.PublishEvent(It.IsAny<SubscriptionEvent>(), It.IsAny<CancellationToken>()));
+            publisher.Setup(x => x.PublishEventAsync(It.IsAny<SubscriptionEvent>(), It.IsAny<CancellationToken>()));
 
             var collection = new ServiceCollection();
             collection.AddSingleton<IGraphEventLogger>(logger.Object);
@@ -56,14 +56,14 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var source = new CancellationTokenSource(50);
             try
             {
-                await publicationService.PollQueue(source.Token);
+                await publicationService.PollQueueAsync(source.Token);
             }
             catch (OperationCanceledException)
             {
             }
 
             logger.Verify(x => x.Log(LogLevel.Debug, It.IsAny<Func<IGraphLogEntry>>()), Times.Once(), "logger not called exactly once");
-            publisher.Verify(x => x.PublishEvent(It.IsAny<SubscriptionEvent>(), It.IsAny<CancellationToken>()), Times.Once(), "published failed to publish one times");
+            publisher.Verify(x => x.PublishEventAsync(It.IsAny<SubscriptionEvent>(), It.IsAny<CancellationToken>()), Times.Once(), "published failed to publish one times");
         }
     }
 }

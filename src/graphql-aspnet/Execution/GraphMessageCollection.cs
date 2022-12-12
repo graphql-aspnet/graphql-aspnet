@@ -109,7 +109,12 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
-            return this.Add(GraphMessageSeverity.Critical, message, errorCode, origin, exceptionThrown);
+            return this.Add(
+                GraphMessageSeverity.Critical,
+                message,
+                errorCode,
+                origin,
+                exceptionThrown);
         }
 
         /// <inheritdoc />
@@ -119,7 +124,12 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
-            return this.Add(GraphMessageSeverity.Warning, message, errorCode, origin, exceptionThrown);
+            return this.Add(
+                GraphMessageSeverity.Warning,
+                message,
+                errorCode,
+                origin,
+                exceptionThrown);
         }
 
         /// <inheritdoc />
@@ -129,7 +139,12 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
-            return this.Add(GraphMessageSeverity.Information, message, errorCode, origin, exceptionThrown);
+            return this.Add(
+                GraphMessageSeverity.Information,
+                message,
+                errorCode,
+                origin,
+                exceptionThrown);
         }
 
         /// <inheritdoc />
@@ -139,7 +154,12 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
-            return this.Add(GraphMessageSeverity.Debug, message, errorCode, origin, exceptionThrown);
+            return this.Add(
+                GraphMessageSeverity.Debug,
+                message,
+                errorCode,
+                origin,
+                exceptionThrown);
         }
 
         /// <inheritdoc />
@@ -149,7 +169,12 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
-            return this.Add(GraphMessageSeverity.Trace, message, errorCode, origin, exceptionThrown);
+            return this.Add(
+                GraphMessageSeverity.Trace,
+                message,
+                errorCode,
+                origin,
+                exceptionThrown);
         }
 
         /// <inheritdoc />

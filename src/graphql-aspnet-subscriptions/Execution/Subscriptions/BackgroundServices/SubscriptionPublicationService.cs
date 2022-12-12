@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.BackgroundServices
         /// <inheritdoc />
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await this.PollQueue(stoppingToken);
+            await this.PollQueueAsync(stoppingToken);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.BackgroundServices
         /// </summary>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>ValueTask.</returns>
-        internal async ValueTask PollQueue(CancellationToken cancelToken = default)
+        internal async ValueTask PollQueueAsync(CancellationToken cancelToken = default)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.BackgroundServices
                     {
                         try
                         {
-                            await _publisher.PublishEvent(raisedEvent, cancelToken);
+                            await _publisher.PublishEventAsync(raisedEvent, cancelToken);
                             _logger?.SubscriptionEventPublished(raisedEvent);
                         }
                         catch (Exception ex)

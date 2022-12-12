@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </remarks>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        Task BeginProcessingQueue(CancellationToken cancelToken = default);
+        Task BeginProcessingQueueAsync(CancellationToken cancelToken = default);
 
         /// <summary>
         /// Gets a value indicating whether the queue is being processed.

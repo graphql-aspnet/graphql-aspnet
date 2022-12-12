@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.BackgroundServices
         /// <inheritdoc />
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await _dispatchQueue.BeginProcessingQueue(stoppingToken);
+            await _dispatchQueue.BeginProcessingQueueAsync(stoppingToken);
         }
 
         /// <inheritdoc />

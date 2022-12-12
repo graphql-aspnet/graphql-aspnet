@@ -40,9 +40,9 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
         }
 
         /// <inheritdoc />
-        public async Task Resolve(FieldResolutionContext context, CancellationToken cancelToken = default)
+        public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
-            await _primaryResolver.Resolve(context, cancelToken).ConfigureAwait(false);
+            await _primaryResolver.ResolveAsync(context, cancelToken).ConfigureAwait(false);
             await _extention.Invoke(context, cancelToken).ConfigureAwait(false);
         }
 

@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Engine
     /// client factories to create an appropriate proxy through which the server can speak with
     /// a connected client.
     /// </summary>
-    public sealed class DefaultSubscriptionServerClientFactory : ISubscriptionServerClientFactory
+    internal sealed class DefaultSubscriptionServerClientFactory : ISubscriptionServerClientFactory
     {
         private readonly Dictionary<string, ISubscriptionClientProxyFactory> _clientFactories;
 

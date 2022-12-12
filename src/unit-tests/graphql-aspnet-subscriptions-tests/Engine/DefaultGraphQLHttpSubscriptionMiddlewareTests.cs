@@ -120,7 +120,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
             var next = new RequestDelegate(CallNext);
 
             var connection = new Mock<ISubscriptionClientProxy>();
-            connection.Setup(x => x.StartConnection(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            connection.Setup(x => x.StartConnectionAsync(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             var factory = new Mock<ISubscriptionServerClientFactory>();
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
@@ -262,7 +262,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
             var next = new RequestDelegate(CallNext);
 
             var connection = new Mock<ISubscriptionClientProxy>();
-            connection.Setup(x => x.StartConnection(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            connection.Setup(x => x.StartConnectionAsync(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             var factory = new Mock<ISubscriptionServerClientFactory>();
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();

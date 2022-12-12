@@ -6,14 +6,14 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Directives
 {
-    using System;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// An enumeration depicting when a directive might be invoked against a target item.
+    /// An enumeration denoting when a directive is being invoked.
     /// </summary>
     public enum DirectiveInvocationPhase
     {

@@ -26,9 +26,9 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.TypeSystemDirectiveTestData
 
         public Type ObjectType { get; }
 
-        public async Task Resolve(FieldResolutionContext context, CancellationToken cancelToken = default)
+        public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
-            await _originalResolver.Resolve(context, cancelToken);
+            await _originalResolver.ResolveAsync(context, cancelToken);
         }
     }
 }

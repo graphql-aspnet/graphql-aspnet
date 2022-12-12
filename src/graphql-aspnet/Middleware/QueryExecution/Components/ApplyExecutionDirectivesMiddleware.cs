@@ -136,7 +136,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             foreach (var directiveDocumentPart in directivesToExecute)
             {
                 var targetPart = directiveDocumentPart.Parent;
-                await this.ApplyDirectiveToItem(
+                await this.ApplyDirectiveToItemAsync(
                     context,
                     targetPart,
                     directiveDocumentPart,
@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             return totalApplied;
         }
 
-        private async Task ApplyDirectiveToItem(
+        private async Task ApplyDirectiveToItemAsync(
             GraphQueryExecutionContext queryContext,
             IDocumentPart targetDocumentPart,
             IDirectiveDocumentPart directiveDocumentPart,

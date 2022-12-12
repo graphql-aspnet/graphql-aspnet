@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// the field and produce a reslt.</param>
         /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
         /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
-        public async Task Resolve(FieldResolutionContext context, CancellationToken cancelToken = default)
+        public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             var sourceData = context.Arguments.SourceData;
             if (sourceData == null)

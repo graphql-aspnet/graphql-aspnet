@@ -47,16 +47,16 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public override async Task SubmitGraphQLQuery(GraphQueryData queryData, CancellationToken cancelToken = default)
+        protected override async Task SubmitGraphQLQueryAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
             if (this.User?.Identity == null || !this.User.Identity.IsAuthenticated)
             {
-                await this.WriteStatusCodeResponse(HttpStatusCode.Unauthorized, ERROR_UNAUTHORIZED, cancelToken).ConfigureAwait(false);
+                await this.WriteStatusCodeResponseAsync(HttpStatusCode.Unauthorized, ERROR_UNAUTHORIZED, cancelToken).ConfigureAwait(false);
                 return;
             }
 
             await base
-                .SubmitGraphQLQuery(queryData, cancelToken)
+                .SubmitGraphQLQueryAsync(queryData, cancelToken)
                 .ConfigureAwait(false);
         }
     }

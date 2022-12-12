@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public Task Complete(SchemaItemResolutionContext resolutionContext)
+        public Task CompleteAsync(SchemaItemResolutionContext resolutionContext)
         {
             if (_modelState != null)
             {

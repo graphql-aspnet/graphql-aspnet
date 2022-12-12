@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Configuration
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Configuration.Mvc;
+    using GraphQL.AspNet.Configuration.Startup;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
@@ -26,14 +26,14 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// Helper methods for wiring up a a graph QL schema to a service collection.
     /// </summary>
-    public static class GraphQLMvcSchemaBuilderExtensions
+    public static class GraphQLSchemaBuilderExtensions
     {
         private static readonly Dictionary<Type, ISchemaInjector> SCHEMA_REGISTRATIONS;
 
         /// <summary>
-        /// Initializes static members of the <see cref="GraphQLMvcSchemaBuilderExtensions"/> class.
+        /// Initializes static members of the <see cref="GraphQLSchemaBuilderExtensions"/> class.
         /// </summary>
-        static GraphQLMvcSchemaBuilderExtensions()
+        static GraphQLSchemaBuilderExtensions()
         {
             SCHEMA_REGISTRATIONS = new Dictionary<Type, ISchemaInjector>();
         }

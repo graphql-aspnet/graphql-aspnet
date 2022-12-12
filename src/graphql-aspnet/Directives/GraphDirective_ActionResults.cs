@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Directives
     /// <summary>
     /// A base class from which all Execution and Type System directives must inherit.
     /// </summary>
-    public partial class GraphDirective : GraphControllerBase<IGraphDirectiveRequest>
+    public abstract partial class GraphDirective : GraphControllerBase<IGraphDirectiveRequest>
     {
         /// <summary>
         /// Returns an action result indicating the directive completed its intended operation correctly.

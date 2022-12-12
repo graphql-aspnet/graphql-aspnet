@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public Task Complete(SchemaItemResolutionContext context)
+        public Task CompleteAsync(SchemaItemResolutionContext context)
         {
             if (context is FieldResolutionContext frc)
             {

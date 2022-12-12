@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     /// <summary>
     /// The result of attempting to resolve an input argument in a query document.
     /// </summary>
-    public class ArgumentGenerationResult
+    internal class ArgumentGenerationResult
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ArgumentGenerationResult"/> class.
@@ -29,7 +29,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         /// <summary>
         /// Initializes a new instance of the <see cref="ArgumentGenerationResult"/> class.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="message">A generated message, usually an error, in lue of
+        /// an argument being resolved.</param>
         public ArgumentGenerationResult(IGraphMessage message)
         {
             this.Message = message;
@@ -38,13 +39,13 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         /// <summary>
         /// Gets the argument that was generated.
         /// </summary>
-        /// <value>The argument.</value>
+        /// <value>The argument that was resolved.</value>
         public IInputValue Argument { get; }
 
         /// <summary>
         /// Gets a message that was generated due to a failure in creating the argument.
         /// </summary>
-        /// <value>The message.</value>
+        /// <value>The message that was generated, if any.</value>
         public IGraphMessage Message { get; }
 
         /// <summary>

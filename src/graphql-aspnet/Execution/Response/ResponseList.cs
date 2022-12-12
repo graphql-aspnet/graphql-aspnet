@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Response
     /// query.
     /// </summary>
     [DebuggerDisplay("Count = {_list.Count}")]
-    public class ResponseList : IResponseList
+    internal class ResponseList : IResponseList
     {
         private List<IResponseItem> _list;
 

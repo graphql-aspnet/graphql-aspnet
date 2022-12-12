@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
         /// runtime information needed to resolve it.</param>
         /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
         /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
-        public Task Resolve(FieldResolutionContext resolutionContext, CancellationToken cancelToken = default)
+        public Task ResolveAsync(FieldResolutionContext resolutionContext, CancellationToken cancelToken = default)
         {
             if (!resolutionContext.Arguments.TryGetArgument<string>("name", out var name))
             {

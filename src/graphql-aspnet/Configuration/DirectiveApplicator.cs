@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         static DirectiveApplicator()
         {
-            var list = new List<Func<ISchemaItem, bool>>();
+            var list = new List<Func<ISchemaItem, bool>>(4);
 
             // auto remove introspection data, system level items and any virtual items added to the graph
             list.Add(x => !x.IsIntrospectionItem());

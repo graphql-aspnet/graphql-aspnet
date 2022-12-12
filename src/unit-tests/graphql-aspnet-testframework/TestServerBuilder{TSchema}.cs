@@ -6,13 +6,6 @@
 // --
 // License:  MIT
 // *************************************************************
-// *************************************************************// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
 
 namespace GraphQL.AspNet.Tests.Framework
 {
@@ -20,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using System.Collections.Generic;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Configuration.Mvc;
+    using GraphQL.AspNet.Configuration.Startup;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;

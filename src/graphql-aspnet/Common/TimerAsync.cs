@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Common
                     return;
 
                 _cancellationSource = new CancellationTokenSource();
-                _scheduledTask = RunScheduledAction();
+                _scheduledTask = RunScheduledActionAsync();
                 this.IsRunning = true;
             }
             finally
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Common
         /// has completed any outstanding iterations and has successfully stopped.
         /// </summary>
         /// <returns>A task that completes when the timer is stopped.</returns>
-        public async Task Stop()
+        public async Task StopAsync()
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Common
             }
         }
 
-        private Task RunScheduledAction()
+        private Task RunScheduledActionAsync()
         {
             return Task.Run(
                 async () =>

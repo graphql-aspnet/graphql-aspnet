@@ -80,19 +80,19 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// </summary>
         /// <param name="token">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual Task InitializationWindowExpired(CancellationToken token)
+        protected virtual Task InitializationWindowExpiredAsync(CancellationToken token)
         {
             return Task.CompletedTask;
         }
 
         /// <summary>
         /// When overridden in a child class, this method is called on an interval set by the
-        /// time provided during <see cref="StartConnection"/>. When called this method should immediately initiate
+        /// time provided during <see cref="StartConnectionAsync"/>. When called this method should immediately initiate
         /// a keep alive heartbeat sequence with the connected client.
         /// </summary>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual Task ExecuteKeepAlive(CancellationToken cancelToken = default)
+        protected virtual Task ExecuteKeepAliveAsync(CancellationToken cancelToken = default)
         {
             return Task.CompletedTask;
         }
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <param name="message">The message that was sent by the connected client.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected abstract Task ClientMessageReceived(TMessage message, CancellationToken cancelToken = default);
+        protected abstract Task ClientMessageReceivedAsync(TMessage message, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Creates a message, consistant with this proxy's underlying protocol, that
@@ -147,7 +147,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         protected abstract TMessage CreateCompleteMessage(string subscriptionId);
 
         /// <inheritdoc />
-        public virtual async Task StartConnection(
+        public virtual async Task StartConnectionAsync(
             TimeSpan? keepAliveInterval = null,
             TimeSpan? initializationTimeout = null,
             CancellationToken cancelToken = default)
@@ -173,8 +173,8 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     initialziationTimer = new TimerAsync(
                         async (token) =>
                         {
-                            await this.InitializationWindowExpired(token);
-                            await initialziationTimer.Stop();
+                            await this.InitializationWindowExpiredAsync(token);
+                            await initialziationTimer.StopAsync();
                         },
                         initializationTimeout.Value,
                         TimeSpan.MaxValue,
@@ -187,7 +187,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 {
                     this.IsKeepAliveEnabled = true;
                     keepAliveTimer = new TimerAsync(
-                        (token) => this.ExecuteKeepAlive(token),
+                        (token) => this.ExecuteKeepAliveAsync(token),
                         keepAliveInterval.Value,
                         keepAliveInterval.Value,
                         false);
@@ -210,7 +210,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                         {
                             stream.Seek(0, SeekOrigin.Begin);
                             var message = await this.DeserializeMessage(stream);
-                            await this.ClientMessageReceived(message)
+                            await this.ClientMessageReceivedAsync(message)
                                 .ConfigureAwait(false);
                         }
                     }
@@ -219,12 +219,12 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
                 // immediately kill any timers once we stop
                 // listening for messages
-                keepAliveTimer?.Stop();
+                keepAliveTimer?.StopAsync();
                 keepAliveTimer?.Dispose();
                 keepAliveTimer = null;
                 this.IsKeepAliveEnabled = false;
 
-                initialziationTimer?.Stop();
+                initialziationTimer?.StopAsync();
                 initialziationTimer?.Dispose();
                 initialziationTimer = null;
 
@@ -232,7 +232,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 // but in case it wasnt formally close it
                 if (_clientConnection?.State == ClientConnectionState.Open)
                 {
-                    await this.CloseConnection(
+                    await this.CloseConnectionAsync(
                         result?.CloseStatus ?? ConnectionCloseStatus.Unknown,
                         result?.CloseStatusDescription,
                         cancelToken)
@@ -250,19 +250,19 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 // ensure timers are stopped and released
                 // even when a server exception may be thrown
                 // during message receiving
-                keepAliveTimer?.Stop();
+                keepAliveTimer?.StopAsync();
                 keepAliveTimer?.Dispose();
                 keepAliveTimer = null;
                 this.IsKeepAliveEnabled = false;
 
-                initialziationTimer?.Stop();
+                initialziationTimer?.StopAsync();
                 initialziationTimer?.Dispose();
                 initialziationTimer = null;
             }
         }
 
         /// <inheritdoc />
-        public async ValueTask ReceiveEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default)
+        public async ValueTask ReceiveEventAsync(SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             // its possible that an event was scheduled by the router
             // when this connection was closed (but before it could be delivered)
@@ -295,7 +295,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             var tasks = new List<Task>();
             foreach (var subscription in targetSubscriptions)
             {
-                var executionTask = this.ExecuteSubscriptionEvent(subscription, eventData, cancelToken);
+                var executionTask = this.ExecuteSubscriptionEventAsync(subscription, eventData, cancelToken);
                 tasks.Add(executionTask);
             }
 
@@ -309,7 +309,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <param name="eventData">The event data to process.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task ExecuteSubscriptionEvent(ISubscription<TSchema> subscription, SubscriptionEvent eventData, CancellationToken cancelToken = default)
+        protected virtual async Task ExecuteSubscriptionEventAsync(ISubscription<TSchema> subscription, SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             var processor = new SubscriptionEventProcessor<TSchema>(_clientConnection.ServiceProvider);
 
@@ -332,7 +332,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 if (!shouldSkip)
                 {
                     var message = this.CreateDataMessage(subscription.Id, context.Result);
-                    await this.SendMessage(message, cancelSource.Token);
+                    await this.SendMessageAsync(message, cancelSource.Token);
                 }
 
                 // ------------------------------
@@ -343,7 +343,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 {
                     var completeMessage = this.CreateCompleteMessage(subscription.Id);
                     if (completeMessage != null)
-                        await this.SendMessage(completeMessage, cancelSource.Token);
+                        await this.SendMessageAsync(completeMessage, cancelSource.Token);
                     this.ReleaseSubscription(subscription.Id);
                 }
             }
@@ -359,7 +359,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <param name="message">The message to send.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task SendMessage(TMessage message, CancellationToken cancelToken = default)
+        protected virtual async Task SendMessageAsync(TMessage message, CancellationToken cancelToken = default)
         {
             Validation.ThrowIfNull(message, nameof(message));
 
@@ -390,7 +390,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <param name="enableMetrics">if set to <c>true</c> metrics will be added
         /// to the generatd query.</param>
         /// <returns>SubscriptionDataExecutionResult&lt;TSchema&gt;.</returns>
-        protected virtual async Task<SubscriptionDataExecutionResult<TSchema>> ExecuteQuery(
+        protected virtual async Task<SubscriptionDataExecutionResult<TSchema>> ExecuteQueryAsync(
             string subscriptionId,
             GraphQueryData queryData,
             bool enableMetrics = false)
@@ -471,7 +471,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <inheritdoc />
-        public virtual async Task CloseConnection(
+        public virtual async Task CloseConnectionAsync(
             ConnectionCloseStatus reason,
             string message = null,
             CancellationToken cancelToken = default)

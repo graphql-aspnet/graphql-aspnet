@@ -12,7 +12,6 @@ namespace GraphQL.Subscriptions.Tests.Configuration
     using System;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
@@ -30,7 +29,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
     using NUnit.Framework;
 
     [TestFixture]
-    public class ConfigurationMvcSetupTests
+    public class ConfigurationSetupTests
     {
         [Test]
         public void AddSubscriptions_RegistrationChecks()
@@ -40,7 +39,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
             GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
-            GraphQLMvcSchemaBuilderExtensions.Clear();
+            GraphQLSchemaBuilderExtensions.Clear();
 
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
@@ -65,7 +64,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
             GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
-            GraphQLMvcSchemaBuilderExtensions.Clear();
+            GraphQLSchemaBuilderExtensions.Clear();
 
             var serviceCollection = new ServiceCollection();
             var schemaBuilder = serviceCollection.AddGraphQL(options =>
@@ -91,7 +90,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
             GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
-            GraphQLMvcSchemaBuilderExtensions.Clear();
+            GraphQLSchemaBuilderExtensions.Clear();
 
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
@@ -113,7 +112,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
             GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
-            GraphQLMvcSchemaBuilderExtensions.Clear();
+            GraphQLSchemaBuilderExtensions.Clear();
 
             SchemaOptions<GraphSchema> optionsSaved = null;
             var serviceCollection = new ServiceCollection();
@@ -137,7 +136,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
             GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
-            GraphQLMvcSchemaBuilderExtensions.Clear();
+            GraphQLSchemaBuilderExtensions.Clear();
 
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>

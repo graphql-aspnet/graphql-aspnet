@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
 
             var canBeAnonymous = context.SecurityRequirements.AllowAnonymous;
 
-            await this.EnsureDefaults();
+            await this.EnsureDefaultsAsync();
 
             // Step 2: Attempt to authenticate the user against the acceptable schemes
             IAuthenticationResult authTicket = null;
@@ -156,7 +156,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         /// <summary>
         /// Extracts the default and all known schemes available to this instance.
         /// </summary>
-        private async Task EnsureDefaults()
+        private async Task EnsureDefaultsAsync()
         {
             if (_defaultsSet)
                 return;

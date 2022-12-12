@@ -7,10 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.Mvc
+namespace GraphQL.AspNet.Configuration
 {
     using System;
     using System.Linq;
+    using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Subscriptions;
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     /// <summary>
     /// A set of extensions to configure web socket support at startup.
     /// </summary>
-    public static class DefaultSubscriptionBuilderExtensions
+    public static class SubscriptionBuilderExtensions
     {
         /// <summary>
         /// Adds the ability for this graphql server to raise and receive subscription events.

@@ -51,7 +51,9 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         {
             this.Path = path;
             this.Value = rawData;
-            this.Items = dataItems == null ? new List<GraphDataItem>() : new List<GraphDataItem>(dataItems);
+            this.Items = dataItems == null
+                ? new List<GraphDataItem>()
+                : new List<GraphDataItem>(dataItems);
         }
 
         /// <summary>

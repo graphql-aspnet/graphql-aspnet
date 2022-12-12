@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Web.WebTestData
     {
         public Task TestInvoke(HttpContext context)
         {
-            return this.Invoke(context);
+            return this.InvokeAsync(context);
         }
     }
 }

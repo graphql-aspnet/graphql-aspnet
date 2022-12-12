@@ -22,9 +22,9 @@ namespace GraphQL.AspNet.Execution.QueryPlans
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A generator capable of converting a single <see cref="IOperationDocumentPart"/> from a query document into an actionable
-    /// execution context containing the necessary data, steps, resolvers, analyzers etc.  to fulfill a
-    /// request made from it.
+    /// A generator capable of converting a single <see cref="IOperationDocumentPart"/> from a
+    /// query document into an actionable execution context containing the necessary data, steps,
+    /// resolvers, analyzers etc. to fulfill a request made from it.
     /// </summary>
     internal class ExecutableOperationGenerator
     {
@@ -34,7 +34,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutableOperationGenerator" /> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <param name="schema">The schema used by this generator to find resolvers
+        /// and look up various data items.</param>
         public ExecutableOperationGenerator(ISchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));

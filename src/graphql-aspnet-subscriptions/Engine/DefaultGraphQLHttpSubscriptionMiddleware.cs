@@ -135,7 +135,7 @@ namespace GraphQL.AspNet.Engine
                 // ----------------------------
                 logger?.SubscriptionClientRegistered<TSchema>(subscriptionClient);
 
-                await subscriptionClient.StartConnection(
+                await subscriptionClient.StartConnectionAsync(
                     _options.ConnectionKeepAliveInterval,
                     _options.ConnectionInitializationTimeout,
                     context.RequestAborted).ConfigureAwait(false);
@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Engine
             }
             catch (MaxConcurrentClientConnectionsReachedException)
             {
-                await this.WriteErrorToClientAndClose(
+                await this.WriteErrorToClientAndCloseAsync(
                             context,
                             clientConnection,
                             (int)ConnectionCloseStatus.InternalServerError,
@@ -154,7 +154,7 @@ namespace GraphQL.AspNet.Engine
             }
             catch (UnauthenticatedClientConnectionException)
             {
-                await this.WriteErrorToClientAndClose(
+                await this.WriteErrorToClientAndCloseAsync(
                            context,
                            clientConnection,
                            (int)HttpStatusCode.Unauthorized,
@@ -165,7 +165,7 @@ namespace GraphQL.AspNet.Engine
             catch (UnsupportedClientProtocolException uspe)
             {
                 logger?.UnsupportedClientProtocol(_schema, uspe.Protocol);
-                await this.WriteErrorToClientAndClose(
+                await this.WriteErrorToClientAndCloseAsync(
                          context,
                          clientConnection,
                          (int)ConnectionCloseStatus.ProtocolError,
@@ -177,7 +177,7 @@ namespace GraphQL.AspNet.Engine
             catch (Exception ex)
             {
                 logger?.UnhandledExceptionEvent(ex);
-                await this.WriteErrorToClientAndClose(
+                await this.WriteErrorToClientAndCloseAsync(
                         context,
                         clientConnection,
                         (int)ConnectionCloseStatus.InternalServerError,
@@ -197,7 +197,7 @@ namespace GraphQL.AspNet.Engine
             }
         }
 
-        private async Task WriteErrorToClientAndClose(
+        private async Task WriteErrorToClientAndCloseAsync(
             HttpContext context,
             IClientConnection clientConnection,
             int clientConnectionStatus,

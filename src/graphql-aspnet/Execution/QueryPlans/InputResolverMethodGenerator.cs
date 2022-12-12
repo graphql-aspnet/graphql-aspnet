@@ -11,25 +11,28 @@ namespace GraphQL.AspNet.Execution.QueryPlans
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.ValueResolvers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An object that, for a given schema, can generate a resolver function to evaluate
-    /// and properly build input data values used in graph queries.
-    ///
+    /// and properly build dynamic values expressed in graph queries as part of field arguments
+    /// and input objects.
     /// </summary>
-    public class InputResolverMethodGenerator
+    internal class InputResolverMethodGenerator
     {
         private readonly ISchema _schema;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputResolverMethodGenerator"/> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <param name="schema">The schema this generator will reference when building
+        /// the resolver.</param>
         public InputResolverMethodGenerator(ISchema schema)
         {
             _schema = schema;
@@ -39,23 +42,20 @@ namespace GraphQL.AspNet.Execution.QueryPlans
         /// Creates the resolver for the given expression. The Typename of the expression must be
         /// type represented in the schema this generator references or null will be returned.
         /// </summary>
-        /// <param name="expression">The expression.</param>
+        /// <param name="typeExpression">The type expression of the data type
+        /// that should be created by this resolver.</param>
         /// <returns>IQueryInputValueResolver.</returns>
-        public IInputValueResolver CreateResolver(GraphTypeExpression expression)
+        public IInputValueResolver CreateResolver(GraphTypeExpression typeExpression)
         {
-            var graphType = _schema.KnownTypes.FindGraphType(expression.TypeName);
+            Validation.ThrowIfNull(typeExpression, nameof(typeExpression));
+
+            var graphType = _schema.KnownTypes.FindGraphType(typeExpression.TypeName);
             if (graphType == null)
                 return null;
 
-            return this.CreateResolver(graphType, expression);
+            return this.CreateResolver(graphType, typeExpression);
         }
 
-        /// <summary>
-        /// Creates the resolver.
-        /// </summary>
-        /// <param name="graphType">The graph type to generate a resolver for.</param>
-        /// <param name="expression">The expression representing how the type should be wrapped.</param>
-        /// <returns>IQueryInputValueResolver.</returns>
         private IInputValueResolver CreateResolver(IGraphType graphType, GraphTypeExpression expression)
         {
             // extract the core resolver for the input type being processed
@@ -90,12 +90,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans
             return coreResolver;
         }
 
-        /// <summary>
-        /// Creates the object resolver used to individually resolve the fields against the schema and assemble the final input object.
-        /// </summary>
-        /// <param name="inputType">The graph type to generate a resolver for.</param>
-        /// <param name="type">The concrete type that the supplied graph type is linked to.</param>
-        /// <returns>IQueryInputValueResolver.</returns>
         private IInputValueResolver CreateObjectResolver(IInputObjectGraphType inputType, Type type)
         {
             var inputObjectResolver = new InputObjectResolver(inputType, type, _schema);

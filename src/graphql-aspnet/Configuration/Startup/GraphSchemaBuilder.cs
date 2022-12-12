@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.Mvc
+namespace GraphQL.AspNet.Configuration.Startup
 {
     using System;
     using System.Collections.Concurrent;

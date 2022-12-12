@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Middleware
     /// </summary>
     /// <typeparam name="TContext">The type of the context.</typeparam>
     [DebuggerDisplay("Middleware '{Name}'")]
-    public class GraphMiddlewareDefinition<TContext>
+    internal class GraphMiddlewareDefinition<TContext>
         where TContext : class, IGraphExecutionContext
     {
         /// <summary>

@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
             where TSchema : class, ISchema;
 
         /// <summary>
-        /// Recorded when the startup services registers a publically available ASP.NET MVC route to which
+        /// Recorded when the startup services registers a publically available ASP.NET route to which
         /// end users can submit graphql queries.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema the route was registered for.</typeparam>

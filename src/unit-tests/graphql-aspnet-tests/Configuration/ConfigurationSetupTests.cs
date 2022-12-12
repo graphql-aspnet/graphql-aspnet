@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Tests.Configuration
     using System.Reflection;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -23,7 +22,6 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Web;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Configuration.ConfigurationTestData;
@@ -34,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using NUnit.Framework;
 
     [TestFixture]
-    public class ConfigurationMvcSetupTests
+    public class ConfigurationSetupTests
     {
         [SetUp]
         public void Setup()
@@ -45,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         [TearDown]
         public void TearDown()
         {
-            GraphQLMvcSchemaBuilderExtensions.Clear();
+            GraphQLSchemaBuilderExtensions.Clear();
             GraphQLProviders.TemplateProvider.Clear();
             GraphQLProviders.TemplateProvider.CacheTemplates = false;
         }

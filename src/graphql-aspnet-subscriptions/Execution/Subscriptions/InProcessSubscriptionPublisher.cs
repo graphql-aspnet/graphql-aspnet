@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         }
 
         /// <inheritdoc />
-        public ValueTask PublishEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default)
+        public ValueTask PublishEventAsync(SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             // this publisher pushes events raised
             // by mutations and queries directly into the DI-configured router

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.Mvc
+namespace GraphQL.AspNet.Configuration.Startup
 {
     using GraphQL.AspNet.Interfaces.Schema;
 
@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     /// An interface used by the injector to expose its useschema method across
     /// multiple generic types.
     /// </summary>
-        /// <typeparam name="TSchema">The type of the schema.</typeparam>
+    /// <typeparam name="TSchema">The type of the schema.</typeparam>
     internal interface ISchemaInjector<TSchema> : ISchemaInjector
            where TSchema : class, ISchema
     {

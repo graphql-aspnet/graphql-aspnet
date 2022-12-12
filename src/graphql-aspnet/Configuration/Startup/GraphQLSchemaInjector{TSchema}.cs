@@ -7,13 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.Mvc
+namespace GraphQL.AspNet.Configuration.Startup
 {
     using System;
     using System.Linq;
     using System.Reflection;
+    using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Parsing;
@@ -24,7 +26,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Web;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Middleware.DirectiveExecution;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
@@ -36,11 +37,10 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// A builder for adding and configuring the controller based <see cref="ISchema" /> to a DI container
-    /// and any MVC settings if applicable.
+    /// A builder for adding and configuring the controller based <see cref="ISchema" /> to a DI container.
     /// </summary>
     /// <typeparam name="TSchema">The type of the graphql schema to inject.</typeparam>
-    public class GraphQLSchemaInjector<TSchema> : ISchemaInjector<TSchema>
+    internal class GraphQLSchemaInjector<TSchema> : ISchemaInjector<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>

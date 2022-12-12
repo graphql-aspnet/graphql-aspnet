@@ -7,11 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.Mvc
+namespace GraphQL.AspNet.Configuration.Startup
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;

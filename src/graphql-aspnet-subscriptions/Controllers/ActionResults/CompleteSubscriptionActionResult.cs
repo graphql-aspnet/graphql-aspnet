@@ -45,14 +45,14 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public override Task Complete(SchemaItemResolutionContext context)
+        public override Task CompleteAsync(SchemaItemResolutionContext context)
         {
             if (context is FieldResolutionContext frc)
             {
                 if (frc.Request.Field is ISubscriptionGraphField)
                 {
                     ConfigureForCompletedSubscription(frc);
-                    return base.Complete(context);
+                    return base.CompleteAsync(context);
                 }
 
                 frc.Result = null;

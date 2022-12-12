@@ -15,8 +15,13 @@ namespace GraphQL.AspNet.Execution
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// A context object representing a single request, by a single requestor, to use through the query execution process.
+    /// <para>
+    /// A context object representing a single graphql request,
+    /// by a single requestor, to use through the query execution process.
+    /// </para>
+    /// <para>
     /// This request originated as a result of an HTTP request.
+    /// </para>
     /// </summary>
     [DebuggerDisplay("Query Length = {QueryLength} (Operation = {OperationName})")]
     public class GraphOperationWebRequest : GraphOperationRequest, IGraphOperationWebRequest

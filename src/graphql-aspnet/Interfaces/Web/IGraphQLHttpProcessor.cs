@@ -24,6 +24,6 @@ namespace GraphQL.AspNet.Interfaces.Web
         /// </summary>
         /// <param name="context">The context to process.</param>
         /// <returns>Task.</returns>
-        Task Invoke(HttpContext context);
+        Task InvokeAsync(HttpContext context);
     }
 }

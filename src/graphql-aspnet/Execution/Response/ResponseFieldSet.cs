@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Response
     /// A collection of keyed items included as a result to a graphql query.
     /// </summary>
     [DebuggerDisplay("Count = {Fields.Count}")]
-    public class ResponseFieldSet : IResponseFieldSet
+    internal class ResponseFieldSet : IResponseFieldSet
     {
         private readonly OrderedDictionary<string, IResponseItem> _dictionary;
 

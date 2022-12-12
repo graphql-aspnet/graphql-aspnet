@@ -13,7 +13,6 @@ namespace GraphQL.Subscriptions.Tests.Mock
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
     using GraphQL.AspNet.Interfaces.Schema;

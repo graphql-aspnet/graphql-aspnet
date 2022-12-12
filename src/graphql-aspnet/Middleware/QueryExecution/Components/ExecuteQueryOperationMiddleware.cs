@@ -69,14 +69,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             context.Metrics?.StartPhase(ApolloExecutionPhase.EXECUTION);
             if (context.IsValid && !context.IsCancelled && context.QueryPlan != null)
             {
-                await this.ExecuteOperation(context).ConfigureAwait(false);
+                await this.ExecuteOperationAsync(context).ConfigureAwait(false);
             }
 
             await next(context, cancelToken).ConfigureAwait(false);
             context.Metrics?.EndPhase(ApolloExecutionPhase.EXECUTION);
         }
 
-        private async Task ExecuteOperation(GraphQueryExecutionContext context)
+        private async Task ExecuteOperationAsync(GraphQueryExecutionContext context)
         {
             // create a manager that will monitor both the governing token passed
             // on the context as well as the configured timeout for the schema

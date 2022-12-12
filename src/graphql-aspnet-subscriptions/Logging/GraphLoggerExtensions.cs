@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Logging
     public static class GraphLoggerExtensions
     {
         /// <summary>
-        /// Recorded when the startup services registers a publically available ASP.NET MVC route to which
+        /// Recorded when the startup services registers a publically available ASP.NET route to which
         /// end users can intiate a websocket request through which subscriptions can be established.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema the route was registered for.</typeparam>

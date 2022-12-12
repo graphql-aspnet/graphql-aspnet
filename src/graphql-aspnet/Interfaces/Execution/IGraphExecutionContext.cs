@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
-    using System.Diagnostics;
     using System.Threading;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Logging;

@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Controllers.ActionResults.Batching;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
 
@@ -22,7 +23,7 @@ namespace GraphQL.AspNet.Controllers
     public abstract partial class GraphController
     {
         /// <summary>
-        /// Returns an result with the given item as the resolved object for the field resolution.
+        /// Returns an result with the given item as the resolved value for the field.
         /// </summary>
         /// <param name="item">The object to resolve the field with.</param>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
@@ -32,7 +33,8 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// Returns an result with a <c>null</c> value as the resolved object for the field resolution.
+        /// Returns a result indicating that <c>null</c> is the resolved value
+        /// for the field.
         /// </summary>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
         protected virtual IGraphActionResult Ok()
@@ -41,11 +43,11 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// Returns an error indicating that the given issue occured.
+        /// Returns an error indicating that the issue indicated by <paramref name="message"/> occured.
         /// </summary>
         /// <param name="message">The human-friendly error message to assign ot the reported error in the graph result.</param>
-        /// <param name="code">The error code to assign to the reported error in the graph result.</param>
-        /// <param name="exception">An optional exception to be published if the query is configured to allow exposing exceptions.</param>
+        /// <param name="code">The code to assign to the error entry in the graph result.</param>
+        /// <param name="exception">An optional exception that generated this error.</param>
         /// <returns>IGraphActionResult.</returns>
         protected virtual IGraphActionResult Error(
             string message,
@@ -56,7 +58,7 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// Returns an error indicating that the given issue occured.
+        /// Returns an error indicating that the issue indicated by <paramref name="message"/> occured.
         /// </summary>
         /// <param name="severity">The severity of the message.</param>
         /// <param name="message">The human-friendly error message to assign ot the reported error in the graph result.</param>
@@ -76,23 +78,55 @@ namespace GraphQL.AspNet.Controllers
         /// <summary>
         /// Returns an error indicating that the given issue occured.
         /// </summary>
-        /// <param name="message">A custom generated message.</param>
+        /// <param name="message">A custom generated error message.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult Error(
-            IGraphMessage message)
+        protected virtual IGraphActionResult Error(IGraphMessage message)
         {
             return new GraphFieldErrorActionResult(message);
         }
 
         /// <summary>
-        /// Returns an error indicating that the requested query projection was not found on the schema or could not be
-        /// resolved correctly with the information provided.
+        /// Returns an error result indicating that processing failed due to some internal process. An exception
+        /// will be injected into the graph result and processing will be terminated.
+        /// </summary>
+        /// <param name="errorMessage">The error message.</param>
+        /// <returns>IGraphActionResult.</returns>
+        protected virtual IGraphActionResult InternalServerError(string errorMessage)
+        {
+            return new InternalServerErrorGraphActionResult(errorMessage);
+        }
+
+        /// <summary>
+        /// Returns an negative result, indicating the data supplied on the request was bad or
+        /// otherwise not usable by the controller method.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult NotFound(string message)
+        protected virtual IGraphActionResult BadRequest(string message)
         {
-            return new RouteNotFoundGraphActionResult(message);
+            return new BadRequestGraphActionResult(message);
+        }
+
+        /// <summary>
+        /// Returns an negative result, indicating the data supplied on the request was bad or
+        /// otherwise not usable by the controller method.
+        /// </summary>
+        /// <param name="modelState">The model state with its contained validation failures.</param>
+        /// <returns>IGraphActionResult.</returns>
+        protected virtual IGraphActionResult BadRequest(InputModelStateDictionary modelState)
+        {
+            return new BadRequestGraphActionResult(modelState);
+        }
+
+        /// <summary>
+        /// Returns a negative result, indicating that the action requested was unauthorized for the current context.
+        /// </summary>
+        /// <param name="message">The message to return to the client.</param>
+        /// <param name="errorCode">The error code to apply to the error returned to the client.</param>
+        /// <returns>IGraphActionResult.</returns>
+        protected virtual IGraphActionResult Unauthorized(string message = null, string errorCode = null)
+        {
+            return new UnauthorizedGraphActionResult(errorCode ?? "Unauthorized", message ?? string.Empty);
         }
 
         /// <summary>

@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual async Task Invoke(HttpContext context)
+        public virtual async Task InvokeAsync(HttpContext context)
         {
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
 
@@ -90,11 +90,11 @@ namespace GraphQL.AspNet.Engine
             }
             catch (HttpContextParsingException ex)
             {
-                await this.WriteStatusCodeResponse(ex.StatusCode, ex.Message, context.RequestAborted).ConfigureAwait(false);
+                await this.WriteStatusCodeResponseAsync(ex.StatusCode, ex.Message, context.RequestAborted).ConfigureAwait(false);
                 return;
             }
 
-            await this.SubmitGraphQLQuery(queryData, context.RequestAborted).ConfigureAwait(false);
+            await this.SubmitGraphQLQueryAsync(queryData, context.RequestAborted).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -120,16 +120,16 @@ namespace GraphQL.AspNet.Engine
         /// <param name="queryData">The query data parsed from an <see cref="HttpRequest" />; may be null.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
-        public virtual async Task SubmitGraphQLQuery(GraphQueryData queryData, CancellationToken cancelToken = default)
+        protected virtual async Task SubmitGraphQLQueryAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
             // ensure data was received
             if (queryData == null || string.IsNullOrWhiteSpace(queryData.Query))
             {
-                await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, ERROR_NO_QUERY_PROVIDED, cancelToken).ConfigureAwait(false);
+                await this.WriteStatusCodeResponseAsync(HttpStatusCode.BadRequest, ERROR_NO_QUERY_PROVIDED, cancelToken).ConfigureAwait(false);
                 return;
             }
 
-            await this.ExecuteGraphQLQuery(queryData, cancelToken).ConfigureAwait(false);
+            await this.ExecuteGraphQLQueryAsync(queryData, cancelToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Engine
         /// <param name="queryData">The query data.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
-        protected virtual async Task ExecuteGraphQLQuery(GraphQueryData queryData, CancellationToken cancelToken = default)
+        protected virtual async Task ExecuteGraphQLQueryAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
             try
             {
@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Engine
                 var request = await this.CreateOperationRequest(queryData, cancelToken);
                 if (request == null)
                 {
-                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED, cancelToken).ConfigureAwait(false);
+                    await this.WriteStatusCodeResponseAsync(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED, cancelToken).ConfigureAwait(false);
                     return;
                 }
 
@@ -174,7 +174,7 @@ namespace GraphQL.AspNet.Engine
 
                 // all done, finalize and return
                 queryResponse = this.FinalizeResult(queryResponse);
-                await this.WriteResponse(queryResponse, cancelToken).ConfigureAwait(false);
+                await this.WriteResponseAsync(queryResponse, cancelToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -196,11 +196,11 @@ namespace GraphQL.AspNet.Engine
                         }
                     }
 
-                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_INTERNAL_SERVER_ISSUE, cancelToken).ConfigureAwait(false);
+                    await this.WriteStatusCodeResponseAsync(HttpStatusCode.InternalServerError, ERROR_INTERNAL_SERVER_ISSUE, cancelToken).ConfigureAwait(false);
                 }
                 else
                 {
-                    await this.WriteResponse(exceptionResult, cancelToken).ConfigureAwait(false);
+                    await this.WriteResponseAsync(exceptionResult, cancelToken).ConfigureAwait(false);
                 }
             }
         }
@@ -216,7 +216,7 @@ namespace GraphQL.AspNet.Engine
         {
             var request = _runtime.CreateRequest(queryData);
             if (request == null)
-                await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED, cancelToken).ConfigureAwait(false);
+                await this.WriteStatusCodeResponseAsync(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED, cancelToken).ConfigureAwait(false);
 
             // repackage the runtime request to carry the
             // HttpContext along. It's not used or needed by the runtime
@@ -242,7 +242,7 @@ namespace GraphQL.AspNet.Engine
         /// <param name="message">The message to deliver with the given code.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected async Task WriteStatusCodeResponse(HttpStatusCode statusCode, string message, CancellationToken cancelToken = default)
+        protected async Task WriteStatusCodeResponseAsync(HttpStatusCode statusCode, string message, CancellationToken cancelToken = default)
         {
             if (_schema.Configuration.ResponseOptions.AppendServerHeader)
             {
@@ -259,7 +259,7 @@ namespace GraphQL.AspNet.Engine
         /// <param name="result">The operation result to write.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WriteResponse(IGraphOperationResult result, CancellationToken cancelToken = default)
+        protected virtual async Task WriteResponseAsync(IGraphOperationResult result, CancellationToken cancelToken = default)
         {
             this.Response.ContentType = Constants.MediaTypes.JSON;
             if (_schema.Configuration.ResponseOptions.AppendServerHeader)

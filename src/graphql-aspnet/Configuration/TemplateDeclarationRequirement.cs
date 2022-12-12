@@ -11,12 +11,18 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A set of potential requirements enforcing template field declarations
-    /// on various objects that will be included in the object graph.
+    /// on POCO objects that will be included in the object graph.
     /// </summary>
+    /// <remarks>
+    /// Use of these settings do not effect classes that inherit from <see cref="GraphController"/>
+    /// or <see cref="GraphDirective"/>.
+    /// </remarks>
     [Flags]
     [GraphSkip]
     public enum TemplateDeclarationRequirements

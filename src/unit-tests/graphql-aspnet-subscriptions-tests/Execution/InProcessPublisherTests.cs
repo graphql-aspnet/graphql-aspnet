@@ -27,7 +27,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var publisher = new InProcessSubscriptionPublisher(router.Object);
 
             var eventData = new SubscriptionEvent();
-            await publisher.PublishEvent(eventData);
+            await publisher.PublishEventAsync(eventData);
 
             router.Verify(x => x.RaisePublishedEvent(It.IsAny<SubscriptionEvent>()), Times.Once(), "failed to raise the event");
         }

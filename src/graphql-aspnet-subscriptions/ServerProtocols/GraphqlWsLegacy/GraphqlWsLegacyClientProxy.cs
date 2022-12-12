@@ -156,7 +156,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         /// </summary>
         /// <param name="message">The message.</param>
         /// <returns>TaskMethodBuilder.</returns>
-        internal Task ProcessMessage(GraphqlWsLegacyMessage message)
+        internal Task ProcessMessageAsync(GraphqlWsLegacyMessage message)
         {
             if (message == null)
                 return Task.CompletedTask;
@@ -165,21 +165,21 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             switch (message.Type)
             {
                 case GraphqlWsLegacyMessageType.CONNECTION_INIT:
-                    return this.AcknowledgeNewConnection();
+                    return this.AcknowledgeNewConnectionAsync();
 
                 case GraphqlWsLegacyMessageType.START:
-                    return this.ExecuteStartRequest(message as GraphqlWsLegacyClientStartMessage);
+                    return this.ExecuteStartRequestAsync(message as GraphqlWsLegacyClientStartMessage);
 
                 case GraphqlWsLegacyMessageType.STOP:
-                    return this.ExecuteStopRequest(message as GraphqlWsLegacyClientStopMessage);
+                    return this.ExecuteStopRequestAsync(message as GraphqlWsLegacyClientStopMessage);
 
                 case GraphqlWsLegacyMessageType.CONNECTION_TERMINATE:
-                    return this.CloseConnection(
+                    return this.CloseConnectionAsync(
                         ConnectionCloseStatus.NormalClosure,
                         $"Recieved closure request via message '{GraphqlWsLegacyMessageTypeExtensions.Serialize(GraphqlWsLegacyMessageType.CONNECTION_TERMINATE)}'.");
 
                 default:
-                    return this.UnknownMessageRecieved(message);
+                    return this.UnknownMessageRecievedAsync(message);
             }
         }
 
@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         /// </summary>
         /// <param name="lastMessage">The last message that was received that was unprocessable.</param>
         /// <returns>Task.</returns>
-        private Task UnknownMessageRecieved(GraphqlWsLegacyMessage lastMessage)
+        private Task UnknownMessageRecievedAsync(GraphqlWsLegacyMessage lastMessage)
         {
             var GraphqlWsLegacyError = new GraphqlWsLegacyServerErrorMessage(
                     "The last message recieved was unknown or could not be processed " +
@@ -206,7 +206,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
                 Constants.Messaging.REFERENCE_RULE_URL_KEY,
                 "https://github.com/GraphqlWsLegacygraphql/subscriptions-transport-ws/blob/master/PROTOCOL.md");
 
-            return this.SendMessage(GraphqlWsLegacyError);
+            return this.SendMessageAsync(GraphqlWsLegacyError);
         }
 
         /// <summary>
@@ -214,13 +214,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         /// </summary>
         /// <param name="message">The message containing the subscription id to stop.</param>
         /// <returns>Task.</returns>
-        private async Task ExecuteStopRequest(GraphqlWsLegacyClientStopMessage message)
+        private async Task ExecuteStopRequestAsync(GraphqlWsLegacyClientStopMessage message)
         {
             var removedSuccessfully = this.ReleaseSubscription(message.Id);
 
             if (removedSuccessfully)
             {
-                await this.SendMessage(new GraphqlWsLegacyServerCompleteMessage(message.Id))
+                await this.SendMessageAsync(new GraphqlWsLegacyServerCompleteMessage(message.Id))
                     .ConfigureAwait(false);
             }
             else
@@ -232,7 +232,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
                     clientProvidedId: message.Id);
 
                 await this
-                    .SendMessage(errorMessage)
+                    .SendMessageAsync(errorMessage)
                     .ConfigureAwait(false);
             }
         }
@@ -242,9 +242,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         /// set for this instance.
         /// </summary>
         /// <param name="message">The message with the subscription details.</param>
-        private async Task ExecuteStartRequest(GraphqlWsLegacyClientStartMessage message)
+        private async Task ExecuteStartRequestAsync(GraphqlWsLegacyClientStartMessage message)
         {
-            var result = await this.ExecuteQuery(message.Id, message.Payload, _enableMetrics);
+            var result = await this.ExecuteQueryAsync(message.Id, message.Payload, _enableMetrics);
 
             switch (result.Status)
             {
@@ -258,7 +258,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
                         result.Messages?.FirstOrDefault(),
                         lastMessage: message,
                         clientProvidedId: message.Id);
-                    await this.SendMessage(idInUseMessage).ConfigureAwait(false);
+                    await this.SendMessageAsync(idInUseMessage).ConfigureAwait(false);
                     break;
 
                 case SubscriptionOperationResultType.OperationFailure:
@@ -280,8 +280,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
                         responseMessage = new GraphqlWsLegacyServerDataMessage(message.Id, result.OperationResult);
                     }
 
-                    await this.SendMessage(responseMessage).ConfigureAwait(false);
-                    await this.SendMessage(new GraphqlWsLegacyServerCompleteMessage(message.Id)).ConfigureAwait(false);
+                    await this.SendMessageAsync(responseMessage).ConfigureAwait(false);
+                    await this.SendMessageAsync(new GraphqlWsLegacyServerCompleteMessage(message.Id)).ConfigureAwait(false);
                     break;
             }
         }
@@ -289,26 +289,26 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         /// <summary>
         /// Sends the required startup messages down to the connected client to acknowledge the connection/protocol.
         /// </summary>
-        private async Task AcknowledgeNewConnection()
+        private async Task AcknowledgeNewConnectionAsync()
         {
             // protocol dictates the messages must be sent in this order
             // await each send before attempting the next one
-            await this.SendMessage(new GraphqlWsLegacyServerAckOperationMessage()).ConfigureAwait(false);
+            await this.SendMessageAsync(new GraphqlWsLegacyServerAckOperationMessage()).ConfigureAwait(false);
 
             if (this.IsKeepAliveEnabled)
-                await this.SendMessage(new GraphqlWsLegacyKeepAliveOperationMessage()).ConfigureAwait(false);
+                await this.SendMessageAsync(new GraphqlWsLegacyKeepAliveOperationMessage()).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
-        protected override async Task ExecuteKeepAlive(CancellationToken cancelToken = default)
+        protected override async Task ExecuteKeepAliveAsync(CancellationToken cancelToken = default)
         {
-            await this.SendMessage(new GraphqlWsLegacyKeepAliveOperationMessage());
+            await this.SendMessageAsync(new GraphqlWsLegacyKeepAliveOperationMessage());
         }
 
         /// <inheritdoc />
-        protected override async Task ClientMessageReceived(GraphqlWsLegacyMessage message, CancellationToken cancelToken = default)
+        protected override async Task ClientMessageReceivedAsync(GraphqlWsLegacyMessage message, CancellationToken cancelToken = default)
         {
-            await this.ProcessMessage(message);
+            await this.ProcessMessageAsync(message);
         }
 
         /// <inheritdoc />

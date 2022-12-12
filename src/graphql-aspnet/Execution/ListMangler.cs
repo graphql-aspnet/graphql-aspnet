@@ -22,23 +22,18 @@ namespace GraphQL.AspNet.Execution
 
     /* Motivation
     *  ------------------------------
-    *  Internally, this library maintains all its array structures as List<T>
-    *  However, the developer may wish to accept an list of objects for an argument
+    *  Internally, the library maintains all its array structures as List<T>
+    *  However, the developer may wish to accept a list of objects for an argument
     *  as an array (i.e. T[]).  This class performs the necessary restructuring
     *  of turning List<T> into T[]  as necessary to ensure a match for the
     *  target.
     */
 
     /// <summary>
-    /// <para>
-    /// Converts a list structure from one format to another.
-    /// </para>
-    /// <para>
-    /// i.e. Converts <c>List{List{T}}</c> to <c>T[][]</c>, <c>IEnumerable{T[]}</c>  etc.
-    /// </para>
-    ///
+    /// Converts a list structure from one format to another accounting for explicit
+    /// arrays if and when necessary.
     /// </summary>
-    public class ListMangler
+    internal class ListMangler
     {
         private static ConcurrentDictionary<Type, ListMap> _allMaps = new ConcurrentDictionary<Type, ListMap>();
 
@@ -129,7 +124,10 @@ namespace GraphQL.AspNet.Execution
                 // This should be impossible
                 // from the map checks...but just in case
                 if (elementIndex != _targetMap.Elements.Count)
-                    throw new GraphExecutionException("Invalid Object");
+                {
+                    throw new GraphExecutionException(
+                        "Unable to mangle data. Invalid object reference.");
+                }
 
                 return dataItem;
             }
@@ -137,7 +135,11 @@ namespace GraphQL.AspNet.Execution
             // listData should be a List<T>
             var enumerable = dataItem as IEnumerable;
             if (enumerable == null)
-                throw new GraphExecutionException("Not IEnumerable");
+            {
+                throw new GraphExecutionException(
+                    "Unable to mangle data. Target data item does not implement " +
+                    $"{nameof(IEnumerable)} but was expected to.");
+            }
 
             // for every item in this list
             // convert it into the type expected for the outbound set

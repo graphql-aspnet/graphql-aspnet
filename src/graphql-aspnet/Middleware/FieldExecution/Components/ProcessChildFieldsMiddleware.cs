@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         public async Task InvokeAsync(GraphFieldExecutionContext context, GraphMiddlewareInvocationDelegate<GraphFieldExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.IsValid && context.Result != null && !context.IsCancelled)
-                await this.ProcessDownStreamFieldContexts(context, cancelToken).ConfigureAwait(false);
+                await this.ProcessDownStreamFieldContextsAsync(context, cancelToken).ConfigureAwait(false);
 
             await next(context, cancelToken).ConfigureAwait(false);
         }
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// <param name="context">The "parent" context supplying data for downstream reslts.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task.</returns>
-        private async Task ProcessDownStreamFieldContexts(GraphFieldExecutionContext context, CancellationToken cancelToken)
+        private async Task ProcessDownStreamFieldContextsAsync(GraphFieldExecutionContext context, CancellationToken cancelToken)
         {
             if (context.InvocationContext.ChildContexts.Count == 0)
                 return;
@@ -184,7 +184,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // and executing them first through to completion
             foreach (var isolatedChildContext in executableChildContexts.IsolatedContexts)
             {
-                var task = this.ExecuteChildContext(context, isolatedChildContext, cancelToken);
+                var task = this.ExecuteChildContextAsync(context, isolatedChildContext, cancelToken);
                 allChildPipelines.Add(task);
 
                 if (_debugMode)
@@ -203,7 +203,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
             foreach (var paralellChildContext in executableChildContexts.ParalellContexts)
             {
-                var task = this.ExecuteChildContext(context, paralellChildContext, cancelToken);
+                var task = this.ExecuteChildContextAsync(context, paralellChildContext, cancelToken);
                 allChildPipelines.Add(task);
 
                 if (_debugMode)
@@ -213,7 +213,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             await Task.WhenAll(allChildPipelines).ConfigureAwait(false);
         }
 
-        private Task ExecuteChildContext(
+        private Task ExecuteChildContextAsync(
             GraphFieldExecutionContext parentContext,
             GraphFieldExecutionContext childContext,
             CancellationToken cancelToken = default)
@@ -329,7 +329,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 {
                     var child = sourceItem.AddChildField(childInvocationContext);
 
-                    var dataSource = new GraphDataContainer(sourceItem.ResultData, child.Origin.Path, child);
+                    var dataSource = new GraphDataContainer(
+                        sourceItem.ResultData,
+                        child.Origin.Path,
+                        child);
+
                     var request = new GraphFieldRequest(
                         parentContext.Request.OperationRequest,
                         childInvocationContext,

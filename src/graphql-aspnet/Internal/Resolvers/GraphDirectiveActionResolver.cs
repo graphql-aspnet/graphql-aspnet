@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// the directive and produce a result.</param>
         /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
         /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
-        public async Task Resolve(DirectiveResolutionContext context, CancellationToken cancelToken = default)
+        public async Task ResolveAsync(DirectiveResolutionContext context, CancellationToken cancelToken = default)
         {
             var action = _directiveTemplate.FindMethod(context.Request.InvocationContext.Location);
 
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
             // resolve the final graph action output using the provided field context
             // in what ever manner is appropriate for the result itself
-            await result.Complete(context);
+            await result.CompleteAsync(context);
         }
     }
 }

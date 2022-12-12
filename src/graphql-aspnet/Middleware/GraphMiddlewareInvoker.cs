@@ -19,12 +19,12 @@ namespace GraphQL.AspNet.Middleware
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// An encapulated piece of middleware, defined by an end user, with all the
-    /// technical bits to process the resultant pipeline correctly.
+    /// An encapulated piece of middleware with all the
+    /// technical bits to correclty invoke the component as part of a pipeline.
     /// </summary>
     /// <typeparam name="TContext">The type of the context the middleware component will accept on its invoke method.</typeparam>
     [DebuggerDisplay("Middleware Invoker '{ComponentDefinition.Name}'")]
-    public class GraphMiddlewareInvoker<TContext>
+    internal class GraphMiddlewareInvoker<TContext>
         where TContext : class, IGraphExecutionContext
     {
         private readonly object _locker = new object();
@@ -41,18 +41,20 @@ namespace GraphQL.AspNet.Middleware
         {
             this.ComponentDefinition = Validation.ThrowIfNullOrReturn(middlewareComponent, nameof(middlewareComponent));
             _singletonInstance = this.ComponentDefinition.Component;
+
             this.Next = next;
             if (this.Next == null)
-                this.Next = (_, __) => Task.CompletedTask;
+                this.Next = (_, _) => Task.CompletedTask;
         }
 
         /// <summary>
         /// Invokes the middleware instance in the manner provided by the definition.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="cancelToken">The cancel token.</param>
+        /// <param name="context">The context being processed by this middleware component.</param>
+        /// <param name="cancelToken">The cancel token governing the process. If the token has
+        /// signaled a cancellation the middleware component will NOT be invoked.</param>
         /// <returns>Task.</returns>
-        [DebuggerStepThrough]
+        [DebuggerStepperBoundary]
         public async Task InvokeAsync(TContext context, CancellationToken cancelToken)
         {
             // stop processing when cancelation is requested
@@ -63,9 +65,10 @@ namespace GraphQL.AspNet.Middleware
             var instance = _singletonInstance;
             if (instance == null)
             {
-                // no pre-instantiated component was provided
-                // generate the compoennt from the current context. If it was marked as a singleton scope
-                // store the reference for use on subsequent calls
+                // no pre-instantiated component was provided at startup so
+                // we need to generate the compoennt from the current context.
+                // If the compoent is generated as a singleton
+                // store it for use on subsequent calls
                 instance = context?.ServiceProvider?
                     .GetService(this.ComponentDefinition.MiddlewareType) as IGraphMiddlewareComponent<TContext>;
 
@@ -77,19 +80,18 @@ namespace GraphQL.AspNet.Middleware
                             _singletonInstance = instance;
                     }
                 }
+
+                if (instance == null)
+                {
+                    throw new GraphPipelineMiddlewareInvocationException(
+                        this.ComponentDefinition.Name,
+                        $"Unable to resolve an instance of the middleware compoent '{this.ComponentDefinition.Name}'. Either no instance was provided " +
+                        "or one could not be created from the service provider on the request context.");
+                }
             }
 
-            if (instance == null)
-            {
-                throw new GraphPipelineMiddlewareInvocationException(
-                    this.ComponentDefinition.Name,
-                    $"Unable to resolve an instance of the middleware compoent '{this.ComponentDefinition.Name}'. Either no instance was provided " +
-                    "or one could not be created from the service provider on the request context.");
-            }
-
-            // invoke it and return
-            var task = instance.InvokeAsync(context, this.Next, cancelToken);
-            await task.ConfigureAwait(false);
+            // invoke the middleware component
+            await instance.InvokeAsync(context, this.Next, cancelToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -101,7 +103,8 @@ namespace GraphQL.AspNet.Middleware
         /// <summary>
         /// Gets the component definition that is to invoked.
         /// </summary>
-        /// <value>The component.</value>
+        /// <value>The original component definition that declares
+        /// how this invoker should function.</value>
         public GraphMiddlewareDefinition<TContext> ComponentDefinition { get; }
     }
 }

@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .ControllerServiceLifeTime = ServiceLifetime.Transient;
 
             var collection = new ServiceCollection();
-            var options = new SchemaOptions(typeof(GraphSchema), collection);
+            var options = new SchemaOptions<GraphSchema>(collection);
 
             options.AddDirective<CountableLateBoundDirective>(ServiceLifetime.Singleton);
             options.FinalizeServiceRegistration();
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .ControllerServiceLifeTime = ServiceLifetime.Transient;
 
             var collection = new ServiceCollection();
-            var options = new SchemaOptions(typeof(GraphSchema), collection);
+            var options = new SchemaOptions<GraphSchema>(collection);
 
             options.AddController<MutationAndQueryController>(ServiceLifetime.Singleton);
             options.FinalizeServiceRegistration();

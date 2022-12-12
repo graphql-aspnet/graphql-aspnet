@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionServerLogEntries
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded when the startup services registers a publically available ASP.NET MVC route to which
+    /// Recorded when the startup services registers a publically available ASP.NET route to which
     /// end users can intiate a websocket request through which subscriptions can be established.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema for which the route was registered.</typeparam>

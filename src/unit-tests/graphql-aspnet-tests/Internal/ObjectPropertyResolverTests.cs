@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
             var resolver = new GraphObjectPropertyResolver(fieldContextBuilder.GraphMethod.Object);
-            await resolver.Resolve(resolutionContext);
+            await resolver.ResolveAsync(resolutionContext);
 
             Assert.AreEqual(null, resolutionContext.Result);
             Assert.IsFalse(resolutionContext.Messages.IsSucessful);
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var resolver = new GraphObjectPropertyResolver(fieldContextBuilder.GraphMethod.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            await resolver.Resolve(resolutionContext);
+            await resolver.ResolveAsync(resolutionContext);
             Assert.AreEqual("15th Street", resolutionContext.Result);
             Assert.IsTrue(resolutionContext.Messages.IsSucessful);
         }
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var resolver = new GraphObjectPropertyResolver(fieldContextBuilder.GraphMethod.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            await resolver.Resolve(resolutionContext);
+            await resolver.ResolveAsync(resolutionContext);
             Assert.AreEqual(null, resolutionContext.Result);
             Assert.IsFalse(resolutionContext.Messages.IsSucessful);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_OBJECT, resolutionContext.Messages[0].Code);
@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var resolver = new GraphObjectPropertyResolver(fieldContextBuilder.GraphMethod.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            await resolver.Resolve(resolutionContext);
+            await resolver.ResolveAsync(resolutionContext);
             Assert.AreEqual(null, resolutionContext.Result);
             Assert.IsFalse(resolutionContext.Messages.IsSucessful);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_OBJECT, resolutionContext.Messages[0].Code);
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var resolver = new GraphObjectPropertyResolver(fieldContextBuilder.GraphMethod.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            await resolver.Resolve(resolutionContext);
+            await resolver.ResolveAsync(resolutionContext);
             Assert.AreEqual(null, resolutionContext.Result);
             Assert.IsFalse(resolutionContext.Messages.IsSucessful);
             Assert.IsTrue(resolutionContext.Messages[0].Exception is InvalidOperationException);
@@ -165,7 +165,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
             var resolver = new GraphObjectPropertyResolver(fieldContextBuilder.GraphMethod.Object);
-            await resolver.Resolve(resolutionContext);
+            await resolver.ResolveAsync(resolutionContext);
 
             Assert.IsNotNull(resolutionContext.Result);
             Assert.True(resolutionContext.Messages.IsSucessful);
@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var resolver = new GraphObjectPropertyResolver(fieldContextBuilder.GraphMethod.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            await resolver.Resolve(resolutionContext);
+            await resolver.ResolveAsync(resolutionContext);
             Assert.AreEqual(null, resolutionContext.Result);
             Assert.IsFalse(resolutionContext.Messages.IsSucessful);
             Assert.IsTrue(resolutionContext.Messages[0].Exception is InvalidOperationException);

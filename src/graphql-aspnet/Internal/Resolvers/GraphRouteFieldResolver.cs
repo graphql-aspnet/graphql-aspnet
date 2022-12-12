@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// the field and produce a reslt.</param>
         /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
         /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
-        public Task Resolve(FieldResolutionContext context, CancellationToken cancelToken = default)
+        public Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             context.Result = _dataObject ?? new object();
             return Task.CompletedTask;

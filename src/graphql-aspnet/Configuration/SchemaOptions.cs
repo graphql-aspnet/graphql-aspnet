@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// A complete set of configuration options to setup a schema.
     /// </summary>
-    public partial class SchemaOptions
+    public abstract class SchemaOptions
     {
         private readonly Dictionary<Type, IGraphQLServerExtension> _serverExtensions;
         private readonly HashSet<SchemaTypeToRegister> _possibleTypes;

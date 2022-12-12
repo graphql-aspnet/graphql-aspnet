@@ -100,13 +100,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// </summary>
         /// <param name="lastMessage">The last message that was received that was unprocessable.</param>
         /// <returns>Task.</returns>
-        private async Task ResponseToUnknownMessage(GqltwsMessage lastMessage)
+        private async Task ResponseToUnknownMessageAsync(GqltwsMessage lastMessage)
         {
             var error = "The last message recieved was unknown or could not be processed " +
                         $"by this server. This connection is configured to use the {GqltwsConstants.PROTOCOL_NAME} " +
                         $"message schema. (messageType: '{lastMessage.Type}')";
 
-            await this.CloseConnection(
+            await this.CloseConnectionAsync(
                 (ConnectionCloseStatus)GqltwsConstants.CustomCloseEventIds.InvalidMessageType,
                 error);
         }
@@ -116,9 +116,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// set for this instance.
         /// </summary>
         /// <param name="message">The message with the subscription details.</param>
-        private async Task ExecuteSubscriptionStartRequest(GqltwsClientSubscribeMessage message)
+        private async Task ExecuteSubscriptionStartRequestAsync(GqltwsClientSubscribeMessage message)
         {
-            var result = await this.ExecuteQuery(message.Id, message.Payload, _enableMetrics);
+            var result = await this.ExecuteQueryAsync(message.Id, message.Payload, _enableMetrics);
             switch (result.Status)
             {
                 case SubscriptionOperationResultType.SubscriptionRegistered:
@@ -136,7 +136,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                               message,
                               message.Id);
 
-                        await this.SendMessage(responseMessage).ConfigureAwait(false);
+                        await this.SendMessageAsync(responseMessage).ConfigureAwait(false);
                     }
                     else
                     {
@@ -144,8 +144,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                         var responseMessage = new GqltwsServerNextDataMessage(message.Id, result.OperationResult);
                         var completedMessage = new GqltwsSubscriptionCompleteMessage(message.Id);
 
-                        await this.SendMessage(responseMessage).ConfigureAwait(false);
-                        await this.SendMessage(completedMessage).ConfigureAwait(false);
+                        await this.SendMessageAsync(responseMessage).ConfigureAwait(false);
+                        await this.SendMessageAsync(completedMessage).ConfigureAwait(false);
                     }
 
                     break;
@@ -156,14 +156,14 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                         lastMessage: message,
                         clientProvidedId: message.Id);
 
-                    await this.SendMessage(failureMessage).ConfigureAwait(false);
+                    await this.SendMessageAsync(failureMessage).ConfigureAwait(false);
                     break;
 
                 case SubscriptionOperationResultType.OperationFailure:
 
                     if (result.Messages.Count == 1)
                     {
-                        await this.SendMessage(
+                        await this.SendMessageAsync(
                             new GqltwsServerErrorMessage(
                                 result.Messages[0],
                                 clientProvidedId: message.Id))
@@ -173,9 +173,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                     {
                         var response = GraphOperationResult.FromMessages(result.Messages, message.Payload);
 
-                        await this.SendMessage(new GqltwsServerNextDataMessage(message.Id, response))
+                        await this.SendMessageAsync(new GqltwsServerNextDataMessage(message.Id, response))
                             .ConfigureAwait(false);
-                        await this.SendMessage(new GqltwsSubscriptionCompleteMessage(message.Id))
+                        await this.SendMessageAsync(new GqltwsSubscriptionCompleteMessage(message.Id))
                             .ConfigureAwait(false);
                     }
 
@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// </summary>
         /// <param name="message">The message containing the subscription id to stop.</param>
         /// <returns>Task.</returns>
-        private Task ExecuteSubscriptionStopRequest(GqltwsSubscriptionCompleteMessage message)
+        private Task ExecuteSubscriptionStopRequestAsync(GqltwsSubscriptionCompleteMessage message)
         {
             var removedSuccessfully = this.ReleaseSubscription(message.Id);
 
@@ -273,9 +273,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        protected override async Task ClientMessageReceived(GqltwsMessage message, CancellationToken cancelToken = default)
+        protected override async Task ClientMessageReceivedAsync(GqltwsMessage message, CancellationToken cancelToken = default)
         {
-            await this.ProcessMessage(message, cancelToken);
+            await this.ProcessMessageAsync(message, cancelToken);
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// <param name="message">The message that was recieved on the socket.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>TaskMethodBuilder.</returns>
-        internal async Task ProcessMessage(GqltwsMessage message, CancellationToken cancelToken = default)
+        internal async Task ProcessMessageAsync(GqltwsMessage message, CancellationToken cancelToken = default)
         {
             if (message == null)
                 return;
@@ -295,19 +295,19 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             switch (message.Type)
             {
                 case GqltwsMessageType.CONNECTION_INIT:
-                    await this.AcknowledgeConnectionInitializationMessage();
+                    await this.AcknowledgeConnectionInitializationMessageAsync();
                     break;
 
                 case GqltwsMessageType.PING:
-                    await this.RespondToPingMessage();
+                    await this.RespondToPingMessageAsync();
                     break;
 
                 case GqltwsMessageType.SUBSCRIBE:
-                    await this.ExecuteSubscriptionStartRequest(message as GqltwsClientSubscribeMessage);
+                    await this.ExecuteSubscriptionStartRequestAsync(message as GqltwsClientSubscribeMessage);
                     break;
 
                 case GqltwsMessageType.COMPLETE:
-                    await this.ExecuteSubscriptionStopRequest(message as GqltwsSubscriptionCompleteMessage);
+                    await this.ExecuteSubscriptionStopRequestAsync(message as GqltwsSubscriptionCompleteMessage);
                     break;
 
                 // do nothing with a recevied pong message
@@ -315,15 +315,15 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                     break;
 
                 default:
-                    await this.ResponseToUnknownMessage(message);
+                    await this.ResponseToUnknownMessageAsync(message);
                     break;
             }
         }
 
         /// <inheritdoc />
-        protected override async Task ExecuteKeepAlive(CancellationToken cancelToken = default)
+        protected override async Task ExecuteKeepAliveAsync(CancellationToken cancelToken = default)
         {
-            await this.SendMessage(new GqltwsPingMessage());
+            await this.SendMessageAsync(new GqltwsPingMessage());
         }
 
         /// <inheritdoc />
@@ -342,7 +342,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// Sends the required startup messages down to the connected client to
         /// acknowledge the connection/protocol.
         /// </summary>
-        private async Task AcknowledgeConnectionInitializationMessage()
+        private async Task AcknowledgeConnectionInitializationMessageAsync()
         {
             await _initSyncLock.WaitAsync();
 
@@ -351,7 +351,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                 if (!_initReceived)
                 {
                     _initReceived = true;
-                    await this.SendMessage(new GqltwsServerConnectionAckMessage()).ConfigureAwait(false);
+                    await this.SendMessageAsync(new GqltwsServerConnectionAckMessage()).ConfigureAwait(false);
                     return;
                 }
 
@@ -359,7 +359,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                 // -----------------------------
                 // If the server receives more than one ConnectionInit message at any given time,
                 // the server will close the socket with the event 4429: Too many initialisation requests.
-                await this.CloseConnection(
+                await this.CloseConnectionAsync(
                     (ConnectionCloseStatus)GqltwsConstants.CustomCloseEventIds.TooManyInitializationRequests,
                     "Too many initialization requests");
             }
@@ -370,7 +370,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        protected override async Task InitializationWindowExpired(CancellationToken token)
+        protected override async Task InitializationWindowExpiredAsync(CancellationToken token)
         {
             await _initSyncLock.WaitAsync();
 
@@ -383,7 +383,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                 // -----------------------------
                 // If the server does not recieve the connection init message within a given time
                 // the server will close the socket with the event 4408: Connection initialziation timeout
-                await this.CloseConnection(
+                await this.CloseConnectionAsync(
                     (ConnectionCloseStatus)GqltwsConstants.CustomCloseEventIds.ConnectionInitializationTimeout,
                     "Connection initialization timeout");
             }
@@ -397,9 +397,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// Sends a PONG message down to the connected client to acknowledge a received
         /// PING messsage.
         /// </summary>
-        private async Task RespondToPingMessage()
+        private async Task RespondToPingMessageAsync()
         {
-            await this.SendMessage(new GqltwsPongMessage()).ConfigureAwait(false);
+            await this.SendMessageAsync(new GqltwsPongMessage()).ConfigureAwait(false);
         }
 
         /// <inheritdoc />

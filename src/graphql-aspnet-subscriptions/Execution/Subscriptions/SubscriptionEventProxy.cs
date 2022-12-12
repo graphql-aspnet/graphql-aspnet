@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
     /// <summary>
     /// A intermediate key/value pair holding the name of an event to be raised and the data object
-    /// to be raised. Data is held until formalized into a <see cref="SubscriptionEvent"/> with
-    /// the target schema when appropriate.
+    /// to be transmitted with it. Data is held until formalized into a <see cref="SubscriptionEvent"/> with
+    /// the actual schema when appropriate.
     /// </summary>
     internal class SubscriptionEventProxy
     {

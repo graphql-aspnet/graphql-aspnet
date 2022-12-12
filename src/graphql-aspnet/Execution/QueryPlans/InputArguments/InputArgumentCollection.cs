@@ -20,7 +20,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A collection of arguments to be passed to a field to assist in resolving it and generating a response.
+    /// A collection of arguments to be passed to a field to assist in resolving it
+    /// and generating a response.
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Count = {Count}")]

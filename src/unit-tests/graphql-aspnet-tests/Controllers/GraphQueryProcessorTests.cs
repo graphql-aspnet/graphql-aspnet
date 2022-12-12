@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             });
 
             var response = httpContext.Response;
-            await processor.Invoke(httpContext);
+            await processor.InvokeAsync(httpContext);
 
             // headers that should be set
             Assert.IsTrue(response.Headers.ContainsKey(HeaderNames.ContentType), "No content type header");

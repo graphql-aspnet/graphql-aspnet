@@ -45,10 +45,10 @@ namespace GraphQL.Subscriptions.Tests.Internal
                 maxConcurrentEvents: 1);
             var wasQueued = queue.EnqueueEvent(receiver.Object.Id, evt, true);
 
-            await queue.BeginProcessingQueue();
+            await queue.BeginProcessingQueueAsync();
 
             Assert.True(wasQueued);
-            receiver.Verify(x => x.ReceiveEvent(evt, It.IsAny<CancellationToken>()), Times.Once);
+            receiver.Verify(x => x.ReceiveEventAsync(evt, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace GraphQL.Subscriptions.Tests.Internal
                 maxConcurrentEvents: 1);
             var wasQueued = queue.EnqueueEvent(SubscriptionClientId.NewClientId(), evt, true);
 
-            await queue.BeginProcessingQueue();
+            await queue.BeginProcessingQueueAsync();
 
             Assert.True(wasQueued);
             Assert.AreEqual(0, queue.Count);
@@ -94,7 +94,7 @@ namespace GraphQL.Subscriptions.Tests.Internal
             queue.StopQueue();
             Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await queue.BeginProcessingQueue();
+                await queue.BeginProcessingQueueAsync();
             });
         }
 
@@ -108,7 +108,7 @@ namespace GraphQL.Subscriptions.Tests.Internal
             queue.Dispose();
             Assert.ThrowsAsync<ObjectDisposedException>(async () =>
             {
-                await queue.BeginProcessingQueue();
+                await queue.BeginProcessingQueueAsync();
             });
         }
 

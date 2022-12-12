@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     /// An object capable of taking a <see cref="DocumentSuppliedValue"/> from a document and converting it into a
     /// core .NET type that represents the value within the target schema.
     /// </summary>
-    public class ArgumentGenerator
+    internal class ArgumentGenerator
     {
         private readonly IInputArgumentCollectionDocumentPart _suppliedArguments;
         private readonly InputResolverMethodGenerator _inputResolverGenerator;

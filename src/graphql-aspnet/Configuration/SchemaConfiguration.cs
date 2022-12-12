@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// A configuration implementation containing all the applicable runtime options for any given schema.
     /// </summary>
-    public class SchemaConfiguration : ISchemaConfiguration
+    internal class SchemaConfiguration : ISchemaConfiguration
     {
         private readonly SchemaDeclarationConfiguration _declarationOptions;
         private readonly SchemaExecutionConfiguration _executionOptions;

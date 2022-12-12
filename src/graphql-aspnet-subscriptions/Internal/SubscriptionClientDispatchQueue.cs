@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Internal
         }
 
         /// <inheritdoc />
-        public async Task BeginProcessingQueue(CancellationToken cancelToken = default)
+        public async Task BeginProcessingQueueAsync(CancellationToken cancelToken = default)
         {
             if (this.IsProcessing)
                 return;
@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Internal
                         // wait for an execution slot
                         await _throttle.WaitAsync(_combinedTokenSource.Token);
 
-                        _ = this.DispatchEvent(
+                        _ = this.DispatchEventAsync(
                                 evt.Item1,
                                 evt.Item2,
                                 _combinedTokenSource.Token);
@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Internal
             }
         }
 
-        private async ValueTask DispatchEvent(SubscriptionClientId clientId, SubscriptionEvent eventData, CancellationToken cancelToken = default)
+        private async ValueTask DispatchEventAsync(SubscriptionClientId clientId, SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             try
             {
@@ -171,7 +171,7 @@ namespace GraphQL.AspNet.Internal
 
                 if (_clientCollection.TryGetClient(clientId, out var client))
                 {
-                    await client.ReceiveEvent(eventData, cancelToken);
+                    await client.ReceiveEventAsync(eventData, cancelToken);
                 }
             }
             finally

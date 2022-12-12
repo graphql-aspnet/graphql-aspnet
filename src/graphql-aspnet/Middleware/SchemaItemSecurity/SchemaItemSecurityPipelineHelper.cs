@@ -61,6 +61,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity
             SchemItemSecurityRequirementsMiddleware MiddlewareFactory(IServiceProvider sp)
             {
                 // policy provider may not be registered and is optional
+                // since not all apps will have security
                 var policyProvider = sp.GetService<IAuthorizationPolicyProvider>();
                 return new SchemItemSecurityRequirementsMiddleware(policyProvider);
             }

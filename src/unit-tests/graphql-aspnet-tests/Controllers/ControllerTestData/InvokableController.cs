@@ -47,12 +47,6 @@ namespace GraphQL.AspNet.Tests.Controllers.ControllerTestData
         }
 
         [Query(typeof(string))]
-        public IGraphActionResult CreateNotFoundResult()
-        {
-            return this.NotFound("it was not found");
-        }
-
-        [Query(typeof(string))]
         public IGraphActionResult ErrorResult()
         {
             return this.Error("an error happened", "12345", new Exception("exception text"));

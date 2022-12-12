@@ -72,7 +72,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         [Test]
         public void BasePipelineAndSubscriptionPipeline_DifferByOnlySubscriptionComponent()
         {
-            var options = new SchemaOptions(typeof(GraphSchema), new ServiceCollection());
+            var options = new SchemaOptions<GraphSchema>(new ServiceCollection());
             options.AuthorizationOptions.Method = AuthorizationMethod.PerRequest;
 
             var basePipeline = new FakePipelineBuilder();

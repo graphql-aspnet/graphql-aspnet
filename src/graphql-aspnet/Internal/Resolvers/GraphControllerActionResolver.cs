@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
         /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
         [DebuggerStepThrough]
-        public async Task Resolve(FieldResolutionContext context, CancellationToken cancelToken = default)
+        public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             IGraphActionResult result;
             try
@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
             // resolve the final graph action output using the provided field context
             // in what ever manner is appropriate for the result itself
-            await result.Complete(context).ConfigureAwait(false);
+            await result.CompleteAsync(context).ConfigureAwait(false);
         }
 
         /// <summary>

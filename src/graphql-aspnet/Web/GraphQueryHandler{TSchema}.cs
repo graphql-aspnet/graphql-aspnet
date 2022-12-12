@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Web
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>Task.</returns>
-        protected Task Invoke(HttpContext context)
+        protected Task InvokeAsync(HttpContext context)
         {
             Validation.ThrowIfNull(context, nameof(context));
             Validation.ThrowIfNull(context?.RequestServices, nameof(HttpContext.RequestServices));
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Web
                     "is registered with the DI container. The GraphQL runtime cannot invoke the target schema.");
             }
 
-            return processor.Invoke(context);
+            return processor.InvokeAsync(context);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Web
         /// <param name="appBuilder">The application builder.</param>
         public void Execute(IApplicationBuilder appBuilder)
         {
-            appBuilder.Run(this.Invoke);
+            appBuilder.Run(this.InvokeAsync);
         }
     }
 }

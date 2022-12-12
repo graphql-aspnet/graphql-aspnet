@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Engine
     /// The default implementation of the collection of all known, active clients
     /// available to this server instance.
     /// </summary>
-    public class DefaultGlobalSubscriptionClientProxyCollection : IGlobalSubscriptionClientProxyCollection
+    internal class DefaultGlobalSubscriptionClientProxyCollection : IGlobalSubscriptionClientProxyCollection
     {
         private readonly ConcurrentDictionary<SubscriptionClientId, ISubscriptionClientProxy> _allClients;
 

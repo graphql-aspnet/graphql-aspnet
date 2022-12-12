@@ -75,7 +75,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             // execute the connection sequence
             socketClient.QueueConnectionClosedByClient();
 
-            await client.StartConnection();
+            await client.StartConnectionAsync();
 
             socketClient.AssertClientClosedConnection();
         }
@@ -92,14 +92,14 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             Assert.AreEqual(2, socketClient.QueuedMessageCount);
 
             // execute the connection sequence
-            await client.StartConnection();
+            await client.StartConnectionAsync();
 
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertClientClosedConnection();
 
             Assert.ThrowsAsync<InvalidOperationException>(async () =>
            {
-               await client.StartConnection();
+               await client.StartConnectionAsync();
            });
         }
 
@@ -122,7 +122,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             socketClient.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await client.StartConnection();
+            await client.StartConnectionAsync();
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertClientClosedConnection();
 
@@ -148,7 +148,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             };
 
             await socketClient.OpenAsync(GraphqlWsLegacyConstants.PROTOCOL_NAME);
-            await client.ProcessMessage(startMessage);
+            await client.ProcessMessageAsync(startMessage);
             socketClient.AssertGraphqlWsLegacyResponse(
                 GraphqlWsLegacyMessageType.DATA,
                 "abc",
@@ -179,7 +179,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             };
 
             await socketClient.OpenAsync(GraphqlWsLegacyConstants.PROTOCOL_NAME);
-            await client.ProcessMessage(startMessage);
+            await client.ProcessMessageAsync(startMessage);
 
             var evt = new SubscriptionEvent()
             {
@@ -194,7 +194,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
                 SchemaTypeName = new GraphSchema().FullyQualifiedSchemaTypeName(),
             };
 
-            await client.ReceiveEvent(evt);
+            await client.ReceiveEventAsync(evt);
 
             socketClient.AssertGraphqlWsLegacyResponse(
                 GraphqlWsLegacyMessageType.DATA,
@@ -229,7 +229,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
                 SchemaTypeName = nameof(GraphSchema),
             };
 
-            await client.ReceiveEvent(evt);
+            await client.ReceiveEventAsync(evt);
             Assert.AreEqual(0, socketClient.ResponseMessageCount);
         }
 
@@ -249,7 +249,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
                 },
             };
 
-            await client.ProcessMessage(startMessage);
+            await client.ProcessMessageAsync(startMessage);
 
             var evt = new SubscriptionEvent()
             {
@@ -298,7 +298,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             socketClient.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await client.StartConnection();
+            await client.StartConnectionAsync();
 
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.COMPLETE, "abc");
@@ -316,7 +316,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             socketClient.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await client.StartConnection(TimeSpan.FromMilliseconds(30));
+            await client.StartConnectionAsync(TimeSpan.FromMilliseconds(30));
 
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
@@ -355,7 +355,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             socketClient.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await client.StartConnection(TimeSpan.FromSeconds(2));
+            await client.StartConnectionAsync(TimeSpan.FromSeconds(2));
 
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
@@ -403,7 +403,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             socketClient.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await client.StartConnection(TimeSpan.FromSeconds(2));
+            await client.StartConnectionAsync(TimeSpan.FromSeconds(2));
 
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
@@ -420,7 +420,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionTerminateMessage());
 
-            await client.StartConnection();
+            await client.StartConnectionAsync();
 
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertServerClosedConnection();
@@ -441,7 +441,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             socketClient.QueueConnectionClosedByClient();
 
             // execute the connection sequence
-            await client.StartConnection(TimeSpan.FromSeconds(2));
+            await client.StartConnectionAsync(TimeSpan.FromSeconds(2));
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.ERROR);
@@ -464,7 +464,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             });
 
             socketClient.QueueConnectionClosedByClient();
-            await client.StartConnection(TimeSpan.FromSeconds(2));
+            await client.StartConnectionAsync(TimeSpan.FromSeconds(2));
 
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);

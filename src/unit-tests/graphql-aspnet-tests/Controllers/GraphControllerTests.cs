@@ -126,25 +126,6 @@ namespace GraphQL.AspNet.Tests.Controllers
         }
 
         [Test]
-        public async Task NotFoundResult_ViaCustomErrorMessage()
-        {
-            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphController<InvokableController>()
-                .Build();
-            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.CreateNotFoundResult));
-
-            var controller = new InvokableController();
-            var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            var result = await controller.InvokeActionAsync(
-                fieldContextBuilder.GraphMethod.Object,
-                resolutionContext) as RouteNotFoundGraphActionResult;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual("it was not found", result.Message);
-        }
-
-        [Test]
         public async Task ErrorResult()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)

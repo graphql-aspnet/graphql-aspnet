@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
     /// An event, raised by a <see cref="GraphController" /> and routed to various

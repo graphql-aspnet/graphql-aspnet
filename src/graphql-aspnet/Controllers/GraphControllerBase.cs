@@ -26,10 +26,9 @@ namespace GraphQL.AspNet.Controllers
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// A base object providing common methods used by invocable containers
-    /// authored by developers.
+    /// A common object providing common methods used by both directives and controllers.
     /// </summary>
-    /// <typeparam name="TRequest">The type of the request this controller item is
+    /// <typeparam name="TRequest">The type of the request this instance is
     /// expected to process.</typeparam>
     public abstract class GraphControllerBase<TRequest>
         where TRequest : class, IDataRequest
@@ -134,50 +133,6 @@ namespace GraphQL.AspNet.Controllers
                         throw;
                 }
             }
-        }
-
-        /// <summary>
-        /// Returns an error result indicating that processing failed due to some internal process. An exception
-        /// will be injected into the graph result and processing will be terminated.
-        /// </summary>
-        /// <param name="errorMessage">The error message.</param>
-        /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult InternalServerError(string errorMessage)
-        {
-            return new InternalServerErrorGraphActionResult(errorMessage);
-        }
-
-        /// <summary>
-        /// Returns an negative result, indicating the data supplied on the request was bad or
-        /// otherwise not usable by the controller method.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult BadRequest(string message)
-        {
-            return new BadRequestGraphActionResult(message);
-        }
-
-        /// <summary>
-        /// Returns an negative result, indicating the data supplied on the request was bad or
-        /// otherwise not usable by the controller method.
-        /// </summary>
-        /// <param name="modelState">The model state with its contained validation failures.</param>
-        /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult BadRequest(InputModelStateDictionary modelState)
-        {
-            return new BadRequestGraphActionResult(modelState);
-        }
-
-        /// <summary>
-        /// Returns a negative result, indicating that the action requested was unauthorized for the current context.
-        /// </summary>
-        /// <param name="message">The message to return to the client.</param>
-        /// <param name="errorCode">The error code to apply to the error returned to the client.</param>
-        /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult Unauthorized(string message = null, string errorCode = null)
-        {
-            return new UnauthorizedGraphActionResult(errorCode ?? "Unauthorized", message ?? string.Empty);
         }
 
         /// <summary>

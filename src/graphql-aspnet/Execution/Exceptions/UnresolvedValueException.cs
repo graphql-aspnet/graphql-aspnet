@@ -13,7 +13,8 @@ namespace GraphQL.AspNet.Execution.Exceptions
     using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>
-    /// An exception thrown when an input value is not valid for its target graph type.
+    /// An exception thrown when an value (to a field argument or an input object)
+    /// is not valid for its target graph type.
     /// </summary>
     public class UnresolvedValueException : Exception
     {
@@ -56,7 +57,6 @@ namespace GraphQL.AspNet.Execution.Exceptions
         public UnresolvedValueException(ReadOnlySpan<char> value, string message, Exception innerException = null)
             : this(value.ToString(), message, innerException)
         {
-            this.Value = value.ToString();
         }
 
          /// <summary>

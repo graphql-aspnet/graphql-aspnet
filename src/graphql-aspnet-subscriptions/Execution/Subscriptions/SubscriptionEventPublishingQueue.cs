@@ -36,10 +36,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         }
 
         /// <summary>
-        /// Enqueues the event to the queue.
+        /// Enqueues the event to be published. Publishing occurs periodically when allowed
+        /// by the runtime.
         /// </summary>
         /// <param name="evt">The event to enqueue.</param>
-        /// <returns><c>true</c> if the event was queued, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c> if the event was successfully queued, <c>false</c> otherwise.</returns>
         public bool Enqueue(SubscriptionEvent evt)
         {
             Validation.ThrowIfNull(evt, nameof(evt));
