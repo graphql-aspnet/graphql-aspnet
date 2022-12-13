@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		CodeMaid.config = CodeMaid.config
 		stylecop.json = stylecop.json
+		library-common.props = library-common.props
 		styles.ruleset = styles.ruleset
 	EndProjectSection
 EndProject
