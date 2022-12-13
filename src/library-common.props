@@ -1,6 +1,5 @@
 <!-- Common property settings for production libraries -->
 <Project>
-
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net6.0;net7.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
@@ -24,7 +23,7 @@
 
     <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://graphql-aspnet.github.io/</PackageProjectUrl>
-    <PackageTags>GraphQL graphql ASP.NET dotnet net7</PackageTags>
+    <PackageTags>GraphQL Asp.Net</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <RepositoryType>git</RepositoryType>
@@ -40,20 +39,20 @@
     <AssemblyOriginatorKeyFile>..\..\build\graphql-aspnet-key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
-	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' AND '$(Configuration)' == 'Release'">
-		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' AND '$(Configuration)' == 'Release'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<AdditionalFiles Include="..\stylecop.json" />
-	</ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\stylecop.json" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="..\..\build\icon.png" Pack="true" PackagePath="\" />
-		<None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\build\icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+  </ItemGroup>
 </Project>
