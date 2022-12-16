@@ -105,7 +105,6 @@ namespace GraphQL.AspNet.Engine
             if (string.IsNullOrWhiteSpace(protocolToUse))
                 throw new UnsupportedClientProtocolException(string.Join(", ", unsupportedProtocols));
 
-
             return await _clientFactories[protocolToUse].CreateClient<TSchema>(connection);
         }
     }

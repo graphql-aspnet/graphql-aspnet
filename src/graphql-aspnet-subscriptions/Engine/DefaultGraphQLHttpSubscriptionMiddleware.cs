@@ -211,8 +211,8 @@ namespace GraphQL.AspNet.Engine
                       message,
                       context.RequestAborted)
                   .ConfigureAwait(false);
-                return;
 
+                return;
             }
 
             if (context != null && !context.Response.HasStarted)
