@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Engine
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// The default implementation of the "server owned" factory which uses all registered
+    /// The default implementation of the "server owned" abstract factory which uses all registered
     /// client factories to create an appropriate proxy through which the server can speak with
     /// a connected client.
     /// </summary>
@@ -102,10 +102,11 @@ namespace GraphQL.AspNet.Engine
             }
 
             // generate the appropriate client
-            if (!string.IsNullOrWhiteSpace(protocolToUse))
-                return await _clientFactories[protocolToUse].CreateClient<TSchema>(connection);
+            if (string.IsNullOrWhiteSpace(protocolToUse))
+                throw new UnsupportedClientProtocolException(string.Join(", ", unsupportedProtocols));
 
-            throw new UnsupportedClientProtocolException(string.Join(", ", unsupportedProtocols));
+
+            return await _clientFactories[protocolToUse].CreateClient<TSchema>(connection);
         }
     }
 }

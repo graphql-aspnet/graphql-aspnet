@@ -12,8 +12,9 @@ namespace GraphQL.AspNet.Attributes
     using System;
 
     /// <summary>
-    /// A marker attribute to desginate a parameter as being the expected source data
-    /// for this subscription field.
+    /// A marker attribute to desginate a parameter of a subscription method as being the
+    /// expected source data for this subscription field. This parameter is not exposed
+    /// on the schema.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class SubscriptionSourceAttribute : Attribute

@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Engine
         where TSchema : class, ISchema
     {
         private readonly RequestDelegate _next;
-        private readonly ISubscriptionServerClientFactory _clientFactory;
+        private readonly ISubscriptionServerClientFactory _clientMaker;
         private readonly TSchema _schema;
         private readonly string _routePath;
         private readonly IGlobalSubscriptionClientProxyCollection _clientTracker;
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Engine
         /// <param name="next">The delegate pointing to the next middleware component
         /// in the pipeline.</param>
         /// <param name="schema">The schema targeted by this middleware component.</param>
-        /// <param name="clientFactory">The client factory used to instantiate
+        /// <param name="clientMaker">The client abstract factory used to instantiate
         /// client proxies.</param>
         /// <param name="clientTracker">The global client tracker that monitors
         /// all active clients on this server instance.</param>
@@ -59,14 +59,14 @@ namespace GraphQL.AspNet.Engine
         public DefaultGraphQLHttpSubscriptionMiddleware(
             RequestDelegate next,
             TSchema schema,
-            ISubscriptionServerClientFactory clientFactory,
+            ISubscriptionServerClientFactory clientMaker,
             IGlobalSubscriptionClientProxyCollection clientTracker,
             SubscriptionServerOptions<TSchema> options)
         {
             _next = next;
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
-            _clientFactory = Validation.ThrowIfNullOrReturn(clientFactory, nameof(clientFactory));
+            _clientMaker = Validation.ThrowIfNullOrReturn(clientMaker, nameof(clientMaker));
             _routePath = Validation.ThrowIfNullOrReturn(_options.Route, nameof(_options.Route));
             _clientTracker = Validation.ThrowIfNullOrReturn(clientTracker, nameof(clientTracker));
         }
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Engine
                 // wrap the connection in a proxy that abstracts graphql related
                 // communications from the underlying communications protocols
                 // ----------------------------
-                subscriptionClient = await _clientFactory.CreateSubscriptionClient<TSchema>(clientConnection);
+                subscriptionClient = await _clientMaker.CreateSubscriptionClient<TSchema>(clientConnection);
                 if (subscriptionClient == null)
                     throw new InvalidOperationException("No client proxy could be configred for the connection.");
 
@@ -171,7 +171,7 @@ namespace GraphQL.AspNet.Engine
                          (int)ConnectionCloseStatus.ProtocolError,
                          (int)HttpStatusCode.BadRequest,
                          $"The requested messaging protocol(s) '{uspe.Protocol}' are not supported " +
-                          $"by the target schema.")
+                         "by the target schema.")
                  .ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -183,7 +183,7 @@ namespace GraphQL.AspNet.Engine
                         (int)ConnectionCloseStatus.InternalServerError,
                         (int)HttpStatusCode.InternalServerError,
                         "An unexpected error occured attempting to configure the web socket " +
-                          "connection. Check the server event logs for further details.")
+                        "connection. Check the server event logs for further details.")
                 .ConfigureAwait(false);
             }
             finally
@@ -211,13 +211,26 @@ namespace GraphQL.AspNet.Engine
                       message,
                       context.RequestAborted)
                   .ConfigureAwait(false);
+                return;
+
             }
-            else if (context != null && !context.Response.HasStarted)
+
+            if (context != null && !context.Response.HasStarted)
             {
+                // write directly to the http context response when
+                // no client connection was successfully created
                 context.Response.StatusCode = httpStatus;
                 await context.Response.WriteAsync(message)
                     .ConfigureAwait(false);
+
+                return;
             }
+
+            // no client connection intiated and a response
+            // is already started back to the user...this should be an impossible state
+            // but there is no garuntee on the order of aspnet middleware components
+            // on the server
+            // ¯\_(ツ)_/¯
         }
     }
 }
