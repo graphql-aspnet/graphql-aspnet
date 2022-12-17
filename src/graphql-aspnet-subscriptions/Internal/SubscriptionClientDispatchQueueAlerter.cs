@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Internal
     {
         private readonly object _locker = new object();
         private readonly ILogger _logger;
-        private readonly int _cooldownToleranceMs;
         private readonly SubscriptionEventAlertThreshold[] _allThresholds;
         private readonly DateTimeOffset[] _cooldownExpirations;
         private readonly HashSet<Task> _cooldownTasks;
@@ -42,7 +41,7 @@ namespace GraphQL.AspNet.Internal
         /// <param name="alertSettings">The alert settings to use when deteremining
         /// if an event should be recorded.</param>
         /// <param name="cooldownToleranceInMs">A
-        /// tolerance, in milliseconds, that if the expected cooldown time vs the actual time
+        /// tolerance value, in milliseconds, that if the expected cooldown time of an alert vs the actual time
         /// is within this tolerance the cooldown will be considered completed (default 5 seconds).</param>
         public SubscriptionClientDispatchQueueAlerter(
             ILogger logger,
@@ -51,10 +50,11 @@ namespace GraphQL.AspNet.Internal
         {
             Validation.ThrowIfNull(alertSettings, nameof(alertSettings));
             _logger = Validation.ThrowIfNullOrReturn(logger, nameof(logger));
-            _cooldownToleranceMs = cooldownToleranceInMs;
 
-            if (_cooldownToleranceMs <= 0)
-                _cooldownToleranceMs = 1;
+            if (cooldownToleranceInMs <= 0)
+                cooldownToleranceInMs = 1;
+
+            this.CooldownToleranceMs = cooldownToleranceInMs;
 
             if (alertSettings.AlertThresholds.Count == 0)
                 throw new ArgumentException("At least one alert threshold must be provided.", nameof(alertSettings));
@@ -173,7 +173,7 @@ namespace GraphQL.AspNet.Internal
                         continue;
 
                     var difference = _cooldownExpirations[i].Subtract(now).TotalMilliseconds;
-                    if (difference > _cooldownToleranceMs)
+                    if (difference > this.CooldownToleranceMs)
                     {
                         // if the threshold  for cool down has not been reached then
                         // this level is not finished cooling down.
@@ -192,5 +192,12 @@ namespace GraphQL.AspNet.Internal
                 _nextThresholdIndex = 0;
             }
         }
+
+        /// <summary>
+        /// Gets a tolerance value, in milliseconds, that if the expected cooldown time since an alert vs the actual time
+        /// is within this tolerance the cooldown will be considered completed even if the cooldown hasn't officially passed.
+        /// </summary>
+        /// <value>The cooldown tolerance in milliseconds.</value>
+        public int CooldownToleranceMs { get; }
     }
 }

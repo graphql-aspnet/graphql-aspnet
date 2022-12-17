@@ -115,6 +115,23 @@ namespace GraphQL.Subscriptions.Tests.Internal
         }
 
         [Test]
+        public void ConfiguredThresholdIsLessThan1_1IsSetAsThreshold()
+        {
+            var logger = new Mock<ILogger>();
+            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+
+            var settings = new SubscriptionClientDispatchQueueAlertSettings();
+            settings.AddThreshold(LogLevel.Debug, 500, TimeSpan.FromMinutes(25));
+
+            var alerter = new SubscriptionClientDispatchQueueAlerter(
+                logger.Object,
+                settings,
+                -1);
+
+            Assert.AreEqual(1, alerter.CooldownToleranceMs);
+        }
+
+        [Test]
         public void ThresholdReachedExactly_EventIsRecorded()
         {
             var logger = new Mock<ILogger>();

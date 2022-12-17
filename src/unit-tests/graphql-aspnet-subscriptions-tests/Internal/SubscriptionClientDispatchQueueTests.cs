@@ -10,6 +10,8 @@
 namespace GraphQL.Subscriptions.Tests.Internal
 {
     using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -17,6 +19,7 @@ namespace GraphQL.Subscriptions.Tests.Internal
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
 
@@ -121,6 +124,51 @@ namespace GraphQL.Subscriptions.Tests.Internal
                 maxConcurrentEvents: 1);
             queue.Dispose();
             queue.StopQueue();
+        }
+
+        [Test]
+        public void CountOnDisposedQueue_ThrowsException()
+        {
+            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            var queue = new SubscriptionClientDispatchQueue(
+                collection.Object,
+                maxConcurrentEvents: 1);
+            queue.Dispose();
+
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                var c = queue.Count;
+            });
+        }
+
+        [Test]
+        public void AlerterAllowedToTest_WhenPresent()
+        {
+            var factory = new Mock<ILoggerFactory>();
+            var logger = new Mock<ILogger>();
+            factory.Setup(x => x.CreateLogger(It.IsAny<string>()))
+                .Returns(logger.Object);
+
+            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            var settings = new Mock<ISubscriptionClientDispatchQueueAlertSettings>();
+            settings.Setup(x => x.AlertThresholds)
+                .Returns(new List<SubscriptionEventAlertThreshold>()
+                {
+                    new SubscriptionEventAlertThreshold(Microsoft.Extensions.Logging.LogLevel.Warning, 45, TimeSpan.FromSeconds(23)),
+                });
+
+            var evt = new SubscriptionEvent();
+
+            var queue = new SubscriptionClientDispatchQueue(
+                collection.Object,
+                settings.Object,
+                factory.Object,
+                maxConcurrentEvents: 1);
+
+            var wasQueued = queue.EnqueueEvent(SubscriptionClientId.NewClientId(), evt);
+
+            Assert.IsTrue(wasQueued);
+            settings.Verify(x => x.AlertThresholds, Times.AtLeastOnce());
         }
     }
 }
