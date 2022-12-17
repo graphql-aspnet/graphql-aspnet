@@ -226,10 +226,11 @@ namespace GraphQL.AspNet.Engine
                 return;
             }
 
-            // no client connection intiated and a response
+            // no client connection intiated and an http response
             // is already started back to the user...this should be an impossible state
             // but there is no garuntee on the order of aspnet middleware components
-            // on the server
+            // on the server. Regardless, there is nothing we can do.
+            //
             // ¯\_(ツ)_/¯
         }
     }

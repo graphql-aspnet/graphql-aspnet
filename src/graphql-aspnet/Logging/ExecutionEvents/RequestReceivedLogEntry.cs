@@ -77,8 +77,8 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
-            var idTruncated = this.OperationRequestId?.Length > 8 ? this.OperationRequestId.Substring(0, 8) : this.OperationRequestId;
-            return $"Graph Query Received | User: {this.Username ?? "{anon}"},  Id: {idTruncated}, Query Length: {this.QueryText.Length}";
+            var idTruncated = (this.OperationRequestId?.Length ?? 0) > 8 ? this.OperationRequestId.Substring(0, 8) : string.Empty;
+            return $"Graph Query Received | User: {this.Username ?? "{anon}"},  Id: {idTruncated}, Query Length: {this.QueryText?.Length ?? 0}";
         }
     }
 }

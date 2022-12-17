@@ -183,7 +183,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityChallengeContext context)
+        public virtual void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityChallengeContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
@@ -193,14 +193,10 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityChallengeContext context, IAuthenticationResult authResult)
+        public virtual void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityChallengeContext context, IAuthenticationResult authResult)
         {
             LogLevel logLevel;
-            if (context?.AuthenticatedUser != null)
-            {
-                logLevel = LogLevel.Trace;
-            }
-            else if (context?.Result != null)
+            if (context?.Result != null)
             {
                 logLevel = context.Result.Status == SchemaItemSecurityChallengeStatus.Failed
                 ? LogLevel.Warning
@@ -289,7 +285,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public void RequestTimedOut(GraphQueryExecutionContext queryContext)
+        public virtual void RequestTimedOut(GraphQueryExecutionContext queryContext)
         {
             if (!this.IsEnabled(LogLevel.Warning))
                 return;
@@ -299,7 +295,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public void RequestCancelled(GraphQueryExecutionContext queryContext)
+        public virtual void RequestCancelled(GraphQueryExecutionContext queryContext)
         {
             if (!this.IsEnabled(LogLevel.Information))
                 return;

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// unique set of <see cref="SubscriptionClientId"/> representing clients
     /// that will receive the event.
     /// </summary>
-    internal class SubscribedEventRecievers : Dictionary<SubscriptionEventName, HashSet<SubscriptionClientId>>
+    internal sealed class SubscribedEventRecievers : Dictionary<SubscriptionEventName, HashSet<SubscriptionClientId>>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscribedEventRecievers"/> class.
