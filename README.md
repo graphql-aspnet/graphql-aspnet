@@ -9,18 +9,10 @@
 
 GraphQL ASP.NET is a fully featured graphql library that utilizes a controller/action programming model familiar to ASP.NET developers. Instead of focusing on schemas and resolvers, the focus on controllers and model objects. This library will automatically generate the schema to match your code.
 
-<br />
 ✅ Controller-Based Programming Model similar to ASP.NET
 <br />
-✅ Minimal Boilerplate Code
-<br />
-✅ Minimal Required Configuration
-<br />
-<br />
+✅ No Boilerplate Code
 
-#### 💻 Example Usage:
-
-<br />
 
 ✏️ **Write This Controller**
 
@@ -46,11 +38,11 @@ public class BakeryController : GraphController
 ▶️ **Execute This Query**
 
 ```graphql
-query SearchGroceryStore($pastryName: String!) {
+query {
   groceryStore {
     bakery {
       pastries {
-        search(nameLike: $pastryName) {
+        search(nameLike: "donut") {
           name
           type
         }
