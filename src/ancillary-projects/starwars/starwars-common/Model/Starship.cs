@@ -70,6 +70,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.Model
         /// </summary>
         /// <value>The coordinates.</value>
         [GraphField]
+        [Description("The starship's current location in the galaxy")]
         public IEnumerable<IEnumerable<float>> Coordinates { get; set; }
     }
 }
