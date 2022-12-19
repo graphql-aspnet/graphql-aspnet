@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Internal
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A global collection of graph type names and their concrete type references.
+    /// A global collection of known graph type names and their concrete type references.
     /// </summary>
     public static class GraphTypeNames
     {

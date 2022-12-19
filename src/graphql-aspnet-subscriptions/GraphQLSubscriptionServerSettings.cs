@@ -12,7 +12,7 @@ namespace GraphQL.AspNet
     using System;
 
     /// <summary>
-    /// "Server level" GraphQL subscription and connection settings that govern all schemas registered
+    /// Server level GraphQL subscription and connection settings that govern all schemas registered
     /// to this server instance. These values rarely need to be changed, howver; any changes should be made prior to
     /// calling <c>.AddGraphQL()</c> during startup.
     /// </summary>

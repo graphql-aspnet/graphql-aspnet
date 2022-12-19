@@ -15,7 +15,7 @@ namespace GraphQL.AspNet
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// "Server level" GraphQL settings that govern all schemas registered
+    /// Server level GraphQL settings that govern all schemas registered
     /// to this server instance. These values rarely need to be changed, howver; any changes should be made prior to
     /// calling <c>.AddGraphQL()</c> during startup.
     /// </summary>
