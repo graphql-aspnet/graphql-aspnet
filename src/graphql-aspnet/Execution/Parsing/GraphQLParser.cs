@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Execution.Parsing
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Interfaces.Execution;
     using KEYWORDS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Keywords;
 
     /// <summary>

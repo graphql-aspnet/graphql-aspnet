@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
     using System;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;

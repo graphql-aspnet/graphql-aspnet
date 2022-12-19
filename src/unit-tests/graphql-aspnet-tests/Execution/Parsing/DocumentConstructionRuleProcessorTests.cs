@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Execution.QueryPlans.Document;
     using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.Execution.RulesEngine;
@@ -23,6 +22,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Execution.Parsing.DocumentConstructionTestData;
     using NUnit.Framework;
 

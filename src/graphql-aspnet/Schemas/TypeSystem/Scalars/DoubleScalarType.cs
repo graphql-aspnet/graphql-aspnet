@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using System.Globalization;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A graph type representing a 64-bit, floating-point value.

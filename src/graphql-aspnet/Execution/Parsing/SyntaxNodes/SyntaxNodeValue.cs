@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
     /// A struct representing a block of characters from a query text.

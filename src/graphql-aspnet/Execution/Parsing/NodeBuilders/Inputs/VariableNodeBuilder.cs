@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
     /// A node builder that creates syntax nodes for a variable declaration on an

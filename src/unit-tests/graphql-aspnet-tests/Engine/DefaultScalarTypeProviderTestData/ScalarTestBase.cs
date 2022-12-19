@@ -11,11 +11,11 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using Moq;
 
     public abstract class ScalarTestBase : IScalarGraphType

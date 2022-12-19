@@ -25,6 +25,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Framework;
     using Moq;
     using NUnit.Framework;

@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
+namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
 
     /// <summary>
-    /// An enumeration for defining what type of scalar is being represented
-    /// spec: https://graphql.github.io/graphql-spec/October2021/#sec-Scalars.
+    /// An enumeration for defining what type of scalar is being represented.
+    /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Scalars"/> .
     /// </summary>
     [Flags]
     public enum ScalarValueType : byte

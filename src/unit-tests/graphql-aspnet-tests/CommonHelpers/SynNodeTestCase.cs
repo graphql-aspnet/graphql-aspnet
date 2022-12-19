@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     internal class SynNodeTestCase
     {

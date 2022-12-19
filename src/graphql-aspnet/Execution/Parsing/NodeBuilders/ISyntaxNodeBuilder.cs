@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Execution
+namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
 {
     using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Execution.Parsing.Lexing;

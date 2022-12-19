@@ -9,8 +9,8 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts
 {
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
     /// A supplied value to an query document that represents a scalar.

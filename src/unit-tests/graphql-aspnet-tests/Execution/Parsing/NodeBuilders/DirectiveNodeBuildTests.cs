@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.Parsing.Helpers;
     using NUnit.Framework;

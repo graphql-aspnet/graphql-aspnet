@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;

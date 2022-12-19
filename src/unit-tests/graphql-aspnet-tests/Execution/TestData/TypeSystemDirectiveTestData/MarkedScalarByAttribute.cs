@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.TypeSystemDirectiveTestData
     using System;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     [ApplyDirective(typeof(ScalarMarkerDirective))]

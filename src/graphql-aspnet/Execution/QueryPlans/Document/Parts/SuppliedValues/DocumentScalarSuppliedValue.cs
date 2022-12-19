@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
     /// An input value representing a single scalar value of data.

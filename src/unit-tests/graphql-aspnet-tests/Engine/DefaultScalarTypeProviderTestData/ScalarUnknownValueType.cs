@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
 {
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     public class ScalarUnknownValueType : ScalarTestBase
     {

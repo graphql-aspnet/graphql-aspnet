@@ -12,8 +12,9 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
     /// A syntax node builder that builds boolean scalar value nodes from a token stream.

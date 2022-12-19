@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A graph type representing a standard guid.

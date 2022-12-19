@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Tests.Execution.Parsing.Helpers;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     [TestFixture]
     public class InputItemNodeBuilderTests

@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
     /// This servers implementation of the required "ID" scalar type of graphql. Maps to the concrete C# object type of <see cref="GraphId"/>.
