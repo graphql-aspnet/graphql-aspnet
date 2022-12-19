@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Interfaces
+namespace GraphQL.AspNet.Interfaces.Internal
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas.TypeSystem;
 

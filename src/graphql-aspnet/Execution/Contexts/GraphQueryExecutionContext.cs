@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// A top level context for the execution of a query through the graphql runtime.

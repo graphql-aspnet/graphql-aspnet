@@ -10,7 +10,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 {
     using System;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using Moq;

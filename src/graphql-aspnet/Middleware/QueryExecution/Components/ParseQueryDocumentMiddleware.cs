@@ -21,7 +21,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQLSyntaxException2 = GraphQL.AspNet.Execution.Parsing.Exceptions.GraphQLSyntaxException;
 
     /// <summary>

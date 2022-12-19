@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Interfaces.Logging
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// A logging interface describing specific logged events in the completion of a graphql request.

@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Engine
 {
     using GraphQL.AspNet.Engine.TypeMakers;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
 

@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>

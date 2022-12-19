@@ -14,8 +14,8 @@ namespace GraphQL.AspNet.Configuration.Startup
     using System.Linq;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// Preloads data related to a schema  into memory.

@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Interfaces.Engine
     using System;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// An interface describing the query plan cache. Build your own cache against any technology you wish

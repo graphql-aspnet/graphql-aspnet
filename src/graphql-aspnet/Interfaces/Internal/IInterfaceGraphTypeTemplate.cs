@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Internal.Interfaces
+namespace GraphQL.AspNet.Interfaces.Internal
 {
     /// <summary>
     /// An interface representing a template that contains the necessary information to render an INTERFACE graph type

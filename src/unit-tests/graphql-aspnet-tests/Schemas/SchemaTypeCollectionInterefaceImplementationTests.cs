@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System.Linq;
     using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
     using GraphQL.AspNet.Tests.Framework;

@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Internal
 {
     using System;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Tests.Common.Extensions.DiExtensionTestData;
     using GraphQL.AspNet.Tests.Framework;

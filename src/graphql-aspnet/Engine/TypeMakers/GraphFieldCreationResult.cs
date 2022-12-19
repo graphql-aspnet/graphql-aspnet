@@ -9,8 +9,8 @@
 
 namespace GraphQL.AspNet.Engine.TypeMakers
 {
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// The complete result of turning a <see cref="IGraphFieldBaseTemplate" /> into a <typeparamref name="TFieldType"/>.

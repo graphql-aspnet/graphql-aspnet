@@ -17,8 +17,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.Resolvers;
 
     /// <summary>

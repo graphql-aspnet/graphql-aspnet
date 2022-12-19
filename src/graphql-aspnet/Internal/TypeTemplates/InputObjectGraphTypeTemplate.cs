@@ -21,12 +21,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
-    using InputGraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Internal.Interfaces.IInputGraphFieldTemplate>;
+    using InputGraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, Interfaces.Internal.IInputGraphFieldTemplate>;
 
     /// <summary>
     /// A representation of the meta data of any given class that could be represented

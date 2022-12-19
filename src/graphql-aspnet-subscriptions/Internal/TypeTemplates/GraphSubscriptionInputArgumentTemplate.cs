@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>

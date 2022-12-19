@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using System.Collections.Generic;
     using System.Reflection;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>

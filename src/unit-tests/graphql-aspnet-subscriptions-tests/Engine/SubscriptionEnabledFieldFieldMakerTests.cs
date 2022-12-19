@@ -6,11 +6,12 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.Subscriptions.Tests.Engine
 {
     using System.Linq;
     using GraphQL.AspNet.Engine.TypeMakers;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Tests.Framework;

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Interfaces
+namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System;
     using GraphQL.AspNet.Engine.TypeMakers;

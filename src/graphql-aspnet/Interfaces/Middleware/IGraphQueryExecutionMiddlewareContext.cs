@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Interfaces.Middleware
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// An interface representing a core context required to complete the primary

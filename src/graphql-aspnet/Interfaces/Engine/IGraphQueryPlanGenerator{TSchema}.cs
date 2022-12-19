@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Interfaces.Engine
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// A plan generator capable of converting a fully constructed query document into an actionable
