@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     /// A resolver that can extend an exsiting resolver.
     /// </summary>
     [DebuggerDisplay("Extended Resolver")]
-    public class ExtendedResolver : IGraphFieldResolver
+    internal class ExtendedResolver : IGraphFieldResolver
     {
         private readonly IGraphFieldResolver _primaryResolver;
         private readonly Func<FieldResolutionContext, CancellationToken, Task> _extention;

@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
     using NUnit.Framework;
 
     [TestFixture]
-    public class ReflectionExtensionTests
+    public class TypeExtensionTests
     {
         [Test]
         public void LocateTypesInAssembly_OnAttributesOrClasses_ReturnsExpectedType()
@@ -79,11 +79,13 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
         [TestCase(typeof(IDictionary<int, string>), "IDictionary_int_string_", false, "_")]
         [TestCase(typeof(Task<IDictionary<int, string>>), "Task<IDictionary<int, string>>")]
         [TestCase(typeof(Task<IDictionary<int, string>>), "Task_IDictionary_int_string__", false, "_")]
-        [TestCase(typeof(Task<IDictionary<DateTimeExtensionTests, ReflectionExtensionTests>>), "Task<IDictionary<DateTimeExtensionTests, ReflectionExtensionTests>>")]
+        [TestCase(typeof(Task<IDictionary<DateTimeExtensionTests, TypeExtensionTests>>), "Task<IDictionary<DateTimeExtensionTests, TypeExtensionTests>>")]
         [TestCase(typeof(int[]), "int[]", true)]
         [TestCase(typeof(int[][]), "int[][]", true)]
         [TestCase(typeof(int[][]), "int____", false, "_")]
         [TestCase(typeof(int[]), "int__", false, "_")]
+        [TestCase(typeof(IList<>), "IList<T>")]
+        [TestCase(typeof(IDictionary<,>), "IDictionary<TKey, TValue>")]
         public void Type_FriendlyName(Type type, string expectedName, bool useDefaultFriendlyName = true, string delimiter = "")
         {
             // non generic type just returns Type.Name
@@ -99,6 +101,8 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
         [TestCase(typeof(int), "System.Int32")]
         [TestCase(typeof(int?), "System.Nullable<System.Int32>")]
         [TestCase(typeof(IDictionary<int, string>), "System.Collections.Generic.IDictionary<System.Int32, System.String>")]
+        [TestCase(typeof(IList<>), "System.Collections.Generic.IList<T>")]
+        [TestCase(typeof(IDictionary<,>), "System.Collections.Generic.IDictionary<TKey, TValue>")]
         public void Type_FriendlyName_WithNamespace(Type type, string expectedName)
         {
             var result = type.FriendlyName(true);
@@ -148,7 +152,7 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
 
         [TestCase(typeof(SingleAttributeClass), typeof(System.ComponentModel.DescriptionAttribute), true)] // defined
         [TestCase(typeof(SingleAttributeClass), typeof(GraphSkipAttribute), false)] // not defined
-        [TestCase(typeof(SingleAttributeClass), typeof(ReflectionExtensionTests), false)] // not an attribute
+        [TestCase(typeof(SingleAttributeClass), typeof(TypeExtensionTests), false)] // not an attribute
         [TestCase(typeof(SingleAttributeClass), null, false)]
         [TestCase(null, typeof(GraphSkipAttribute), false)]
         public void HasAttribute(Type typeToCheck, Type attributeType, bool expectedResult)

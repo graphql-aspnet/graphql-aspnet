@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Common.Generics
     /// <typeparam name="T">The type to be compared.</typeparam>
     internal class ComparisonComparer<T> : Comparer<T>
     {
-
         private readonly Comparison<T> _compareFunction;
 
         /// <summary>

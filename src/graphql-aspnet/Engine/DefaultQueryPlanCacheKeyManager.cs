@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.Engine
     /// </summary>
     public class DefaultQueryPlanCacheKeyManager : IGraphQueryPlanCacheKeyManager
     {
-
         /// <inheritdoc />
         public string CreateKey<TSchema>(string queryText, string operationName)
              where TSchema : class, ISchema

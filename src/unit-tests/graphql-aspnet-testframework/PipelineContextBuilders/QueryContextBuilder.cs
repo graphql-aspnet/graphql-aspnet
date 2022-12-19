@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;

@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Common.Json
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, InputVariableCollection value, JsonSerializerOptions options)
         {
-            throw new NotSupportedException($"{nameof(InputVariableCollection)} cannot be serialized");
+            throw new NotSupportedException($"{nameof(IInputVariableCollection)} cannot be serialized");
         }
 
         /// <inheritdoc />

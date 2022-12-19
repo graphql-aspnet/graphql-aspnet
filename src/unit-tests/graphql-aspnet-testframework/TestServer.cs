@@ -35,6 +35,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -224,7 +225,7 @@ namespace GraphQL.AspNet.Tests.Framework
         public GraphFieldExecutionContext CreateFieldExecutionContext<TType>(
             string fieldName,
             object sourceData,
-            InputArgumentCollection arguments = null)
+            IInputArgumentCollection arguments = null)
         {
             IGraphType graphType = this.Schema.KnownTypes.FindGraphType(typeof(TType));
 

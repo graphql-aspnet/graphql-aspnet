@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Attributes
     /// <summary>
     /// An attribute applied to controllers to denote that the controller's named field will
     /// be excluded on the object graph and any action methods contained within this controller
-    /// will be assigned directly to their root operations. 
+    /// will be assigned directly to their root operations.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class GraphRootAttribute : GraphRouteAttribute

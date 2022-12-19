@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     /// A leaf resolver that can create a valid <see cref="Enum"/> of a given
     /// type from a set of characters parsed from a document.
     /// </summary>
-    public class EnumLeafValueResolver : ILeafValueResolver
+    internal class EnumLeafValueResolver : ILeafValueResolver
     {
         private readonly Type _enumType;
 

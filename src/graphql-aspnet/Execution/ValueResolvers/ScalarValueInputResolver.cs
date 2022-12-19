@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     /// A resolver that operates in context of a field input value that can generate a qualified .NET object for the
     /// provided scalar data.
     /// </summary>
-    public class ScalarValueInputResolver : IInputValueResolver
+    internal class ScalarValueInputResolver : IInputValueResolver
     {
         private readonly ILeafValueResolver _scalarResolver;
 

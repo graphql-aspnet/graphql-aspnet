@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// A collection of <see cref="IInputGraphField" /> owned by a <see cref="IInputObjectGraphType" />.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    public class InputGraphFieldCollection : IInputGraphFieldCollection
+    internal class InputGraphFieldCollection : IInputGraphFieldCollection
     {
         private readonly IInputObjectGraphType _owner;
         private readonly Dictionary<string, IInputGraphField> _fields;

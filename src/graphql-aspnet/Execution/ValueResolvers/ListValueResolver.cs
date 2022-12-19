@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     /// <summary>
     /// A higher order resolver that coerces the provided source data into a list of items of the provided singular value resolver.
     /// </summary>
-    public class ListValueResolver : IInputValueResolver
+    internal class ListValueResolver : IInputValueResolver
     {
         private readonly IInputValueResolver _itemResolver;
         private readonly Type _listItemType;

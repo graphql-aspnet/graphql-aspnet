@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// A collection of allowed arguments defined for a <see cref="IGraphField"/> or <see cref="IDirective"/>.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    public class GraphFieldArgumentCollection : IGraphArgumentCollection
+    internal class GraphFieldArgumentCollection : IGraphArgumentCollection
     {
         private readonly ISchemaItem _owner;
         private readonly OrderedDictionary<string, IGraphArgument> _arguments;

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.Variables
     /// A representation of a user supplied variable AFTER it has been resolved against a
     /// graph type for a specific operation.
     /// </summary>
-    public class ResolvedVariable : IResolvedVariable
+    internal class ResolvedVariable : IResolvedVariable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResolvedVariable"/> class.

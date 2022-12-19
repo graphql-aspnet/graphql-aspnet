@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Count = {Count}")]
-    public class InputArgumentCollection : IInputArgumentCollection
+    internal class InputArgumentCollection : IInputArgumentCollection
     {
         private readonly Dictionary<string, InputArgument> _arguments;
 

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     /// <summary>
     /// A resolver that will convert a source value into a valid <see cref="Enum"/>.
     /// </summary>
-    public class EnumValueInputResolver : IInputValueResolver
+    internal class EnumValueInputResolver : IInputValueResolver
     {
         private readonly ILeafValueResolver _enumResolver;
 

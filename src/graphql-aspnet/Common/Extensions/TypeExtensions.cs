@@ -394,7 +394,7 @@ namespace GraphQL.AspNet.Common.Extensions
             for (var i = 0; i < arrayCount; i++)
                 typeName += arrayDelimiter;
 
-            return fullName ? $"{type.Namespace}.{typeName}" : typeName;
+            return fullName && !type.IsGenericParameter ? $"{type.Namespace}.{typeName}" : typeName;
         }
 
         /// <summary>

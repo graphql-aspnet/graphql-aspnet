@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     /// if necessary.
     /// </summary>
     [DebuggerDisplay("Input Object: {_objectType.Name}")]
-    public class InputObjectResolver : IInputValueResolver
+    internal class InputObjectResolver : IInputValueResolver
     {
         private readonly IInputObjectGraphType _graphType;
         private readonly Type _objectType;

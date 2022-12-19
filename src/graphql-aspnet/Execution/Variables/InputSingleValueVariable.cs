@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Variables
     /// A variable representing one singular value. Be that a number, a string, boolean etc.
     /// </summary>
     [DebuggerDisplay("InputValue: {Name}  (Value = {Value})")]
-    public class InputSingleValueVariable : InputVariable, IInputSingleValueVariable, IResolvableValue
+    internal class InputSingleValueVariable : InputVariable, IInputSingleValueVariable, IResolvableValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InputSingleValueVariable" /> class.
