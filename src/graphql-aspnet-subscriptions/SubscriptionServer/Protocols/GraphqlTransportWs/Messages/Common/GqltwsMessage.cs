@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.Common
 {
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.Interfaces.Subscriptions;

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages
 {
     /// <summary>
     /// <para>An enumeration of the different types of messages carried over a presistent connection.</para>

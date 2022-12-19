@@ -7,12 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Subscriptions
+namespace GraphQL.AspNet.Engine
 {
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// A subscription server proxy that executes in process and will raise events directly to the

@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.ServerMessages
 {
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.Common;
 
     /// <summary>
     /// A message sent by the server to a client acknowledging the start of a connection. This

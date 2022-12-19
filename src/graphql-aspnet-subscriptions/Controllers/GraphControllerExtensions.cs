@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// Extension methods to expose subscription to graph controllers.

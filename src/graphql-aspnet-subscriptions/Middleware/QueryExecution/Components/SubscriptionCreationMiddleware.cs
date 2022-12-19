@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// This middleware assembles the final subscription when warranted. If assembled the query

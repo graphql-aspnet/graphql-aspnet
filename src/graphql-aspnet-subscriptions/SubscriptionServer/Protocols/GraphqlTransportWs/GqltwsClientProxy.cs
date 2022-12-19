@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -28,13 +27,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Extensions;
-    using GraphQL.AspNet.ServerProtocols.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.BidirectionalMessages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.ClientMessages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.Converters;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.ServerMessages;
     using GraphQL.AspNet.Web;
 
     /// <summary>

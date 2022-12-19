@@ -16,8 +16,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;

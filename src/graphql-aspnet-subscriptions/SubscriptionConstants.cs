@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

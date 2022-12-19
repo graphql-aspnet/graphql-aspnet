@@ -14,10 +14,10 @@ namespace GraphQL.Subscriptions.Tests.Internal
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;

@@ -10,8 +10,9 @@
 namespace GraphQL.Subscriptions.Tests.Execution
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
     using Moq;
     using NUnit.Framework;
 

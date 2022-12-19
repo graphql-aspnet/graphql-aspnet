@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.Converters
 {
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.Common;
 
     /// <summary>
     /// A general converter for serializing an <see cref="GqltwsMessage" /> to json.

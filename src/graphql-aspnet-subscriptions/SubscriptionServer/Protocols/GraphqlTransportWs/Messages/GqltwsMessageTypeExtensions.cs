@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages
 {
     using System;
 

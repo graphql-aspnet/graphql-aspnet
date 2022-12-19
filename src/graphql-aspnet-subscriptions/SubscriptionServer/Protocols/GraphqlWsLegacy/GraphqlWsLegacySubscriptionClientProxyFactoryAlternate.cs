@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
 {
     using GraphQL.AspNet.Interfaces.Subscriptions;
 

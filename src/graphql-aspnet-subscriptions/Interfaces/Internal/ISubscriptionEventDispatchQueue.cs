@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// A dispatch queue that will forward events to receivers on a

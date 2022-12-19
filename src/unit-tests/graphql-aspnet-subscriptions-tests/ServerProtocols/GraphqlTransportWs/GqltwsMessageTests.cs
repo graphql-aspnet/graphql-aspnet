@@ -9,8 +9,8 @@
 
 namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 {
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.Common;
     using NUnit.Framework;
 
     [TestFixture]

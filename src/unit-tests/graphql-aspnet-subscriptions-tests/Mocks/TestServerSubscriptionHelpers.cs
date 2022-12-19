@@ -12,12 +12,13 @@ namespace GraphQL.Subscriptions.Tests.Mock
     using System;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
+    using GraphQL.AspNet.SubscriptionServer;
+    using GraphQL.AspNet.SubscriptionServer.BackgroundServices;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Web;

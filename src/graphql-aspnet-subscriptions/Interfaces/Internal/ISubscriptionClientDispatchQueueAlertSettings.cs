@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Internal
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// A collection of settings used by the dispatch queue to determine when it

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Subscriptions
+namespace GraphQL.AspNet.SubscriptionServer
 {
     using System.Threading;
     using System.Threading.Channels;

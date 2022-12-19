@@ -15,7 +15,6 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -25,8 +24,10 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
+    using GraphQL.AspNet.SubscriptionServer;
+    using GraphQL.AspNet.SubscriptionServer.BackgroundServices;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;

@@ -12,11 +12,11 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Execution.ClientSubscriptionTestData;
     using GraphQL.Subscriptions.Tests.Mock;

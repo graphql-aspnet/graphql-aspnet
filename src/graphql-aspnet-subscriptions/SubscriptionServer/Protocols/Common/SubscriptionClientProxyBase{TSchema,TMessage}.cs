@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.Common
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.Common
 {
     using System;
     using System.Collections.Generic;
@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -25,7 +24,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Web;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -519,7 +517,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
+            this.Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 

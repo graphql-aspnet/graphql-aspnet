@@ -18,9 +18,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// Standard middleware component that pulls any raised events off the field execution context

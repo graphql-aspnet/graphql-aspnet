@@ -10,8 +10,8 @@
 namespace GraphQL.Subscriptions.Tests.Execution
 {
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.SubscriptionServer;
     using NUnit.Framework;
 
     [TestFixture]

@@ -12,8 +12,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsL
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class GraphqlWsLegacyResponseMessageConverter : JsonConverter<GraphqlWsLegacyResponseMessage>

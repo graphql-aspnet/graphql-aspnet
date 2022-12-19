@@ -7,27 +7,26 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet
+namespace GraphQL.AspNet.SubscriptionServer
 {
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
-    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
+    using GraphQL.AspNet.SubscriptionServer.BackgroundServices;
+    using GraphQL.AspNet.SubscriptionServer.Exceptions;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;

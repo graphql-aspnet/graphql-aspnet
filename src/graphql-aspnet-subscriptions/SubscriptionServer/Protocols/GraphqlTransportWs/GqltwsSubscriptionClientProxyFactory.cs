@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Engine;

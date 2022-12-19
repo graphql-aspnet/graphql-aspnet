@@ -12,10 +12,10 @@ namespace GraphQL.Subscriptions.Tests.Engine
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Moq;
     using NUnit.Framework;

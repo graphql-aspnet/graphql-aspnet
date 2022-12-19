@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Engine
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -24,6 +23,7 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Extensions;
+    using GraphQL.AspNet.SubscriptionServer.Exceptions;
     using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Web.WebSockets;
     using Microsoft.AspNetCore.Http;

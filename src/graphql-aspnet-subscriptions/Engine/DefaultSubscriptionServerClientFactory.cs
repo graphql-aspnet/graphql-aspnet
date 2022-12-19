@@ -15,10 +15,10 @@ namespace GraphQL.AspNet.Engine
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
+    using GraphQL.AspNet.SubscriptionServer.Exceptions;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

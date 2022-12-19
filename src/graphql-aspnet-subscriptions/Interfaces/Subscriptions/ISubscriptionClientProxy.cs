@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.Web;
 
     /// <summary>

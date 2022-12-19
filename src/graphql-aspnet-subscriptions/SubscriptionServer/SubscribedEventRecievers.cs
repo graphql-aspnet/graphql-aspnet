@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Subscriptions
+namespace GraphQL.AspNet.SubscriptionServer
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;

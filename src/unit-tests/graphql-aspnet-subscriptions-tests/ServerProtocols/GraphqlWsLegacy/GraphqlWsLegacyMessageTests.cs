@@ -9,8 +9,8 @@
 
 namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 {
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.Common;
     using NUnit.Framework;
 
     [TestFixture]

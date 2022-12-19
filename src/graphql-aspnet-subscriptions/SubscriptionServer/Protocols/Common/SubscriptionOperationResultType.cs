@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.Common
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.Common
 {
     /// <summary>
     /// A status indicating the completion of a subscription enabled query.

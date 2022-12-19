@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
 {
     using System;
     using System.Diagnostics;
@@ -26,12 +26,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Extensions;
-    using GraphQL.AspNet.ServerProtocols.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.ClientMessages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.Converters;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Web;
 
     /// <summary>

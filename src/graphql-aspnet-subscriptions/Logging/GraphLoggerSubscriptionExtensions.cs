@@ -10,12 +10,12 @@
 namespace GraphQL.AspNet.Logging
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging.Subscriptions;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet.Logging.Subscriptions
 {
     using System;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// An subscription event was recieved and successfully published from the internal event queue

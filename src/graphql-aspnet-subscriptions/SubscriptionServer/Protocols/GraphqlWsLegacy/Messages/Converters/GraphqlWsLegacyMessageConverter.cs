@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters
+namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.Converters
 {
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.Common;
 
     /// <summary>
     /// A general converter for serializing an <see cref="GraphqlWsLegacyMessage" /> to json.

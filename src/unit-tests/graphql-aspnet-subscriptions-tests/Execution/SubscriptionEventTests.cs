@@ -9,7 +9,7 @@
 
 namespace GraphQL.Subscriptions.Tests.Execution
 {
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
     using NUnit.Framework;
 
     public class SubscriptionEventTests

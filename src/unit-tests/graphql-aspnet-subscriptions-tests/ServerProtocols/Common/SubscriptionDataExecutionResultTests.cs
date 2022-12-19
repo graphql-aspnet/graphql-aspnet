@@ -14,7 +14,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.Common
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.ServerProtocols.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.Common;
     using Moq;
     using NUnit.Framework;
 

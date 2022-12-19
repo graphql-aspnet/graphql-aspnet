@@ -18,10 +18,10 @@ namespace GraphQL.Subscriptions.Tests.Engine
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.SubscriptionServer.Exceptions;
     using GraphQL.Subscriptions.Tests.Mock;
     using Microsoft.AspNetCore.Http;
     using Moq;
