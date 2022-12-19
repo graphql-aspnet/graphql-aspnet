@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Common.Source;
 
     /// <summary>
-    /// An item, that may represent a collection of data items or just one singular item,
+    /// A data item container, that may represent a collection of data items or just one singular item,
     /// that acts as a target to operate against for various invocations.
     /// </summary>
     [DebuggerDisplay("{Path} (Count: {Items.Count})")]

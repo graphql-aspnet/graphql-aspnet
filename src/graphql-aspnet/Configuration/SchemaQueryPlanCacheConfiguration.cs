@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Configuration
         public TimeSpan? SlidingExpiration { get; set; } = TimeSpan.FromMinutes(30);
 
         /// <summary>
-        /// <para>Gets or sets a value indicating whether this query caching is turned off for this schema. (Default: false).</para>
+        /// <para>Gets or sets a value indicating whether query caching is turned off for this schema. (Default: false).</para>
         /// <para>Note: This option is dependent on enabling the query cache at startup. If the query
         /// cache is not enabled for the application it is automatically disabled.. See the documentation
         /// for further details.</para>

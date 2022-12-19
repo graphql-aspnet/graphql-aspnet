@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
     /// A node builder that will build out a top level operation
     /// from the token stream.
     /// </summary>
-    public class OperationNodeBuilder : ISyntaxNodeBuilder
+    internal class OperationNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
         /// Gets the singleton instance of this node builder.

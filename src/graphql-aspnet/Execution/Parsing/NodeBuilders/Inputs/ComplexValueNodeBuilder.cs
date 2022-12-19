@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     /// <summary>
     /// A syntax node builder that builds a complex input argument from a token stream.
     /// </summary>
-    public class ComplexValueNodeBuilder : ISyntaxNodeBuilder
+    internal class ComplexValueNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
         /// Gets the singleton instance of this maker.

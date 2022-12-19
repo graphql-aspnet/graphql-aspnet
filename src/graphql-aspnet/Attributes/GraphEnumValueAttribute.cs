@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.Attributes
     using System;
 
     /// <summary>
-    /// When applied to an enum value, denotes its name in the graph. This
-    /// name is subject to any name formatting rules for enumerations of the target schema.
+    /// When applied to an enum value, explicitly marks it as being included in a graph.
+    /// Optionally, denotes its name in the graph as well.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
     public class GraphEnumValueAttribute : BaseGraphAttribute
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Gets the name to give this enumeration value.
         /// </summary>
-        /// <value>The name.</value>
+        /// <value>The name given to this enum value.</value>
         public string Name { get; }
     }
 }

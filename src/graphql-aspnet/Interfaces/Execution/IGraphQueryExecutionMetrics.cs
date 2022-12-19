@@ -27,7 +27,8 @@ namespace GraphQL.AspNet.Interfaces.Execution
 
         /// <summary>
         /// The last method called when a query is finished processing. This method is the last
-        /// called after the final execution phase is complete.
+        /// called after the final execution phase is complete. Any still active counters should
+        /// be closed when this method completes.
         /// </summary>
         void End();
 

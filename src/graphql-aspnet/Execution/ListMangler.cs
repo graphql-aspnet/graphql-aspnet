@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Execution
     *  Internally, the library maintains all its array structures as List<T>
     *  However, the developer may wish to accept a list of objects for an argument
     *  as an array (i.e. T[]).  This class performs the necessary restructuring
-    *  of turning List<T> into T[]  as necessary to ensure a match for the
+    *  of turning List<T> into T[]  as necessary to ensure a castable match for the
     *  target.
     */
 
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Execution
     /// Converts a list structure from one format to another accounting for explicit
     /// arrays if and when necessary.
     /// </summary>
-    internal class ListMangler
+    internal sealed class ListMangler
     {
         private static ConcurrentDictionary<Type, ListMap> _allMaps = new ConcurrentDictionary<Type, ListMap>();
 

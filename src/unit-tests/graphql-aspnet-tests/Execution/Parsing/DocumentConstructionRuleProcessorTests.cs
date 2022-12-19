@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
         private SyntaxTree CreateSyntaxTree(ref SourceText sourceText)
         {
             var parser = new GraphQLParser();
-            return parser.ParseQueryDocument(ref sourceText);
+            return parser.CreateSyntaxTree(ref sourceText);
         }
 
         private IGraphQueryDocument CreateDocument(SyntaxTree syntaxTree, SourceText sourceText)

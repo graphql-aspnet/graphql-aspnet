@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Execution
     /// <summary>
     /// Helper methods useful during document execution.
     /// </summary>
-    public static class ExecutionExtensionMethods
+    internal static class ExecutionExtensionMethods
     {
         /// <summary>
         /// Converts the value into its equivilant routing constant.

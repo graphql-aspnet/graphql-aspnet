@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
     /// of a name block.
     /// </summary>
     /// <seealso cref="ISourceRule" />
-    public class IsStartOfNameGlyph : ISourceRule
+    internal class IsStartOfNameGlyph : ISourceRule
     {
         /// <summary>
         /// Gets the instance.

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
     /// representing the query document.
     /// </summary>
     [DebuggerDisplay("{NodeType} ({Coordinates})")]
-    public readonly struct SyntaxNode : IEquatable<SyntaxNode>
+    internal readonly struct SyntaxNode : IEquatable<SyntaxNode>
     {
         /// <summary>
         /// Gets a syntax node that represents nothing.

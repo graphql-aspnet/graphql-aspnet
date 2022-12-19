@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution.Metrics
     /// <summary>
     /// A single entry of related metrics data tied to the Apollo Tracing metrics standard.
     /// </summary>
-    public class ApolloMetricsEntry
+    internal class ApolloMetricsEntry
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloMetricsEntry" /> class.

@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Engine
 {
+    using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -19,16 +20,6 @@ namespace GraphQL.AspNet.Engine
     /// </summary>
     public class DefaultQueryPlanCacheKeyManager : IGraphQueryPlanCacheKeyManager
     {
-        private readonly IGraphQLDocumentParser _parser;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultQueryPlanCacheKeyManager"/> class.
-        /// </summary>
-        /// <param name="parser">The parser.</param>
-        public DefaultQueryPlanCacheKeyManager(IGraphQLDocumentParser parser)
-        {
-            _parser = parser;
-        }
 
         /// <inheritdoc />
         public string CreateKey<TSchema>(string queryText, string operationName)
@@ -43,7 +34,7 @@ namespace GraphQL.AspNet.Engine
             else
                 operationName = "Operation~NONE";
 
-            return $"{typeof(TSchema).Name}_{operationName}_{_parser.StripInsignificantWhiteSpace(queryText)}";
+            return $"{typeof(TSchema).Name}_{operationName}_{GraphQLParser.StripInsignificantWhiteSpace(queryText)}";
         }
     }
 }

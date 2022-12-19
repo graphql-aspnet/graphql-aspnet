@@ -12,20 +12,20 @@ namespace GraphQL.AspNet
     using System;
 
     /// <summary>
-    /// "Server level" subscription and connection settings that govern all schemas registered
+    /// "Server level" GraphQL subscription and connection settings that govern all schemas registered
     /// to this server instance. These values rarely need to be changed, howver; any changes should be made prior to
-    /// calling <c>.AddGraphQl()</c> during startup.
+    /// calling <c>.AddGraphQL()</c> during startup.
     /// </summary>
-    public static class SubscriptionServerSettings
+    public static class GraphQLSubscriptionServerSettings
     {
         private static readonly object SETTINGS_LOCK = new object();
         private static int _maxConcurrentReceiverCount;
         private static int? _maxConnectedClientCount;
 
         /// <summary>
-        /// Initializes static members of the <see cref="SubscriptionServerSettings"/> class.
+        /// Initializes static members of the <see cref="GraphQLSubscriptionServerSettings"/> class.
         /// </summary>
-        static SubscriptionServerSettings()
+        static GraphQLSubscriptionServerSettings()
         {
             MaxConcurrentSubscriptionReceiverCount = SubscriptionConstants.DEFAULT_MAX_CONCURRENT_SUBSCRIPTION_RECEIVERS;
             MaxConnectedClientCount = null;

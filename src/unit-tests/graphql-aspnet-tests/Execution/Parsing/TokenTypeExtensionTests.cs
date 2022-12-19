@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
     using NUnit.Framework;
 
     [TestFixture]
-    public class TokenTypeExtensionTests
+    internal class TokenTypeExtensionTests
     {
         [TestCase("{", TokenType.CurlyBraceLeft)]
         [TestCase("}", TokenType.CurlyBraceRight)]

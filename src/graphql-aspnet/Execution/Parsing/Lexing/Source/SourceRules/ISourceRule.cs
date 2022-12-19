@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules
     /// <summary>
     /// Implemented by classes wishing to act as a source rule for validating <see cref="SourceText"/>.
     /// </summary>
-    public interface ISourceRule
+    internal interface ISourceRule
     {
         /// <summary>
         /// Validates the text, from its current position, passes the rule.

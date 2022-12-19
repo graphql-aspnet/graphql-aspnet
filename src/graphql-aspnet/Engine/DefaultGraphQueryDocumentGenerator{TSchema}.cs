@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Engine
 {
+    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Parsing;
@@ -18,13 +19,10 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
     using GraphQL.AspNet.Interfaces.Schema;
-    using DocumentConstructionContext = GraphQL.AspNet.Execution.Contexts.DocumentConstructionContext;
 
     /// <summary>
-    /// Validates that a lexed syntax tree, intended to execute a query on a target schema,
-    /// is valid on that schema such that all field selection sets for all graph types are valid and executable
-    /// ultimately generating a document that can be used to create a query plan from the various resolvers
-    /// that can complete the query.
+    /// An object capable of creating and validating a query document that can be executed
+    /// to generate a graphql result.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this generator is registered for.</typeparam>
     public class DefaultGraphQueryDocumentGenerator<TSchema> : IGraphQueryDocumentGenerator<TSchema>
@@ -32,6 +30,7 @@ namespace GraphQL.AspNet.Engine
     {
         private readonly TSchema _schema;
         private readonly DocumentConstructionRuleProcessor _nodeProcessor;
+        private readonly GraphQLParser _parser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQueryDocumentGenerator{TSchema}" /> class.
@@ -41,20 +40,31 @@ namespace GraphQL.AspNet.Engine
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _nodeProcessor = new DocumentConstructionRuleProcessor();
+            _parser = new GraphQLParser();
         }
 
         /// <inheritdoc />
-        public virtual IGraphQueryDocument CreateDocument(SourceText sourceText, SyntaxTree syntaxTree)
+        public virtual IGraphQueryDocument CreateDocument(ReadOnlySpan<char> queryText)
         {
-            Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
+            var sourceText = new SourceText(queryText);
+            var syntaxTree = _parser.CreateSyntaxTree(ref sourceText);
 
-            var document = new QueryDocument();
-            this.FillDocument(sourceText, syntaxTree, document);
-            return document;
+            try
+            {
+                Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
+
+                var document = this.CreateNewDocumentInstance();
+                this.FillDocument(document, syntaxTree, sourceText);
+                return document;
+            }
+            finally
+            {
+                SyntaxTreeOperations.Release(ref syntaxTree);
+            }
         }
 
         /// <inheritdoc />
-        public bool ValidateDocument(IGraphQueryDocument document)
+        public virtual bool ValidateDocument(IGraphQueryDocument document)
         {
             Validation.ThrowIfNull(document, nameof(document));
 
@@ -65,12 +75,25 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <summary>
-        /// An internal method for populating an existing query document.
+        /// A factory method to generate a new <see cref="IGraphQueryDocument"/>.
+        /// This method should just instantiate a document, not perform any work
+        /// against it.
         /// </summary>
-        /// <param name="sourceText">The source text.</param>
-        /// <param name="syntaxTree">The syntax tree to convert.</param>
+        /// <returns>IGraphQueryDocument.</returns>
+        protected virtual IGraphQueryDocument CreateNewDocumentInstance()
+        {
+            return new QueryDocument();
+        }
+
+        /// <summary>
+        /// An internal method for populating a query document with document parts from
+        /// a provided syntax tree.
+        /// </summary>
         /// <param name="document">The query document to fill.</param>
-        protected virtual void FillDocument(SourceText sourceText, SyntaxTree syntaxTree, IGraphQueryDocument document)
+        /// <param name="syntaxTree">The syntax tree to convert into document parts.</param>
+        /// <param name="sourceText">The source text to extract referenced
+        /// values from.</param>
+        private void FillDocument(IGraphQueryDocument document, SyntaxTree syntaxTree, SourceText sourceText)
         {
             Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
             Validation.ThrowIfNull(document, nameof(document));
@@ -85,39 +108,34 @@ namespace GraphQL.AspNet.Engine
             var constructionContext = new DocumentConstructionContext(syntaxTree, sourceText, document, _schema);
 
             var completedAllSteps = _nodeProcessor.Execute(ref constructionContext);
+            if (!completedAllSteps)
+                return;
 
             // --------------------------------------------
-            // Step 2: Part Linking
+            // Step 2: Fragment Linking
             // --------------------------------------------
-            // Many document parts reference other parts, such as variable references or
-            // fragment spreads. With fragment spreads at the time the parts are constructed
-            // the named fragment may or may not have been parsed yet. As a result we need
-            // ensure that the fragment the spread references is assigned correctly after
-            // the whole document has been parsed
+            // Fragment spreads refernece other document parts (named fragments).
+            // Ensure those linkages are wired up properly.
             // --------------------------------------------
-            if (completedAllSteps)
+            foreach (var spread in constructionContext.Spreads)
             {
-                foreach (var spread in constructionContext.Spreads)
+                if (spread.Fragment != null)
                 {
-                    if (spread.Fragment != null)
-                    {
-                        spread.Fragment.MarkAsReferenced();
-                    }
-                    else
-                    {
-                        // mark all named fragments of this name as referenced
-                        document.NamedFragments.MarkAsReferenced(spread.FragmentName.ToString());
+                    spread.Fragment.MarkAsReferenced();
+                    continue;
+                }
 
-                        // assign the official fragment reference to the spread
-                        if (document.NamedFragments.TryGetValue(spread.FragmentName.ToString(), out var foundFragment))
-                        {
-                            spread.AssignNamedFragment(foundFragment);
-                        }
-                        else
-                        {
-                            completedAllSteps = false;
-                        }
-                    }
+                // its possible that the query text contains multiple named fragments
+                // with the same name (the document is not validated yet)
+                // the query document will contain these duplicated named fragments
+                //
+                // mark all fragments with the name in the spread as being referenced
+                document.NamedFragments.MarkAsReferenced(spread.FragmentName);
+
+                // assign the officially "chosen" named fragment reference to the spread
+                if (document.NamedFragments.TryGetValue(spread.FragmentName, out var foundFragment))
+                {
+                    spread.AssignNamedFragment(foundFragment);
                 }
             }
         }

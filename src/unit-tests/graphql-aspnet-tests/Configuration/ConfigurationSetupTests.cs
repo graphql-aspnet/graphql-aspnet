@@ -71,7 +71,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(IGraphQueryPlanGenerator<GraphSchema>)) as DefaultGraphQueryPlanGenerator<GraphSchema>);
             Assert.IsNotNull(sp.GetService(typeof(IGraphQueryResponseWriter<GraphSchema>)) as DefaultQueryResponseWriter<GraphSchema>);
             Assert.IsNotNull(sp.GetService(typeof(IGraphQueryExecutionMetricsFactory<GraphSchema>)) as DefaultGraphQueryExecutionMetricsFactory<GraphSchema>);
-            Assert.IsNotNull(sp.GetService(typeof(IGraphQLDocumentParser)) as GraphQLParser);
 
             GraphQLProviders.TemplateProvider.Clear();
         }
@@ -305,18 +304,14 @@ namespace GraphQL.AspNet.Tests.Configuration
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
-            GraphQLProviders.GlobalConfiguration = new DefaultGraphQLGLobalConfiguration();
-
-            var originalSetting = GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime;
-
             // make sure the original setting is not what we hope to change it to
             // otherwise the test is inconclusive
-            if (originalSetting == ServiceLifetime.Singleton)
+            if (GraphQLServerSettings.ControllerServiceLifeTime == ServiceLifetime.Singleton)
             {
                 Assert.Inconclusive("Unable to determine if the service lifetime was changed. Original and new settings are the same.");
             }
 
-            GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime = ServiceLifetime.Singleton;
+            GraphQLServerSettings.ControllerServiceLifeTime = ServiceLifetime.Singleton;
 
             var serverBuilder = new TestServerBuilder<CandleSchema>();
             var schemaBuilder = serverBuilder.AddGraphQL<CandleSchema>(options =>

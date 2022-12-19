@@ -23,11 +23,18 @@ namespace GraphQL.AspNet.Execution.InputModel
         /// Initializes a new instance of the <see cref="InputModelStateEntry"/> class.
         /// </summary>
         /// <param name="inputArgument">The input argument.</param>
-        public InputModelStateEntry(ExecutionArgument inputArgument)
+        internal InputModelStateEntry(ExecutionArgument inputArgument)
         {
             this.Model = Validation.ThrowIfNullOrReturn(inputArgument, nameof(inputArgument));
             this.ValidationState = InputModelValidationState.Unvalidated;
             this.Errors = new List<InputModelError>();
+        }
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="InputModelStateEntry"/> class from being created.
+        /// </summary>
+        private InputModelStateEntry()
+        {
         }
 
         /// <summary>
@@ -69,7 +76,7 @@ namespace GraphQL.AspNet.Execution.InputModel
         /// Gets the model item that generated this state entry.
         /// </summary>
         /// <value>The model.</value>
-        public ExecutionArgument Model { get; }
+        internal ExecutionArgument Model { get; }
 
         /// <summary>
         /// Gets the errors assigned to this state entry.

@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.InputModel
     /// <summary>
     /// A generator to fully validate a set of arguments for a given request and generate a state dictionary with the results.
     /// </summary>
-    public class ModelStateGenerator
+    internal class ModelStateGenerator
     {
         private readonly IServiceProvider _serviceProvider;
 

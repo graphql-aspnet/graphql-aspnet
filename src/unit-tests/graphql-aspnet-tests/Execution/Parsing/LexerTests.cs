@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
     /// Tests to validate the tokenization of a string.
     /// </summary>
     [TestFixture]
-    public class LexerTests
+    internal class LexerTests
     {
         [Test]
         public void Lexer_Tokenize_SimpleQuery_ReturnsExpectedTokens()

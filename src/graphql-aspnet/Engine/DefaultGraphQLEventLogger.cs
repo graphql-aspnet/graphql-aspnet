@@ -26,9 +26,9 @@ namespace GraphQL.AspNet.Engine
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// A default logger for use in graphql operations. This logger will automatically append
-    /// a unique instance id to each entry logged through it. When injected into DI as a "scoped" lifetime (the default behavior)
-    /// this has an effect of attaching a unique id to all messages generated for each graphql request coming
+    /// The default logger implementation for use in graphql operations. This logger will automatically append
+    /// a unique instance id to each log entry created ogged through it. When injected into a DI container as a
+    /// "scoped" lifetime (the default behavior) this has an effect of attaching a unique id to all messages generated for each graphql request coming
     /// through the system for easy tracking.
     /// </summary>
     public class DefaultGraphQLEventLogger : IGraphEventLogger

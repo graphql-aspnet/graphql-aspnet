@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Internal
             }
 
             if (!maxConcurrentEvents.HasValue)
-                maxConcurrentEvents = SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
+                maxConcurrentEvents = GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
 
             if (maxConcurrentEvents < 1)
                 maxConcurrentEvents = 1;

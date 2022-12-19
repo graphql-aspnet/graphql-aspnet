@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Attributes
     /// <summary>
     /// A base attribute from which ALL graphql attributes inherit.
     /// </summary>
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
     public abstract class BaseGraphAttribute : Attribute
     {
     }

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
     /// A syntax node builder that creates a variable collection node for a given operation
     /// from a token stream.
     /// </summary>
-    public class VariableCollectionNodeBuilder : ISyntaxNodeBuilder
+    internal class VariableCollectionNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
         /// Gets the instance.

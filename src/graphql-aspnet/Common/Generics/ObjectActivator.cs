@@ -15,5 +15,5 @@ namespace GraphQL.AspNet.Common.Generics
     /// </summary>
     /// <param name="args">The constructor arguments for the object being created.</param>
     /// <returns>The created object.</returns>
-    public delegate object ObjectActivator(object[] args);
+    internal delegate object ObjectActivator(object[] args);
 }

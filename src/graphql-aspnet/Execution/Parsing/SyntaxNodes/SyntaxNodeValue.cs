@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
     /// <summary>
     /// A struct representing a block of characters from a query text.
     /// </summary>
-    public readonly struct SyntaxNodeValue : IEquatable<SyntaxNodeValue>
+    internal readonly struct SyntaxNodeValue : IEquatable<SyntaxNodeValue>
     {
         /// <summary>
         /// Gets a node value that represents no typed text block within a source text.

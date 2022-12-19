@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
     /// <summary>
     /// A wrapper for <see cref="Span{T}"/> to provide some context sensitive helper methods for parsing through it.
     /// </summary>
-    public ref partial struct SourceText
+    internal ref partial struct SourceText
     {
         /// <summary>
         /// Inspects the next character in the sequence to see if its considered whitespace.

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Common.Generics
 
     /// <summary>
     /// Represents a thread-safe, hash-based unique collection.
-    /// Adapted from i3arnon's concurrent hash set: https://github.com/i3arnon/ConcurrentHashSet .
+    /// Adapted from i3arnon's concurrent hash set: <see href="https://github.com/i3arnon/ConcurrentHashSet" />.
     /// </summary>
     /// <typeparam name="T">The type of the items in the collection.</typeparam>
     /// <remarks>

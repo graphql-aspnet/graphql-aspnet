@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
     /// <summary>
     /// A rule that determines if the character on the glyph is a string delimiter or not (the double quote).
     /// </summary>
-    public class IsStringDelimiterGlyph : ISourceRule
+    internal class IsStringDelimiterGlyph : ISourceRule
     {
         /// <summary>
         /// Gets the instance.

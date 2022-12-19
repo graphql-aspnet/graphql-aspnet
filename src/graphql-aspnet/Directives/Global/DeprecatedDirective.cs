@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// <summary>
     /// <para>A directive, applicable to a field definition or enum value, that
     /// indicates its usage has been deprecated and will be removed in the future.</para>
-    /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec--deprecated .</para>
+    /// <para>Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec--deprecated"/>  .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.DEPRECATED_DIRECTIVE)]
     public sealed class DeprecatedDirective : GraphDirective

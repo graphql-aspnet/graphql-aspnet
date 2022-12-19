@@ -24,9 +24,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
-            GraphQLProviders
-                .GlobalConfiguration
-                .ControllerServiceLifeTime = ServiceLifetime.Transient;
+            GraphQLServerSettings.ControllerServiceLifeTime = ServiceLifetime.Transient;
 
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -45,9 +43,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
-            GraphQLProviders
-                .GlobalConfiguration
-                .ControllerServiceLifeTime = ServiceLifetime.Transient;
+            GraphQLServerSettings.ControllerServiceLifeTime = ServiceLifetime.Transient;
 
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);

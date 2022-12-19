@@ -6,6 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Configuration
 {
     using System;
@@ -16,7 +17,7 @@ namespace GraphQL.AspNet.Configuration
 
     /// <summary>
     /// A representation of a type that needs to be registered to a schema when its
-    /// initialied by the runtime.
+    /// initialized by the runtime.
     /// </summary>
     [DebuggerDisplay("Type: {Type.Name}")]
     public class SchemaTypeToRegister

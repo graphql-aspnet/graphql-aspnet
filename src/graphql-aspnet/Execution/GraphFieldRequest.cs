@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution
     /// </summary>
     [DebuggerDisplay("{InvocationContext.Field.Name}, (Leaf = {InvocationContext.Field.IsLeaf})")]
     [DebuggerStepThrough]
-    public class GraphFieldRequest : IGraphFieldRequest
+    internal class GraphFieldRequest : IGraphFieldRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldRequest" /> class.

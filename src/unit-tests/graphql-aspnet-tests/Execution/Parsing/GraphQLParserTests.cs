@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
             {
                 var parser = new GraphQLParser();
                 var sourceText = new SourceText(qualifiedQuery);
-                var syntaxTree = parser.ParseQueryDocument(ref sourceText);
+                var syntaxTree = parser.CreateSyntaxTree(ref sourceText);
             });
         }
 
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
 
             var parser = new GraphQLParser();
             var sourceText = new SourceText(qualifiedQuery);
-            var syntaxTree = parser.ParseQueryDocument(ref sourceText);
+            var syntaxTree = parser.CreateSyntaxTree(ref sourceText);
 
             // RootNode | Operation -> Empty Field Set
             Assert.AreEqual(2, syntaxTree.BlockLength);
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
             {
                 var parser = new GraphQLParser();
                 var sourceText = new SourceText(text);
-                var syntaxTree = parser.ParseQueryDocument(ref sourceText);
+                var syntaxTree = parser.CreateSyntaxTree(ref sourceText);
             });
         }
 
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
 
             var parser = new GraphQLParser();
             var sourceText = new SourceText(qualifiedQuery);
-            var syntaxTree = parser.ParseQueryDocument(ref sourceText);
+            var syntaxTree = parser.CreateSyntaxTree(ref sourceText);
             Assert.IsTrue(syntaxTree.BlockLength > 0);
         }
 
@@ -83,8 +83,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
         [TestCase("a \n   \rb\n  \r  \tc", "a b c")]
         public void StripInsignificantWhiteSpace_StripsAsExpected(string text, string output)
         {
-            var parser = new GraphQLParser();
-            Assert.AreEqual(output, parser.StripInsignificantWhiteSpace(text));
+            Assert.AreEqual(output, GraphQLParser.StripInsignificantWhiteSpace(text));
         }
     }
 }

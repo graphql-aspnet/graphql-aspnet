@@ -165,7 +165,6 @@ namespace GraphQL.AspNet.Configuration.Startup
             _options.ServiceCollection.TryAddTransient(typeof(IGraphQLHttpProcessor<TSchema>), _options.QueryHandler.HttpProcessorType);
 
             // "per application server" instance
-            _options.ServiceCollection.TryAddSingleton<IGraphQLDocumentParser, GraphQLParser>();
             _options.ServiceCollection.TryAddScoped<IGraphLogger>(sp => sp?.GetService<IGraphEventLogger>());
             _options.ServiceCollection.TryAddScoped<IGraphEventLogger>((sp) =>
             {
@@ -245,7 +244,7 @@ namespace GraphQL.AspNet.Configuration.Startup
         {
             // pre-parse any types known to this schema
             var preCacher = new SchemaPreCacher();
-            preCacher.PrecacheTemplates(_options.SchemaTypesToRegister.Select(x => x.Type));
+            preCacher.PreCacheTemplates(_options.SchemaTypesToRegister.Select(x => x.Type));
 
             // only when the service provider is used for final configuration do we
             // invoke extensions with just the service provider

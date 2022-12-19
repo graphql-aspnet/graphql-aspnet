@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     /// A node builder that creates syntax nodes for a variable declaration on an
     /// operation.
     /// </summary>
-    public class VariableNodeBuilder : ISyntaxNodeBuilder
+    internal class VariableNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
         /// Gets the instance.

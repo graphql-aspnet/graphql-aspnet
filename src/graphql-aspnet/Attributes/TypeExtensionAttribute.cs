@@ -17,7 +17,9 @@ namespace GraphQL.AspNet.Attributes
 
     /// <summary>
     /// A decorator for a controller method declare it as an extension of another
-    /// graph type (instead of as a query or mutation field).
+    /// graph type (instead of as a query or mutation field). This attribute indicates that the
+    /// method should be invoked in an individual format, being executed for each object
+    /// being resolved.
     /// </summary>
     /// <remarks>
     /// See documentation for further details.

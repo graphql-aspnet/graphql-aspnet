@@ -233,7 +233,7 @@ namespace GraphQL.AspNet.Configuration
 
         private void RegisterTypeAsDependentService(Type type, ServiceLifetime? lifeTimeScope = null)
         {
-            lifeTimeScope = lifeTimeScope ?? GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime;
+            lifeTimeScope = lifeTimeScope ?? GraphQLServerSettings.ControllerServiceLifeTime;
             var serviceToRegister = new ServiceToRegister(
                 type,
                 type,

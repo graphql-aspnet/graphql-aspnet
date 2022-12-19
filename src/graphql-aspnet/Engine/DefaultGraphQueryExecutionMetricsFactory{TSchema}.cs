@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Engine
     /// <summary>
     /// A factory to generate new metrics instances for a given schema.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the t schema.</typeparam>
+    /// <typeparam name="TSchema">The type of the schema this factory creates metrics for.</typeparam>
     public class DefaultGraphQueryExecutionMetricsFactory<TSchema> : IGraphQueryExecutionMetricsFactory<TSchema>
         where TSchema : ISchema
     {
@@ -27,16 +27,13 @@ namespace GraphQL.AspNet.Engine
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQueryExecutionMetricsFactory{TSchema}"/> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <param name="schema">The schema instance the metrics package should reference.</param>
         public DefaultGraphQueryExecutionMetricsFactory(TSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        /// <summary>
-        /// Creates the metrics package.
-        /// </summary>
-        /// <returns>IQueryExecutionMetrics.</returns>
+        /// <inheritdoc />
         public IGraphQueryExecutionMetrics CreateMetricsPackage()
         {
             return new ApolloTracingMetricsV1(_schema);

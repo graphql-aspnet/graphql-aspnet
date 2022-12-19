@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// <summary>
     /// <para>A directive, applicable to a field, that defines additional logic to determine if
     /// the field should be skipped or not.</para>
-    /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec--skip .</para>
+    /// <para>Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec--skip" /> .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.SKIP_DIRECTIVE)]
     public sealed class SkipDirective : GraphDirective

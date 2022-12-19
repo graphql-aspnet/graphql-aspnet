@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// An abstract factory for creating type makers using all the default, built in type makers.
+    /// An abstract factory for creating type makers using all the default type makers types.
     /// </summary>
     public class DefaultGraphTypeMakerProvider : IGraphTypeMakerProvider
     {
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Engine
                 case TypeKind.INPUT_OBJECT:
                     return new InputObjectGraphTypeMaker(schema);
 
-                    // note: unions cannot currently be made via the type maker stack
+                // note: unions cannot currently be made via the type maker stack
             }
 
             return null;

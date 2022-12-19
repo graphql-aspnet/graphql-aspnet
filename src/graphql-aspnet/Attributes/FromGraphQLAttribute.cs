@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Attributes
 {
     using System;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// Allows for customization of method parameters as arguments on the graph. Use

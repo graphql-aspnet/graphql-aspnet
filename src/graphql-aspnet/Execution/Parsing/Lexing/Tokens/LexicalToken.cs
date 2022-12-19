@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Tokens
     /// extracted from the raw query text.
     /// </summary>
     [DebuggerDisplay("{TokenType}")]
-    public struct LexicalToken
+    internal struct LexicalToken
     {
         /// <summary>
         /// Gets a token that indicates the end of a file.

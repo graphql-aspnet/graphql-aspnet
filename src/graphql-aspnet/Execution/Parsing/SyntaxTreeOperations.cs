@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution.Parsing
     /// <summary>
     /// Extension methods for <see cref="SyntaxTree"/>.
     /// </summary>
-    public static class SyntaxTreeOperations
+    internal static class SyntaxTreeOperations
     {
         /// <summary>
         /// Releases the pool of nodes within the syntax tree. Once released,
@@ -31,10 +31,13 @@ namespace GraphQL.AspNet.Execution.Parsing
         [DebuggerStepperBoundary]
         public static void Release(ref SyntaxTree synTree)
         {
-            for (var i = 0; i < synTree.BlockLength; i++)
-                ArrayPool<SyntaxNode>.Shared.Return(synTree.NodePool[i]);
+            if (synTree.NodePool != null)
+            {
+                for (var i = 0; i < synTree.BlockLength; i++)
+                    ArrayPool<SyntaxNode>.Shared.Return(synTree.NodePool[i]);
 
-            ArrayPool<SyntaxNode[]>.Shared.Return(synTree.NodePool);
+                ArrayPool<SyntaxNode[]>.Shared.Return(synTree.NodePool);
+            }
         }
 
         /// <summary>

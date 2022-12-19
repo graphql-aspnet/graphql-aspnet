@@ -23,7 +23,8 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
-    /// The default implementation of the core runtime.
+    /// The default implementation of the core graphql runtime responsible for generating
+    /// <see cref="IGraphOperationResult"/> from <see cref="IGraphOperationRequest"/>.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this runtime operates with.</typeparam>
     public class DefaultGraphQLRuntime<TSchema> : IGraphQLRuntime<TSchema>

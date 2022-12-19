@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.Helpers
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
 
-    public class HelperAsserts
+    internal class HelperAsserts
     {
         public static void AssertTokenChain(
             TokenStream tokenStream,

@@ -36,11 +36,14 @@ namespace GraphQL.AspNet.Configuration.Startup
         /// Builds the schema according to all options previously configured.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema to build.</typeparam>
-        /// <param name="sp">The schema.</param>
-        /// <returns>TSchema.</returns>
+        /// <param name="sp">The service provide from which to build the schema.</param>
+        /// <returns>The completed schema instance.</returns>
         public static TSchema BuildSchema<TSchema>(IServiceProvider sp)
             where TSchema : class, ISchema
         {
+            // the whole point of this method is to try every possible combination
+            // of parameters and give out a friendly error message if nothing works.
+
             Validation.ThrowIfNull(sp, nameof(sp));
             List<object> paramSet = null;
             if (!SCHEMA_CONSTRUCTORS.TryGetValue(typeof(TSchema), out var schemaConstructor))
@@ -66,8 +69,9 @@ namespace GraphQL.AspNet.Configuration.Startup
 
             if (paramSet == null)
             {
-                throw new InvalidOperationException("No suitable constructors found " +
-                                                    $"to properly instantiate schema '{typeof(TSchema).FriendlyName()}'.");
+                throw new InvalidOperationException(
+                    "No suitable constructors found " +
+                    $"to properly instantiate schema '{typeof(TSchema).FriendlyName()}'.");
             }
 
             return InstanceFactory.CreateInstance(typeof(TSchema), paramSet.ToArray()) as TSchema;

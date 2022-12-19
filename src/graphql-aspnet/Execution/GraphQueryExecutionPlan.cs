@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Execution
     /// <typeparam name="TSchema">The type of the graphql schema to this plan exists for.</typeparam>
     [Serializable]
     [DebuggerDisplay("Operation {OperationName}")]
-    public class GraphQueryExecutionPlan<TSchema> : IGraphQueryPlan
+    internal sealed class GraphQueryExecutionPlan<TSchema> : IGraphQueryPlan
          where TSchema : class, ISchema
     {
         /// <summary>
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <inheritdoc />
-        public Guid Id { get; protected set; }
+        public Guid Id { get; }
 
         /// <inheritdoc />
         public IGraphMessageCollection Messages { get; }

@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
     /// <summary>
     /// A global factory that generates a syntax node builder for an expected <see cref="SyntaxNodeType"/>.
     /// </summary>
-    public class NodeBuilderFactory
+    internal class NodeBuilderFactory
     {
         private static readonly Dictionary<SyntaxNodeType, ISyntaxNodeBuilder> BUILDERS;
 

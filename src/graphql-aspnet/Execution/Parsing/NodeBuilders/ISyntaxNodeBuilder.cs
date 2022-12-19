@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// A builder object that will construct a single node of a <see cref="SyntaxTree"/>
     /// from a stream of lexed token values.
     /// </summary>
-    public interface ISyntaxNodeBuilder
+    internal interface ISyntaxNodeBuilder
     {
         /// <summary>
         /// Reads the <paramref name="tokenStream" /> and creates a node of a specific type

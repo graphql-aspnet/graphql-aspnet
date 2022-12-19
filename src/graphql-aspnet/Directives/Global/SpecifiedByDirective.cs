@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// indicates a url pointing to the specification of the behavior for the target SCALAR. This
     /// url is shown in the type system as a <c>specifiedByUrl</c> field on
     /// the type definition.</para>
-    /// <para>Spec: https://spec.graphql.org/October2021/#sec--specifiedBy.</para>
+    /// <para>Spec: <see href="https://spec.graphql.org/October2021/#sec--specifiedBy" />.</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.SPECIFIED_BY_DIRECTIVE)]
     public sealed class SpecifiedByDirective : GraphDirective

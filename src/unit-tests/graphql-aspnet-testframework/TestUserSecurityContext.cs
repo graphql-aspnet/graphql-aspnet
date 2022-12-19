@@ -6,6 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Tests.Framework
 {
     using System.Collections.Generic;
@@ -23,8 +24,6 @@ namespace GraphQL.AspNet.Tests.Framework
     /// </summary>
     public class TestUserSecurityContext : IUserSecurityContext
     {
-        private const string DEFAULT_SCHEME = "graphql.testing.defaultscheme";
-
         private readonly string _defaultAuthScheme;
         private string _schemeAuthedWith;
         private ClaimsPrincipal _userPrincipal = null;
@@ -43,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Assembles the facke user on this context mimicing the claims principal that would be
+        /// Assembles the fake user on this context mimicing the claims principal that would be
         /// generated as a result of authenticating with the given <paramref name="authSchemeUsed"/>.
         /// </summary>
         /// <param name="authSchemeUsed">The authentication scheme the user

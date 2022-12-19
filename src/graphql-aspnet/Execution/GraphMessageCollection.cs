@@ -36,6 +36,15 @@ namespace GraphQL.AspNet.Execution
             _messages = new List<IGraphMessage>();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphMessageCollection" /> class.
+        /// </summary>
+        /// <param name="capacity">The initial capacity of the collection.</param>
+        public GraphMessageCollection(int capacity)
+        {
+            _messages = new List<IGraphMessage>(capacity);
+        }
+
         /// <inheritdoc />
         public void AddRange(IGraphMessageCollection messagesToAdd)
         {
@@ -45,7 +54,7 @@ namespace GraphQL.AspNet.Execution
             lock (_messages)
             {
                 // since we have to iterate all incoming messags
-                // in this method to do do a severity check anyways...
+                // in this method to do a severity check...
                 //
                 // instead of letting the list dynamicly size itself
                 // as messages are added in 1 by 1, ensure its only ever resized

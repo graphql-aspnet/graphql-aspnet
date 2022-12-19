@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
     /// are valid for a string in graphql
     /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-String-Value .
     /// </summary>
-    public class StringValidator
+    internal class StringValidator
     {
         private const string UNINTIALIZED_STRING = "Uninitialized string. Expected '{0}' received '{1}'";
         private const string UNTERMINATED_STRING = "Unterminated string. Expected '{0}' received '{1}'";

@@ -36,23 +36,18 @@ namespace GraphQL.AspNet.Configuration.Startup
         /// Iterates over the schema types and ensures the are pre-loaded into the global template cache.
         /// </summary>
         /// <param name="schemaTypes">The schema types.</param>
-        public void PrecacheTemplates(IEnumerable<Type> schemaTypes)
+        public void PreCacheTemplates(IEnumerable<Type> schemaTypes)
         {
             if (schemaTypes == null)
                 return;
 
             foreach (var type in schemaTypes)
             {
-                this.PreParseGraphTypeAndChildren(type);
+                this.PreParseTypeAndChildren(type);
             }
         }
 
-        /// <summary>
-        /// Attempts to preparse the graph type (loading it in the global static cache) and if it contains
-        /// any child types, parses them as well.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        private void PreParseGraphTypeAndChildren(Type type)
+        private void PreParseTypeAndChildren(Type type)
         {
             if (_parsedTypes.Contains(type))
                 return;
@@ -73,7 +68,7 @@ namespace GraphQL.AspNet.Configuration.Startup
             {
                 foreach (var dependent in fieldContainer.FieldTemplates.Values.SelectMany(x => x.RetrieveRequiredTypes()))
                 {
-                    this.PreParseGraphTypeAndChildren(dependent.Type);
+                    this.PreParseTypeAndChildren(dependent.Type);
                 }
             }
         }

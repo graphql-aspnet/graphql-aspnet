@@ -24,7 +24,8 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
-    /// A built-in, default collection of singleton instances of <see cref="IScalarGraphType"/> objects; the most fundimental unit of graphql.
+    /// A built-in, default collection of instances of <see cref="IScalarGraphType"/> objects;
+    /// the most fundamental unit of graphql.
     /// </summary>
     public class DefaultScalarTypeProvider : IScalarTypeProvider
     {

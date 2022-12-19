@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Engine
 {
+    using System;
     using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
@@ -26,10 +27,9 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// Interpretes the syntax tree and generates a contextual document that can be transformed into
         /// a query plan.
         /// </summary>
-        /// <param name="sourceText">The source text from which to generate a document.</param>
-        /// <param name="syntaxTree">The syntax tree describing the structure of the provided <paramref name="sourceText"/>.</param>
+        /// <param name="queryText">The raw query text from which to generate a document.</param>
         /// <returns>IGraphQueryDocument.</returns>
-        IGraphQueryDocument CreateDocument(SourceText sourceText, SyntaxTree syntaxTree);
+        IGraphQueryDocument CreateDocument(ReadOnlySpan<char> queryText);
 
         /// <summary>
         /// Validates a query document as being valid against the given <typeparamref name="TSchema"/>.
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// Note: A return value of <c>true</c> indicates that the validation completed, not that it was successful.
         /// Inspect the document's messages collection for any validation failures.</remarks>
         /// <param name="document">The document.</param>
-        /// <returns><c>true</c> if the validation completed successfully, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c> if the validation completed, <c>false</c> otherwise.</returns>
         bool ValidateDocument(IGraphQueryDocument document);
     }
 }

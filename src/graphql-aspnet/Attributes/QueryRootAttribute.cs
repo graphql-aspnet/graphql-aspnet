@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Attributes
 
     /// <summary>
     /// A decorator attribute to identify a controller method as being attached directly
-    /// to the root query operation, as apposed to being nested under its controller field.
+    /// to the root query operation, as apposed to being nested under its controller field declarations.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class QueryRootAttribute : GraphFieldAttribute

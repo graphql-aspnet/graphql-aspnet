@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Common.Generics
     /// A helper object that creates expression trees for dynamic object generation, greatly improving
     /// performance of subsequent object creation calls instead of using <see cref="Activator"/>.
     /// </summary>
-    public static class InstanceFactory
+    internal static class InstanceFactory
     {
         private static readonly ConcurrentDictionary<Tuple<Type, Type, Type, Type>, ObjectActivator> CACHED_OBJECT_CREATORS;
         private static readonly ConcurrentDictionary<MethodInfo, MethodInvoker> CACHED_METHOD_INVOKERS;

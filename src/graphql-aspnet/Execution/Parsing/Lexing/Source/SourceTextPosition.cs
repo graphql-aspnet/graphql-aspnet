@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
     /// <summary>
     /// A reference to where in the source text the seek operation should begin from.
     /// </summary>
-    public enum SourceTextPosition
+    internal enum SourceTextPosition
     {
         FromCurrentCursor,
         FromStart,

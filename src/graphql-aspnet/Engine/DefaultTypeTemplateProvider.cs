@@ -42,23 +42,13 @@ namespace GraphQL.AspNet.Engine
             this.CacheTemplates = true;
         }
 
-        /// <summary>
-        /// Parses the provided type, extracting the metadata to used in type generation for the object graph.
-        /// </summary>
-        /// <typeparam name="TObjectType">The type of the object to parse.</typeparam>
-        /// <param name="kind">The kind of graph type to parse for.</param>
-        /// <returns>IGraphItemTemplate.</returns>
+        /// <inheritdoc />
         public IGraphItemTemplate ParseType<TObjectType>(TypeKind? kind = null)
         {
             return this.ParseType(typeof(TObjectType), kind);
         }
 
-        /// <summary>
-        /// Parses the provided type, extracting the metadata to used in type generation for the object graph.
-        /// </summary>
-        /// <param name="objectType">The type of the object to parse.</param>
-        /// <param name="kind">The kind of graph type to parse for.</param>
-        /// <returns>IGraphTypeTemplate.</returns>
+        /// <inheritdoc />
         public IGraphTypeTemplate ParseType(Type objectType, TypeKind? kind = null)
         {
             Validation.ThrowIfNull(objectType, nameof(objectType));
@@ -96,9 +86,7 @@ namespace GraphQL.AspNet.Engine
             return template;
         }
 
-        /// <summary>
-        /// Removes all cached metadata about each known item template.
-        /// </summary>
+        /// <inheritdoc />
         public void Clear()
         {
             _knownObjects.Clear();
@@ -137,16 +125,10 @@ namespace GraphQL.AspNet.Engine
             return new ObjectGraphTypeTemplate(objectType);
         }
 
-        /// <summary>
-        /// Gets the count of registered <see cref="IGraphTypeTemplate"/> objects.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc />
         public int Count => _knownObjects.Count;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether templates, once parsed, are retained.
-        /// </summary>
-        /// <value><c>true</c> if templates are cached after the first creation; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool CacheTemplates { get; set; }
     }
 }

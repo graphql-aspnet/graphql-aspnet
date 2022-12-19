@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A decorator attribute to identify a method as a field on the mutation graph root. The
+    /// A decorator attribute to identify a controller action method as a field on the mutation graph root. The
     /// field will be nested inside a field or set of fields representing the controller that
     /// defines the method.
     /// </summary>

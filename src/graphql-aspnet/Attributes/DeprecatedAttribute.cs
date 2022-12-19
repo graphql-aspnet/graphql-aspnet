@@ -14,9 +14,10 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Directives.Global;
 
     /// <summary>
-    /// Indicates that the graph field is depreciated and should not be
+    /// A specialized attribute that applies the built in @deprecated directive to
+    /// the target field or enum value. Indicates that the target is deprecated and should not be
     /// used for any future query creation. This information will be exposed on any
-    /// introspection queries targeting the field.
+    /// introspection queries targeting the field or enum value.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
     [DebuggerDisplay("{Reason}")]
@@ -33,7 +34,7 @@ namespace GraphQL.AspNet.Attributes
         }
 
         /// <summary>
-        /// Gets the reason for the depreciation.
+        /// Gets the reason for the depreciation of this field or value.
         /// </summary>
         /// <value>The reason.</value>
         public string Reason { get; }

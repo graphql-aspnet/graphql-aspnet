@@ -14,5 +14,5 @@ namespace GraphQL.AspNet.Common.Generics
     /// <param name="instanceToInvokeOn">The object instance to invoke on.</param>
     /// <param name="methodParameters">The parameters to pass the method call.</param>
     /// <returns>The result of the call.</returns>
-    public delegate object MethodInvoker(ref object instanceToInvokeOn, params object[] methodParameters);
+    internal delegate object MethodInvoker(ref object instanceToInvokeOn, params object[] methodParameters);
 }

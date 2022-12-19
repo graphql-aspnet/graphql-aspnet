@@ -52,40 +52,21 @@ namespace GraphQL.AspNet.Engine
                 this.DefaultSlidingExpiration = TimeSpan.FromMinutes(DEFAULT_SLIDING_EXPIRATION_MINUTES);
         }
 
-        /// <summary>
-        /// Immediately evicts the query plan from the cache.
-        /// </summary>
-        /// <param name="key">The unique hash for the plan of a given schema.</param>
-        /// <returns><c>true</c> if the plan was successfully evicted, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
         public Task<bool> EvictAsync(string key)
         {
             _cachedPlans.Remove(key);
             return true.AsCompletedTask();
         }
 
-        /// <summary>
-        /// Attempts to retrieve a query plan from the cache for the given schema if it sexists.
-        /// </summary>
-        /// <param name="key">The unique hash for the plan of a given schema.</param>
-        /// <param name="plan">The plan that was retrieved or null if it was not found.</param>
-        /// <returns><c>true</c> if the plan was successfully retrieved; otherwise, <c>false</c>.</returns>
-        /// where TSchema : class, ISchema
+        /// <inheritdoc />
         public Task<bool> TryGetPlanAsync(string key, out IGraphQueryPlan plan)
         {
             plan = _cachedPlans.Get(key) as IGraphQueryPlan;
             return (plan != null).AsCompletedTask();
         }
 
-        /// <summary>
-        /// Caches the plan instance for later retrieval.
-        /// </summary>
-        /// <param name="key">The unique hash for the plan of a given schema.</param>
-        /// <param name="plan">The plan to cache.</param>
-        /// <param name="absoluteExpiration">The absolute date, in UTC-0 time, on which the plan will expire and be
-        /// ejected from the cache. (may not be supported by all cache implementations).</param>
-        /// <param name="slidingExpiration">A sliding expiration such that if the plan is not retreived within this timeframe
-        /// the plan will be evicted from the cache (may not be supported by all cache implementations).</param>
-        /// <returns><c>true</c> if the plan was successfully cached, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
         public Task<bool> TryCachePlanAsync(string key, IGraphQueryPlan plan, DateTimeOffset? absoluteExpiration = null, TimeSpan? slidingExpiration = null)
         {
             var policy = new CacheItemPolicy();
@@ -106,9 +87,7 @@ namespace GraphQL.AspNet.Engine
             return true.AsCompletedTask();
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             this.Dispose(true);

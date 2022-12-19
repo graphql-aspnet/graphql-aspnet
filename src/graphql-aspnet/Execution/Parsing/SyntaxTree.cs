@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution.Parsing
     /// that represent the parsed query document.
     /// </summary>
     [DebuggerDisplay("{RootNode}")]
-    public readonly ref struct SyntaxTree
+    internal readonly ref struct SyntaxTree
     {
         /// <summary>
         /// Creates a new tree with a new root node declares as a document type.

@@ -24,8 +24,8 @@ namespace GraphQL.Subscriptions.Tests
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
             var randoValue = _rando.Next();
-            SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = randoValue;
-            Assert.AreEqual(randoValue, SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount);
+            GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = randoValue;
+            Assert.AreEqual(randoValue, GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount);
         }
 
         [Test]
@@ -34,8 +34,8 @@ namespace GraphQL.Subscriptions.Tests
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
             var randoValue = _rando.Next();
-            SubscriptionServerSettings.MaxConnectedClientCount = randoValue;
-            Assert.AreEqual(randoValue, SubscriptionServerSettings.MaxConnectedClientCount);
+            GraphQLSubscriptionServerSettings.MaxConnectedClientCount = randoValue;
+            Assert.AreEqual(randoValue, GraphQLSubscriptionServerSettings.MaxConnectedClientCount);
         }
     }
 }

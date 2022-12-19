@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Engine
 {
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -43,13 +44,11 @@ namespace GraphQL.AspNet.Engine
         {
         }
 
-        /// <summary>
-        /// Inspects the operation and determines a final complexity score.
-        /// </summary>
-        /// <param name="operation">The complexity score for the given operations.</param>
-        /// <returns>System.Single.</returns>
+        /// <inheritdoc />
         public float Calculate(IGraphFieldExecutableOperation operation)
         {
+            Validation.ThrowIfNull(operation, nameof(operation));
+
             float totalWeight = 0;
 
             foreach (var field in operation.FieldContexts)

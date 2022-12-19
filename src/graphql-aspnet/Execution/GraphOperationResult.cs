@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Execution
         {
             this.Request = originalRequest;
             this.Data = dataItem;
-            this.Messages = new GraphMessageCollection();
+            this.Messages = new GraphMessageCollection(messages?.Count ?? 0);
             if (messages != null)
                 this.Messages.AddRange(messages);
 

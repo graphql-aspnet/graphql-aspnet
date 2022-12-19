@@ -49,8 +49,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public async Task<IGraphQueryPlan> CreatePlan(
-            IOperationDocumentPart operation)
+        public async Task<IGraphQueryPlan> CreatePlan(IOperationDocumentPart operation)
         {
             Validation.ThrowIfNull(operation, nameof(operation));
 
@@ -96,9 +95,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="queryPlan">The query plan being generated.</param>
         /// <param name="operation">The operation to be included.</param>
-        protected virtual void InspectSyntaxDepth(
-            IGraphQueryPlan queryPlan,
-            IOperationDocumentPart operation)
+        protected virtual void InspectSyntaxDepth(IGraphQueryPlan queryPlan, IOperationDocumentPart operation)
         {
             var maxAllowedDepth = _schema.Configuration?.ExecutionOptions?.MaxQueryDepth;
             if (maxAllowedDepth == null)

@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Execution.Metrics
     /// spec: https://github.com/apollographql/apollo-tracing/ .
     /// </summary>
     [DebuggerDisplay("Phases = {PhaseEntries.Count}, Resolvers = {ResolverEntries.Count}")]
-    public class ApolloTracingMetricsV1 : IGraphQueryExecutionMetrics, IDisposable
+    internal class ApolloTracingMetricsV1 : IGraphQueryExecutionMetrics, IDisposable
     {
         private const int VERSION = 1;
 

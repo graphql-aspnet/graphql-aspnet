@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules
     /// <summary>
     /// A list of rules that a <see cref="SourceText"/> can process, at its current location.
     /// </summary>
-    public enum GraphQLSourceRule
+    internal enum GraphQLSourceRule
     {
         IsStartOfNameGlyph,
         IsControlGlyph,

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// <summary>
     /// <para>A directive, applicable to a field, that defines additional logic to determine if
     /// the field should be included or not.</para>
-    /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec--include .</para>
+    /// <para>Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec--include" /> .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.INCLUDE_DIRECTIVE)]
     public sealed class IncludeDirective : GraphDirective

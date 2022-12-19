@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Tokens
     /// <summary>
     /// An enumeration representing the possible control characters in a graphql document.
     /// </summary>
-    public enum TokenType
+    internal enum TokenType
     {
         [Description("")] None = 0,
 

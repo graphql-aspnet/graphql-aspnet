@@ -20,13 +20,12 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
-    using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// A common object providing common methods used by both directives and controllers.
+    /// A common object providing methods used by both directives and controllers.
     /// </summary>
     /// <typeparam name="TRequest">The type of the request this instance is
     /// expected to process.</typeparam>

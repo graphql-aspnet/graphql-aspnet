@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing
     /// stripping it away from the stream.
     /// </summary>
     [DebuggerDisplay("Active = {ActiveToken.TokenType}")]
-    public ref struct TokenStream
+    internal ref struct TokenStream
     {
         private SourceText _sourceText;
 

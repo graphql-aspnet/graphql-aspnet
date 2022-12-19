@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
     /// a <see cref="SourceText"/> object.
     /// </summary>
     [DebuggerDisplay("(Index: {StartIndex}, Length: {Length})")]
-    public readonly struct SourceTextBlockPointer : IEquatable<SourceTextBlockPointer>
+    internal readonly struct SourceTextBlockPointer : IEquatable<SourceTextBlockPointer>
     {
         /// <summary>
         /// Gets a block pointer that points to nothing.

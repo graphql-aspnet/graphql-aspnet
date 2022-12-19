@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
     /// <summary>
     /// A syntax node builder that builds named fragment nodes from a token stream.
     /// </summary>
-    public class NamedFragmentNodeBuilder : ISyntaxNodeBuilder
+    internal class NamedFragmentNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
         /// Gets the single global instance of this builder.

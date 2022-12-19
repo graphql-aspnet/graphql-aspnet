@@ -7,14 +7,21 @@
 // License:  MIT
 // *************************************************************
 
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
 namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Execution.Parsing;
-    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
@@ -30,13 +37,8 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     {
         private IGraphQueryDocument CreateDocument(GraphSchema schema, string text)
         {
-            var parser = new GraphQLParser();
-
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = parser.ParseQueryDocument(ref source);
-
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(schema);
-            var doc = docGenerator.CreateDocument(source, syntaxTree);
+            var doc = docGenerator.CreateDocument(text.AsSpan());
             docGenerator.ValidateDocument(doc);
             return doc;
         }

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing
     /// A tokenizer programmed with the symbols of graphql, capable of walking a string,
     /// splitting it into logical segments, tracking read position, performing look aheads etc.
     /// </summary>
-    public static class Lexer
+    internal static class Lexer
     {
         /// <summary>
         /// Converts a given source text into a stream of tokens that can be consumed to create a syntax tree.

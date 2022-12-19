@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     /// <summary>
     /// A syntax node builder that creates list value nodes from a token stream.
     /// </summary>
-    public class ListValueNodeBuilder : ISyntaxNodeBuilder
+    internal class ListValueNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
         /// Gets the singleton instance of this builder.

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
     /// <summary>
     /// A syntax node builder that builds directive nodes from a token stream.
     /// </summary>
-    public class DirectiveNodeBuilder : ISyntaxNodeBuilder
+    internal class DirectiveNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
         /// Gets the instance.

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Common.Generics
     /// the setters of a given object and apply a value. This is used instead of reflective calls
     /// for speed and performance at the expensive of an initial setup cost.
     /// </summary>
-    public class PropertyGetterCollection : IReadOnlyDictionary<string, PropertyGetterInvoker>
+    internal class PropertyGetterCollection : IReadOnlyDictionary<string, PropertyGetterInvoker>
     {
         private readonly Dictionary<string, PropertyGetterInvoker> _getters;
 

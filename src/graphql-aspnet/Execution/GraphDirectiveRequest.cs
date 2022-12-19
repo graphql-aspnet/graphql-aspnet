@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution
     /// or conditional processing on a segment of a query document.
     /// </summary>
     [DebuggerDisplay("@{InvocationContext.Directive.Name}  (Phase = {DirectivePhase})")]
-    public class GraphDirectiveRequest : IGraphDirectiveRequest
+    internal class GraphDirectiveRequest : IGraphDirectiveRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveRequest" /> class.

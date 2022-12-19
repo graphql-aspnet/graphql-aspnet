@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     /// A factory that will choose the correct builder to build the proper value
     /// node from hte token stream.
     /// </summary>
-    public class ValueNodeBuilderFactory
+    internal class ValueNodeBuilderFactory
     {
         /// <summary>
         /// Inspects the token stream and generates the appropriate builder to

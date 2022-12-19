@@ -14,12 +14,13 @@ namespace GraphQL.AspNet.Common.Generics
     using System.Collections.ObjectModel;
 
     /// <summary>
-    /// A keyed collection that generates keys from a delegate rather than being explicitly provided.
+    /// A keyed collection that generates keys from a delegate rather than being
+    /// explicitly provided.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TItem">The type of the item.</typeparam>
     /// <seealso cref="System.Collections.ObjectModel.KeyedCollection{TKey, TItem}" />
-    public class DelegateKeyedCollection<TKey, TItem> : KeyedCollection<TKey, TItem>
+    internal class DelegateKeyedCollection<TKey, TItem> : KeyedCollection<TKey, TItem>
     {
         private readonly Func<TItem, TKey> _keyDelegate;
 

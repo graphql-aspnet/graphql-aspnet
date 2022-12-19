@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <summary>
         /// Sets the schema configuration to allow the processing of subscriptions in test mode.
         /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <param name="schema">The schema to append to.</param>
         public static void SetSubscriptionAllowances(this ISchema schema)
         {
             schema.Configuration.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);

@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     /// <summary>
     /// A collection of helper methods for <see cref="FieldItemResolutionStatus"/>.
     /// </summary>
-    public static class FieldItemResolutionStatusExtensions
+    internal static class FieldItemResolutionStatusExtensions
     {
         private static readonly Dictionary<FieldItemResolutionStatus, HashSet<FieldItemResolutionStatus>> CAN_BECOME_STATI;
 

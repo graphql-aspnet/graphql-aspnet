@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
     /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Int-Value
     /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Float-Value .
     /// </summary>
-    public class NumberValidator
+    internal class NumberValidator
     {
         private const string INVALID_NUMBER_EMPTY = "Invalid number. No phrase provided.";
         private const string INVALID_NUMBER = "Invalid Number. Expected '{0}', received '{1}'.";

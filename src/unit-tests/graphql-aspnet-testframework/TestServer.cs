@@ -131,17 +131,6 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Renders a syntax tree in the same manner that the graphql server would as part of fulfilling a request.
-        /// </summary>
-        /// <param name="source">The source text to generate the AST for.</param>
-        /// <returns>ISyntaxTree.</returns>
-        public SyntaxTree CreateSyntaxTree(ref SourceText source)
-        {
-            var parser = this.ServiceProvider.GetService<IGraphQLDocumentParser>();
-            return parser.ParseQueryDocument(ref source);
-        }
-
-        /// <summary>
         /// Renders a completed query document in the same manner that the graphql server
         /// would as part of fulfilling a request. This method DOES NOT validate the document.
         /// </summary>
@@ -153,11 +142,9 @@ namespace GraphQL.AspNet.Tests.Framework
             if (queryText != null)
                 text = queryText.AsSpan();
 
-            var source = new SourceText(text);
-
             var generator = this.ServiceProvider.GetService<IGraphQueryDocumentGenerator<TSchema>>();
-            var synTree = this.CreateSyntaxTree(ref source);
-            var document = generator.CreateDocument(source, synTree);
+
+            var document = generator.CreateDocument(text);
             return document;
         }
 

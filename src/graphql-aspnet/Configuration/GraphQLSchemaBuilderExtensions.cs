@@ -104,9 +104,11 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Performs final configuration on graphql and preparses any referenced types for their meta data.
+        /// Performs final configuration on graphql, preparses any referenced types for their meta data,
+        /// compiles the schema instance and sets up the query handler to accept web requests
+        /// at this point in the ASP.NET request pipeline.
         /// </summary>
-        /// <param name="app">The application.</param>
+        /// <param name="app">The application being constructed.</param>
         public static void UseGraphQL(this IApplicationBuilder app)
         {
             foreach (var injector in SCHEMA_REGISTRATIONS.Values)
@@ -118,10 +120,17 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Performs final configuration on graphql and preparses any referenced types for their meta data.
-        /// Will NOT attempt to register an HTTP for the schema.
+        /// <para>
+        /// Performs final configuration on graphql, preparses any referenced types for their meta data,
+        /// registers the schema with the runtime.
+        /// </para>
+        /// <para>
+        /// NOTE: No query handler will be registered with ASP.NET and requests will NOT
+        /// be configured to be served via HTTP when this method is called via the <see cref="IServiceProvider"/>.
+        /// </para>
         /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="serviceProvider">The service provider from which to construct and configure the
+        /// graphql runtime.</param>
         public static void UseGraphQL(this IServiceProvider serviceProvider)
         {
             foreach (var injector in SCHEMA_REGISTRATIONS.Values)

@@ -14,5 +14,5 @@ namespace GraphQL.AspNet.Common.Generics
     /// </summary>
     /// <param name="inputObject">The input object.</param>
     /// <returns>The value of the property on the supplied object.</returns>
-    public delegate object PropertyGetterInvoker(ref object inputObject);
+    internal delegate object PropertyGetterInvoker(ref object inputObject);
 }

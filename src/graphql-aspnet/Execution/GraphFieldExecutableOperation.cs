@@ -10,9 +10,7 @@
 namespace GraphQL.AspNet.Execution
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
@@ -24,7 +22,7 @@ namespace GraphQL.AspNet.Execution
     /// </summary>
     [Serializable]
     [DebuggerDisplay("{OperationName} (Type = {OperationType})")]
-    public sealed class GraphFieldExecutableOperation : IGraphFieldExecutableOperation
+    internal sealed class GraphFieldExecutableOperation : IGraphFieldExecutableOperation
     {
         private IOperationDocumentPart _operation;
         private IVariableCollectionDocumentPart _variableCollection;
