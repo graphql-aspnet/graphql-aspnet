@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// Recorded when the startup services generate a new pipeline chain for the target schema.

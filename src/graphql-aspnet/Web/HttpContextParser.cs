@@ -189,18 +189,18 @@ namespace GraphQL.AspNet.Web
         /// Gets a value indicating whether the watched http context is a GET request.
         /// </summary>
         /// <value>A value indicating if the context is a GET request.</value>
-        public bool IsGetRequest => string.Equals(this.HttpContext.Request.Method, nameof(HttpMethod.Get), StringComparison.OrdinalIgnoreCase);
+        public virtual bool IsGetRequest => string.Equals(this.HttpContext.Request.Method, nameof(HttpMethod.Get), StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Gets a value indicating whether the watched http context is a POST request.
         /// </summary>
         /// <value>A value indicating if the context is a post request.</value>
-        public bool IsPostRequest => string.Equals(this.HttpContext.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase);
+        public virtual bool IsPostRequest => string.Equals(this.HttpContext.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Gets a value indicating whether the content-type of the http request is set to <c>application/graphql</c>.
         /// </summary>
         /// <value>A value indicating if the http post body content type represents a graphql query.</value>
-        public bool IsGraphQLBody => string.Equals(this.HttpContext.Request.ContentType, Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER_VALUE, StringComparison.OrdinalIgnoreCase);
+        public virtual bool IsGraphQLBody => string.Equals(this.HttpContext.Request.ContentType, Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER_VALUE, StringComparison.OrdinalIgnoreCase);
     }
 }

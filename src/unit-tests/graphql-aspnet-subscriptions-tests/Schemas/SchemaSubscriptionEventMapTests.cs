@@ -29,7 +29,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         public void MapOfFieldWithNoEventName_RendersOneItem()
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
-            SchemaSubscriptionEventMap.ClearCache();
+            SubscriptionEventSchemaMap.ClearCache();
 
             var schema = new TestServerBuilder<EventMapSchema>()
                 .AddSubscriptionServer()
@@ -37,7 +37,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
                 .Build()
                 .Schema;
 
-            var map = SchemaSubscriptionEventMap.CreateEventMap(schema);
+            var map = SubscriptionEventSchemaMap.CreateEventMap(schema);
             var pathName = "[subscription]/OneFieldMap/TestActionMethod";
             var eventName = new SubscriptionEventName(typeof(EventMapSchema), "TestActionMethod");
 
@@ -51,7 +51,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         public void RetrieveFieldPathByName_YieldsCorrectPath()
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
-            SchemaSubscriptionEventMap.ClearCache();
+            SubscriptionEventSchemaMap.ClearCache();
 
             var schema = new TestServerBuilder<EventMapSchema>()
                 .AddSubscriptionServer()
@@ -59,7 +59,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
                 .Build()
                 .Schema;
 
-            var map = SchemaSubscriptionEventMap.CreateEventMap(schema);
+            var map = SubscriptionEventSchemaMap.CreateEventMap(schema);
             var pathName = "[subscription]/OneFieldMap/TestActionMethod";
             var eventName = new SubscriptionEventName(
                 typeof(EventMapSchema),
@@ -75,7 +75,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         public void DuplicateEventName_ThrowsExceptionOnBuild()
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
-            SchemaSubscriptionEventMap.ClearCache();
+            SubscriptionEventSchemaMap.ClearCache();
             var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 var schema = new TestServerBuilder<EventMapSchema>()

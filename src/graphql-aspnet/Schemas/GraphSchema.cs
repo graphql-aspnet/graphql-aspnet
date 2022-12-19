@@ -23,7 +23,8 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
 
     /// <summary>
-    /// An object that can be used as a base for a custom schema or used directly as the only schema in a single schema setup.
+    /// An object that can be used as a base for a custom schema or used directly as the only schema
+    /// in a single schema setup.
     /// </summary>
     /// <seealso cref="ISchema" />
     [DebuggerDisplay("Default Schema (Known Types = {KnownTypes.Count})")]

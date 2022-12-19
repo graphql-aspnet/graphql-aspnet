@@ -18,8 +18,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
     using GraphQL.AspNet.Middleware.QueryExecution;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
+    using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Security;
     using Microsoft.Extensions.DependencyInjection;

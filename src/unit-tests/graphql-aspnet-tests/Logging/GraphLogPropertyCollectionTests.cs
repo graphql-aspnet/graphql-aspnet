@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using System;
     using System.Collections;
     using System.Linq;
-    using GraphQL.AspNet.Logging.Common;
+    using GraphQL.AspNet.Logging;
     using NUnit.Framework;
 
     [TestFixture]

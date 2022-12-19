@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// Recorded when an executor successfully caches a newly created query plan to its

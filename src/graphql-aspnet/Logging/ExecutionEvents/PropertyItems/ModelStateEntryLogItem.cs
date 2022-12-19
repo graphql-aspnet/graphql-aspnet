@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
     using System.Linq;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// A collection of model state items that are part of a structured log entry.

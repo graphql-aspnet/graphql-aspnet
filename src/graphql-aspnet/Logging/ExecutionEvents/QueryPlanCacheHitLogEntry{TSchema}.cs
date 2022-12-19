@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// Recorded when an executor attempts, and succeeds, to retrieve a query plan from its local cache.

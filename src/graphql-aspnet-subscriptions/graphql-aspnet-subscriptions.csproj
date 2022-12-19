@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="..\library-common.props"/>
+	<Import Project="..\library-common.props" />
 
   <PropertyGroup>
     <AssemblyName>GraphQL.AspNet.Subscriptions</AssemblyName>
@@ -7,6 +7,12 @@
     <PackageId>GraphQL.AspNet.Subscriptions</PackageId>
     <PackageDescription>A package to support subscriptions for GraphQL ASP.NET. Provides the required functionality to setup a websocket connection and perform graphql subscriptions over web sockets.</PackageDescription>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="SubscirptionServer\**" />
+    <EmbeddedResource Remove="SubscirptionServer\**" />
+    <None Remove="SubscirptionServer\**" />
+  </ItemGroup>
 
   <ItemGroup>
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />

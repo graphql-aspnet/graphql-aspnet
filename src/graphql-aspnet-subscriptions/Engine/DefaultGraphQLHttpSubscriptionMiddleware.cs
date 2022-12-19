@@ -17,11 +17,11 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Web;

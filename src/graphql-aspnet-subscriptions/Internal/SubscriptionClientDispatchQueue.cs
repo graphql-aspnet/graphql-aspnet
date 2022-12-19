@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Internal
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

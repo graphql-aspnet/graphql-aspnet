@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Framework
             _maxSubConnectedClient = GraphQLSubscriptionServerSettings.MaxConnectedClientCount;
             _maxSubConcurrentReceiver = GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
 
-            SchemaSubscriptionEventMap.ClearCache();
+            SubscriptionEventSchemaMap.ClearCache();
         }
 
         /// <summary>

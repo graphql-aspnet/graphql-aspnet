@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// Recorded when the security middleware invokes an authentication challenge

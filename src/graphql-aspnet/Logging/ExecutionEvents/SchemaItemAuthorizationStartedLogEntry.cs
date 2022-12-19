@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using System.Security.Claims;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// Recorded when the security middleware invokes a security challenge

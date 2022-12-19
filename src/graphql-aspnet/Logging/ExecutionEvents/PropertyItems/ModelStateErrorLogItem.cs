@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
 {
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// A single error that occured during the validation of a model state item (usually

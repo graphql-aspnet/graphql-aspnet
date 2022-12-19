@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Common
         /// </summary>
         /// <param name="text">The text to manipulate.</param>
         /// <param name="nullOnFailure">if set to <c>true</c> should the string not be correctly delimited null is returned. When
-        /// false and the stirng is not correclty delimited, the original string is returned unaltered.</param>        ///
+        /// false and the string is not correctly delimited, the original string is returned unaltered.</param>        ///
         /// <remarks>
         /// e.g.  Converts  { "Hell\u019f" }  to HellƟ.
         /// </remarks>

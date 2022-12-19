@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Tests.Logging
 {
     using System;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.Common;
     using Microsoft.Extensions.Logging;
     using NUnit.Framework;
 

@@ -16,7 +16,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Logging.SubscriptionEventLogEntries;
+    using GraphQL.AspNet.Logging.Subscriptions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Moq;

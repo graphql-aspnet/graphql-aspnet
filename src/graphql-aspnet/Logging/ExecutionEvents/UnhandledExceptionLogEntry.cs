@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// A general event raised when an unhandled exception is not in any way

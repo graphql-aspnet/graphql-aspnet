@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// A set of parsed metadata, read from a declared <see cref="GraphController"/>, to properly

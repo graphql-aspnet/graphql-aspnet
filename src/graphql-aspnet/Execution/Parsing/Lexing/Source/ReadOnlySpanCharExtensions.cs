@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
     /// <summary>
     /// Helper methods against a span of characters.
     /// </summary>
-    public static class ReadOnlySpanCharExtensions
+    internal static class ReadOnlySpanCharExtensions
     {
         /// <summary>
         /// Determines whether the given span of characters "could be" a properly escaped

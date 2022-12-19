@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// A loggable item representing an exception that was thrown or generated.

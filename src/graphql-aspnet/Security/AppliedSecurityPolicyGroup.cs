@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Security
 
     /// <summary>
     /// A group of <see cref="AppliedSecurityPolicy"/>s describing the collected security requirements
-    /// of an entity such as the policies applied to a controller or to a field method.
+    /// of an entity such as the policies applied to a controller or to a field.
     /// </summary>
     public sealed class AppliedSecurityPolicyGroup : IEnumerable<AppliedSecurityPolicy>
     {

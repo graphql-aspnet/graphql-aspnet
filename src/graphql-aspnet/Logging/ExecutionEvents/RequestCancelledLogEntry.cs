@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
 {
     using System;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// Recorded by an executor after a cancellation request by an external actor was successfully

@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// Recorded when the startup services registers a publically available ASP.NET route to which

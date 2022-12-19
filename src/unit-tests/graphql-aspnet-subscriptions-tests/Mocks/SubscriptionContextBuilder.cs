@@ -13,6 +13,7 @@ namespace GraphQL.Subscriptions.Tests.Mock
     using System.Collections.Generic;
     using System.Text.Json;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -20,7 +21,6 @@ namespace GraphQL.Subscriptions.Tests.Mock
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Internal.TypeTemplates;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
     using Moq;
 
@@ -139,7 +139,7 @@ namespace GraphQL.Subscriptions.Tests.Mock
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier to assign to the created sub.</param>
         /// <returns>GraphQueryContext.</returns>
-        public virtual SubcriptionExecutionContext Build(string subscriptionId = null)
+        public virtual SubcriptionGraphQueryExecutionContext Build(string subscriptionId = null)
         {
             subscriptionId = subscriptionId ?? Guid.NewGuid().ToString();
             var metaData = new MetaDataCollection();
@@ -148,7 +148,7 @@ namespace GraphQL.Subscriptions.Tests.Mock
             var request = new Mock<IGraphOperationRequest>();
 
             // updateable items about the request
-            var context = new SubcriptionExecutionContext(
+            var context = new SubcriptionGraphQueryExecutionContext(
                 this.OperationRequest,
                 _client,
                 _serviceProvider,

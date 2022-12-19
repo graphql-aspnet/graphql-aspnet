@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
     /// Recorded after a controller invokes and receives a result from an action method.

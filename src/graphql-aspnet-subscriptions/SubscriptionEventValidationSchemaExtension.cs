@@ -18,7 +18,7 @@ namespace GraphQL.AspNet
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// A server extension to validate all registered schema extensions as the
+    /// A server extension to validate any registered subscription extensions as the
     /// server comes online.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema to validate.</typeparam>
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet
             var scope = provider.CreateScope();
             var schema = scope.ServiceProvider.GetRequiredService<TSchema>();
 
-            SchemaSubscriptionEventMap.EnsureSubscriptionEventsOrThrow(schema);
+            SubscriptionEventSchemaMap.EnsureSubscriptionEventsOrThrow(schema);
         }
     }
 }

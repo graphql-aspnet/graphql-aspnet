@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
-    using GraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, Interfaces.Internal.IGraphFieldTemplate>;
+    using GraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Interfaces.Internal.IGraphFieldTemplate>;
 
     /// <summary>
     /// A base representation of a template for an object related graph type containing common elements.

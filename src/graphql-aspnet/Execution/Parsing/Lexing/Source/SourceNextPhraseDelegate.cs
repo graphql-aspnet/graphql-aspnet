@@ -18,5 +18,5 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
     /// </summary>
     /// <param name="text">The text.</param>
     /// <returns>A result of inspecting the phrase instructing the feeder on how to act next.</returns>
-    public delegate NextPhraseResult SourceNextPhraseDelegate(ReadOnlySpan<char> text);
+    internal delegate NextPhraseResult SourceNextPhraseDelegate(ReadOnlySpan<char> text);
 }

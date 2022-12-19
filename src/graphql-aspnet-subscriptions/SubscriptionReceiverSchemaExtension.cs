@@ -16,14 +16,14 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
     using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution;
+    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;

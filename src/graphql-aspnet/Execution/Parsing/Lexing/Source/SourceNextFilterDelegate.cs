@@ -15,5 +15,5 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
     /// </summary>
     /// <param name="text">The character to inspect.</param>
     /// <returns><c>true</c> if the filter was applied, <c>false</c> otherwise.</returns>
-    public delegate bool SourceTextNextCharacterFilterDelegate(char text);
+    internal delegate bool SourceTextNextCharacterFilterDelegate(char text);
 }

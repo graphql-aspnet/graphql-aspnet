@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
     using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Logging.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
