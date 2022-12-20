@@ -82,7 +82,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             var service = new DefaultSubscriptionServerClientFactory(clientFactories);
 
-            var client = await service.CreateSubscriptionClient<GraphSchema>(connection);
+            var client = await service.CreateSubscriptionClientAsync<GraphSchema>(connection);
 
             Assert.IsNotNull(client);
             Assert.AreEqual("protocol1", client.Protocol);
@@ -103,7 +103,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             var exception = Assert.ThrowsAsync<UnsupportedClientProtocolException>(async () =>
             {
-                var client = await service.CreateSubscriptionClient<GraphSchema>(connection);
+                var client = await service.CreateSubscriptionClientAsync<GraphSchema>(connection);
             });
 
             Assert.AreEqual("unknown-protocol", exception.Protocol);
@@ -125,7 +125,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             var exception = Assert.ThrowsAsync<UnsupportedClientProtocolException>(async () =>
             {
-                var client = await service.CreateSubscriptionClient<GraphSchema>(connection);
+                var client = await service.CreateSubscriptionClientAsync<GraphSchema>(connection);
             });
 
             Assert.AreEqual("protocol2", exception.Protocol);
@@ -143,7 +143,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
             var service = new DefaultSubscriptionServerClientFactory(clientFactories);
 
             var connection = this.CreateConnection("protocol3, protocol1, protocol2", subOptions);
-            var client = await service.CreateSubscriptionClient<GraphSchema>(connection);
+            var client = await service.CreateSubscriptionClientAsync<GraphSchema>(connection);
 
             Assert.IsNotNull(client);
             Assert.AreEqual("protocol1", client.Protocol);
@@ -164,7 +164,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             var exception = Assert.ThrowsAsync<UnsupportedClientProtocolException>(async () =>
             {
-                var client = await service.CreateSubscriptionClient<GraphSchema>(connection);
+                var client = await service.CreateSubscriptionClientAsync<GraphSchema>(connection);
             });
 
             Assert.AreEqual("protocol3, protocol4", exception.Protocol);
@@ -190,7 +190,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             var exception = Assert.ThrowsAsync<UnsupportedClientProtocolException>(async () =>
             {
-                var client = await service.CreateSubscriptionClient<GraphSchema>(connection);
+                var client = await service.CreateSubscriptionClientAsync<GraphSchema>(connection);
             });
 
             Assert.AreEqual("protocol3, protocol4", exception.Protocol);
@@ -212,7 +212,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
                 string.Empty,
                 subOptions);
 
-            var client = await service.CreateSubscriptionClient<GraphSchema>(connection);
+            var client = await service.CreateSubscriptionClientAsync<GraphSchema>(connection);
 
             Assert.AreEqual("protocol1", client.Protocol);
         }
@@ -234,7 +234,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             var exception = Assert.ThrowsAsync<UnsupportedClientProtocolException>(async () =>
             {
-                var client = await service.CreateSubscriptionClient<GraphSchema>(connection);
+                var client = await service.CreateSubscriptionClientAsync<GraphSchema>(connection);
             });
 
             Assert.AreEqual("~none~", exception.Protocol);

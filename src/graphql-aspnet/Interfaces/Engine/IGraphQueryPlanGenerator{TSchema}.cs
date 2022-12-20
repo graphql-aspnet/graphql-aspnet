@@ -27,6 +27,6 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// </summary>
         /// <param name="operation">The operation to generate a query plan for.</param>
         /// <returns>Task&lt;IGraphQueryPlan&gt;.</returns>
-        Task<IGraphQueryPlan> CreatePlan(IOperationDocumentPart operation);
+        Task<IGraphQueryPlan> CreatePlanAsync(IOperationDocumentPart operation);
     }
 }

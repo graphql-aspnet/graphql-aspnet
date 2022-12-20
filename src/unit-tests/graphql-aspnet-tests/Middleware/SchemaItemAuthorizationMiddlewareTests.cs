@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             var server = builder.Build();
             if (buildUser)
-                _user = (await server.SecurityContext.Authenticate())?.User;
+                _user = (await server.SecurityContext.AuthenticateAsync())?.User;
 
             var contextBuilder = server.CreateQueryContextBuilder();
             var queryContext = contextBuilder.Build();

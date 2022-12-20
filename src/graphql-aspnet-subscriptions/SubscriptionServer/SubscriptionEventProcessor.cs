@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// <param name="subscription">The subscription to process the event against.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>GraphQueryExecutionContext.</returns>
-        public async Task<GraphQueryExecutionContext> ProcessEvent(
+        public async Task<GraphQueryExecutionContext> ProcessEventAsync(
             IUserSecurityContext securityContext,
             SubscriptionEvent evt,
             ISubscription<TSchema> subscription,
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.SubscriptionServer
             // ------------------------------
             // execute the request
             // ------------------------------
-            await runtime.ExecuteRequest(context, cancelToken);
+            await runtime.ExecuteRequestAsync(context, cancelToken);
             return context;
         }
     }

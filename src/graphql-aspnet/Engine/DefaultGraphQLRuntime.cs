@@ -65,7 +65,25 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public Task<IGraphOperationResult> ExecuteRequest(
+        public Task<IGraphOperationResult> ExecuteRequestAsync(
+            IServiceProvider serviceProvider,
+            IGraphOperationRequest request,
+            CancellationToken cancelToken = default)
+        {
+            Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
+            Validation.ThrowIfNull(request, nameof(request));
+
+            return this.ExecuteRequestAsync(
+                serviceProvider,
+                request,
+                securityContext: null,
+                metricsPackage: null,
+                session: null,
+                cancelToken: cancelToken);
+        }
+
+        /// <inheritdoc />
+        public Task<IGraphOperationResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
             IGraphOperationRequest request,
             IUserSecurityContext securityContext = null,
@@ -75,21 +93,22 @@ namespace GraphQL.AspNet.Engine
             Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
             Validation.ThrowIfNull(request, nameof(request));
 
-            return this.ExecuteRequest(
+            return this.ExecuteRequestAsync(
                 serviceProvider,
                 request,
                 securityContext: securityContext,
                 metricsPackage: enableMetrics ? this.CreateMetricsPackage() : null,
+                session: null,
                 cancelToken: cancelToken);
         }
 
         /// <inheritdoc />
-        public Task<IGraphOperationResult> ExecuteRequest(
+        public Task<IGraphOperationResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
             IGraphOperationRequest request,
-            IQuerySession session = null,
             IUserSecurityContext securityContext = null,
             IGraphQueryExecutionMetrics metricsPackage = null,
+            IQuerySession session = null,
             CancellationToken cancelToken = default)
         {
             Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
@@ -106,11 +125,11 @@ namespace GraphQL.AspNet.Engine
                 metrics: metricsPackage,
                 logger: _logger);
 
-            return this.ExecuteRequest(context, cancelToken);
+            return this.ExecuteRequestAsync(context, cancelToken);
         }
 
         /// <inheritdoc />
-        public async Task<IGraphOperationResult> ExecuteRequest(
+        public async Task<IGraphOperationResult> ExecuteRequestAsync(
             GraphQueryExecutionContext context,
             CancellationToken cancelToken = default)
         {

@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public Task<IAuthenticationResult> Authenticate(string scheme, CancellationToken token = default)
+        public Task<IAuthenticationResult> AuthenticateAsync(string scheme, CancellationToken token = default)
         {
             var schemeToCheckAgainst = scheme ?? _defaultAuthScheme;
 
@@ -102,9 +102,9 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public Task<IAuthenticationResult> Authenticate(CancellationToken token = default)
+        public Task<IAuthenticationResult> AuthenticateAsync(CancellationToken token = default)
         {
-            return this.Authenticate(null, token);
+            return this.AuthenticateAsync(null, token);
         }
 
         /// <inheritdoc />

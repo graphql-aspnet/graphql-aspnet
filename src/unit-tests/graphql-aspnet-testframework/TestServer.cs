@@ -170,7 +170,7 @@ namespace GraphQL.AspNet.Tests.Framework
             else
                 docPart = document.Operations.RetrieveOperation(operationName);
 
-            return planGenerator.CreatePlan(docPart);
+            return planGenerator.CreatePlanAsync(docPart);
         }
 
         /// <summary>

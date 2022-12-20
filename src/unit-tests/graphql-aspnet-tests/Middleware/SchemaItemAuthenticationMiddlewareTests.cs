@@ -78,12 +78,12 @@ namespace GraphQL.AspNet.Tests.Middleware
                 authResult.Setup(x => x.Suceeded).Returns(kvp.Value != null);
                 authResult.Setup(x => x.User).Returns(kvp.Value);
                 authResult.Setup(x => x.AuthenticationScheme).Returns(kvp.Key);
-                _userSecurityContext?.Setup(x => x.Authenticate(kvp.Key, It.IsAny<CancellationToken>()))
+                _userSecurityContext?.Setup(x => x.AuthenticateAsync(kvp.Key, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(authResult.Object);
 
                 if (kvp.Key == DEFAULT_SCHEME)
                 {
-                    _userSecurityContext?.Setup(x => x.Authenticate(It.IsAny<CancellationToken>()))
+                    _userSecurityContext?.Setup(x => x.AuthenticateAsync(It.IsAny<CancellationToken>()))
                         .ReturnsAsync(authResult.Object);
                     defaultSet = true;
                 }
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             if (!defaultSet)
             {
-                _userSecurityContext?.Setup(x => x.Authenticate(It.IsAny<CancellationToken>()))
+                _userSecurityContext?.Setup(x => x.AuthenticateAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new InvalidOperationException("No Default Scheme Defined"));
             }
 

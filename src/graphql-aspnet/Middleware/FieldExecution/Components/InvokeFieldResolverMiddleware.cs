@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             context.Metrics?.BeginFieldResolution(context);
             var continueExecution = true;
             if (context.IsValid)
-                continueExecution = await this.ExecuteContext(context, cancelToken).ConfigureAwait(false);
+                continueExecution = await this.ExecuteContextAsync(context, cancelToken).ConfigureAwait(false);
 
             if (!continueExecution)
             {
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             validationProcessor.Execute(validationContexts);
         }
 
-        private async Task<bool> ExecuteContext(GraphFieldExecutionContext context, CancellationToken cancelToken = default)
+        private async Task<bool> ExecuteContextAsync(GraphFieldExecutionContext context, CancellationToken cancelToken = default)
         {
             // Step 1: Build a collection of arguments from the supplied context that will
             //         be supplied to teh resolver

@@ -205,7 +205,7 @@ namespace GraphQL.AspNet.Tests.Web
             }
 
             var parser = new HttpContextParser(context);
-            var result = await parser.Parse();
+            var result = await parser.ParseAsync();
 
             Assert.AreEqual(expectedOutput.Query, result.Query);
             Assert.AreEqual(expectedOutput.OperationName, result.OperationName);
@@ -241,7 +241,7 @@ namespace GraphQL.AspNet.Tests.Web
 
             try
             {
-                await parser.Parse();
+                await parser.ParseAsync();
             }
             catch (HttpContextParsingException ex)
             {
@@ -271,7 +271,7 @@ namespace GraphQL.AspNet.Tests.Web
 
             try
             {
-                await parser.Parse();
+                await parser.ParseAsync();
             }
             catch (HttpContextParsingException ex)
             {
@@ -298,7 +298,7 @@ namespace GraphQL.AspNet.Tests.Web
 
             try
             {
-                await parser.Parse();
+                await parser.ParseAsync();
             }
             catch (HttpContextParsingException ex)
             {

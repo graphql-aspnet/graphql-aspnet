@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Engine
                 // wrap the connection in a proxy that abstracts graphql related
                 // communications from the underlying communications protocols
                 // ----------------------------
-                subscriptionClient = await _clientMaker.CreateSubscriptionClient<TSchema>(clientConnection);
+                subscriptionClient = await _clientMaker.CreateSubscriptionClientAsync<TSchema>(clientConnection);
                 if (subscriptionClient == null)
                     throw new InvalidOperationException("No client proxy could be configred for the connection.");
 

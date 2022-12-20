@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
         }
 
         /// <inheritdoc />
-        protected override async Task<GraphqlWsLegacyMessage> DeserializeMessage(Stream stream, CancellationToken cancelToken = default)
+        protected override async Task<GraphqlWsLegacyMessage> DeserializeMessageAsync(Stream stream, CancellationToken cancelToken = default)
         {
             GraphqlWsLegacyMessage recievedMessage;
 

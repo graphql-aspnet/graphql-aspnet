@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         {
             if (context.SecurityRequirements == null)
             {
-                var reqSet = await this.RetrieveSecurityRequirements(context.SecureSchemaItem);
+                var reqSet = await this.RetrieveSecurityRequirementsAsync(context.SecureSchemaItem);
                 context.Result = context.Result ?? reqSet.ChallengeResult;
                 context.SecurityRequirements = reqSet.Requirements;
             }
@@ -70,18 +70,18 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             await next.Invoke(context, cancelToken);
         }
 
-        private async Task<CachedRequirements> RetrieveSecurityRequirements(ISecurableSchemaItem schemaItem)
+        private async Task<CachedRequirements> RetrieveSecurityRequirementsAsync(ISecurableSchemaItem schemaItem)
         {
             if (_cachedRequirements.TryGetValue(schemaItem, out var requirementSet))
                 return requirementSet;
 
-            requirementSet = await this.CreateSecurityRequirements(schemaItem);
+            requirementSet = await this.CreateSecurityRequirementsAsync(schemaItem);
             _cachedRequirements.TryAdd(schemaItem, requirementSet);
 
             return requirementSet;
         }
 
-        private async Task<CachedRequirements> CreateSecurityRequirements(ISecurableSchemaItem schemaItem)
+        private async Task<CachedRequirements> CreateSecurityRequirementsAsync(ISecurableSchemaItem schemaItem)
         {
             if (schemaItem?.SecurityGroups == null)
             {

@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             if (context.IsValid && context.QueryPlan == null && context.Operation != null)
             {
                 context.QueryPlan = await _planGenerator
-                    .CreatePlan(context.Operation)
+                    .CreatePlanAsync(context.Operation)
                     .ConfigureAwait(false);
 
                 context.QueryPlan.IsCacheable = context.Operation.AllDirectives.Count == 0;

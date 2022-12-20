@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     // early
                     context.Metrics?.StartPhase(ApolloExecutionPhase.EXECUTION);
 
-                    var totalDirectivesApplied = await this.ApplyDirectives(
+                    var totalDirectivesApplied = await this.ApplyDirectivesAsync(
                         context,
                         directivesToExecute,
                         cancelToken);
@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             return list;
         }
 
-        private async Task<int> ApplyDirectives(
+        private async Task<int> ApplyDirectivesAsync(
             GraphQueryExecutionContext context,
             List<IDirectiveDocumentPart> directivesToExecute,
             CancellationToken cancelToken)

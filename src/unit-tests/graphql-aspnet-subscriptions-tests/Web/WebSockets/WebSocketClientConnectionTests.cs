@@ -397,7 +397,7 @@ namespace GraphQL.Subscriptions.Tests.Web.WebSockets
 
             await client.OpenAsync("protocol");
             var stream = new MemoryStream();
-            var result = await client.ReceiveFullMessage(stream);
+            var result = await client.ReceiveFullMessageAsync(stream);
 
             Assert.IsNotNull(fakeSocket);
             Assert.AreEqual(1, fakeSocket.TotalCallsToReceive);

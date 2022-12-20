@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public async Task<ISubscriptionClientProxy<TSchema>> CreateSubscriptionClient<TSchema>(IClientConnection connection)
+        public async Task<ISubscriptionClientProxy<TSchema>> CreateSubscriptionClientAsync<TSchema>(IClientConnection connection)
         where TSchema : class, ISchema
         {
             Validation.ThrowIfNull(connection, nameof(connection));

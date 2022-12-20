@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Engine
             GraphQueryData queryData;
             try
             {
-                queryData = await this.ParseHttpContext();
+                queryData = await this.ParseHttpContextAsync();
             }
             catch (HttpContextParsingException ex)
             {
@@ -112,10 +112,10 @@ namespace GraphQL.AspNet.Engine
         /// </remarks>
         /// <returns>A parsed query data object containing the input parameters for the
         /// graphql runtime or <c>null</c>.</returns>
-        protected virtual async Task<GraphQueryData> ParseHttpContext()
+        protected virtual async Task<GraphQueryData> ParseHttpContextAsync()
         {
             var dataGenerator = new HttpContextParser(this.HttpContext);
-            return await dataGenerator.Parse();
+            return await dataGenerator.ParseAsync();
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace GraphQL.AspNet.Engine
                 // Primary query execution
                 // *******************************
                 var queryResponse = await _runtime
-                    .ExecuteRequest(
+                    .ExecuteRequestAsync(
                         this.HttpContext.RequestServices,
                         this.GraphQLRequest,
                         securityContext,

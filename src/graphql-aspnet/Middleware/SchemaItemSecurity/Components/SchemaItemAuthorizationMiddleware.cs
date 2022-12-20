@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             // in this auth pipeline, if a result is already determined just skip this step
             if (context.Result == null)
             {
-                var result = await this.AuthorizeRequest(context).ConfigureAwait(false);
+                var result = await this.AuthorizeRequestAsync(context).ConfigureAwait(false);
                 context.Result = result ?? SchemaItemSecurityChallengeResult.Default();
             }
 
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         /// </summary>
         /// <param name="context">The context to process.</param>
         /// <returns>FieldSecurityChallengeResult.</returns>
-        private async Task<SchemaItemSecurityChallengeResult> AuthorizeRequest(GraphSchemaItemSecurityChallengeContext context)
+        private async Task<SchemaItemSecurityChallengeResult> AuthorizeRequestAsync(GraphSchemaItemSecurityChallengeContext context)
         {
             Validation.ThrowIfNull(context?.SecurityRequirements, nameof(GraphSchemaItemSecurityChallengeContext.SecurityRequirements));
 

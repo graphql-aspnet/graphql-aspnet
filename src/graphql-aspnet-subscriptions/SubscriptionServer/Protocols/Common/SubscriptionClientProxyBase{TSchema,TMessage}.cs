@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.Common
         /// <param name="stream">The stream containing the bytes to deserialize.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>TMessage.</returns>
-        protected abstract Task<TMessage> DeserializeMessage(Stream stream, CancellationToken cancelToken = default);
+        protected abstract Task<TMessage> DeserializeMessageAsync(Stream stream, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Serializes the message into an array of UTF-8 encoded bytes that can be transmitted
@@ -201,13 +201,13 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.Common
                     {
                         var stream = new MemoryStream();
                         result = await _clientConnection
-                                .ReceiveFullMessage(stream)
+                                .ReceiveFullMessageAsync(stream)
                                 .ConfigureAwait(false);
 
                         if (result.MessageType == ClientMessageType.Text)
                         {
                             stream.Seek(0, SeekOrigin.Begin);
-                            var message = await this.DeserializeMessage(stream);
+                            var message = await this.DeserializeMessageAsync(stream);
                             await this.ClientMessageReceivedAsync(message)
                                 .ConfigureAwait(false);
                         }
@@ -317,7 +317,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.Common
 
             try
             {
-                var context = await processor.ProcessEvent(
+                var context = await processor.ProcessEventAsync(
                         _clientConnection.SecurityContext,
                         eventData,
                         subscription,
@@ -416,7 +416,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.Common
                 metrics: metricsPackage,
                 logger: logger);
 
-            var result = await runtime.ExecuteRequest(context, _clientConnection.RequestAborted).ConfigureAwait(false);
+            var result = await runtime.ExecuteRequestAsync(context, _clientConnection.RequestAborted).ConfigureAwait(false);
 
             if (context.IsSubscriptionOperation)
             {

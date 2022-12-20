@@ -204,7 +204,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        protected async override Task<GqltwsMessage> DeserializeMessage(Stream stream, CancellationToken cancelToken = default)
+        protected async override Task<GqltwsMessage> DeserializeMessageAsync(Stream stream, CancellationToken cancelToken = default)
         {
             GqltwsMessage recievedMessage;
 

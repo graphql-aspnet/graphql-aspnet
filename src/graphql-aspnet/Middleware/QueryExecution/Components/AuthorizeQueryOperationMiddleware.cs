@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             if (context.IsValid && context.Operation != null)
             {
-                var isAuthorized = await this.AuthorizeOperation(context, cancelToken).ConfigureAwait(false);
+                var isAuthorized = await this.AuthorizeOperationAsync(context, cancelToken).ConfigureAwait(false);
                 if (!isAuthorized)
                     context.Cancel();
             }
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <param name="context">The primary query context.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns><c>true</c> if authorization was successful, otherwise false.</returns>
-        private async Task<bool> AuthorizeOperation(GraphQueryExecutionContext context, CancellationToken cancelToken)
+        private async Task<bool> AuthorizeOperationAsync(GraphQueryExecutionContext context, CancellationToken cancelToken)
         {
             var authTasks = new List<Task>();
             bool isAuthorized = true;

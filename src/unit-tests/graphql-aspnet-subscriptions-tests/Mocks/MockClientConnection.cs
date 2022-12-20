@@ -159,7 +159,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
         }
 
         /// <inheritdoc />
-        public async Task<IClientConnectionReceiveResult> ReceiveFullMessage(Stream stream, CancellationToken cancelToken = default)
+        public async Task<IClientConnectionReceiveResult> ReceiveFullMessageAsync(Stream stream, CancellationToken cancelToken = default)
         {
             IClientConnectionReceiveResult response;
             object currentMessage = null;

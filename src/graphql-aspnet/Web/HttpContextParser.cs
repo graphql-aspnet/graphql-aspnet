@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Web
         /// Generates a query data object usable by the graphql runtime.
         /// </summary>
         /// <returns>GraphQueryData.</returns>
-        public virtual async Task<GraphQueryData> Parse()
+        public virtual async Task<GraphQueryData> ParseAsync()
         {
             GraphQueryData queryData = new GraphQueryData();
 
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Web
             {
                 try
                 {
-                    queryData = await this.DecodePostBody();
+                    queryData = await this.DecodePostBodyAsync();
                 }
                 catch (JsonException ex)
                 {
@@ -155,7 +155,7 @@ namespace GraphQL.AspNet.Web
         /// into a <see cref="GraphQueryData" /> object that can be processed by the GraphQL runtime.
         /// </summary>
         /// <returns>GraphQueryData.</returns>
-        protected virtual async Task<GraphQueryData> DecodePostBody()
+        protected virtual async Task<GraphQueryData> DecodePostBodyAsync()
         {
             // if the content-type is set to graphql, treat
             // the whole body as the query string

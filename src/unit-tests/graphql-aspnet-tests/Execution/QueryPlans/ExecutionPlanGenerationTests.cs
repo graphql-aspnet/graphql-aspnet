@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
                 new DefaultOperationDepthCalculator<GraphSchema>(),
                 new DefaultOperationComplexityCalculator<GraphSchema>());
 
-            return await planGenerator.CreatePlan(doc.Operations[0]);
+            return await planGenerator.CreatePlanAsync(doc.Operations[0]);
         }
 
         [Test]

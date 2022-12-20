@@ -59,13 +59,13 @@ namespace GraphQL.AspNet.Web.Security
         }
 
         /// <inheritdoc />
-        public Task<IAuthenticationResult> Authenticate(CancellationToken token = default)
+        public Task<IAuthenticationResult> AuthenticateAsync(CancellationToken token = default)
         {
-            return this.Authenticate(null, token);
+            return this.AuthenticateAsync(null, token);
         }
 
         /// <inheritdoc />
-        public async Task<IAuthenticationResult> Authenticate(string scheme, CancellationToken token = default)
+        public async Task<IAuthenticationResult> AuthenticateAsync(string scheme, CancellationToken token = default)
         {
             var schemeKey = scheme ?? DEFAULT_SCHEME;
 

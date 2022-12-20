@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public async Task<IGraphQueryPlan> CreatePlan(IOperationDocumentPart operation)
+        public async Task<IGraphQueryPlan> CreatePlanAsync(IOperationDocumentPart operation)
         {
             Validation.ThrowIfNull(operation, nameof(operation));
 
@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Engine
 
             var generator = new ExecutableOperationGenerator(_schema);
 
-            var executableOperation = await generator.Create(operation).ConfigureAwait(false);
+            var executableOperation = await generator.CreateAsync(operation).ConfigureAwait(false);
             queryPlan.Operation = executableOperation;
             queryPlan.Messages.AddRange(executableOperation.Messages);
 
