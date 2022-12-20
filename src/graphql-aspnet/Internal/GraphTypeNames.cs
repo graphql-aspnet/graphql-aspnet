@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Internal
         }
 
         /// <summary>
-        /// Parses the name of the type as it would exist in the object graph.
+        /// Parses the name of the type as it would exist in the object graph, minus any expected casing.
         /// </summary>
         /// <typeparam name="TType">The concrete type to retrieve the graph type name of.</typeparam>
         /// <param name="kind">The kind of type to generate a name for.</param>
@@ -58,11 +58,11 @@ namespace GraphQL.AspNet.Internal
         }
 
         /// <summary>
-        /// Forciably assigns a graph name to a type, will override any previously assigned name.
+        /// Forcibly assigns a name to a type, will override any previously assigned name.
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="kind">The kind of object for which the name will be assigned.</param>
-        /// <param name="graphTypeName">Name of the graph type.</param>
+        /// <param name="type">The type to assign to.</param>
+        /// <param name="kind">The type kind of object for which the name will be assigned.</param>
+        /// <param name="graphTypeName">Name of the graph type to assign.</param>
         public static void AssignName(Type type, TypeKind kind, string graphTypeName)
         {
             Validation.ThrowIfNull(type, nameof(type));
