@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Internal
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer
 {
     using System;
     using System.Collections.Generic;
@@ -153,7 +153,7 @@ namespace GraphQL.Subscriptions.Tests.Internal
             settings.Setup(x => x.AlertThresholds)
                 .Returns(new List<SubscriptionEventAlertThreshold>()
                 {
-                    new SubscriptionEventAlertThreshold(Microsoft.Extensions.Logging.LogLevel.Warning, 45, TimeSpan.FromSeconds(23)),
+                    new SubscriptionEventAlertThreshold(LogLevel.Warning, 45, TimeSpan.FromSeconds(23)),
                 });
 
             var evt = new SubscriptionEvent();

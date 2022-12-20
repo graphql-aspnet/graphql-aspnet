@@ -16,7 +16,7 @@ namespace GraphQL.Subscriptions.Tests.Execution.RulesEngine
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Execution.RulesEngine.RuleCheckTestData;
-    using GraphQL.Subscriptions.Tests.Mock;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using NUnit.Framework;
 
     [TestFixture]

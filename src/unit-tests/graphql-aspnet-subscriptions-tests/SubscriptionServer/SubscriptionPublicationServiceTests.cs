@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer
 {
     using System;
     using System.Threading;
@@ -35,8 +35,8 @@ namespace GraphQL.Subscriptions.Tests.Execution
             publisher.Setup(x => x.PublishEventAsync(It.IsAny<SubscriptionEvent>(), It.IsAny<CancellationToken>()));
 
             var collection = new ServiceCollection();
-            collection.AddSingleton<IGraphEventLogger>(logger.Object);
-            collection.AddSingleton<ISubscriptionEventPublisher>(publisher.Object);
+            collection.AddSingleton(logger.Object);
+            collection.AddSingleton(publisher.Object);
             var provider = collection.BuildServiceProvider();
 
             var eventData = new SubscriptionEvent()

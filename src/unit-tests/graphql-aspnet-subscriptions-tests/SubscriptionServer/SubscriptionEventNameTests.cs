@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer
 {
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Schemas;

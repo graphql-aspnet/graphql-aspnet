@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.GraphqlWsLegacyData
 {
     using System;
     using System.Text.Json;

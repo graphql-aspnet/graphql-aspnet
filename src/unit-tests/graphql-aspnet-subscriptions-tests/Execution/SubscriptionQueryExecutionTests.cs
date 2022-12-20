@@ -15,7 +15,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.Subscriptions.Tests.Execution.SubscriptionQueryExecutionData;
-    using GraphQL.Subscriptions.Tests.Mock;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using NuGet.Frameworks;
     using NUnit.Framework;
 

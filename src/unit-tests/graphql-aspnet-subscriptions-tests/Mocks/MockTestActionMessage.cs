@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Mock
+namespace GraphQL.Subscriptions.Tests.Mocks
 {
     using System;
 

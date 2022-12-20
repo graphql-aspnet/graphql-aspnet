@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Web
+namespace GraphQL.Subscriptions.Tests.Web.WebSockets
 {
     using System.Net.WebSockets;
     using GraphQL.AspNet.Web;
@@ -31,7 +31,7 @@ namespace GraphQL.Subscriptions.Tests.Web
 
             Assert.AreEqual(55, proxy.Count);
             Assert.AreEqual(ClientMessageType.Text, proxy.MessageType);
-            Assert.IsTrue((bool)proxy.EndOfMessage);
+            Assert.IsTrue(proxy.EndOfMessage);
             Assert.AreEqual(ConnectionCloseStatus.InternalServerError, proxy.CloseStatus.Value);
             Assert.AreEqual("no Description", proxy.CloseStatusDescription);
         }

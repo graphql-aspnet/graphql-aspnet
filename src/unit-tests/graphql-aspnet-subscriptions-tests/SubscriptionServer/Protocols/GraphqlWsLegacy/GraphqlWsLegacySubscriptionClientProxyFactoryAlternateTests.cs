@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;

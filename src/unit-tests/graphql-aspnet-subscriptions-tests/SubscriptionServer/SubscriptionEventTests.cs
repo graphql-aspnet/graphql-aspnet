@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer
 {
     using GraphQL.AspNet.SubscriptionServer;
     using NUnit.Framework;

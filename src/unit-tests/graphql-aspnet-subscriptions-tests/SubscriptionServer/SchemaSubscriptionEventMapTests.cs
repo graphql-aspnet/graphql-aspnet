@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Schemas
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer
 {
     using System.Data;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.Mock;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using GraphQL.Subscriptions.Tests.Schemas.SchemaTestData;
     using NUnit.Framework;
 

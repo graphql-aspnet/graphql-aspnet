@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
 {
     using System;
     using System.Linq;
@@ -26,8 +26,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Web;
-    using GraphQL.Subscriptions.Tests.Mock;
-    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData;
+    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs.GraphqlTransportWsData;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
@@ -96,7 +96,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             // init a connection then close the socket
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
             connection.QueueConnectionClosedByClient();
 
             Assert.AreEqual(2, connection.QueuedMessageCount);
@@ -121,7 +121,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
             connection.QueueConnectionClosedByClient(); // socket level close message
 
             Assert.AreEqual(2, connection.QueuedMessageCount);
@@ -140,8 +140,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             // startup the connection then register a subscription
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -339,8 +339,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -349,7 +349,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 },
             });
 
-            connection.QueueClientMessage((object)new GqltwsSubscriptionCompleteMessage()
+            connection.QueueClientMessage(new GqltwsSubscriptionCompleteMessage()
             {
                 Id = "abc",
             });
@@ -367,8 +367,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -376,7 +376,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                     Query = "subscription {  gqltwsSubscription { watchForPropObject { property1 } } }",
                 },
             });
-            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
             {
                 Id = "abc1",
                 Payload = new GraphQueryData()
@@ -398,8 +398,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -407,7 +407,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                     Query = "subscription {  gqltwsSubscription { watchForPropObject { property1 } } }",
                 },
             });
-            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -431,8 +431,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -464,8 +464,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
 
             await graphqlWsClient.StartConnectionAsync();
 
@@ -502,8 +502,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((object)new GqltwsPingMessage());
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsPingMessage());
             connection.QueueConnectionClosedByClient();
 
             await graphqlWsClient.StartConnectionAsync();
@@ -526,8 +526,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             // queue the subscription
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -543,7 +543,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             });
 
             // unsbuscribe the subscription
-            connection.QueueClientMessage((object)new GqltwsSubscriptionCompleteMessage("abc"));
+            connection.QueueClientMessage(new GqltwsSubscriptionCompleteMessage("abc"));
 
             // ensure it was removed
             connection.QueueAction(() =>
@@ -573,8 +573,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((object)new FakeGqltwsMessage());
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new FakeGqltwsMessage());
 
             await graphqlWsClient.StartConnectionAsync();
 
@@ -595,8 +595,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         {
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((object)new GqltwsPingMessage());
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsPingMessage());
             connection.QueueConnectionClosedByClient();
 
             await graphqlWsClient.StartConnectionAsync();
@@ -612,11 +612,11 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
 
             // mimic the client sending a complete message for a subscription
             // not currently registered
-            connection.QueueClientMessage((object)new GqltwsSubscriptionCompleteMessage()
+            connection.QueueClientMessage(new GqltwsSubscriptionCompleteMessage()
             {
                 Id = "abc123",
             });

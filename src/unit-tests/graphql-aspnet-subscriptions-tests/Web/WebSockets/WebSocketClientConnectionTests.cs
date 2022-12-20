@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Web
+namespace GraphQL.Subscriptions.Tests.Web.WebSockets
 {
     using System;
     using System.IO;
@@ -18,7 +18,7 @@ namespace GraphQL.Subscriptions.Tests.Web
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Web.WebSockets;
-    using GraphQL.Subscriptions.Tests.Mock;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
     using Moq;
     using NUnit.Framework;
@@ -89,7 +89,7 @@ namespace GraphQL.Subscriptions.Tests.Web
 
             await client.CloseAsync(ConnectionCloseStatus.Unknown, string.Empty);
 
-            Assert.IsTrue((bool)client.ClosedForever);
+            Assert.IsTrue(client.ClosedForever);
         }
 
         [Test]
@@ -114,7 +114,7 @@ namespace GraphQL.Subscriptions.Tests.Web
             await client.OpenAsync("some protocol");
             await client.CloseAsync(ConnectionCloseStatus.Unknown, string.Empty);
 
-            Assert.IsTrue((bool)client.ClosedForever);
+            Assert.IsTrue(client.ClosedForever);
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace GraphQL.Subscriptions.Tests.Web
             });
 
             Assert.AreSame(exceptionToThrow, thrownException);
-            Assert.IsTrue((bool)client.ClosedForever);
+            Assert.IsTrue(client.ClosedForever);
         }
 
         [Test]
@@ -174,7 +174,7 @@ namespace GraphQL.Subscriptions.Tests.Web
             });
 
             Assert.AreSame(exceptionToThrow, thrownException);
-            Assert.IsTrue((bool)client.ClosedForever);
+            Assert.IsTrue(client.ClosedForever);
         }
 
         [Test]
@@ -401,7 +401,7 @@ namespace GraphQL.Subscriptions.Tests.Web
 
             Assert.IsNotNull(fakeSocket);
             Assert.AreEqual(1, fakeSocket.TotalCallsToReceive);
-            Assert.IsFalse((bool)result.CloseStatus.HasValue);
+            Assert.IsFalse(result.CloseStatus.HasValue);
             Assert.IsTrue(stream.Length > 0);
         }
 

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
 {
     using System;
     using System.Text.Json;
@@ -24,8 +24,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.ServerMessages;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.Mock;
-    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData;
+    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs.GraphqlTransportWsData;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
@@ -49,7 +49,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize((object)message, message.GetType(), options);
+            var response = JsonSerializer.Serialize(message, message.GetType(), options);
 
             var expected = @"
             {
@@ -68,7 +68,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize((object)message, message.GetType(), options);
+            var response = JsonSerializer.Serialize(message, message.GetType(), options);
 
             var expected = @"
             {
@@ -103,7 +103,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize((object)message, message.GetType(), options);
+            var response = JsonSerializer.Serialize(message, message.GetType(), options);
 
             // error message should render a single IGraphMessage
             // that is normally part of the errors collection on a standard response
@@ -154,7 +154,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize((object)message, message.GetType(), options);
+            var response = JsonSerializer.Serialize(message, message.GetType(), options);
 
             // error message should render a single IGraphMessage
             // that is normally part of the errors collection on a standard response
@@ -203,7 +203,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize((object)message, message.GetType(), options);
+            var response = JsonSerializer.Serialize(message, message.GetType(), options);
 
             var expected = @"
             {
@@ -232,7 +232,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize((object)message, typeof(GqltwsMessage), options);
+            var response = JsonSerializer.Serialize(message, typeof(GqltwsMessage), options);
 
             var expected = @"
             {
@@ -251,7 +251,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize((object)message, typeof(GqltwsMessage), options);
+            var response = JsonSerializer.Serialize(message, typeof(GqltwsMessage), options);
 
             var expected = @"
             {

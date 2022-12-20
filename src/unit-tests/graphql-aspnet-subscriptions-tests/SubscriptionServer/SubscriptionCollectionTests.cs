@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer
 {
     using System;
     using System.Linq;
@@ -88,10 +88,10 @@ namespace GraphQL.Subscriptions.Tests.Execution
             Assert.AreEqual(2, collection.Count);
 
             var foundSubs = collection.RetreiveByRoute(field);
-            Assert.AreEqual(fakeSub.Object, Enumerable.Single<ISubscription<GraphSchema>>(foundSubs));
+            Assert.AreEqual(fakeSub.Object, foundSubs.Single());
 
             foundSubs = collection.RetreiveByRoute(field2);
-            Assert.AreEqual(fakeSub2.Object, Enumerable.Single<ISubscription<GraphSchema>>(foundSubs));
+            Assert.AreEqual(fakeSub2.Object, foundSubs.Single());
 
             foundSubs = collection.RetreiveByRoute(field3);
             CollectionAssert.IsEmpty(foundSubs);

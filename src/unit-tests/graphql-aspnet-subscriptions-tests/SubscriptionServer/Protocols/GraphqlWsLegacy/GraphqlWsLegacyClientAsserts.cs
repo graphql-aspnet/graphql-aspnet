@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
 {
     using System.Text;
     using System.Text.Json;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.Mock;
-    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData;
+    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.GraphqlWsLegacyData;
     using NUnit.Framework;
 
     public static class GraphqlWsLegacyClientAsserts
@@ -30,7 +30,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             GraphqlWsLegacyMessageType type,
             bool dequeue = true)
         {
-            AssertGraphqlWsLegacyResponse(connection, type, null, false, null, false, dequeue);
+            connection.AssertGraphqlWsLegacyResponse(type, null, false, null, false, dequeue);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             string id,
             bool dequeue = true)
         {
-            AssertGraphqlWsLegacyResponse(connection, type, id, true, null, false, dequeue);
+            connection.AssertGraphqlWsLegacyResponse(type, id, true, null, false, dequeue);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             string expectedPayloadJson,
             bool dequeue = true)
         {
-            AssertGraphqlWsLegacyResponse(connection, type, id, true, expectedPayloadJson, true, dequeue);
+            connection.AssertGraphqlWsLegacyResponse(type, id, true, expectedPayloadJson, true, dequeue);
         }
 
         private static void AssertGraphqlWsLegacyResponse(
@@ -88,7 +88,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             options.AllowTrailingCommas = true;
             options.Converters.Add(new GraphqlWsLegacyResponseMessageConverter());
 
-            var convertedMessage = System.Text.Json.JsonSerializer.Deserialize<GraphqlWsLegacyResponseMessage>(str, options);
+            var convertedMessage = JsonSerializer.Deserialize<GraphqlWsLegacyResponseMessage>(str, options);
 
             Assert.IsNotNull(convertedMessage, "Could not deserialized response message");
             Assert.AreEqual(type, convertedMessage.Type, $"Expected message type of {type.ToString()} but got {convertedMessage.Type.ToString()}");

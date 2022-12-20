@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
 {
     using System.Text;
     using System.Text.Json;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.Mock;
-    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData;
+    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs.GraphqlTransportWsData;
     using NUnit.Framework;
 
     public static class GqltwsClientAsserts

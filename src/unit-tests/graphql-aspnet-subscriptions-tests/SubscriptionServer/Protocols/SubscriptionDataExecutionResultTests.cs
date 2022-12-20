@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.Common
+namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols
 {
     using GraphQL.AspNet;
     using GraphQL.AspNet.Execution;

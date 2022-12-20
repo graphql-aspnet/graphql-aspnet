@@ -22,7 +22,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer.Exceptions;
-    using GraphQL.Subscriptions.Tests.Mock;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
     using Moq;
     using NUnit.Framework;
