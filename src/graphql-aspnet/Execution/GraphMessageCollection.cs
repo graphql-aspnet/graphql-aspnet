@@ -60,10 +60,15 @@ namespace GraphQL.AspNet.Execution
                 // as messages are added in 1 by 1, ensure its only ever resized
                 // once for the whole iterated operation.
                 var newCount = messagesToAdd.Count + _messages.Count;
-                if (newCount < _messages.Capacity)
+                if (newCount > _messages.Capacity)
                 {
-                    var newCapacity = _messages.Capacity * 2;
-                    while (newCount < newCapacity)
+                    var newCapacity = _messages.Capacity;
+                    if (newCapacity == 0)
+                        newCapacity += 1;
+
+                    newCapacity = newCapacity * 2;
+
+                    while (newCount > newCapacity)
                         newCapacity = newCapacity * 2;
 
                     _messages.Capacity = newCapacity;
@@ -194,6 +199,9 @@ namespace GraphQL.AspNet.Execution
 
         /// <inheritdoc />
         public bool IsSucessful => !this.Severity.IsCritical();
+
+        /// <inheritdoc />
+        public int Capacity => _messages.Capacity;
 
         /// <inheritdoc />
         public IGraphMessage this[int index]

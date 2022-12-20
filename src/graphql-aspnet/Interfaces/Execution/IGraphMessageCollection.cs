@@ -106,5 +106,11 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value><c>true</c> if this instance is success; otherwise, <c>false</c>.</value>
         bool IsSucessful { get; }
+
+        /// <summary>
+        /// Gets the current maximum capacity of this collection.
+        /// </summary>
+        /// <value>The current maximum capacity.</value>
+        int Capacity { get; }
     }
 }

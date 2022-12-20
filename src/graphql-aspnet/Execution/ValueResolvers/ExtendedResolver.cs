@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     internal class ExtendedResolver : IGraphFieldResolver
     {
         private readonly IGraphFieldResolver _primaryResolver;
-        private readonly Func<FieldResolutionContext, CancellationToken, Task> _extention;
+        private readonly Func<FieldResolutionContext, CancellationToken, Task> _extension;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExtendedResolver" /> class.
@@ -36,14 +36,14 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
             Func<FieldResolutionContext, CancellationToken, Task> extension)
         {
             _primaryResolver = Validation.ThrowIfNullOrReturn(primaryResolver, nameof(primaryResolver));
-            _extention = Validation.ThrowIfNullOrReturn(extension, nameof(extension));
+            _extension = Validation.ThrowIfNullOrReturn(extension, nameof(extension));
         }
 
         /// <inheritdoc />
         public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             await _primaryResolver.ResolveAsync(context, cancelToken).ConfigureAwait(false);
-            await _extention.Invoke(context, cancelToken).ConfigureAwait(false);
+            await _extension.Invoke(context, cancelToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
