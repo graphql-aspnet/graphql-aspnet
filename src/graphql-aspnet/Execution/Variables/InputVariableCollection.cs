@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution.Variables
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.Common.Json;
+    using GraphQL.AspNet.Execution.Variables.Json;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>

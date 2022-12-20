@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Common.Json
+namespace GraphQL.AspNet.Execution.Variables.Json
 {
     using System;
     using System.Globalization;

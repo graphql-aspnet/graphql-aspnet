@@ -20,14 +20,14 @@ namespace GraphQL.AspNet.Execution
     /// <summary>
     /// Helper methods useful during document execution.
     /// </summary>
-    internal static class ExecutionExtensionMethods
+    public static class ExecutionExtensionMethods
     {
         /// <summary>
         /// Converts the value into its equivilant routing constant.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>System.String.</returns>
-        public static string ToRouteRoot(this GraphCollection value)
+        internal static string ToRouteRoot(this GraphCollection value)
         {
             switch (value)
             {

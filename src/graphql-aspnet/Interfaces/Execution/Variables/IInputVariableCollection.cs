@@ -10,8 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Execution.Variables
 {
     using System.Collections.Generic;
-    using System.Text.Json.Serialization;
-    using GraphQL.AspNet.Common.Json;
 
     /// <summary>
     /// A collection of variables supplied by user to be used when resolving
