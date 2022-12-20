@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Common
+namespace GraphQL.AspNet.SubscriptionServer
 {
     using System;
 

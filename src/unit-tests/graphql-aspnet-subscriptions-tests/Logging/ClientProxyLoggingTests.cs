@@ -19,6 +19,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
     using GraphQL.AspNet.Logging.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.SubscriptionServer;
     using Moq;
     using NUnit.Framework;
 

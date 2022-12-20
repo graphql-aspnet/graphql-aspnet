@@ -21,6 +21,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.SubscriptionServer;
+    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// Standard middleware component that pulls any raised events off the field execution context

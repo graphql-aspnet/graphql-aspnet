@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
         [Test]
         public void LocateTypesInAssembly_NoAssemblyProvided_ReturnsEmptyList()
         {
-            var types = ReflectionExtensions.LocateTypesInAssembly(null);
+            var types = AssemblyExtensions.LocateTypesInAssembly(null);
             Assert.AreEqual(0, types.Count());
         }
 

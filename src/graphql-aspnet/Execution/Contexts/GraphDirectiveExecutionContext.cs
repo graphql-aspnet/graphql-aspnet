@@ -10,12 +10,9 @@
 namespace GraphQL.AspNet.Execution.Contexts
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using System.Security.Claims;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
@@ -27,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A set of information needed to successiful execute a directive as part of a field resolution.
     /// </summary>
     [DebuggerDisplay("Directive Context: {Directive.Name}")]
-    public class GraphDirectiveExecutionContext : BaseGraphExecutionContext, IChildContextGenerator<GraphDirectiveExecutionContext>
+    public class GraphDirectiveExecutionContext : BaseGraphExecutionContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveExecutionContext" /> class.
@@ -94,12 +91,6 @@ namespace GraphQL.AspNet.Execution.Contexts
             this.Request = Validation.ThrowIfNullOrReturn(directiveRequest, nameof(directiveRequest));
             this.VariableData = variableData ?? ResolvedVariableCollection.Empty;
             this.User = user;
-        }
-
-        /// <inheritdoc />
-        IEnumerable<GraphDirectiveExecutionContext> IChildContextGenerator<GraphDirectiveExecutionContext>.CreateChildContexts()
-        {
-            return Enumerable.Empty<GraphDirectiveExecutionContext>();
         }
 
         /// <summary>

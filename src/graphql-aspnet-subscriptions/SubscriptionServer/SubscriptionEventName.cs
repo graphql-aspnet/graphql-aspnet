@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.SubscriptionServer
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// A name representing the qualified, unique path in a shcema where a subscription is declared.

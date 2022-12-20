@@ -9,8 +9,8 @@
 
 namespace GraphQL.AspNet.Interfaces.Internal
 {
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// A collection of all know, active subscription clients attached to this

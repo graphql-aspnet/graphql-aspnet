@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Common.Extensions
     /// <summary>
     /// Helper methods for working with types.
     /// </summary>
-    public static class ReflectionExtensions
+    public static class AssemblyExtensions
     {
         /// <summary>
         /// <para>Scans the given assembly and returns a list of found types that are not abstract and is: </para>

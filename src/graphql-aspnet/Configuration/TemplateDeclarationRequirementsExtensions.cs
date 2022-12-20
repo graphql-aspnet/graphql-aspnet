@@ -16,30 +16,30 @@ namespace GraphQL.AspNet.Configuration
     public static class TemplateDeclarationRequirementsExtensions
     {
         /// <summary>
-        /// Determines, on this set of requirements, if methods must be explicitly declared to be included.
+        /// Determines, on this set of requirements, if methods need not be declared to be included.
         /// </summary>
         /// <param name="requirementSetting">The requirement setting.</param>
-        /// <returns><c>true</c> if methods must be explicitly declared, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c> if methods do not need to be explicitly declared, <c>false</c> otherwise.</returns>
         public static bool AllowImplicitMethods(this TemplateDeclarationRequirements requirementSetting)
         {
             return !requirementSetting.HasFlag(TemplateDeclarationRequirements.Method);
         }
 
         /// <summary>
-        /// Determines, on this set of requirements, if properties must be explicitly declared to be included.
+        /// Determines, on this set of requirements, if properties need not be declared to be included.
         /// </summary>
         /// <param name="requirementSetting">The requirement setting.</param>
-        /// <returns><c>true</c> if properties must be explicitly declared, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c> if properties do not need to be explicitly declared, <c>false</c> otherwise.</returns>
         public static bool AllowImplicitProperties(this TemplateDeclarationRequirements requirementSetting)
         {
             return !requirementSetting.HasFlag(TemplateDeclarationRequirements.Property);
         }
 
         /// <summary>
-        /// Determines, on this set of requirements, if enum values must be explicitly declared to be included.
+        /// Determines, on this set of requirements, if enum values need not be declared to be included.
         /// </summary>
         /// <param name="requirementSetting">The requirement setting.</param>
-        /// <returns><c>true</c> if enums must be explicitly declared, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c> if enum values do not need to be explicitly declared, <c>false</c> otherwise.</returns>
         public static bool AllowImplicitEnumValues(this TemplateDeclarationRequirements requirementSetting)
         {
             return !requirementSetting.HasFlag(TemplateDeclarationRequirements.EnumValue);

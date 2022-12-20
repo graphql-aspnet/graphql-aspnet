@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             if (this.Route.RootCollection == Execution.GraphCollection.Subscription)
             {
-                return new GraphSubscriptionInputArgumentTemplate(
+                return new GraphSubscriptionArgumentTemplate(
                     this,
                     paramInfo,
                     _explicitlyDeclaredAsSubscriptionSourceType != null);

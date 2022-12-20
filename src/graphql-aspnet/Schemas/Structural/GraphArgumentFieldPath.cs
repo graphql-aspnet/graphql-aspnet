@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 
     /// <summary>
-    /// An implemention of the route path system with special considering for input arguments
+    /// An implemention of the schema item path with special considering for input arguments
     /// to differentiate them from normal field routes.
     /// </summary>
     public class GraphArgumentFieldPath : SchemaItemPath

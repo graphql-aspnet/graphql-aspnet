@@ -9,7 +9,6 @@
 
 namespace GraphQL.Subscriptions.Tests.SubscriptionServer
 {
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer;
     using NUnit.Framework;

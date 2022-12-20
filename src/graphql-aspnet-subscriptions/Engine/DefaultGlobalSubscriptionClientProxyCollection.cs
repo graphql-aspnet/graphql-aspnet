@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// The default implementation of the collection of all known, active clients

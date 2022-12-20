@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Common.Extensions
     using System.Reflection;
 
     /// <summary>
-    /// Helper methods for working with Expressions.
+    /// Extension methods for working with Expression trees.
     /// </summary>
     public static class ExpressionExtensions
     {

@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Common.Extensions
     using System;
 
     /// <summary>
-    /// Helper methods for SpanT.
+    /// Extension methods for working with <see cref="Span{T}"/>.
     /// </summary>
     public static class SpanTExtensions
     {

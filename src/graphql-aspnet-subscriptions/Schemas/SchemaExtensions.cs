@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Common.Extensions
+namespace GraphQL.AspNet.Schemas
 {
     using System;
     using System.Collections.Concurrent;
