@@ -31,8 +31,10 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// Attempts to remove the client from the client. If it is not
         /// part of the collection, the operation is ignored.
         /// </summary>
-        /// <param name="clientProxy">The client proxy to remove.</param>
-        void RemoveClient(ISubscriptionClientProxy clientProxy);
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="clientProxy">The client proxy that was removed, if any.</param>
+        /// <returns><c>true</c> if the client was removed from the collection, <c>false</c> otherwise.</returns>
+        bool TryRemoveClient(SubscriptionClientId clientId, out ISubscriptionClientProxy clientProxy);
 
         /// <summary>
         /// Tries to retrieve a client with the given id.

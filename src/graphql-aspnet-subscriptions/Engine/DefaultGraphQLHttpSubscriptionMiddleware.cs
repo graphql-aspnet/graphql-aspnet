@@ -190,7 +190,7 @@ namespace GraphQL.AspNet.Engine
             {
                 if (subscriptionClient != null)
                 {
-                    _clientTracker.RemoveClient(subscriptionClient);
+                    _clientTracker.TryRemoveClient(subscriptionClient.Id, out _);
                     subscriptionClient.Dispose();
                     subscriptionClient = null;
                 }

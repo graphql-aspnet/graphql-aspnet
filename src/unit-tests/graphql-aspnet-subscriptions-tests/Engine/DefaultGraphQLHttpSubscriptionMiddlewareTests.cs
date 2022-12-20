@@ -21,6 +21,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.SubscriptionServer.Exceptions;
     using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
@@ -124,6 +125,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             var factory = new Mock<ISubscriptionServerClientFactory>();
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
+            client.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
 
             factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
                 .ReturnsAsync(client.Object);

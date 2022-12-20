@@ -89,6 +89,9 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(SubscriptionClientId ls, SubscriptionClientId rs)
         {
+            if (object.ReferenceEquals(ls, null))
+                return object.ReferenceEquals(rs, null);
+
             return ls.Equals(rs);
         }
 

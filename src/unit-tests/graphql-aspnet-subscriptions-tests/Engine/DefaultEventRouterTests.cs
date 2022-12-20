@@ -33,6 +33,8 @@ namespace GraphQL.Subscriptions.Tests.Engine
             {
                 router.RaisePublishedEvent(null);
             });
+
+            router.Dispose();
         }
 
         [Test]
@@ -42,6 +44,8 @@ namespace GraphQL.Subscriptions.Tests.Engine
             var router = new DefaultSubscriptionEventRouter(dispatcher.Object);
 
             router.RemoveClient(null);
+
+            router.Dispose();
         }
 
         [Test]
@@ -65,6 +69,8 @@ namespace GraphQL.Subscriptions.Tests.Engine
             router.RaisePublishedEvent(evt);
 
             dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt, false), Times.Once, "Event1 never received");
+
+            router.Dispose();
         }
 
         [Test]
@@ -101,6 +107,8 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt, false), Times.Once, "Event1 never received");
             dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt2, false), Times.Once, "Event2 never received");
+
+            router.Dispose();
         }
 
         [Test]
@@ -139,6 +147,8 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt, false), Times.Never, "Event1 was received");
             dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt2, false), Times.Once, "Event2 never received");
+
+            router.Dispose();
         }
 
         [Test]
@@ -176,6 +186,8 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt, false), Times.Never, "Event1 was received");
             dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt2, false), Times.Never, "Event2 was received");
+
+            router.Dispose();
         }
     }
 }
