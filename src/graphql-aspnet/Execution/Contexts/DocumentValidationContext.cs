@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A context used to validate all the created parts of a document generated during construction.
     /// </summary>
     [DebuggerDisplay("Part: {ActivePart.PartType}")]
-    internal class DocumentValidationContext : IContextGenerator<DocumentValidationContext>
+    public class DocumentValidationContext : IChildContextGenerator<DocumentValidationContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentValidationContext" /> class.

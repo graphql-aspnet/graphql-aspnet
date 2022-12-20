@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
 
     /// <summary>

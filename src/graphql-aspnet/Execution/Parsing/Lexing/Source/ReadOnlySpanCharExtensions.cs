@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
         /// Determines whether the given span of characters "could be" a properly escaped
         /// unique sequence according to graphQL. This method will rule out a string from being
         /// a valid unicode string but can't conclusively tell that it is valid in all cases
-        /// spec: https://graphql.github.io/graphql-spec/October2021/#sec-String-Value .
+        /// spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-String-Value" /> .
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns><c>true</c> if span could potentially be an escaped unicode character; otherwise, <c>false</c>.</returns>
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
         /// <summary>
         /// Determines whether the given span of characters represents a properly escaped
         /// unique sequence according to graphQL
-        /// spec: https://graphql.github.io/graphql-spec/October2021/#sec-String-Value.
+        /// spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-String-Value" />.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns><c>true</c> if span represents an escaped unicode character; otherwise, <c>false</c>.</returns>
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
 
         /// <summary>
         /// Determines if the given span of characters represents a valid escaped sequence of characters or not.
-        /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Appendix-Grammar-Summary.Lexical-Tokens .
+        /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Appendix-Grammar-Summary.Lexical-Tokens" /> .
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns>System.Boolean.</returns>

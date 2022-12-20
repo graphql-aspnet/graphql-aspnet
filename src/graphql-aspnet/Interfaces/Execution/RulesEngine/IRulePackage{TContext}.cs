@@ -7,15 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.RulesEngine.Interfaces
+namespace GraphQL.AspNet.Interfaces.Execution.RulesEngine
 {
     using System.Collections.Generic;
 
     /// <summary>
-    /// A collection of rules that can be executed against a context.
+    /// A collection of rules that can be executed against a given context.
     /// </summary>
-    /// <typeparam name="TContext">The type of the t context.</typeparam>
-    internal interface IRulePackage<TContext>
+    /// <typeparam name="TContext">The type of the context the rules work against.</typeparam>
+    public interface IRulePackage<TContext>
     {
         /// <summary>
         /// Fetches the rules that should be executed, in order, for the given context.

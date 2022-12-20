@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
         /// GraphqlWsLegacy.
         /// </summary>
         /// <remarks>
-        /// Details: (https://github.com/GraphqlWsLegacygraphql/subscriptions-transport-ws/blob/master/PROTOCOL.md).
+        /// Details: <see href="https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md" />.
         /// </remarks>
         public const string PROTOCOL_NAME = "graphql-ws";
 

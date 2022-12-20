@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using System.Security.Principal;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;

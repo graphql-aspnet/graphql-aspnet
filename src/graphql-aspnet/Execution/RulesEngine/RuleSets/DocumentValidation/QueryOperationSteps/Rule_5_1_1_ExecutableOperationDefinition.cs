@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     /// <summary>
     /// <para>(5.1.1) Verify that all top level definitions in the document are either an operation definition
     /// or a fragment definition.</para>
-    /// <para>Reference: https://graphql.github.io/graphql-spec/October2021/#sec-Executable-Definitions .</para>
+    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Executable-Definitions" /> .</para>
     /// </summary>
     internal class Rule_5_1_1_ExecutableOperationDefinition
         : DocumentPartValidationRuleStep<IOperationDocumentPart>

@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Parsing;

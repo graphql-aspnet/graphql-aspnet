@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution.Parsing
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using NUnit.Framework;
 
     [TestFixture]
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
                     path.AddFieldName(s);
             }
 
-            var result = path.ArrayString();
+            var result = path.ToArrayString();
             Assert.AreEqual(items.Length, path.Count);
             Assert.AreEqual(expectedString, result);
 
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
             }
 
             var parent = path.MakeParent();
-            var result = parent.ArrayString();
+            var result = parent.ToArrayString();
 
             Assert.AreEqual(expectedString, result);
 

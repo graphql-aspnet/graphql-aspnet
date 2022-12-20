@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Execution.Exceptions
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
     /// An exception thrown in context of processing a graph pipeline action. The data contained

@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine
     /// to a <see cref="GraphDataItem"/> during a query plan execution. The rules of this processor must pass
     /// for the field to allow child context execution.
     /// </summary>
-    internal sealed class FieldCompletionRuleProcessor : RuleProcessor<FieldValidationContext>
+    public sealed class FieldCompletionRuleProcessor : RuleProcessor<FieldValidationContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldCompletionRuleProcessor"/> class.

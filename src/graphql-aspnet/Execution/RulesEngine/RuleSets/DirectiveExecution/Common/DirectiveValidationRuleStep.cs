@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Commo
     using System;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
     /// A base step for any rules targeting the validation of

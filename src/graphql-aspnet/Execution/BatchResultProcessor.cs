@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;

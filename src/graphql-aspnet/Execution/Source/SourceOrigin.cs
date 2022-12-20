@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Common.Source
+namespace GraphQL.AspNet.Execution.Source
 {
     using System;
 
     /// <summary>
-    /// A complete origin represention of a location within the source text.
+    /// A complete represention (location and path) of a place within a query's source text.
     /// </summary>
     public readonly struct SourceOrigin
     {

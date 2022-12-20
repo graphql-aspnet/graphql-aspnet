@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
     /// A representing of a syntax node within a larger AST

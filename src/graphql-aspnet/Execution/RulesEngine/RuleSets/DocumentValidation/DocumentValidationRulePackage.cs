@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
     using System.Linq;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSetSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSteps;

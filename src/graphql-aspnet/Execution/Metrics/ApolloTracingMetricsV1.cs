@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution.Metrics
 
     /// <summary>
     /// A metrics package that tracks according to the apollo tracing standard.
-    /// spec: https://github.com/apollographql/apollo-tracing/ .
+    /// spec: <see href="https://github.com/apollographql/apollo-tracing/" /> .
     /// </summary>
     [DebuggerDisplay("Phases = {PhaseEntries.Count}, Resolvers = {ResolverEntries.Count}")]
     internal class ApolloTracingMetricsV1 : IGraphQueryExecutionMetrics, IDisposable

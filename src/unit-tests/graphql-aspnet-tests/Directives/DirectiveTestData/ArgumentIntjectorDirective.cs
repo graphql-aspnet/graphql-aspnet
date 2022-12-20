@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
 {
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Interfaces.Controllers;

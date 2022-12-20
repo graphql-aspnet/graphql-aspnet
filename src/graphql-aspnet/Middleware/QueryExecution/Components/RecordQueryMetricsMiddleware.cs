@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
     /// <summary>
     /// A middleware component for tracking execution time and other Apollo tracing
-    /// compatiable metrics: https://github.com/apollographql/apollo-tracing .
+    /// compatiable metrics: <see href="https://github.com/apollographql/apollo-tracing" /> .
     /// </summary>
     public class RecordQueryMetricsMiddleware : IQueryExecutionMiddleware
     {

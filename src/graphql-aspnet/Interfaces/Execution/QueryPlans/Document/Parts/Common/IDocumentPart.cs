@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common
 {
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.QueryPlans.Document;
     using GraphQL.AspNet.Interfaces.Schema;
 

@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Schema;

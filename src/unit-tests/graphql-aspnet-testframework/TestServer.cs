@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using System.Threading.Tasks;
     using Castle.DynamicProxy.Generators;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Engine;

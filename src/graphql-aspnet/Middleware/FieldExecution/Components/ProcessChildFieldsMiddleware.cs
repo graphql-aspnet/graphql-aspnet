@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;

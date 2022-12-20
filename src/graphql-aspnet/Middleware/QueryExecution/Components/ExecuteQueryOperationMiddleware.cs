@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;

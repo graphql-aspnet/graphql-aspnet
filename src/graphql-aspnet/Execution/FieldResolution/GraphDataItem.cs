@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -490,7 +490,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                     if (fieldSet.Fields.ContainsKey(field.FieldContext.Name))
                     {
                         throw new GraphExecutionException(
-                            $"Duplicate field name. The field '{field.Name}'  at '{this.Origin.Path.DotString()}' was resolved " +
+                            $"Duplicate field name. The field '{field.Name}'  at '{this.Origin.Path.ToDotString()}' was resolved " +
                             "more than once for a source object, unable to generate a valid output. " +
                             $"Field collections require unique names. An attempt was made to add the field '{field.Name}', " +
                             $"for target type '{field.FieldContext.ExpectedSourceType?.FriendlyName() ?? "-all-"}' when the field " +

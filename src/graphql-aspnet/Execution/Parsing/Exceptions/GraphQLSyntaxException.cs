@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Execution.Parsing.Exceptions
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
     /// Thrown when an invalid or unexpected character is found while parsing the provided source text.

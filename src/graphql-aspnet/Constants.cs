@@ -524,7 +524,7 @@ namespace GraphQL.AspNet
         {
             /// <summary>
             /// A regex containing the rules for parsing a graphql name.
-            /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Appendix-Grammar-Summary.Lexical-Tokens .
+            /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Appendix-Grammar-Summary.Lexical-Tokens" />.
             /// </summary>
             public static readonly Regex NameRegex = new Regex(@"^([_A-Za-z][0-9A-Za-z]|[0-9A-Za-z]+)[_0-9A-Za-z]*$");
         }

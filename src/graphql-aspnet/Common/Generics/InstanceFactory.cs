@@ -18,8 +18,8 @@ namespace GraphQL.AspNet.Common.Generics
     using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>
-    /// A helper object that creates expression trees for dynamic object generation, greatly improving
-    /// performance of subsequent object creation calls instead of using <see cref="Activator"/>.
+    /// A factory that creates compiled expression trees for dynamic object generation, greatly improving
+    /// performance over reflection.
     /// </summary>
     internal static class InstanceFactory
     {

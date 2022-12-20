@@ -7,15 +7,16 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.RulesEngine.Interfaces
+namespace GraphQL.AspNet.Interfaces.Execution.RulesEngine
 {
     using System;
+    using GraphQL.AspNet.Execution.RulesEngine;
 
     /// <summary>
     /// A Rule that can be executed by a <see cref="RuleProcessor{TContext}"/>.
     /// </summary>
     /// <typeparam name="TContext">The type of the rule context to execute against.</typeparam>
-    internal interface IRuleStep<TContext>
+    public interface IRuleStep<TContext>
     {
         /// <summary>
         /// Gets the id of this rule. The id must be unique within a given rule package

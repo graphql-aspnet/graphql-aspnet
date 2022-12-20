@@ -13,13 +13,13 @@ namespace GraphQL.AspNet.Execution.RulesEngine
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
     /// A processor that will execute a set of hierarchial rules against a context.
     /// </summary>
     /// <typeparam name="TContext">The type of the context being processed by this rule set.</typeparam>
-    internal abstract class RuleProcessor<TContext>
+    public abstract class RuleProcessor<TContext>
     {
         private static readonly int _maxDepth;
 
@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine
         private bool ProcessChildContexts(TContext parentContext, int parentDepth)
         {
             var completedAllSteps = true;
-            if (parentContext is IContextGenerator<TContext> childGenerator)
+            if (parentContext is IChildContextGenerator<TContext> childGenerator)
             {
                 foreach (var childContext in childGenerator.CreateChildContexts())
                     completedAllSteps = this.ProcessContext(childContext, parentDepth + 1) && completedAllSteps;

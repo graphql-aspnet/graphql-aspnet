@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine
     /// (parsed from the text submitted by a user) is internally consistant and valid against its target schema.
     /// e.g. things such as "are variables used when delcared", "are type expressions matched against the schema" etc.
     /// </summary>
-    internal class DocumentValidationRuleProcessor : RuleProcessor<DocumentValidationContext>
+    public class DocumentValidationRuleProcessor : RuleProcessor<DocumentValidationContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentValidationRuleProcessor"/> class.

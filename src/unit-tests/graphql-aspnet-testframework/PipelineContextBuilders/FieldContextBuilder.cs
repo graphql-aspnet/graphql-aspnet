@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;

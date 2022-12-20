@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
     /// A base request defining fields common to all intermediate request types.

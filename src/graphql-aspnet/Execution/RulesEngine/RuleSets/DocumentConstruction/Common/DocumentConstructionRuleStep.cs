@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Com
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
     /// A base construction step specialized for validation providing some common properites used among all document validation steps.

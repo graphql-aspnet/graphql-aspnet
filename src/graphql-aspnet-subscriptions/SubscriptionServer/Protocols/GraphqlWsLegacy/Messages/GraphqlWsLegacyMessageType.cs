@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages
 {
     /// <summary>
     /// <para>An enumeration of the different types of messages carried over a presistent connection.</para>
-    /// <para>Reference: https://github.com/GraphqlWsLegacygraphql/subscriptions-transport-ws/blob/master/PROTOCOL.md .</para>
+    /// <para>Reference: <see href="https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md"/>.</para>
     /// </summary>
     public enum GraphqlWsLegacyMessageType
     {

@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution.Parsing.Helpers
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
 
     internal class LexicalTokenTestCase

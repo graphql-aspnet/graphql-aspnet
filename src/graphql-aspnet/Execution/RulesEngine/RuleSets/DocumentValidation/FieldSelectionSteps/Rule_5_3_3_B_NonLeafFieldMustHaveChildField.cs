@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
     /// <summary>
     /// <para>(5.3.3)A rule that dictates for any given graph type returned by a field if that graph type
     /// is an OBJECT, UNION or INTERFACE type then the field MUST declare a selection set of fields to return.</para>
-    /// <para>Reference: https://graphql.github.io/graphql-spec/October2021/#sec-Leaf-Field-Selections .</para>
+    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Leaf-Field-Selections" /> .</para>
     /// </summary>
     internal class Rule_5_3_3_B_NonLeafFieldMustHaveChildField
         : DocumentPartValidationRuleStep<IFieldDocumentPart>

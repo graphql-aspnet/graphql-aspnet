@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
 {
     using System.Collections.Generic;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
     /// A data item container, that may represent a collection of data items or just one singular item,

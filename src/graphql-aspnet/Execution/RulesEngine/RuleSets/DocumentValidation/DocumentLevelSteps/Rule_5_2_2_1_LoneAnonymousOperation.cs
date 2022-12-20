@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Docum
 
     /// <summary>
     /// <para>(5.2.2.1) Validate that when an anon operation is included it exists by itself.</para>
-    /// <para>Reference: https://graphql.github.io/graphql-spec/October2021/#sec-Operation-Name-Uniqueness" .</para>
+    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Operation-Name-Uniqueness" /> .</para>
     /// </summary>
     internal class Rule_5_2_2_1_LoneAnonymousOperation
         : DocumentPartValidationRuleStep<IGraphQueryDocument>

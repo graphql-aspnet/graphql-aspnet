@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;

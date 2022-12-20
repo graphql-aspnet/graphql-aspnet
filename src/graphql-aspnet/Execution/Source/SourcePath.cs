@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Common.Source
+namespace GraphQL.AspNet.Execution.Source
 {
     using System;
     using System.Collections;
@@ -17,11 +17,11 @@ namespace GraphQL.AspNet.Common.Source
     using System.Text;
 
     /// <summary>
-    /// A logical represention of a path through a set of graph fields, using field names and array index numbers
-    /// to assist a developer in locating the source of their error in their query.
+    /// A logical represention of a path through a set of fields, using field names and array index numbers
+    /// to assist in locating the source of their error in a query.
     /// </summary>
     [Serializable]
-    [DebuggerDisplay("{DotString()}")]
+    [DebuggerDisplay("{ToDotString()}")]
     public class SourcePath : IReadOnlyList<object>
     {
         /// <summary>
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Common.Source
         /// <summary>
         /// <para>Adds the name of the current field to the path. Note: This should be the field alias if the
         /// user supplied one.</para>
-        /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Errors .</para>
+        /// <para>Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Errors"/>.</para>
         /// </summary>
         /// <param name="fieldName">Name of the field.</param>
         public void AddFieldName(string fieldName)
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Common.Source
 
         /// <summary>
         /// <para>Adds the index of the current array being iterated to the path.</para>
-        /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Errors .</para>
+        /// <para>Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Errors"/> .</para>
         /// </summary>
         /// <param name="index">The current index.</param>
         public void AddArrayIndex(int index)
@@ -147,42 +147,33 @@ namespace GraphQL.AspNet.Common.Source
         /// <summary>
         /// Gets the <see cref="object" /> with the specified error.
         /// </summary>
-        /// <param name="index">The index.</param>
+        /// <param name="index">The index of the segment to retrieve.</param>
         /// <returns>System.Object.</returns>
         public object this[int index] => _segments[index];
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         public IEnumerator<object> GetEnumerator()
         {
             return _segments.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
-            return this.DotString();
+            return this.ToDotString();
         }
 
         /// <summary>
         /// Creates a string of this path in a json serialized array format. (e.g. ["Path0", "Path1", 0, "Path2"]).
         /// </summary>
         /// <returns>System.String.</returns>
-        public string ArrayString()
+        public string ToArrayString()
         {
             var builder = new StringBuilder();
             builder.Append("[");
@@ -210,7 +201,7 @@ namespace GraphQL.AspNet.Common.Source
         /// Create a string of this path using a dot notation. (e.g. "Path0.Path1[0].Path2").
         /// </summary>
         /// <returns>System.String.</returns>
-        public string DotString()
+        public string ToDotString()
         {
             var builder = new StringBuilder();
             for (var i = 0; i < _segments.Count; i++)

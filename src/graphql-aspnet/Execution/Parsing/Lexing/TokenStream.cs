@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;

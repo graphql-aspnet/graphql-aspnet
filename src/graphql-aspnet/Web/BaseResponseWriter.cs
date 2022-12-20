@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Web
     using System.Text.Json;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Web
 
         /// <summary>
         /// Creates a new dictionary of properties for the message map
-        /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Errors .
+        /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Errors" />.
         /// </summary>
         /// <param name="writer">The json writer to output the reslts to.</param>
         /// <param name="message">The message to render into the output.</param>

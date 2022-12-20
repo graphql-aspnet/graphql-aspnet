@@ -12,10 +12,10 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A validation context used to perform final validation of this context and all its children.
     /// </summary>
     [DebuggerDisplay("{DataItem}")]
-    internal class FieldValidationContext : IContextGenerator<FieldValidationContext>
+    public class FieldValidationContext : IChildContextGenerator<FieldValidationContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldValidationContext" /> class.

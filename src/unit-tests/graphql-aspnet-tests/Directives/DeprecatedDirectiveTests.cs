@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Directives
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Execution;

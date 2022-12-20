@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.Common;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;

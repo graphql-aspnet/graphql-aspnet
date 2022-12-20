@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Docum
 
     /// <summary>
     /// <para>(5.2.1.1) Validate that each top level operation has a unique name within the document scope.</para>
-    /// <para>Reference: https://graphql.github.io/graphql-spec/October2021/#sec-Operation-Name-Uniqueness" .</para>
+    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Operation-Name-Uniqueness" /> .</para>
     /// </summary>
     internal class Rule_5_2_1_1_OperationNamesMustBeUnique
         : DocumentPartValidationRuleStep<IGraphQueryDocument>

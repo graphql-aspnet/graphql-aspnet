@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Common.Source
+namespace GraphQL.AspNet.Execution.Source
 {
     using System;
     using System.Diagnostics;
 
     /// <summary>
-    /// A snapshot representation of a location of a read block within a source text.
+    /// A pointer to a location with a query's text.
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Index: {AbsoluteIndex}, Line: ({LineNumber}:{LineIndex})")]

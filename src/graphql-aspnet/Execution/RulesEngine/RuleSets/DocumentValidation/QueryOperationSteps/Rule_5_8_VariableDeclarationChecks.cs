@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
@@ -281,7 +281,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         /// defined on section 5.8.5 of the specification.
         /// </summary>
         /// <remarks>
-        /// (https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed).
+        /// Spec: <see href="https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed" />.
         /// </remarks>
         /// <param name="context">The context being evaluated.</param>
         /// <param name="variableUsage">The variable usage where the variable

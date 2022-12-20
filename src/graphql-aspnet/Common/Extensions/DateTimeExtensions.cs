@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Converts the datetime to a RFC3339 formatted string (yyyy-MM-dd'T'HH:mm:ss.fffzzz).
-        /// spec: https://www.ietf.org/rfc/rfc3339.txt .
+        /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt"/> .
         /// </summary>
         /// <param name="dateTime">The date time.</param>
         /// <returns>System.String.</returns>
@@ -161,7 +161,7 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Converts the datetime to a RFC3339 formatted string (yyyy-MM-dd'T'HH:mm:ss.fffzzz).
-        /// spec: https://www.ietf.org/rfc/rfc3339.txt .
+        /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt"/> .
         /// </summary>
         /// <param name="dateTime">The date time.</param>
         /// <returns>System.String.</returns>
@@ -172,7 +172,7 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Converts the datetime to a RFC3339 formatted string (yyyy-MM-dd'T'HH:mm:ss.fffzzz).
-        /// spec: https://www.ietf.org/rfc/rfc3339.txt .
+        /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt"/> .
         /// </summary>
         /// <param name="dateTime">The date time.</param>
         /// <returns>System.String.</returns>
@@ -186,7 +186,7 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Converts the datetime to a RFC3339 formatted string (yyyy-MM-dd'T'HH:mm:ss.fffzzz).
-        /// spec: https://www.ietf.org/rfc/rfc3339.txt .
+        /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt" /> .
         /// </summary>
         /// <param name="dateTime">The date time.</param>
         /// <returns>System.String.</returns>

@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.ServerMessages
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.Common;

@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution.Parsing
     using System.Buffers;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>

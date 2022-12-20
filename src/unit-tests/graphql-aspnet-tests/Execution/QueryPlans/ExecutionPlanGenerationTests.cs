@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var queuedContext = plan.Operation.FieldContexts[0];
             Assert.IsNotNull(queuedContext);
             Assert.AreEqual("simple", queuedContext.Name);
-            Assert.AreEqual("simple", queuedContext.Origin.Path.DotString());
+            Assert.AreEqual("simple", queuedContext.Origin.Path.ToDotString());
 
             // "simple" should contain 1 child field called "simpleQueryMethod"
             Assert.AreEqual(0, queuedContext.Arguments.Count);
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var child = queuedContext.ChildContexts[0];
             Assert.IsNotNull(child);
             Assert.AreEqual("simpleQueryMethod", child.Name);
-            Assert.AreEqual("simple.simpleQueryMethod", child.Origin.Path.DotString());
+            Assert.AreEqual("simple.simpleQueryMethod", child.Origin.Path.ToDotString());
             Assert.AreEqual(1, child.ChildContexts.Count);
 
             // the defaults defined on the method should have been assigned when none were supplied
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var prop1 = child.ChildContexts[0];
             Assert.IsNotNull(prop1);
             Assert.AreEqual("property1", prop1.Name);
-            Assert.AreEqual("simple.simpleQueryMethod.property1", prop1.Origin.Path.DotString());
+            Assert.AreEqual("simple.simpleQueryMethod.property1", prop1.Origin.Path.ToDotString());
             Assert.AreEqual(0, prop1.ChildContexts.Count);
             Assert.AreEqual(0, prop1.Arguments.Count);
             Assert.IsTrue(prop1.Field?.Resolver is GraphObjectPropertyResolver);

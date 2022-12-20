@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine
     /// A helper method to build a url that points to a rule in
     /// a specific graphql specification document.
     /// </summary>
-    internal static class ReferenceRule
+    public static class ReferenceRule
     {
         /// <summary>
         /// Creates a url to reference rule to the graphql specification document

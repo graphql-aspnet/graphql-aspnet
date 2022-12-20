@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.RulesEngine.Interfaces
+namespace GraphQL.AspNet.Interfaces.Execution.RulesEngine
 {
     /// <summary>
     /// An interface describing a type of rule that may be executed in the rule processors.
     /// </summary>
-    public interface IValidationRule
+    internal interface IValidationRule
     {
         /// <summary>
         /// Gets the error code to associate with the broken rule.

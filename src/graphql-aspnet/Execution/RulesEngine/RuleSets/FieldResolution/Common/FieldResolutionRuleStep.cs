@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.Common
     using System;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
     /// A base field resolution step with additional specification rule logic.

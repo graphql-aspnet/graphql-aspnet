@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
         /// A graphql over websocket messaging protcol.
         /// </summary>
         /// <remarks>
-        /// Details: (https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md).
+        /// Details: <see href="https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md" />.
         /// </remarks>
         public const string PROTOCOL_NAME = "graphql-transport-ws";
 

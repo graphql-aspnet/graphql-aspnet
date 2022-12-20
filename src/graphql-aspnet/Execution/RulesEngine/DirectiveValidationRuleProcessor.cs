@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine
     /// be that invocations on a query document or those added to <see cref="ISchemaItem"/>
     /// during schema construction.
     /// </summary>
-    internal class DirectiveValidationRuleProcessor : RuleProcessor<GraphDirectiveExecutionContext>
+    public class DirectiveValidationRuleProcessor : RuleProcessor<GraphDirectiveExecutionContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectiveValidationRuleProcessor"/> class.

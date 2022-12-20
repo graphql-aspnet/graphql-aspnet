@@ -14,7 +14,7 @@ namespace GraphQL.AspNet
 
     /// <summary>
     /// <para>A scalar representation of the graphql defined "ID" scalar.</para>
-    /// <para>spec: https://graphql.github.io/graphql-spec/October2021/#sec-ID .</para>
+    /// <para>spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-ID" /> .</para>
     /// </summary>
     [DebuggerDisplay("{Value}")]
     public readonly struct GraphId : IEquatable<GraphId>

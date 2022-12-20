@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;

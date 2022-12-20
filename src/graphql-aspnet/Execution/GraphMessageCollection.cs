@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
