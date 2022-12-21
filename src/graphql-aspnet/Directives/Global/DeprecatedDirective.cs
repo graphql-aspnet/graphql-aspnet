@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Directives.Global
 {
+    using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -22,6 +23,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// <para>Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec--deprecated"/>  .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.DEPRECATED_DIRECTIVE)]
+    [Description("A directive that indicates the schema item should not be used and may be removed in the future.")]
     public sealed class DeprecatedDirective : GraphDirective
     {
         /// <summary>
@@ -30,7 +32,10 @@ namespace GraphQL.AspNet.Directives.Global
         /// <param name="reason">An optional reason for the deprecation.</param>
         /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.FIELD_DEFINITION | DirectiveLocation.ENUM_VALUE)]
-        public IGraphActionResult Execute([FromGraphQL("reason")] string reason = "No longer supported")
+        public IGraphActionResult Execute(
+            [FromGraphQL("reason")]
+            [Description("An optional human-friendly reason explaining why the schema item is being deprecated.")]
+            string reason = "No longer supported")
         {
             reason = reason?.Trim();
             var item = this.DirectiveTarget as ISchemaItem;

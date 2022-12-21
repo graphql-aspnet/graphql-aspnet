@@ -8,6 +8,7 @@
 // *************************************************************
 namespace GraphQL.AspNet.Directives.Global
 {
+    using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -23,6 +24,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// <para>Spec: <see href="https://spec.graphql.org/October2021/#sec--specifiedBy" />.</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.SPECIFIED_BY_DIRECTIVE)]
+    [Description("A directive that points to additional details about the target SCALAR.")]
     public sealed class SpecifiedByDirective : GraphDirective
     {
         /// <summary>
@@ -31,7 +33,10 @@ namespace GraphQL.AspNet.Directives.Global
         /// <param name="url">The URL pointing to the specification for the custom scalar.</param>
         /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.SCALAR)]
-        public IGraphActionResult Execute([FromGraphQL("url", TypeExpression = "Type!")] string url)
+        public IGraphActionResult Execute(
+            [FromGraphQL("url", TypeExpression = "Type!")]
+            [Description("A url pointing to the documentation about the target scalar.")]
+            string url)
         {
             var scalarItem = this.DirectiveTarget as IScalarGraphType;
 

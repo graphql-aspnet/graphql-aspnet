@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Directives.Global
 {
+    using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
@@ -20,6 +21,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// <para>Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec--include" /> .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.INCLUDE_DIRECTIVE)]
+    [Description("A directive which potentially includes a field or fragment in the query results.")]
     public sealed class IncludeDirective : GraphDirective
     {
         /// <summary>
@@ -29,7 +31,10 @@ namespace GraphQL.AspNet.Directives.Global
         /// directive is attached to WILL be included in the results set.</param>
         /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
-        public IGraphActionResult Execute([FromGraphQL("if")] bool ifArgument)
+        public IGraphActionResult Execute(
+            [FromGraphQL("if")]
+            [Description("When true, the field or fragment is included in the query results.")]
+            bool ifArgument)
         {
             if (this.DirectiveTarget is IIncludeableDocumentPart rdp)
                 rdp.IsIncluded = rdp.IsIncluded && ifArgument;
