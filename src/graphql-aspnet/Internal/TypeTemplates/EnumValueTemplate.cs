@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A class used to templatize a single option (a label) within an
     /// <see cref="EnumGraphTypeTemplate"/>.
     /// </summary>
-    public class EnumValueTemplate : BaseItemTemplate, IEnumValueTemplate
+    public class EnumValueTemplate : SchemaItemTemplateBase, IEnumValueTemplate
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumValueTemplate" /> class.

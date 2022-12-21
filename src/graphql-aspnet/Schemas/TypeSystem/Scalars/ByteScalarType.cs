@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type representing a single unsigned byte.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class ByteScalarType : BaseScalarType
+    public sealed class ByteScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ByteScalarType"/> class.

@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A field template describing a field on an INPUT_OBJECT.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public class InputGraphFieldTemplate : BaseItemTemplate, IInputGraphFieldTemplate
+    public class InputGraphFieldTemplate : SchemaItemTemplateBase, IInputGraphFieldTemplate
     {
         private GraphFieldAttribute _fieldDeclaration;
 

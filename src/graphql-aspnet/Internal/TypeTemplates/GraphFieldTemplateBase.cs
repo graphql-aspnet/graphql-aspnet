@@ -32,19 +32,19 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// <summary>
     /// A base definition for items required to generate a graph field.
     /// </summary>
-    public abstract class GraphFieldTemplate : BaseItemTemplate, IGraphFieldTemplate
+    public abstract class GraphFieldTemplateBase : SchemaItemTemplateBase, IGraphFieldTemplate
     {
         private AppliedSecurityPolicyGroup _securityPolicies;
         private GraphFieldAttribute _fieldDeclaration;
         private bool _invalidTypeExpression;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphFieldTemplate" /> class.
+        /// Initializes a new instance of the <see cref="GraphFieldTemplateBase" /> class.
         /// </summary>
         /// <param name="parent">The parent.</param>
         /// <param name="attributeProvider">The instance that will supply the various attributes used to generate this field template.
         /// This is usually <see cref="PropertyInfo"/> or <see cref="MethodInfo"/>.</param>
-        protected GraphFieldTemplate(IGraphTypeTemplate parent, ICustomAttributeProvider attributeProvider)
+        protected GraphFieldTemplateBase(IGraphTypeTemplate parent, ICustomAttributeProvider attributeProvider)
             : base(attributeProvider)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));

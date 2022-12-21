@@ -19,16 +19,16 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     /// A base entry with common info about an exception that was thrown while
     /// executing a controller action method.
     /// </summary>
-    public abstract class BaseActionMethodExceptionLogEntry : GraphLogEntry
+    public abstract class ActionMethodExceptionLogEntryBase : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseActionMethodExceptionLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="ActionMethodExceptionLogEntryBase" /> class.
         /// </summary>
         /// <param name="eventId">The event identifier.</param>
         /// <param name="method">The method being invoked.</param>
         /// <param name="request">The request being executed on the method.</param>
         /// <param name="exception">The exception that was thrown.</param>
-        protected BaseActionMethodExceptionLogEntry(
+        protected ActionMethodExceptionLogEntryBase(
             EventId eventId,
             IGraphMethod method,
             IDataRequest request,

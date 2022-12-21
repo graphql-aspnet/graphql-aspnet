@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A base representation of a template for an object related graph type containing common elements.
     /// </summary>
     [DebuggerDisplay("{Name} (Type: {FriendlyObjectTypeName})")]
-    public abstract class BaseObjectGraphTypeTemplate : BaseGraphTypeTemplate
+    public abstract class ObjectGraphTypeTemplateBase : GraphTypeTemplateBase
     {
         private readonly GraphFieldCollection _fields;
         private readonly HashSet<Type> _interfaces;
@@ -39,10 +39,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         private AppliedSecurityPolicyGroup _securityPolicies;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseObjectGraphTypeTemplate"/> class.
+        /// Initializes a new instance of the <see cref="ObjectGraphTypeTemplateBase"/> class.
         /// </summary>
         /// <param name="objectType">Type of the object.</param>
-        internal BaseObjectGraphTypeTemplate(Type objectType)
+        internal ObjectGraphTypeTemplateBase(Type objectType)
             : base(objectType)
         {
             Validation.ThrowIfNull(objectType, nameof(objectType));

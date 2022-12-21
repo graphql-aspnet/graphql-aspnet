@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     /// <summary>
     /// An item that has a name.
     /// </summary>
-    public interface INamedTemplateItem
+    public interface INamedItemTemplate
     {
         /// <summary>
         /// Gets the formal name of this item as it exists in the schema.

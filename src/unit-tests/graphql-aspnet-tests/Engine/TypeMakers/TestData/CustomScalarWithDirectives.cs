@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     [ApplyDirective(typeof(DirectiveWithArgs), 87, "scalar arg")]
-    public class CustomScalarWithDirectives : BaseScalarType
+    public class CustomScalarWithDirectives : ScalarGraphTypeBase
     {
         public CustomScalarWithDirectives(
             IAppliedDirectiveCollection directives = null)

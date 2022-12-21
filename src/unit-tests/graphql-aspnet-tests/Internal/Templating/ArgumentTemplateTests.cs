@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 .GetParameters()
                 .FirstOrDefault(x => x.Name == paramName);
 
-            var mockMethod = new Mock<IGraphFieldBaseTemplate>();
+            var mockMethod = new Mock<IGraphFieldTemplateBase>();
             mockMethod.Setup(x => x.InternalFullName)
                 .Returns($"{nameof(ParameterTestClass)}.{nameof(ParameterTestClass.TestMethod)}");
             mockMethod.Setup(x => x.ObjectType).Returns(typeof(ParameterTestClass));

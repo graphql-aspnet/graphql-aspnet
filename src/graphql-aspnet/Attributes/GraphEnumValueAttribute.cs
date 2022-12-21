@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Attributes
     /// Optionally, denotes its name in the graph as well.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    public class GraphEnumValueAttribute : BaseGraphAttribute
+    public class GraphEnumValueAttribute : GraphAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphEnumValueAttribute"/> class.

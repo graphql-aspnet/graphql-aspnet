@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Common.Extensions
         [DebuggerStepThrough]
         public static Task<TItem> AsCompletedTask<TItem>(this TItem item)
         {
-            return Task.FromResult(item);
+            return Task.FromResult<TItem>(item);
         }
     }
 }

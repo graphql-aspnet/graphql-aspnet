@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     /// Recorded when the invocation of action method generated a known exception; generally
     /// related to target invocation errors.
     /// </summary>
-    public class ActionMethodUnhandledExceptionLogEntry : BaseActionMethodExceptionLogEntry
+    public class ActionMethodUnhandledExceptionLogEntry : ActionMethodExceptionLogEntryBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionMethodUnhandledExceptionLogEntry" /> class.

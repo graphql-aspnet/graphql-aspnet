@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// populate graphQL fields from action methods.
     /// </summary>
     [DebuggerDisplay("Controller: '{ObjectType.Name}', Route: '{Route.Path}'")]
-    public class GraphControllerTemplate : BaseObjectGraphTypeTemplate, IGraphControllerTemplate
+    public class GraphControllerTemplate : ObjectGraphTypeTemplateBase, IGraphControllerTemplate
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphControllerTemplate"/> class.

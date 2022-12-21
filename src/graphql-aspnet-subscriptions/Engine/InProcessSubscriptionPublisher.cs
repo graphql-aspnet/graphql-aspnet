@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Engine
         /// Initializes a new instance of the <see cref="InProcessSubscriptionPublisher"/> class.
         /// </summary>
         /// <param name="eventRouter">The local event router to push messages to.</param>
-        public InProcessSubscriptionPublisher(ISubscriptionEventRouter eventRouter = null)
+        public InProcessSubscriptionPublisher(ISubscriptionEventRouter eventRouter)
         {
             _eventRouter = Validation.ThrowIfNullOrReturn(eventRouter, nameof(eventRouter));
         }

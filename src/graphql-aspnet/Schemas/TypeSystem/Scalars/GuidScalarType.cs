@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type representing a standard guid.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class GuidScalarType : BaseScalarType
+    public sealed class GuidScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GuidScalarType"/> class.

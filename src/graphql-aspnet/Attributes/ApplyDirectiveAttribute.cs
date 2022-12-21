@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Attributes
         AttributeTargets.Method | AttributeTargets.Property |
         AttributeTargets.Parameter | AttributeTargets.Field,
         AllowMultiple = true)]
-    public class ApplyDirectiveAttribute : BaseGraphAttribute
+    public class ApplyDirectiveAttribute : GraphAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplyDirectiveAttribute" /> class.

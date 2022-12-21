@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     /// An interface defining a field that may have some source data supplied to it to perform its
     /// resolution. (e.g. A property or method field of a model object).
     /// </summary>
-    public interface IGraphFieldBaseTemplate : IGraphItemTemplate
+    public interface IGraphFieldTemplateBase : ISchemaItemTemplate
     {
         /// <summary>
         /// Gets a list of arguments this field can accept.
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
 
         /// <summary>
         /// Gets the type of the object that supplies data to this field during a resolution. This is usually
-        /// the concrete type of the<see cref="IGraphItemTemplate" /> that defines this field.
+        /// the concrete type of the<see cref="ISchemaItemTemplate" /> that defines this field.
         /// </summary>
         /// <value>The type of the source object.</value>
         Type SourceObjectType { get; }

@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// Used as a mechanism to convert virtual paths in <see cref="GraphRouteAttribute"/> declarations into fields on the object graph.
     /// </summary>
     [DebuggerDisplay("OBJECT (virtual) {Name}")]
-    public class VirtualObjectGraphType : BaseObjectGraphType, IObjectGraphType, IInternalSchemaItem
+    public class VirtualObjectGraphType : ObjectGraphTypeBase, IObjectGraphType, IInternalSchemaItem
     {
         // Implementation Note:
         //

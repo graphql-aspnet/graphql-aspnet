@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// A special resolver specifically for actions on <see cref="GraphController"/>s. Provides extra
     /// fields, options and meta-data used by controllers to field a request through user code.
     /// </summary>
-    public class GraphControllerActionResolver : BaseInvocableActionResolver, IGraphFieldResolver
+    public class GraphControllerActionResolver : InvocableActionResolverBase, IGraphFieldResolver
     {
         private readonly IGraphMethod _actionMethod;
 

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     /// A base template definition for the metadata about a graph field belonging to a real type (as opposed to a virutal
     /// type).
     /// </summary>
-    public interface IInputGraphFieldTemplate : IGraphItemTemplate
+    public interface IInputGraphFieldTemplate : ISchemaItemTemplate
     {
         /// <summary>
         /// Gets a value indicating whether this instance is marked as being a required field.

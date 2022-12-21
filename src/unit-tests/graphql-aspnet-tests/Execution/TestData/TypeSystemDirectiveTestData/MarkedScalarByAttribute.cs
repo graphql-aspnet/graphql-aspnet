@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.TypeSystemDirectiveTestData
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     [ApplyDirective(typeof(ScalarMarkerDirective))]
-    public class MarkedScalarByAttribute : BaseScalarType
+    public class MarkedScalarByAttribute : ScalarGraphTypeBase
     {
         public MarkedScalarByAttribute()
             : base("CustomScalar", typeof(MarkedScalarType))

@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A context for handling a security challenge through the authorization pipeline.
     /// </summary>
     [DebuggerDisplay("Auth Context, Item: {SecureSchemaItem.Route.Path}")]
-    public class GraphSchemaItemSecurityChallengeContext : BaseGraphExecutionContext
+    public class GraphSchemaItemSecurityChallengeContext : GraphExecutionContextBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityChallengeContext" /> class.

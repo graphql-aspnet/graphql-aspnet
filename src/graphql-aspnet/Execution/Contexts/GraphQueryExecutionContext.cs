@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// through asp.net.
     /// </remarks>
     [DebuggerDisplay("IsValid = {IsValid} (Messages = {Messages.Count})")]
-    public class GraphQueryExecutionContext : BaseGraphExecutionContext
+    public class GraphQueryExecutionContext : GraphExecutionContextBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQueryExecutionContext" /> class.

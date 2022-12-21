@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Attributes
     /// that the directive is repeatable on a given target.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class RepeatableAttribute : BaseGraphAttribute
+    public class RepeatableAttribute : GraphAttributeBase
     {
     }
 }

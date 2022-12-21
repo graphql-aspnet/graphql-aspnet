@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Attributes
     /// of this attribute is optional.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
-    public class FromGraphQLAttribute : BaseGraphAttribute
+    public class FromGraphQLAttribute : GraphAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FromGraphQLAttribute"/> class.

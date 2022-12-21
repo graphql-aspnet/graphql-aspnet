@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type reprsenting a calendar date that does include a time component.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class DateOnlyScalarType : BaseScalarType
+    public sealed class DateOnlyScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DateOnlyScalarType"/> class.

@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             _templateMap = new Dictionary<DirectiveLocation, GraphDirectiveMethodTemplate>();
         }
 
-        /// <inheritdoc cref="IGraphItemTemplate.RetrieveRequiredTypes" />
+        /// <inheritdoc cref="ISchemaItemTemplate.RetrieveRequiredTypes" />
         public IEnumerable<DependentType> RetrieveRequiredTypes()
         {
             // all methods are required to be the same signatured

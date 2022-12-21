@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// Helper methods for <see cref="IGraphItemTemplate"/>.
+    /// Helper methods for <see cref="ISchemaItemTemplate"/>.
     /// </summary>
     internal static class ApplyDirectiveAttributeExtensions
     {
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="itemTemplate">The item template which may contain applied directives.</param>
         /// <returns>IEnumerable&lt;AppliedDirectiveTemplate&gt;.</returns>
-        public static IEnumerable<IAppliedDirectiveTemplate> ExtractAppliedDirectiveTemplates(this IGraphItemTemplate itemTemplate)
+        public static IEnumerable<IAppliedDirectiveTemplate> ExtractAppliedDirectiveTemplates(this ISchemaItemTemplate itemTemplate)
         {
             return itemTemplate.AttributeProvider.ExtractAppliedDirectiveTemplates(itemTemplate);
         }

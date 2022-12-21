@@ -24,16 +24,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// <summary>
     /// A base template defining common attribute across all template definitions.
     /// </summary>
-    public abstract class BaseItemTemplate : IGraphItemTemplate
+    public abstract class SchemaItemTemplateBase : ISchemaItemTemplate
     {
         private bool? _isExplicitlyDeclared;
         private bool _isParsed;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseItemTemplate"/> class.
+        /// Initializes a new instance of the <see cref="SchemaItemTemplateBase"/> class.
         /// </summary>
         /// <param name="attributeProvider">The attribute provider.</param>
-        protected BaseItemTemplate(ICustomAttributeProvider attributeProvider)
+        protected SchemaItemTemplateBase(ICustomAttributeProvider attributeProvider)
         {
             this.AttributeProvider = Validation.ThrowIfNullOrReturn(attributeProvider, nameof(attributeProvider));
         }
@@ -146,7 +146,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 _isExplicitlyDeclared = false;
                 foreach (var attribute in this.AttributeProvider.GetCustomAttributes(false))
                 {
-                    if (attribute is BaseGraphAttribute)
+                    if (attribute is GraphAttributeBase)
                     {
                         _isExplicitlyDeclared = true;
                         break;

@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
         /// </summary>
         /// <param name="template">The template to extract directives from.</param>
         /// <returns>IAppliedDirectiveCollection.</returns>
-        public static IAppliedDirectiveCollection CreateAppliedDirectives(this IGraphItemTemplate template)
+        public static IAppliedDirectiveCollection CreateAppliedDirectives(this ISchemaItemTemplate template)
         {
             Validation.ThrowIfNull(template, nameof(template));
             return template.AppliedDirectives.CreateAppliedDirectives();

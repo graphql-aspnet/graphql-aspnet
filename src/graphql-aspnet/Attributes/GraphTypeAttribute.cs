@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Attributes
     /// optional depending on your schema configuration and naming preferences.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Enum)]
-    public class GraphTypeAttribute : BaseGraphAttribute
+    public class GraphTypeAttribute : GraphAttributeBase
     {
         private TemplateDeclarationRequirements _templateDeclarationRequirements = TemplateDeclarationRequirements.None;
 

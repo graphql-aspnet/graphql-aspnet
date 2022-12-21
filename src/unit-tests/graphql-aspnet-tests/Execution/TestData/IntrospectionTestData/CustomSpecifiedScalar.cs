@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospectionTestData
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     [SpecifiedBy("http://someSiteViaAttribute")]
-    public class CustomSpecifiedScalar : BaseScalarType
+    public class CustomSpecifiedScalar : ScalarGraphTypeBase
     {
         public CustomSpecifiedScalar()
             : base("MyCustomScalar", typeof(CustomSpecifiedScalarObjectItem))

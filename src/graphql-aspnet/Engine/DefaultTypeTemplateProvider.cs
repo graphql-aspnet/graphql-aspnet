@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public IGraphItemTemplate ParseType<TObjectType>(TypeKind? kind = null)
+        public ISchemaItemTemplate ParseType<TObjectType>(TypeKind? kind = null)
         {
             return this.ParseType(typeof(TObjectType), kind);
         }

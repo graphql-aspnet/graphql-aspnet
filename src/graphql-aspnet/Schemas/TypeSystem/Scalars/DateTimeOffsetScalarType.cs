@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type represneting a .NET <see cref="DateTimeOffset"/> that does include a time component.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class DateTimeOffsetScalarType : BaseScalarType
+    public sealed class DateTimeOffsetScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DateTimeOffsetScalarType"/> class.

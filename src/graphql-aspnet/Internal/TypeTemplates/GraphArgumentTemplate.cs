@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <param name="parent">The owner of this argument.</param>
         /// <param name="parameter">The parameter on which this
         /// argument template is made.</param>
-        public GraphArgumentTemplate(IGraphFieldBaseTemplate parent, ParameterInfo parameter)
+        public GraphArgumentTemplate(IGraphFieldTemplateBase parent, ParameterInfo parameter)
         {
             Validation.ThrowIfNull(parent, nameof(parent));
             Validation.ThrowIfNull(parameter, nameof(parameter));
@@ -259,7 +259,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public bool IsExplicitDeclaration => true;
 
         /// <inheritdoc />
-        public IGraphFieldBaseTemplate Parent { get; }
+        public IGraphFieldTemplateBase Parent { get; }
 
         /// <inheritdoc />
         public string Description { get; private set; }

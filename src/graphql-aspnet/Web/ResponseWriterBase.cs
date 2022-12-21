@@ -24,24 +24,24 @@ namespace GraphQL.AspNet.Web
     /// A class containing many shared methods for writing all or part of a <see cref="IGraphOperationResult"/>
     /// to a <see cref="Utf8JsonWriter"/>.
     /// </summary>
-    public abstract class BaseResponseWriter
+    public abstract class ResponseWriterBase
     {
         private static readonly JsonSerializerOptions _serializerSettings;
 
         /// <summary>
-        /// Initializes static members of the <see cref="BaseResponseWriter"/> class.
+        /// Initializes static members of the <see cref="ResponseWriterBase"/> class.
         /// </summary>
-        static BaseResponseWriter()
+        static ResponseWriterBase()
         {
             _serializerSettings = new JsonSerializerOptions();
             _serializerSettings.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseResponseWriter"/> class.
+        /// Initializes a new instance of the <see cref="ResponseWriterBase"/> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        protected BaseResponseWriter(ISchema schema)
+        protected ResponseWriterBase(ISchema schema)
         {
             Validation.ThrowIfNull(schema, nameof(schema));
             this.TimeLocalizer = schema.Configuration.ResponseOptions.TimeStampLocalizer;

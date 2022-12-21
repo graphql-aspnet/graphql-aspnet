@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// <summary>
     /// The default resolver for processing directive requests.
     /// </summary>
-    public class GraphDirectiveActionResolver : BaseInvocableActionResolver, IGraphDirectiveResolver
+    public class GraphDirectiveActionResolver : InvocableActionResolverBase, IGraphDirectiveResolver
     {
         private readonly IGraphDirectiveTemplate _directiveTemplate;
 

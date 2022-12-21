@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// This servers implementation of the required "ID" scalar type of graphql. Maps to the concrete C# object type of <see cref="GraphId"/>.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class GraphIdScalarType : BaseScalarType
+    public sealed class GraphIdScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphIdScalarType"/> class.

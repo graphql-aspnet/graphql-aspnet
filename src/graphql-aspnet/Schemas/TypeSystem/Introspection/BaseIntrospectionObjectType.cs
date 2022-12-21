@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
     /// <summary>
     /// An intermediate base class to define logic common to all schema types for the native introspection schema.
     /// </summary>
-    internal abstract class BaseIntrospectionObjectType : BaseObjectGraphType, IObjectGraphType, IInternalSchemaItem
+    internal abstract class BaseIntrospectionObjectType : ObjectGraphTypeBase, IObjectGraphType, IInternalSchemaItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseIntrospectionObjectType"/> class.

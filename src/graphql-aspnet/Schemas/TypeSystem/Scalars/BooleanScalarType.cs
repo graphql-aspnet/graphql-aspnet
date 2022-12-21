@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type representing a true|false boolean value.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class BooleanScalarType : BaseScalarType
+    public sealed class BooleanScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BooleanScalarType"/> class.

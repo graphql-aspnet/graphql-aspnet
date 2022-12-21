@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Message
         /// <see cref="Utf8JsonWriter"/>. This object expects the writer to be pointed at a location
         /// that an object property value can be written in place.
         /// </summary>
-        private class SingleMessageResponseWriter : BaseResponseWriter
+        private class SingleMessageResponseWriter : ResponseWriterBase
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="SingleMessageResponseWriter" /> class.

@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// A maker capable of turning a <see cref="IGraphFieldBaseTemplate"/> into a usable field in an object graph.
+    /// A maker capable of turning a <see cref="IGraphFieldTemplateBase"/> into a usable field in an object graph.
     /// </summary>
     public class GraphFieldMaker : IGraphFieldMaker
     {

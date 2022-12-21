@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type representing a 32-bit, unsigned integer.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class UIntScalarType : BaseScalarType
+    public sealed class UIntScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UIntScalarType"/> class.

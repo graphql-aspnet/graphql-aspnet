@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <typeparam name="TType">The graph type to template.</typeparam>
         /// <param name="kind">The kind.</param>
         /// <returns>IGraphItemTemplate.</returns>
-        public static IGraphItemTemplate CreateGraphTypeTemplate<TType>(TypeKind? kind = null)
+        public static ISchemaItemTemplate CreateGraphTypeTemplate<TType>(TypeKind? kind = null)
         {
             GraphQLProviders.TemplateProvider.CacheTemplates = false;
             return GraphQLProviders.TemplateProvider.ParseType<TType>(kind);

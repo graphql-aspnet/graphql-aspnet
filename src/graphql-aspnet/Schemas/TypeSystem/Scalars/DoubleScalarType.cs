@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type representing a 64-bit, floating-point value.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class DoubleScalarType : BaseScalarType
+    public sealed class DoubleScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DoubleScalarType"/> class.

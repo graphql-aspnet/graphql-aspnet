@@ -19,7 +19,7 @@ namespace GraphQL.Subscriptions.Tests.Internal.Templating
     [TestFixture]
     public class GraphControllerTemplateTests
     {
-        public IGraphTypeTemplateProvider SubscriptionTemplateProvider => new SubscriptionEnabledTemplateProvider();
+        public IGraphTypeTemplateProvider SubscriptionTemplateProvider => new SubscriptionEnabledTypeTemplateProvider();
 
         [Test]
         public void Parse_SingleSubscriptionRoute_CreatesCorrectActionTemplate()

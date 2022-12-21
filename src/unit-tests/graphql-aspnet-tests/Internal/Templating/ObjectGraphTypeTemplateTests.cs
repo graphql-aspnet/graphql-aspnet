@@ -232,7 +232,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new ObjectGraphTypeTemplate(typeof(BaseItemTemplate));
+                var template = new ObjectGraphTypeTemplate(typeof(SchemaItemTemplateBase));
                 template.Parse();
                 template.ValidateOrThrow();
             });

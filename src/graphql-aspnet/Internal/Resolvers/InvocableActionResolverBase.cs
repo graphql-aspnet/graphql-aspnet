@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// <summary>
     /// A common base class defining common operations for the various action invokers that handle pipelne requests.
     /// </summary>
-    public abstract class BaseInvocableActionResolver
+    public abstract class InvocableActionResolverBase
     {
         /// <summary>
         /// Ensures the supplied result is a <see cref="IGraphActionResult"/> or boxes

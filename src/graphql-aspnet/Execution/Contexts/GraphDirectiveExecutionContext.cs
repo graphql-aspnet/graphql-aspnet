@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A set of information needed to successiful execute a directive as part of a field resolution.
     /// </summary>
     [DebuggerDisplay("Directive Context: {Directive.Name}")]
-    public class GraphDirectiveExecutionContext : BaseGraphExecutionContext
+    public class GraphDirectiveExecutionContext : GraphExecutionContextBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveExecutionContext" /> class.

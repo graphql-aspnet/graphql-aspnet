@@ -107,5 +107,33 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
             var result = task.ResultOfTypeOrNull<Dictionary<int, string>>();
             Assert.IsNull(result);
         }
+
+        [Test]
+        public async Task ReferenceType_AsCompletedTask_ReturnsValue()
+        {
+            var task = "bob".AsCompletedTask();
+            var result = await task;
+
+            Assert.AreEqual("bob", result);
+        }
+
+        [Test]
+        public async Task Null_AsCompletedTask_ReturnsValue()
+        {
+            object item = null;
+            var task = item.AsCompletedTask();
+            var result = await task;
+
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public async Task ValueType_AsCompletedTask_ReturnsValue()
+        {
+            var task = 8.AsCompletedTask();
+            var result = await task;
+
+            Assert.AreEqual(8, result);
+        }
     }
 }

@@ -261,7 +261,7 @@ namespace GraphQL.AspNet.Schemas
             IObjectGraphType parentType,
             string fieldName,
             SchemaItemPath path,
-            IGraphItemTemplate definition = null)
+            ISchemaItemTemplate definition = null)
         {
             var childField = new VirtualGraphField(
                 parentType,

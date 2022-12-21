@@ -20,15 +20,15 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// <summary>
     /// A base representation of a template for an any graph type containing common elements amongst all types.
     /// </summary>
-    public abstract class BaseGraphTypeTemplate : BaseItemTemplate, IGraphTypeTemplate
+    public abstract class GraphTypeTemplateBase : SchemaItemTemplateBase, IGraphTypeTemplate
     {
         private TemplateDeclarationRequirements? _fieldDeclarationOverrides;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseGraphTypeTemplate"/> class.
+        /// Initializes a new instance of the <see cref="GraphTypeTemplateBase"/> class.
         /// </summary>
         /// <param name="attributeProvider">The attribute provider.</param>
-        protected BaseGraphTypeTemplate(ICustomAttributeProvider attributeProvider)
+        protected GraphTypeTemplateBase(ICustomAttributeProvider attributeProvider)
             : base(attributeProvider)
         {
             this.Publish = true;

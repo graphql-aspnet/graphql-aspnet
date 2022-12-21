@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// and executed via an instruction from a query document.
     /// </summary>
     [DebuggerDisplay("Directive Template: {InternalName}")]
-    public class GraphDirectiveTemplate : BaseGraphTypeTemplate, IGraphDirectiveTemplate
+    public class GraphDirectiveTemplate : GraphTypeTemplateBase, IGraphDirectiveTemplate
     {
         private AppliedSecurityPolicyGroup _securityPolicies;
 

@@ -16,13 +16,13 @@ namespace GraphQL.AspNet.Interfaces.Internal
     /// <summary>
     /// An interface describing a template that can accurately represent an input argument in the object graph.
     /// </summary>
-    public interface IGraphArgumentTemplate : IGraphItemTemplate
+    public interface IGraphArgumentTemplate : ISchemaItemTemplate
     {
         /// <summary>
         /// Gets the parent method this parameter belongs to.
         /// </summary>
         /// <value>The parent.</value>
-        IGraphFieldBaseTemplate Parent { get; }
+        IGraphFieldTemplateBase Parent { get; }
 
         /// <summary>
         /// Gets the default value assigned to this parameter as part of its declaration, if any.

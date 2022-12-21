@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// methods.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public abstract class MethodGraphFieldTemplateBase : GraphFieldTemplate, IGraphMethod
+    public abstract class MethodGraphFieldTemplateBase : GraphFieldTemplateBase, IGraphMethod
     {
         private readonly List<GraphArgumentTemplate> _arguments;
 

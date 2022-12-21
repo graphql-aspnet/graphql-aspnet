@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Engine
     /// to a stream.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this writer works for.</typeparam>
-    public class DefaultQueryResponseWriter<TSchema> : BaseResponseWriter, IGraphQueryResponseWriter<TSchema>
+    public class DefaultQueryResponseWriter<TSchema> : ResponseWriterBase, IGraphQueryResponseWriter<TSchema>
          where TSchema : class, ISchema
     {
         private readonly GraphMessageSeverity _minSeverityLevel;

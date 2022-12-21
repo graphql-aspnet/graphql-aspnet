@@ -17,17 +17,18 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A base collection of possible field item dependencies.
+    /// A collection of possible dependencies of either abstract or concrete
+    /// graph types.
     /// </summary>
-    public abstract class BaseItemDependencyCollection : IGraphItemDependencies
+    public abstract class DependentTypeCollection : IGraphItemDependencies
     {
         private readonly List<DependentType> _dependentTypes;
         private readonly List<IGraphType> _abstractTypes;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseItemDependencyCollection"/> class.
+        /// Initializes a new instance of the <see cref="DependentTypeCollection"/> class.
         /// </summary>
-        public BaseItemDependencyCollection()
+        public DependentTypeCollection()
         {
             _dependentTypes = new List<DependentType>();
             _abstractTypes = new List<IGraphType>();

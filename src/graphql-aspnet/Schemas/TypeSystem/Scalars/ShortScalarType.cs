@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type representing a short.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class ShortScalarType : BaseScalarType
+    public sealed class ShortScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ShortScalarType"/> class.

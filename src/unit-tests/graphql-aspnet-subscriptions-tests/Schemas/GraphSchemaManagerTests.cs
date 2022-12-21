@@ -27,7 +27,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
-            GraphQLProviders.TemplateProvider = new SubscriptionEnabledTemplateProvider();
+            GraphQLProviders.TemplateProvider = new SubscriptionEnabledTypeTemplateProvider();
             var schema = new GraphSchema() as ISchema;
             schema.SetNoAlterationConfiguration();
             schema.SetSubscriptionAllowances();
@@ -63,7 +63,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
-            GraphQLProviders.TemplateProvider = new SubscriptionEnabledTemplateProvider();
+            GraphQLProviders.TemplateProvider = new SubscriptionEnabledTypeTemplateProvider();
             var schema = new GraphSchema() as ISchema;
             schema.SetNoAlterationConfiguration();
 

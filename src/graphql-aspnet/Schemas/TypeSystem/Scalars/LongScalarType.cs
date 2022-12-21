@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type reprsenting a 64-bit integer.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class LongScalarType : BaseScalarType
+    public sealed class LongScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LongScalarType"/> class.

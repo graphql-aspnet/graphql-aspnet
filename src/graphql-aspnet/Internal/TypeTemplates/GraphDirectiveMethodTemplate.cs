@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A base template for all directive methods that can be declared.
     /// </summary>
     [DebuggerDisplay("{InternalName} (Type: {Parent.InternalName})")]
-    public class GraphDirectiveMethodTemplate : IGraphFieldBaseTemplate, IGraphMethod
+    public class GraphDirectiveMethodTemplate : IGraphFieldTemplateBase, IGraphMethod
     {
         private readonly List<GraphArgumentTemplate> _arguments;
 

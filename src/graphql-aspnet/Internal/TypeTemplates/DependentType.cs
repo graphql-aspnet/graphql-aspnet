@@ -24,9 +24,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentType"/> class.
         /// </summary>
-        /// <param name="type">The type.</param>
+        /// <param name="type">The .NET type that this instance references.</param>
         /// <param name="expectedKind">The expected type kind to declare the dependency
-        /// as the type cannot be inferred from usage.</param>
+        /// if the type cannot be inferred from usage.</param>
         public DependentType(Type type, TypeKind expectedKind)
         {
             this.Type = Validation.ThrowIfNullOrReturn(type, nameof(type));
@@ -34,15 +34,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// Gets the type on this instance.
+        /// Gets the dependent type this instance points to.
         /// </summary>
         /// <value>The type.</value>
         public Type Type { get; }
 
         /// <summary>
-        /// Gets the expected kind of the graph type created.
+        /// Gets the expected type kind that the target <see cref="Type"/> should be
+        /// instantiated as.
         /// </summary>
-        /// <value>The expected kind.</value>
+        /// <value>The expected type kind of this dependent type.</value>
         public TypeKind ExpectedKind { get; }
 
         /// <summary>

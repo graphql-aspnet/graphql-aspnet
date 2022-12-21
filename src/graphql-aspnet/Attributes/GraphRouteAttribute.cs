@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Attributes
     /// Note: Conditional specifications using curly braces (e.g. 'path/{variable}') are not permitted on graph routes.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Class)]
-    public class GraphRouteAttribute : BaseGraphAttribute
+    public class GraphRouteAttribute : GraphAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphRouteAttribute"/> class.

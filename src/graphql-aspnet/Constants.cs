@@ -73,7 +73,7 @@ namespace GraphQL.AspNet
         {
             typeof(GraphController),
             typeof(GraphDirective),
-            typeof(BaseGraphAttribute),
+            typeof(GraphAttributeBase),
         };
 
         /// <summary>

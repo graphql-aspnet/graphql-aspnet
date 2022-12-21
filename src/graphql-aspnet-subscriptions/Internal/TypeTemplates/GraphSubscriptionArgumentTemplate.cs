@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <param name="resourceSubscriptionSourceDeclaration">if set to <c>true</c> this field must be tagged with <see cref="SubscriptionSourceAttribute"/> to be marked
         /// as a source parameter.</param>
         public GraphSubscriptionArgumentTemplate(
-            IGraphFieldBaseTemplate parent,
+            IGraphFieldTemplateBase parent,
             ParameterInfo parameter,
             bool resourceSubscriptionSourceDeclaration = false)
             : base(parent, parameter)

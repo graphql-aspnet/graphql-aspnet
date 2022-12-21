@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Attributes
     /// </summary>
     [DebuggerDisplay("{Template}")]
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class GraphFieldAttribute : BaseGraphAttribute
+    public class GraphFieldAttribute : GraphAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldAttribute"/> class.

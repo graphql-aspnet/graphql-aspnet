@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         private string RetrieveOwnerName()
         {
-            if (_owner is INamedTemplateItem nti)
+            if (_owner is INamedItemTemplate nti)
                 return nti.Name;
             if (_owner is INamedItem ni)
                 return ni.Name;

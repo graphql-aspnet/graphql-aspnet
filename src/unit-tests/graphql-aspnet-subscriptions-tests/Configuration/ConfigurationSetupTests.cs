@@ -162,7 +162,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(ISubscriptionEventRouter)));
 
             // ensure the template provider for the runtime is swapped
-            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
+            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTypeTemplateProvider);
             Assert.IsTrue(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider);
         }
 
@@ -210,7 +210,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(IHostedService)) as SubscriptionPublicationService);
 
             // ensure the template provider for the runtime is swapped
-            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
+            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTypeTemplateProvider);
             Assert.IsTrue(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider);
         }
     }

@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Engine
     /// A template provider that adds the ability to parse subscription marked fields on graph controllers
     /// in order to add them to the schema.
     /// </summary>
-    public class SubscriptionEnabledTemplateProvider : DefaultTypeTemplateProvider
+    public class SubscriptionEnabledTypeTemplateProvider : DefaultTypeTemplateProvider
     {
         /// <summary>
         /// Makes a graph template from the given type.

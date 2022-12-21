@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type representing a UTF-8 encoded string of characters.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class StringScalarType : BaseScalarType
+    public sealed class StringScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StringScalarType"/> class.

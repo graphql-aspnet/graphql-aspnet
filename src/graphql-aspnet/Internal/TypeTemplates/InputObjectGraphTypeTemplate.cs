@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A representation of the meta data of any given class that could be represented
     /// as an input object graph type in an <see cref="ISchema"/>.
     /// </summary>
-    public class InputObjectGraphTypeTemplate : BaseGraphTypeTemplate, IInputObjectGraphTypeTemplate
+    public class InputObjectGraphTypeTemplate : GraphTypeTemplateBase, IInputObjectGraphTypeTemplate
     {
         private IEnumerable<string> _duplicateNames;
         private List<IInputGraphFieldTemplate> _invalidFields;

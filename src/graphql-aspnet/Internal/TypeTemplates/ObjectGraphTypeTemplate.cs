@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// as an object graph type in an <see cref="ISchema"/>.
     /// </summary>
     [DebuggerDisplay("Object: {InternalName}")]
-    public class ObjectGraphTypeTemplate : BaseObjectGraphTypeTemplate, IObjectGraphTypeTemplate
+    public class ObjectGraphTypeTemplate : ObjectGraphTypeTemplateBase, IObjectGraphTypeTemplate
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectGraphTypeTemplate" /> class.

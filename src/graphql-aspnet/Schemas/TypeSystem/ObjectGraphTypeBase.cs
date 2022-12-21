@@ -20,18 +20,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// fields that can be "requested" when this type is queried.
     /// </summary>
     [DebuggerDisplay("OBJECT: {Name} (Fields = {Fields.Count})")]
-    public abstract class BaseObjectGraphType : IGraphType
+    public abstract class ObjectGraphTypeBase : IGraphType
     {
         private readonly GraphFieldCollection _graphFields;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseObjectGraphType" /> class.
+        /// Initializes a new instance of the <see cref="ObjectGraphTypeBase" /> class.
         /// </summary>
         /// <param name="name">The name of the graph type as it is displayed in the __type information.</param>
         /// <param name="route">The route path of this object.</param>
         /// <param name="directives">The directives applied to this schema item
         /// when its added to a schema.</param>
-        protected BaseObjectGraphType(
+        protected ObjectGraphTypeBase(
             string name,
             SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)

@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// as a field on a type in an <see cref="ISchema" />.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public class PropertyGraphFieldTemplate : GraphFieldTemplate, IGraphMethod
+    public class PropertyGraphFieldTemplate : GraphFieldTemplateBase, IGraphMethod
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyGraphFieldTemplate" /> class.

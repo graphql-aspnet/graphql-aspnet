@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A graph type representing a 16-bit unsigned integer.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class UShortScalarType : BaseScalarType
+    public sealed class UShortScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UShortScalarType"/> class.

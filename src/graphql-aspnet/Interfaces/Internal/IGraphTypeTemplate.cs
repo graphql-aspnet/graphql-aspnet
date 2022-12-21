@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     /// <summary>
     /// A base interface identifiying an object as a graph type in the object type.
     /// </summary>
-    public interface IGraphTypeTemplate : IGraphItemTemplate, ISecureItem
+    public interface IGraphTypeTemplate : ISchemaItemTemplate, ISecureItem
     {
         /// <summary>
         /// Gets the kind of graph type that can be made from this template.

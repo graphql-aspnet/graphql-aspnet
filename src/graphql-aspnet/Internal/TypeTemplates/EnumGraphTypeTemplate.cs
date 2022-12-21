@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A template for harsing a C# enumeration to be used in the object graph.
     /// </summary>
     [DebuggerDisplay("Enum Template: {InternalName}")]
-    public class EnumGraphTypeTemplate : BaseGraphTypeTemplate, IEnumGraphTypeTemplate
+    public class EnumGraphTypeTemplate : GraphTypeTemplateBase, IEnumGraphTypeTemplate
     {
         private readonly List<EnumValueTemplate> _values;
         private Dictionary<string, IList<string>> _valuesTolabels;

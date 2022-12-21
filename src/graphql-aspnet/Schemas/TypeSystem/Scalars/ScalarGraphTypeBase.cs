@@ -19,13 +19,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// A base class for all scalar types. This base class serves as the scalar type itself, the value resolver and the serializer
-    /// with abstract methods that must be implemented for the later two.
+    /// A base class defining a lot of common functionality used by all scalar types.
     /// </summary>
-    public abstract class BaseScalarType : IScalarGraphType, ILeafValueResolver
+    public abstract class ScalarGraphTypeBase : IScalarGraphType, ILeafValueResolver
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseScalarType" /> class.
+        /// Initializes a new instance of the <see cref="ScalarGraphTypeBase" /> class.
         /// </summary>
         /// <param name="name">The name of the scalar as it appears in a schema.</param>
         /// <param name="primaryType">The primary datatype that represents this scalar.</param>
@@ -33,7 +32,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         /// when its added to a schema.</param>
         /// <param name="specifiedByUrl">An optional url pointing to the specification of this
         /// scalar type.</param>
-        protected BaseScalarType(
+        protected ScalarGraphTypeBase(
             string name,
             Type primaryType,
             IAppliedDirectiveCollection directives = null,
