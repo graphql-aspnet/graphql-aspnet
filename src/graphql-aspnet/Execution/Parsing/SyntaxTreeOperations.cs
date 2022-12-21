@@ -31,13 +31,10 @@ namespace GraphQL.AspNet.Execution.Parsing
         [DebuggerStepperBoundary]
         public static void Release(ref SyntaxTree synTree)
         {
-            if (synTree.NodePool != null)
-            {
-                for (var i = 0; i < synTree.BlockLength; i++)
-                    ArrayPool<SyntaxNode>.Shared.Return(synTree.NodePool[i]);
+            for (var i = 0; i < synTree.BlockLength; i++)
+                ArrayPool<SyntaxNode>.Shared.Return(synTree.NodePool[i]);
 
-                ArrayPool<SyntaxNode[]>.Shared.Return(synTree.NodePool);
-            }
+            ArrayPool<SyntaxNode[]>.Shared.Return(synTree.NodePool);
         }
 
         /// <summary>

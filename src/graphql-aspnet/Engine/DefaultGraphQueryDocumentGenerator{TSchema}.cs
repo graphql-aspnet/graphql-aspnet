@@ -47,10 +47,11 @@ namespace GraphQL.AspNet.Engine
         public virtual IGraphQueryDocument CreateDocument(ReadOnlySpan<char> queryText)
         {
             var sourceText = new SourceText(queryText);
-            var syntaxTree = _parser.CreateSyntaxTree(ref sourceText);
+            var syntaxTree = SyntaxTree.FromDocumentRoot();
 
             try
             {
+                _parser.CreateSyntaxTree(ref syntaxTree, ref sourceText);
                 Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
 
                 var document = this.CreateNewDocumentInstance();

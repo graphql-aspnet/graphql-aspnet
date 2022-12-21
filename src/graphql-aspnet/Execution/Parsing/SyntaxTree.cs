@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Execution.Parsing
         /// <summary>
         /// Creates a new tree with a new root node declares as a document type.
         /// </summary>
-        /// <param name="minBlockCapacity">The minmum number of node blocks
+        /// <param name="minBlockCapacity">The minmum allocated number node blocks
         /// that can be contained within this tree.</param>
         /// <returns>The newly created syntax tree.</returns>
         public static SyntaxTree FromDocumentRoot(int minBlockCapacity = 4)

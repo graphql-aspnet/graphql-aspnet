@@ -36,9 +36,9 @@ namespace GraphQL.AspNet.Execution.Parsing
         /// its internal rule set.  If, during parsing, an error occurs or something about
         /// the supplied query text is incorrect or unexpected a <see cref="GraphQLSyntaxException" />.
         /// </summary>
+        /// <param name="syntaxTree">The syntax tree to fill.</param>
         /// <param name="sourceText">The source text to parse and query a tree from.</param>
-        /// <returns>The completed syntax tree.</returns>
-        public SyntaxTree CreateSyntaxTree(ref SourceText sourceText)
+        public void CreateSyntaxTree(ref SyntaxTree syntaxTree, ref SourceText sourceText)
         {
             // if an exception occurs during parsing just let it bubble up
             // the owner of the parse request will handle it accordingly
@@ -80,8 +80,7 @@ namespace GraphQL.AspNet.Execution.Parsing
             // * variables are identified and proper reference is ensured
             // * ..and on and on
             // ----------------------------------
-            var synTree = SyntaxTree.FromDocumentRoot();
-            var docRoot = synTree.RootNode;
+            var docRoot = syntaxTree.RootNode;
 
             do
             {
@@ -114,11 +113,9 @@ namespace GraphQL.AspNet.Execution.Parsing
                     builder = NodeBuilderFactory.CreateBuilder(SyntaxNodeType.Operation);
                 }
 
-                builder.BuildNode(ref synTree, ref docRoot, ref tokenStream);
+                builder.BuildNode(ref syntaxTree, ref docRoot, ref tokenStream);
             }
             while (!tokenStream.EndOfStream);
-
-            return synTree;
         }
 
         /// <summary>
