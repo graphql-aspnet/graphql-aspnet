@@ -31,12 +31,12 @@ namespace GraphQL.AspNet.Schemas
     public class GraphSchema : ISchema
     {
         /// <summary>
-        /// The human-friendly named assigned to the default graph schema type (this schema type).
+        /// The human-friendly named assigned to the default graph schema type.
         /// </summary>
         public const string DEFAULT_NAME = "-Default-";
 
         /// <summary>
-        /// The human-friendly named assigned to the default graph schema type (this schema type).
+        /// The human-friendly named assigned to the default graph schema type.
         /// </summary>
         public const string DEFAULT_DESCRIPTION = "-Default Schema-";
 
@@ -54,8 +54,8 @@ namespace GraphQL.AspNet.Schemas
             if (!GraphValidation.IsValidGraphName(graphName))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The object {this.GetType().FriendlyName()} cannot be used as a " +
-                    $"schema due to its name. Ensure all proposed schema types have no " +
+                    $"The type {this.GetType().FriendlyName()} cannot be used as a " +
+                    $"schema due to its C# type name. Ensure all schema types have no " +
                     $"special characters (such as carrots for generics) and does not start with an underscore.");
             }
 
