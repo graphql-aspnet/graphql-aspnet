@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Directives.Global
         public IGraphActionResult Execute([FromGraphQL("if")] bool ifArgument)
         {
             if (this.DirectiveTarget is IIncludeableDocumentPart rdp)
-                rdp.IsIncluded = !ifArgument;
+                rdp.IsIncluded = rdp.IsIncluded && !ifArgument;
 
             return this.Ok();
         }
