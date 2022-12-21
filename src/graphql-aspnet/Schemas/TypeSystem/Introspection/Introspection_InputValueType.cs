@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
                 new IntrospectedRoutePath(GraphCollection.Types, this.Name, "defaultValue"),
                 (inputField) => inputField.DefaultValue.AsCompletedTask(),
-                "(optional) a default value that will be used if this input field is not provided in a query.");
+                "(optional) A default value that will be used if this input field is not provided in a query.");
         }
     }
 }

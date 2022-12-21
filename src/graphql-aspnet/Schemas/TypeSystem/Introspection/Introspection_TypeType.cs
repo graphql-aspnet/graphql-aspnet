@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
                 new IntrospectedRoutePath(GraphCollection.Types, this.Name, "name"),
                 (gt) => Task.FromResult(gt?.Name),
-                "The case sensitive name of this graph type as it appears in the object graph");
+                "The case-sensitive name of this graph type as it appears in the object graph");
 
             this.GraphFieldCollection.AddField<IntrospectedType, string>(
                 "description",
@@ -115,7 +115,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(Constants.ReservedNames.INPUT_VALUE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(GraphCollection.Types, this.Name, "inputFields"),
                 (gt) => Task.FromResult(gt?.InputFields),
-                $"For {TypeKind.INPUT_OBJECT.ToString()} types, declares the fields that need to be supplied when submitting the value on a query; otherwise null.");
+                $"For {TypeKind.INPUT_OBJECT.ToString()} types, declares the fields that need to be supplied when submitting an object on a query; otherwise null.");
 
             // ofType
             this.GraphFieldCollection.AddField<IntrospectedType, IntrospectedType>(
@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE),
                 new IntrospectedRoutePath(GraphCollection.Types, this.Name, "ofType"),
                 (gt) => Task.FromResult(gt?.OfType),
-                $"For {TypeKind.NON_NULL.ToString()} and {TypeKind.LIST.ToString()} meta types, declare the underlying type that is " +
+                $"For {TypeKind.NON_NULL.ToString()} and {TypeKind.LIST.ToString()} meta types, declares the underlying type that is " +
                 "wrapped by this type; otherwise null.");
 
             // specifiedByURL

@@ -32,11 +32,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             this.Directive = directiveType;
         }
 
-        /// <summary>
-        /// When overridden in a child class,populates this introspected type using its parent schema to fill in any details about
-        /// other references in this instance.
-        /// </summary>
-        /// <param name="introspectedSchema">The schema.</param>
+        /// <inheritdoc />
         public override void Initialize(IntrospectedSchema introspectedSchema)
         {
             var list = new List<IntrospectedInputValueType>();

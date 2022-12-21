@@ -33,6 +33,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
             // "__Schema" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
             // -------------------------------------------------------------------------
+            this.GraphFieldCollection.AddField<IntrospectedSchema, string>(
+                "description",
+                new GraphTypeExpression(Constants.ScalarNames.STRING, GraphTypeExpression.SingleItem),
+                new IntrospectedRoutePath(GraphCollection.Types, this.Name, "description"),
+                (its) => its.Description.AsCompletedTask(),
+                "A human-readable string describing this schema.");
+
             this.GraphFieldCollection.AddField<IntrospectedSchema, IEnumerable<IntrospectedType>>(
                 "types",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, GraphTypeExpression.RequiredListRequiredItem),

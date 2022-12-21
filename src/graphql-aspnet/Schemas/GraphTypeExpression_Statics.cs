@@ -34,36 +34,60 @@ namespace GraphQL.AspNet.Schemas
         /// <summary>
         /// Gets a wrapper set representing a return value of a single item. That item may be returned as null.
         /// </summary>
+        /// <remarks>
+        /// Schema Lang: <c>Type</c><br/>
+        /// --.
+        /// </remarks>
         /// <value>A set of wrappers.</value>
         public static MetaGraphTypes[] SingleItem { get; } = new MetaGraphTypes[0];
 
         /// <summary>
         /// Gets a wrapper set representing a return value of a single item. The item must be provided, it cannot be null.
         /// </summary>
+        /// <remarks>
+        /// Schema Lang: <c>Type!</c><br/>
+        /// --.
+        /// </remarks>
         /// <value>A set of wrappers.</value>
         public static MetaGraphTypes[] RequiredSingleItem { get; } = { MetaGraphTypes.IsNotNull };
 
         /// <summary>
         /// Gets a wrapper set representing a return value of a list of items. Both the list and the items within the list could be null.
         /// </summary>
+        /// <remarks>
+        /// Schema Lang: <c>[Type]</c><br/>
+        /// --.
+        /// </remarks>
         /// <value>A set of wrappers.</value>
         public static MetaGraphTypes[] List { get; } = { MetaGraphTypes.IsList };
 
         /// <summary>
         /// Gets a wrapper set representing a return value of list items. The list is required to be returned, but the items within the list may be null.
         /// </summary>
+        /// <remarks>
+        /// Schema Lang: <c>[Type]!</c><br/>
+        /// --.
+        /// </remarks>
         /// <value>A set of wrappers.</value>
         public static MetaGraphTypes[] RequiredList { get; } = { MetaGraphTypes.IsNotNull, MetaGraphTypes.IsList };
 
         /// <summary>
         /// Gets a wrapper set representing a return value of list items. The list is can be null but when returned all the items within the list must not be null.
         /// </summary>
+        /// <remarks>
+        /// Schema Lang: <c>[Type!]</c><br/>
+        /// --.
+        /// </remarks>
         /// <value>A set of wrappers.</value>
         public static MetaGraphTypes[] ListRequiredItem { get; } = { MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull };
 
         /// <summary>
         /// Gets a wrapper set representing a return value of list items. The list itself is required to be returned and all items in the list must not be null.
         /// </summary>
+        /// <remarks>
+        /// Schema Lang: <c>[Type!]!</c><br/>
+        /// --.
+        /// </remarks>
         /// <value>A set of wrappers.</value>
         public static MetaGraphTypes[] RequiredListRequiredItem { get; } = { MetaGraphTypes.IsNotNull, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull };
 

@@ -41,12 +41,6 @@ namespace GraphQL.AspNet.Directives.Global
                     $"an object that implements {typeof(IGraphField).FriendlyName()} or {typeof(IEnumValue).FriendlyName()}. (Current Target: {this.DirectiveTarget?.GetType().FriendlyName()})");
             }
 
-            if (reason == null)
-            {
-                throw new GraphTypeDeclarationException(
-                    $"A non-null reason must be provided with @{Constants.ReservedNames.DEPRECATED_DIRECTIVE}. (Target: {item.Route.Path})");
-            }
-
             if (this.DirectiveTarget is IDeprecatable deprecatable)
             {
                 deprecatable.IsDeprecated = true;
