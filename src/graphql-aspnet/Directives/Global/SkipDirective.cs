@@ -23,10 +23,10 @@ namespace GraphQL.AspNet.Directives.Global
     public sealed class SkipDirective : GraphDirective
     {
         /// <summary>
-        /// Executes the directive returning back the provided argument (from the user's query)
-        /// to determine if execution should continue in the location this directive was found.
+        /// Executes the directive on the target document part.
         /// </summary>
-        /// <param name="ifArgument">if set to <c>true</c> processing of the request, on this branch, will stop.</param>
+        /// <param name="ifArgument">If set to <c>true</c> the document part this
+        /// directive is attached to will NOT be included in the results set.</param>
         /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
         public IGraphActionResult Execute([FromGraphQL("if")] bool ifArgument)

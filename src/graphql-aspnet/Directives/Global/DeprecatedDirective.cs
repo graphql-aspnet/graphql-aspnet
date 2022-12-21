@@ -25,9 +25,9 @@ namespace GraphQL.AspNet.Directives.Global
     public sealed class DeprecatedDirective : GraphDirective
     {
         /// <summary>
-        /// Executes the directive and marking the target as being deprecated with the given reason.
+        /// Executes the directive on the target document part.
         /// </summary>
-        /// <param name="reason">the reason for the deprecation, if any.</param>
+        /// <param name="reason">An optional reason for the deprecation.</param>
         /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.FIELD_DEFINITION | DirectiveLocation.ENUM_VALUE)]
         public IGraphActionResult Execute([FromGraphQL("reason")] string reason = "No longer supported")

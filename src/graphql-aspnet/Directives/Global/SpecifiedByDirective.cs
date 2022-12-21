@@ -26,8 +26,7 @@ namespace GraphQL.AspNet.Directives.Global
     public sealed class SpecifiedByDirective : GraphDirective
     {
         /// <summary>
-        /// Executes the directive returning back the provided argument (from the user's query)
-        /// to determine if execution should continue in the location this directive was found.
+        /// Executes the directive on the target document part.
         /// </summary>
         /// <param name="url">The URL pointing to the specification for the custom scalar.</param>
         /// <returns>IGraphActionResult.</returns>
