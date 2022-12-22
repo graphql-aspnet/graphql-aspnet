@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// Represents the introspection enumeration '__DirectiveLocation'.
+    /// Represents the enum graph type '__DirectiveLocation'.
     /// </summary>
     [DebuggerDisplay("INTROSPECTION TYPE __DirectiveLocation")]
     internal class Introspection_DirectiveLocationType : EnumGraphType, IInternalSchemaItem

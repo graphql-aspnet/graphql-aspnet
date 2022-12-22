@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A model object containing data for the __schema meta field.
+    /// A model object containing data for the '__Schema' type.
     /// </summary>
     [DebuggerDisplay("Introspected Schema: {Name}")]
     public sealed class IntrospectedSchema : IntrospectedItem, ISchemaItem

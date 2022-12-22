@@ -206,7 +206,7 @@ namespace GraphQL.AspNet.Tests.Framework
                 _userSecurityContext,
                 fieldResult.Field,
                 this.Schema,
-                template as IGraphMethod);
+                template as IGraphFieldResolverMethod);
 
             builder.AddSourceData(new object());
             return builder;
@@ -353,7 +353,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="fieldName">Name of the field.</param>
         /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
         /// <returns>IGraphMethod.</returns>
-        public IGraphMethod CreateInvokableReference<TObjectType>(string fieldName, TypeKind? typeKind = null)
+        public IGraphFieldResolverMethod CreateInvokableReference<TObjectType>(string fieldName, TypeKind? typeKind = null)
         {
             var template = TemplateHelper.CreateGraphTypeTemplate<TObjectType>(typeKind);
             var fieldContainer = template as IGraphTypeFieldTemplateContainer;
@@ -373,11 +373,11 @@ namespace GraphQL.AspNet.Tests.Framework
                       $"contain a field named '{fieldName}'.");
             }
 
-            var method = fieldTemplate as IGraphMethod;
+            var method = fieldTemplate as IGraphFieldResolverMethod;
             if (method == null)
             {
                 Assert.Fail($"The field named '{fieldName}' on the provided type '{typeof(TObjectType).FriendlyName()}' " +
-                      $"does not represent an invokable {typeof(IGraphMethod)}. Operation cannot proceed.");
+                      $"does not represent an invokable {typeof(IGraphFieldResolverMethod)}. Operation cannot proceed.");
             }
 
             return method;

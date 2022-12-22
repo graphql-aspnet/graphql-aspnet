@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
     [DebuggerDisplay("Meta Field: " + Constants.ReservedNames.TYPENAME_FIELD)]
     public class Introspection_TypeNameMetaField : MethodGraphField
     {
-        private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(GraphCollection.Query, Constants.ReservedNames.TYPENAME_FIELD);
+        private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(SchemaItemCollections.Query, Constants.ReservedNames.TYPENAME_FIELD);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_TypeNameMetaField"/> class.
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
                 FIELD_PATH)
         {
             Validation.ThrowIfNull(graphTypeName, nameof(graphTypeName));
-            this.UpdateResolver(new GraphDataValueResolver<object, string>((obj) => graphTypeName.AsCompletedTask()), FieldResolutionMode.PerSourceItem);
+            this.UpdateResolver(new FunctionValueResolver<object, string>((obj) => graphTypeName.AsCompletedTask()), FieldResolutionMode.PerSourceItem);
         }
 
         /// <inheritdoc />

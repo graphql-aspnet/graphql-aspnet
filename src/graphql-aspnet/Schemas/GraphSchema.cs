@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Schemas
                     $"special characters (such as carrots for generics) and does not start with an underscore.");
             }
 
-            this.Route = new SchemaItemPath(GraphCollection.Schemas, graphName);
+            this.Route = new SchemaItemPath(SchemaItemCollections.Schemas, graphName);
             this.Name = DEFAULT_NAME;
             this.Description = DEFAULT_DESCRIPTION;
         }

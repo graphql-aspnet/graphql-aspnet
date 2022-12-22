@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Logging
         }
 
         private void ValidateModelDictionaryToLogEntry(
-            IGraphMethod graphMethod,
+            IGraphFieldResolverMethod graphMethod,
             IGraphFieldRequest fieldRequest,
             InputModelStateDictionary dictionary,
             ActionMethodModelStateValidatedLogEntry logEntry)

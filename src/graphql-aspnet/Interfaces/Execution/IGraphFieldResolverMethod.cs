@@ -12,20 +12,23 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// A packaged data set pointing to a specific method on a <see cref="GraphController"/> or general <see cref="Type"/> that is to be invoked
-    /// as an action to resolve a field request.
+    /// A data package describing the details necessary to
+    /// invoke a <see cref="IGraphFieldResolver"/> against an object instance.
     /// </summary>
-    public interface IGraphMethod
+    /// <remarks>
+    /// This interface describes the "bridge" between a field on an schema
+    /// and the C# code from which that field originated.
+    /// </remarks>
+    public interface IGraphFieldResolverMethod
     {
         /// <summary>
         /// Gets the type that contains this method.
         /// </summary>
-        /// <value>The type of the controller.</value>
+        /// <value>The type template that owns this method.</value>
         IGraphTypeTemplate Parent { get; }
 
         /// <summary>
@@ -42,9 +45,9 @@ namespace GraphQL.AspNet.Interfaces.Execution
         Type ExpectedReturnType { get; }
 
         /// <summary>
-        /// Gets the action method to be called on the controller.
+        /// Gets the method to be called on the target object or struct instance.
         /// </summary>
-        /// <value>The action method.</value>
+        /// <value>The method to be invoked.</value>
         MethodInfo Method { get; }
 
         /// <summary>
@@ -55,7 +58,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IReadOnlyList<ParameterInfo> Parameters { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the method described by this instance should be.
+        /// Gets a value indicating whether the method described by this instance should be
         /// invoked asyncronously.
         /// </summary>
         /// <value><c>true</c> if the method is asynchronous; otherwise, <c>false</c>.</value>
@@ -68,25 +71,27 @@ namespace GraphQL.AspNet.Interfaces.Execution
         string Name { get; }
 
         /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
+        /// Gets the fully qualified name, including namespace, of this item as it exists in the
+        /// .NET code (e.g. <c>Namespace.ObjectType.MethodName</c>).
         /// </summary>
         /// <value>The internal name given to this item.</value>
         string InternalFullName { get; }
 
         /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
+        /// Gets the name that defines this item within the .NET code of the application;
+        /// typically a method name or property name.
         /// </summary>
         /// <value>The internal name given to this item.</value>
         string InternalName { get; }
 
         /// <summary>
-        /// Gets the qualified route that points to this method in the object graph.
+        /// Gets the qualified, unique route that points to the field in the object graph.
         /// </summary>
         /// <value>The route.</value>
         SchemaItemPath Route { get; }
 
         /// <summary>
-        /// Gets the arguments defined on the method this instance represents.
+        /// Gets the templatized arguments representing the field.
         /// </summary>
         /// <value>The arguments.</value>
         IReadOnlyList<IGraphArgumentTemplate> Arguments { get; }

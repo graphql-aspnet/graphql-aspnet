@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <param name="graphMethod">The graph method.</param>
         /// <returns>System.Object[].</returns>
-        object[] PrepareArguments(IGraphMethod graphMethod);
+        object[] PrepareArguments(IGraphFieldResolverMethod graphMethod);
 
         /// <summary>
         /// Gets the source data, if any, that is supplying values for this execution run.

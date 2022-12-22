@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <inheritdoc />
-        public object[] PrepareArguments(IGraphMethod graphMethod)
+        public object[] PrepareArguments(IGraphFieldResolverMethod graphMethod)
         {
             var preparedParams = new List<object>();
             var paramInfos = graphMethod.Parameters;

@@ -151,6 +151,6 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// this subscription.
         /// </summary>
         /// <value>The query operation.</value>
-        public IGraphFieldExecutableOperation QueryOperation { get; }
+        public IExecutableOperation QueryOperation { get; }
     }
 }

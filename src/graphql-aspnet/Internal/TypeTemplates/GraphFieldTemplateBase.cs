@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// A base definition for items required to generate a graph field.
+    /// A base class representing common functionality shared between all field templates.
     /// </summary>
     public abstract class GraphFieldTemplateBase : SchemaItemTemplateBase, IGraphFieldTemplate
     {

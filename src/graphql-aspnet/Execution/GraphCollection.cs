@@ -12,13 +12,12 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// An enumeration depicting the various collections of items supported by
-    /// graphql.
+    /// An enumeration depicting the various collections of items tracked by graphql.
     /// </summary>
-    public enum GraphCollection
+    public enum SchemaItemCollections : int
     {
         // negative numbers represent internally defined collections
-        // (not part of  the graph schema)
+        // (not part of the graph schema)
         Document = -70,
         Introspection = -60,
         Schemas = -50,

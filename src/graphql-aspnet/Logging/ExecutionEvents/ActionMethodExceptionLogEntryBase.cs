@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// <param name="exception">The exception that was thrown.</param>
         protected ActionMethodExceptionLogEntryBase(
             EventId eventId,
-            IGraphMethod method,
+            IGraphFieldResolverMethod method,
             IDataRequest request,
             Exception exception)
             : base(eventId)

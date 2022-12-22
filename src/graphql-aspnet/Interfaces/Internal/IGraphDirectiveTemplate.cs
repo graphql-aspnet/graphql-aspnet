@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// </summary>
         /// <param name="location">The location.</param>
         /// <returns>IGraphMethod.</returns>
-        IGraphMethod FindMethod(DirectiveLocation location);
+        IGraphFieldResolverMethod FindMethod(DirectiveLocation location);
 
         /// <summary>
         /// Creates a resolver capable of completing a resolution of this directive.

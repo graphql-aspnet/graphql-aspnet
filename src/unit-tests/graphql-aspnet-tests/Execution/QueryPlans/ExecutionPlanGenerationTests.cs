@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             // "simple" should contain 1 child field called "simpleQueryMethod"
             Assert.AreEqual(0, queuedContext.Arguments.Count);
             Assert.AreEqual(1, queuedContext.ChildContexts.Count);
-            Assert.IsTrue(queuedContext.Field?.Resolver is GraphRouteFieldResolver);
+            Assert.IsTrue(queuedContext.Field?.Resolver is GraphControllerRouteFieldResolver);
 
             // simpleQueryMethod should contain 1 property to be resolved
             var child = queuedContext.ChildContexts[0];
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             Assert.AreEqual("simple.simpleQueryMethod.property1", prop1.Origin.Path.ToDotString());
             Assert.AreEqual(0, prop1.ChildContexts.Count);
             Assert.AreEqual(0, prop1.Arguments.Count);
-            Assert.IsTrue(prop1.Field?.Resolver is GraphObjectPropertyResolver);
+            Assert.IsTrue(prop1.Field?.Resolver is ObjectPropertyResolver);
         }
 
         [Test]
@@ -242,7 +242,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             // "simple" should contain 1 child field called "simpleQueryMethod"
             Assert.AreEqual(0, queuedContext.Arguments.Count);
             Assert.AreEqual(1, queuedContext.ChildContexts.Count);
-            Assert.IsTrue(queuedContext.Field?.Resolver is GraphRouteFieldResolver);
+            Assert.IsTrue(queuedContext.Field?.Resolver is GraphControllerRouteFieldResolver);
 
             // simpleQueryMethod should contain 2 properties to be resolved (the two props on the fragment)
             var child = queuedContext.ChildContexts[0];
@@ -261,7 +261,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             Assert.AreEqual("property1", prop1.Name);
             Assert.AreEqual(0, prop1.ChildContexts.Count);
             Assert.AreEqual(0, prop1.Arguments.Count);
-            Assert.IsTrue(prop1.Field?.Resolver is GraphObjectPropertyResolver);
+            Assert.IsTrue(prop1.Field?.Resolver is ObjectPropertyResolver);
 
             // "property2"
             var prop2 = child.ChildContexts[1];
@@ -269,7 +269,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             Assert.AreEqual("property2", prop2.Name);
             Assert.AreEqual(0, prop2.ChildContexts.Count);
             Assert.AreEqual(0, prop2.Arguments.Count);
-            Assert.IsTrue(prop2.Field?.Resolver is GraphObjectPropertyResolver);
+            Assert.IsTrue(prop2.Field?.Resolver is ObjectPropertyResolver);
         }
 
         [Test]

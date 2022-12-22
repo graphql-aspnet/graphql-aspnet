@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mockMethod.Setup(x => x.ObjectType).Returns(typeof(ParameterTestClass));
 
             var route = new SchemaItemPath(SchemaItemPath.Join(
-                GraphCollection.Query,
+                SchemaItemCollections.Query,
                 nameof(ParameterTestClass),
                 nameof(ParameterTestClass.TestMethod)));
             mockMethod.Setup(x => x.Route).Returns(route);

@@ -20,9 +20,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A representation of data about an object graph type that can be returned from a field.
+    /// A model object representing the introspected data of a graph type declared on a schema.
     /// </summary>
-    [DebuggerDisplay("OBJECT: {Name}")]
+    [DebuggerDisplay("Target Type: {Name}")]
     public sealed class IntrospectedType
     {
         /// <summary>

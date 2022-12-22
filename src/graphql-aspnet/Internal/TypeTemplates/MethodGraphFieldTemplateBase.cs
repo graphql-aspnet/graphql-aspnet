@@ -18,15 +18,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Resolvers;
 
     /// <summary>
-    /// A base class representing common items between all <see cref="IGraphType"/> capable
-    /// methods.
+    /// A base class representing common functionality between all field templates based on
+    /// C# methods.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public abstract class MethodGraphFieldTemplateBase : GraphFieldTemplateBase, IGraphMethod
+    public abstract class MethodGraphFieldTemplateBase : GraphFieldTemplateBase, IGraphFieldResolverMethod
     {
         private readonly List<GraphArgumentTemplate> _arguments;
 
@@ -96,7 +95,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public override IGraphFieldResolver CreateResolver()
         {
-            return new GraphObjectMethodResolver(this);
+            return new ObjectMethodResolver(this);
         }
 
         /// <inheritdoc />

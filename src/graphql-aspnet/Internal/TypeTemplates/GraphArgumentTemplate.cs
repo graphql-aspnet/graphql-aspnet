@@ -26,8 +26,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A fully qualified description of a single argument of a method.
-    /// This template can be added as an input argument to a field or directive.
+    /// A template describing an argument declared a field.
     /// </summary>
     [DebuggerDisplay("{Name} (Type: {FriendlyObjectTypeName})")]
     public class GraphArgumentTemplate : IGraphArgumentTemplate

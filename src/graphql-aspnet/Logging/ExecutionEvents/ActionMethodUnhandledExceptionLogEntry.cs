@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// <param name="request">The request being executed on the method.</param>
         /// <param name="exception">The exception that was thrown.</param>
         public ActionMethodUnhandledExceptionLogEntry(
-            IGraphMethod method,
+            IGraphFieldResolverMethod method,
             IDataRequest request,
             Exception exception)
             : base(

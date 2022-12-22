@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// this subscription.
         /// </summary>
         /// <value>The query operation.</value>
-        IGraphFieldExecutableOperation QueryOperation { get; }
+        IExecutableOperation QueryOperation { get; }
 
         /// <summary>
         /// Gets a value indicating whether this subscription has been properly configured.

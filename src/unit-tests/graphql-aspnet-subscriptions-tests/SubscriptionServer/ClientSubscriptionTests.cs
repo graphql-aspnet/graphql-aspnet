@@ -69,7 +69,7 @@ namespace GraphQL.Subscriptions.Tests.SubscriptionServer
                 .Build();
 
             var fakePlan = new Mock<IGraphQueryPlan>();
-            var fakeOp = new Mock<IGraphFieldExecutableOperation>();
+            var fakeOp = new Mock<IExecutableOperation>();
 
             fakePlan.Setup(x => x.Operation).Returns(fakeOp.Object);
             fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Query);
@@ -97,7 +97,7 @@ namespace GraphQL.Subscriptions.Tests.SubscriptionServer
                 .Build();
 
             var fakePlan = new Mock<IGraphQueryPlan>();
-            var fakeOp = new Mock<IGraphFieldExecutableOperation>();
+            var fakeOp = new Mock<IExecutableOperation>();
             var fakeFieldContext = new Mock<IGraphFieldInvocationContext>();
             fakeFieldContext.Setup(x => x.Field).Returns(null as IGraphField);
 

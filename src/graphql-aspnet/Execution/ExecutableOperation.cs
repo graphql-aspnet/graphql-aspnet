@@ -22,16 +22,16 @@ namespace GraphQL.AspNet.Execution
     /// </summary>
     [Serializable]
     [DebuggerDisplay("{OperationName} (Type = {OperationType})")]
-    internal sealed class GraphFieldExecutableOperation : IGraphFieldExecutableOperation
+    internal sealed class ExecutableOperation : IExecutableOperation
     {
         private IOperationDocumentPart _operation;
         private IVariableCollectionDocumentPart _variableCollection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphFieldExecutableOperation" /> class.
+        /// Initializes a new instance of the <see cref="ExecutableOperation" /> class.
         /// </summary>
         /// <param name="operation">The reference operation to use when constructing this container.</param>
-        public GraphFieldExecutableOperation(IOperationDocumentPart operation)
+        public ExecutableOperation(IOperationDocumentPart operation)
         {
             _operation = Validation.ThrowIfNullOrReturn(operation, nameof(operation));
 

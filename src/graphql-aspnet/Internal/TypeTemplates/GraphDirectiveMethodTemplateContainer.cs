@@ -19,8 +19,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A collection of known methods that can be invoked by the run time
-    /// in response to the directive being included in a query document at various locations.
+    /// A collection of method templates declared on a directive template.
     /// </summary>
     public class GraphDirectiveMethodTemplateContainer
     {
@@ -82,7 +81,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="location">A valid graphql directive location.</param>
         /// <returns>IGraphMethod.</returns>
-        public IGraphMethod FindMethod(DirectiveLocation location)
+        public IGraphFieldResolverMethod FindMethod(DirectiveLocation location)
         {
             if (_templateMap.ContainsKey(location))
                 return _templateMap[location];

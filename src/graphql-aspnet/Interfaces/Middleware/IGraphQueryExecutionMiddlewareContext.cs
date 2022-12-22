@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Interfaces.Middleware
         /// Gets or sets the query operation to execute of the active query plan.
         /// </summary>
         /// <value>The query operation.</value>
-        IGraphFieldExecutableOperation QueryOperation { get; set; }
+        IExecutableOperation QueryOperation { get; set; }
 
         /// <summary>
         /// Gets or sets the operation result created during the query pipeline execution.

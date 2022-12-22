@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Directives
 
         /// <inheritdoc />
         internal override Task<object> InvokeActionAsync(
-            IGraphMethod actionToInvoke,
+            IGraphFieldResolverMethod actionToInvoke,
             SchemaItemResolutionContext<IGraphDirectiveRequest> context)
         {
             Validation.ThrowIfNull(context, nameof(context));

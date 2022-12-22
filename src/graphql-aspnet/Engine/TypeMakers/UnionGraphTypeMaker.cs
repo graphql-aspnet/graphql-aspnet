@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             var union = new UnionGraphType(
                 name,
                 (IUnionTypeMapper)proxy,
-                new SchemaItemPath(GraphCollection.Types, name),
+                new SchemaItemPath(SchemaItemCollections.Types, name),
                 directives)
             {
                 Description = proxy.Description,

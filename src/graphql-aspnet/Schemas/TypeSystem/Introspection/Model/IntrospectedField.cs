@@ -17,7 +17,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A model object containing data for the __Field type of one field in a graph type.
+    /// A model object containing data for a '__Field' type
+    /// created from one field in a graph type.
     /// </summary>
     [DebuggerDisplay("field: {Name}")]
     public sealed class IntrospectedField : IntrospectedItem, ISchemaItem

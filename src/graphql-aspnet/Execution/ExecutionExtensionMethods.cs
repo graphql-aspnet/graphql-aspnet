@@ -27,26 +27,26 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>System.String.</returns>
-        internal static string ToRouteRoot(this GraphCollection value)
+        internal static string ToRouteRoot(this SchemaItemCollections value)
         {
             switch (value)
             {
-                case GraphCollection.Query:
+                case SchemaItemCollections.Query:
                     return RouteConstants.QUERY_ROOT;
 
-                case GraphCollection.Mutation:
+                case SchemaItemCollections.Mutation:
                     return RouteConstants.MUTATION_ROOT;
 
-                case GraphCollection.Subscription:
+                case SchemaItemCollections.Subscription:
                     return RouteConstants.SUBSCRIPTION_ROOT;
 
-                case GraphCollection.Types:
+                case SchemaItemCollections.Types:
                     return RouteConstants.TYPE_ROOT;
 
-                case GraphCollection.Enums:
+                case SchemaItemCollections.Enums:
                     return RouteConstants.ENUM_ROOT;
 
-                case GraphCollection.Directives:
+                case SchemaItemCollections.Directives:
                     return RouteConstants.DIRECTIVE_ROOT;
 
                 default:

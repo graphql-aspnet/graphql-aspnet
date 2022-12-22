@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
         /// </summary>
         /// <param name="operation">The query operation to generate an execution context for.</param>
         /// <returns>Task&lt;IGraphFieldExecutableOperation&gt;.</returns>
-        public async Task<IGraphFieldExecutableOperation> CreateAsync(IOperationDocumentPart operation)
+        public async Task<IExecutableOperation> CreateAsync(IOperationDocumentPart operation)
         {
             Validation.ThrowIfNull(operation, nameof(operation));
             _messages = new GraphMessageCollection();
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
                 operation.FieldSelectionSet)
                 .ConfigureAwait(false);
 
-            var result = new GraphFieldExecutableOperation(operation);
+            var result = new ExecutableOperation(operation);
             foreach (var field in topLevelFields)
                 result.FieldContexts.Add(field);
 

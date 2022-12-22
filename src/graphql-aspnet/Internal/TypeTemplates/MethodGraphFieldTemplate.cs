@@ -14,13 +14,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A parsed description of the meta data of any "general method" that should be represented
-    /// as a field on a type in an <see cref="ISchema"/>.
+    /// An template describing a field on an OBJECT or INTERFACE graph type that
+    /// is created from a C# object method.
     /// </summary>
     public class MethodGraphFieldTemplate : MethodGraphFieldTemplateBase
     {
@@ -36,11 +35,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.OwnerTypeKind = ownerTypeKind;
         }
 
-        /// <summary>
-        /// When overridden in a child class, this metyhod builds the route that will be assigned to this method
-        /// using the implementation rules of the concrete type.
-        /// </summary>
-        /// <returns>GraphRoutePath.</returns>
+        /// <inheritdoc />
         protected override SchemaItemPath GenerateFieldPath()
         {
             // an object method cannot contain any route pathing or nesting like controller methods can
@@ -52,11 +47,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, graphName));
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc />
         public override void ValidateOrThrow()
         {
             base.ValidateOrThrow();
@@ -74,10 +65,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
         }
 
-        /// <summary>
-        /// Gets the kind of graph type that should own fields created from this template.
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public override TypeKind OwnerTypeKind { get; }
     }
 }

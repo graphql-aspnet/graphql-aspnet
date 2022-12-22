@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// A base representation of a template for an any graph type containing common elements amongst all types.
+    /// A base template defining common functionality across all graph type template definitions.
     /// </summary>
     public abstract class GraphTypeTemplateBase : SchemaItemTemplateBase, IGraphTypeTemplate
     {
@@ -53,30 +53,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
         }
 
-        /// <summary>
-        /// Gets the security policies found via defined attributes on the item that need to be enforced.
-        /// </summary>
-        /// <value>The security policies.</value>
+        /// <inheritdoc />
         public abstract AppliedSecurityPolicyGroup SecurityPolicies { get; }
 
-        /// <summary>
-        /// Gets the kind of graph type that can be made from this template.
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public abstract TypeKind Kind { get; }
 
-        /// <summary>
-        /// Gets the declaration requirements, if any, that this template defines as needing to be inforced for its specific templated
-        /// type.
-        /// </summary>
-        /// <value>The declaration requirements.</value>
+        /// <inheritdoc />
         public TemplateDeclarationRequirements? DeclarationRequirements => _fieldDeclarationOverrides;
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is marked such that graph types
-        /// made from it are published in introspection queries.
-        /// </summary>
-        /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool Publish { get; private set; }
     }
 }

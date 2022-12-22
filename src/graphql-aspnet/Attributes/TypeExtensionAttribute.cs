@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Attributes
         /// <param name="returnType">The type of the data object returned from this method. If this type implements
         /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type.</param>
         public TypeExtensionAttribute(Type typeToExtend, string fieldName, Type returnType)
-            : base(false, GraphCollection.Types, fieldName, returnType)
+            : base(false, SchemaItemCollections.Types, fieldName, returnType)
         {
             this.TypeToExtend = typeToExtend;
         }
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Attributes
             params Type[] additionalUnionTypes)
             : base(
                 false,
-                GraphCollection.Types,
+                SchemaItemCollections.Types,
                 fieldName,
                 unionTypeName,
                 unionTypeA.AsEnumerable().Concat(unionTypeB.AsEnumerable()).Concat(additionalUnionTypes).ToArray())

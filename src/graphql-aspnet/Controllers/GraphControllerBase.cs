@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Controllers
         where TRequest : class, IDataRequest
     {
         private SchemaItemResolutionContext<TRequest> _schemaItemContext;
-        private IGraphMethod _action;
+        private IGraphFieldResolverMethod _action;
 
         /// <summary>
         /// Invoke the specified action method as an asynchronous operation.
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>Task&lt;System.Object&gt;.</returns>
         [GraphSkip]
         internal virtual async Task<object> InvokeActionAsync(
-            IGraphMethod actionToInvoke,
+            IGraphFieldResolverMethod actionToInvoke,
             SchemaItemResolutionContext<TRequest> schemaItemContext)
         {
             // deconstruct the context for processing

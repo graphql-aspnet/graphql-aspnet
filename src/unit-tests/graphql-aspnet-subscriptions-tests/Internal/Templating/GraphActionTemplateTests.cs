@@ -52,10 +52,10 @@ namespace GraphQL.Subscriptions.Tests.Internal.Templating
             Assert.AreEqual("SubDescription", action.Description);
             Assert.AreEqual(typeof(TwoPropertyObject), action.SourceObjectType);
             Assert.AreEqual(typeof(OneMethodSubscriptionController), action.Parent.ObjectType);
-            Assert.AreEqual(GraphCollection.Subscription, action.Route.RootCollection);
+            Assert.AreEqual(SchemaItemCollections.Subscription, action.Route.RootCollection);
             Assert.AreEqual("[subscription]/path0/path1", action.Route.Path);
             Assert.AreEqual($"{nameof(OneMethodSubscriptionController)}.{nameof(OneMethodSubscriptionController.SingleMethod)}", action.InternalFullName);
-            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphMethod)action).Parent.ObjectType);
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)action).Parent.ObjectType);
             Assert.AreEqual("path0", action.Parent.Name);
             Assert.AreEqual(methodInfo, action.Method);
             Assert.AreEqual(1, action.Arguments.Count);

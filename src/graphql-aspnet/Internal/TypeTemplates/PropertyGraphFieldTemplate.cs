@@ -20,17 +20,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A parsed description of the meta data of any given property that should be represented
-    /// as a field on a type in an <see cref="ISchema" />.
+    /// An template describing a field on an OBJECT or INTERFACE graph type that
+    /// is created from a C# object property.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public class PropertyGraphFieldTemplate : GraphFieldTemplateBase, IGraphMethod
+    public class PropertyGraphFieldTemplate : GraphFieldTemplateBase, IGraphFieldResolverMethod
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyGraphFieldTemplate" /> class.
@@ -95,7 +94,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public override IGraphFieldResolver CreateResolver()
         {
-            return new GraphObjectPropertyResolver(this);
+            return new ObjectPropertyResolver(this);
         }
 
         /// <inheritdoc />

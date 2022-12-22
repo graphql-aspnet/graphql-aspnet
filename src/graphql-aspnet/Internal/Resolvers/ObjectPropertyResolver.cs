@@ -25,27 +25,20 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// </summary>
     /// <seealso cref="IGraphFieldResolver" />
     [DebuggerDisplay("Prop Resolver: {_graphMethod.Name}")]
-    public class GraphObjectPropertyResolver : IGraphFieldResolver
+    internal class ObjectPropertyResolver : IGraphFieldResolver
     {
-        private readonly IGraphMethod _graphMethod;
+        private readonly IGraphFieldResolverMethod _graphMethod;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphObjectPropertyResolver" /> class.
+        /// Initializes a new instance of the <see cref="ObjectPropertyResolver" /> class.
         /// </summary>
-        /// <param name="propertyGetMethod">The property method.</param>
-        public GraphObjectPropertyResolver(IGraphMethod propertyGetMethod)
+        /// <param name="propertyGetMethod">A method that describes .</param>
+        public ObjectPropertyResolver(IGraphFieldResolverMethod propertyGetMethod)
         {
             _graphMethod = Validation.ThrowIfNullOrReturn(propertyGetMethod, nameof(propertyGetMethod));
         }
 
-        /// <summary>
-        /// Processes the given <see cref="IGraphFieldRequest" /> against this instance
-        /// performing the operation as defined by this entity and generating a response.
-        /// </summary>
-        /// <param name="context">The field context containing the necessary data to resolve
-        /// the field and produce a reslt.</param>
-        /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
-        /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
+        /// <inheritdoc />
         public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             var sourceData = context.Arguments.SourceData;
@@ -142,10 +135,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             }
         }
 
-        /// <summary>
-        /// Gets the concrete type this resolver attempts to create during its operation.
-        /// </summary>
-        /// <value>The type of the return.</value>
+        /// <inheritdoc />
         public Type ObjectType => _graphMethod.ObjectType;
     }
 }

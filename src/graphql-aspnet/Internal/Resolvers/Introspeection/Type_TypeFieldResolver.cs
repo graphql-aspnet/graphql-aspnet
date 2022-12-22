@@ -29,13 +29,7 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
         {
         }
 
-        /// <summary>
-        /// Executes the given context in an attempt to resolve the request and produce a reslt.
-        /// </summary>
-        /// <param name="context">The field context containing the necessary data to resolve
-        /// the field and produce a reslt.</param>
-        /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
-        /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
+        /// <inheritdoc />
         public Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             var sourceData = context.Arguments.SourceData as IntrospectedType;
@@ -58,11 +52,7 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Gets the concrete type this resolver attempts to create as a during its invocation. If this
-        /// resolver may generate a list, this type should represent a single list item. (i.e. 'string' not 'List[string]').
-        /// </summary>
-        /// <value>The type of the return.</value>
+        /// <inheritdoc />
         public Type ObjectType => typeof(IntrospectedField);
     }
 }

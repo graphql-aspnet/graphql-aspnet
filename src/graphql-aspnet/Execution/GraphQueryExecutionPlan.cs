@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Execution
         public IGraphMessageCollection Messages { get; }
 
         /// <inheritdoc />
-        public IGraphFieldExecutableOperation Operation { get; set; }
+        public IExecutableOperation Operation { get; set; }
 
         /// <inheritdoc />
         public bool IsValid => !this.Messages.Severity.IsCritical();

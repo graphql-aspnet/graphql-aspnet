@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// Represents the introspection enumeration '__TypeKind'.
+    /// Represents the enumeration graph type '__TypeKind'.
     /// </summary>
     [DebuggerDisplay("INTROSPECTION TYPE __TypeKind")]
     internal class Introspection_TypeKindType : EnumGraphType, IInternalSchemaItem

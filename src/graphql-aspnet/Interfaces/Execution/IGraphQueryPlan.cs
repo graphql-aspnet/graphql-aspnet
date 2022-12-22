@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets or sets the executable operation that can be carried out by this query plan.
         /// </summary>
         /// <value>The query operation to execute.</value>
-        IGraphFieldExecutableOperation Operation { get; set; }
+        IExecutableOperation Operation { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this plan is in a valid and potentially executable state.

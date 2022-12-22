@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System;
 
     /// <summary>
-    /// An enumeration representing where a source field was parsed from.
+    /// An enumeration representing where a given field or field template was sourced from.
     /// </summary>
     [Flags]
     public enum GraphFieldSource

@@ -14,15 +14,16 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Interfaces.Controllers;
 
     /// <summary>
-    /// A common base class defining common operations for the various action invokers that handle pipelne requests.
+    /// A base class defining common functionality for resolvers that target action
+    /// methods on a controller.
     /// </summary>
-    public abstract class InvocableActionResolverBase
+    internal abstract class GraphControllerActionResolverBase
     {
         /// <summary>
-        /// Ensures the supplied result is a <see cref="IGraphActionResult"/> or boxes
+        /// Ensures the supplied result object is a <see cref="IGraphActionResult"/> or boxes
         /// the value into a valid result.
         /// </summary>
-        /// <param name="result">The result.</param>
+        /// <param name="result">The controller action result to inspect.</param>
         /// <returns>IGraphActionResult.</returns>
         [DebuggerStepThrough]
         protected virtual IGraphActionResult EnsureGraphActionResult(object result)

@@ -16,8 +16,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A type dependency on a template indicating both the concrete type and the kind of dependency expected.
+    /// An object describing another type which must exist in a schema for the owner
+    /// to be correctly included.
     /// </summary>
+    /// <remarks>
+    /// If an object declares a property that returns a string, then that OBJECT graph type
+    /// is said to be dependent on the String graph type for it to function correctly in
+    /// a graph.
+    /// </remarks>
     [DebuggerDisplay("{TypeName} (Kind = {ExpectedKind})")]
     public class DependentType
     {

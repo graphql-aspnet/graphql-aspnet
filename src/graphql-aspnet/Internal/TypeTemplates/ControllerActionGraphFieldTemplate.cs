@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // Various meta data fields about the method
             // -------------------------------------------
             var graphMethodAttrib = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
-            var fieldType = graphMethodAttrib?.FieldType ?? GraphCollection.Unknown;
+            var fieldType = graphMethodAttrib?.FieldType ?? SchemaItemCollections.Unknown;
 
             var routeFragment = graphMethodAttrib?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             routeFragment = routeFragment.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();

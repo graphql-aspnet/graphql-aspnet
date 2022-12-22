@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// </summary>
         /// <param name="method">The method being invoked.</param>
         /// <param name="request">The request being executed on the method.</param>
-        public ActionMethodInvocationStartedLogEntry(IGraphMethod method, IDataRequest request)
+        public ActionMethodInvocationStartedLogEntry(IGraphFieldResolverMethod method, IDataRequest request)
             : base(LogEventIds.ControllerInvocationStarted)
         {
             this.PipelineRequestId = request?.Id.ToString();

@@ -24,8 +24,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A method template containing the metadata for a controller method flaged as a special type extension
-    /// and not a normal controller action.
+    /// A template defining a field for OBJECT or INTERFACE graph types of which the C# code
+    /// for the field is not part of the target graph type's defining class or struct.
     /// </summary>
     public class GraphTypeExtensionFieldTemplate : MethodGraphFieldTemplateBase
     {
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             var graphName = _typeAttrib.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();
 
-            return new SchemaItemPath(SchemaItemPath.Join(GraphCollection.Types, parentName, graphName));
+            return new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, parentName, graphName));
         }
 
         /// <inheritdoc />

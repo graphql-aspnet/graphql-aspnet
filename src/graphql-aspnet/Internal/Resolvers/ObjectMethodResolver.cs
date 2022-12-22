@@ -22,30 +22,24 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
     /// <summary>
     /// A field resolver that will invoke a schema pipeline for whatever schema is beng processed
-    /// resulting in the configured <see cref="IGraphMethod"/> handling the request.
+    /// resulting in the configured <see cref="IGraphFieldResolverMethod"/> handling the request.
     /// </summary>
-    public class GraphObjectMethodResolver : IGraphFieldResolver
+    internal class ObjectMethodResolver : IGraphFieldResolver
     {
-        private readonly IGraphMethod _graphMethod;
+        private readonly IGraphFieldResolverMethod _graphMethod;
         private readonly MethodInfo _methodInfo;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphObjectMethodResolver" /> class.
+        /// Initializes a new instance of the <see cref="ObjectMethodResolver" /> class.
         /// </summary>
         /// <param name="graphMethod">The graph method.</param>
-        public GraphObjectMethodResolver(IGraphMethod graphMethod)
+        public ObjectMethodResolver(IGraphFieldResolverMethod graphMethod)
         {
             _graphMethod = Validation.ThrowIfNullOrReturn(graphMethod, nameof(graphMethod));
             _methodInfo = _graphMethod.Method;
         }
 
-        /// <summary>
-        /// Processes the given <see cref="IGraphFieldRequest" /> against this instance
-        /// performing the operation as defined by this entity and generating a response.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
-        /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
+        /// <inheritdoc />
         public virtual async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             var sourceData = context.Arguments?.SourceData;
@@ -118,10 +112,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             }
         }
 
-        /// <summary>
-        /// Gets the concrete type this resolver attempts to create during its operation.
-        /// </summary>
-        /// <value>The type of the return.</value>
+        /// <inheritdoc />
         public Type ObjectType => _graphMethod.ObjectType;
     }
 }

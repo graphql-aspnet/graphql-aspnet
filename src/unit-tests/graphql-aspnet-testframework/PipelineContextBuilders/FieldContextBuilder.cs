@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             IUserSecurityContext userSecurityContext,
             IGraphField graphField,
             ISchema schema,
-            IGraphMethod graphMethod)
+            IGraphFieldResolverMethod graphMethod)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _graphField = Validation.ThrowIfNullOrReturn(graphField, nameof(graphField));
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockInvocationContext.Setup(x => x.Schema).Returns(_schema);
             _mockInvocationContext.Setup(x => x.FieldDocumentPart).Returns(_mockFieldDocumentPart.Object);
 
-            this.GraphMethod = new Mock<IGraphMethod>();
+            this.GraphMethod = new Mock<IGraphFieldResolverMethod>();
             this.GraphMethod.Setup(x => x.Parent).Returns(graphMethod.Parent);
             this.GraphMethod.Setup(x => x.ObjectType).Returns(graphMethod.ObjectType);
             this.GraphMethod.Setup(x => x.ExpectedReturnType).Returns(graphMethod.ExpectedReturnType);
@@ -245,6 +245,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// against the testserver.
         /// </summary>
         /// <value>The graph method.</value>
-        public Mock<IGraphMethod> GraphMethod { get; }
+        public Mock<IGraphFieldResolverMethod> GraphMethod { get; }
     }
 }

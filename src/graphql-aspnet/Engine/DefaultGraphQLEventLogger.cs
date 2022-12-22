@@ -224,7 +224,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void ActionMethodInvocationRequestStarted(IGraphMethod action, IDataRequest request)
+        public virtual void ActionMethodInvocationRequestStarted(IGraphFieldResolverMethod action, IDataRequest request)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
@@ -234,7 +234,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void ActionMethodModelStateValidated(IGraphMethod action, IDataRequest request, InputModelStateDictionary modelState)
+        public virtual void ActionMethodModelStateValidated(IGraphFieldResolverMethod action, IDataRequest request, InputModelStateDictionary modelState)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
@@ -244,7 +244,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void ActionMethodInvocationException(IGraphMethod action, IDataRequest request, Exception exception)
+        public virtual void ActionMethodInvocationException(IGraphFieldResolverMethod action, IDataRequest request, Exception exception)
         {
             if (!this.IsEnabled(LogLevel.Error))
                 return;
@@ -254,7 +254,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void ActionMethodUnhandledException(IGraphMethod action, IDataRequest request, Exception exception)
+        public virtual void ActionMethodUnhandledException(IGraphFieldResolverMethod action, IDataRequest request, Exception exception)
         {
             if (!this.IsEnabled(LogLevel.Error))
                 return;
@@ -264,7 +264,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void ActionMethodInvocationCompleted(IGraphMethod action, IDataRequest request, object result)
+        public virtual void ActionMethodInvocationCompleted(IGraphFieldResolverMethod action, IDataRequest request, object result)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;

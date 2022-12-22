@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="itemName">Name of the item.</param>
         public GraphIntrospectionFieldPath(string itemName)
-            : base(GraphCollection.Introspection, itemName)
+            : base(SchemaItemCollections.Introspection, itemName)
         {
         }
     }

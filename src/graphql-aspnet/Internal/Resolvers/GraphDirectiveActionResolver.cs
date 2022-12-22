@@ -23,9 +23,11 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Interfaces.Internal;
 
     /// <summary>
-    /// The default resolver for processing directive requests.
+    /// A special resolver specifically for invoking controller actions
+    /// on <see cref="GraphDirective"/>s. Provides extra options and meta-data used by
+    /// directives to ensure they are processed correctly.
     /// </summary>
-    public class GraphDirectiveActionResolver : InvocableActionResolverBase, IGraphDirectiveResolver
+    internal class GraphDirectiveActionResolver : GraphControllerActionResolverBase, IGraphDirectiveResolver
     {
         private readonly IGraphDirectiveTemplate _directiveTemplate;
 
@@ -39,14 +41,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             _directiveTemplate = Validation.ThrowIfNullOrReturn(directiveTemplate, nameof(directiveTemplate));
         }
 
-        /// <summary>
-        /// Processes the given <see cref="IGraphDirectiveRequest" /> against this instance
-        /// performing the operation as defined by this entity and generating a response.
-        /// </summary>
-        /// <param name="context">The  context containing the necessary data to resolve
-        /// the directive and produce a result.</param>
-        /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
-        /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
+        /// <inheritdoc />
         public async Task ResolveAsync(DirectiveResolutionContext context, CancellationToken cancelToken = default)
         {
             var action = _directiveTemplate.FindMethod(context.Request.InvocationContext.Location);

@@ -19,7 +19,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// A representation of data about a graph type being exposed as an input to another field.
+    /// A model object representing an individual '__InputValue',
+    /// created from an field argument or input field.
     /// </summary>
     [DebuggerDisplay("Introspected Input Value: {Name}")]
     public sealed class IntrospectedInputValueType : IntrospectedItem, ISchemaItem

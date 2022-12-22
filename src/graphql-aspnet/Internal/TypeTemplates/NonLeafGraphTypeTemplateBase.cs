@@ -6,6 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
@@ -27,10 +28,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Interfaces.Internal.IGraphFieldTemplate>;
 
     /// <summary>
-    /// A base representation of a template for an object related graph type containing common elements.
+    /// A base class with common functionality shared amongst templates for
+    /// OBJECT, INPUT_OBJECT, INTERFACE and Controllers.
     /// </summary>
     [DebuggerDisplay("{Name} (Type: {FriendlyObjectTypeName})")]
-    public abstract class ObjectGraphTypeTemplateBase : GraphTypeTemplateBase
+    public abstract class NonLeafGraphTypeTemplateBase : GraphTypeTemplateBase
     {
         private readonly GraphFieldCollection _fields;
         private readonly HashSet<Type> _interfaces;
@@ -39,10 +41,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         private AppliedSecurityPolicyGroup _securityPolicies;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectGraphTypeTemplateBase"/> class.
+        /// Initializes a new instance of the <see cref="NonLeafGraphTypeTemplateBase"/> class.
         /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        internal ObjectGraphTypeTemplateBase(Type objectType)
+        /// <param name="objectType">The concrete type to create a template for.</param>
+        internal NonLeafGraphTypeTemplateBase(Type objectType)
             : base(objectType)
         {
             Validation.ThrowIfNull(objectType, nameof(objectType));
@@ -50,6 +52,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             _fields = new GraphFieldCollection();
             _interfaces = new HashSet<Type>();
             _securityPolicies = AppliedSecurityPolicyGroup.Empty;
+
+            this.AllowedSchemaItemCollections = new HashSet<SchemaItemCollections>()
+            {
+                SchemaItemCollections.Types,
+            };
 
             // customize the error message on the thrown exception for some helpful hints.
             string rejectionReason = null;
@@ -107,11 +114,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 if (this.CouldBeGraphField(member))
                 {
-                    // All members on types are "query operations" but are shown as part of the '[type]' collection
-                    // kinda wierd when put against controllers which declare against [Query] and [Mutation] but are also types.
                     var parsedTemplate = this.CreateFieldTemplate(member);
                     parsedTemplate?.Parse();
-                    if (parsedTemplate?.Route == null || !this.AllowedGraphCollectionTypes.Contains(parsedTemplate.Route.RootCollection))
+
+                    // ensure the schema item collection defined on the field template is consistant
+                    // with this template's allowed collections
+                    //
+                    // OBJECT, INPUT_OBJECT and INTERFACES are restricted to [Type]
+                    // but controllers are allowed to attach to the operation root collections
+                    //
+                    // this is used as a check against POCOs declaring [Query] fields for example
+                    if (parsedTemplate?.Route == null
+                        || !this.AllowedSchemaItemCollections.Contains(parsedTemplate.Route.RootCollection))
                     {
                         _invalidFields = _invalidFields ?? new List<IGraphFieldTemplate>();
                         _invalidFields.Add(parsedTemplate);
@@ -220,7 +234,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // a standard graph object cannot contain any route pathing or nesting like controllers can
             // before creating hte route, ensure that the declared name, by itself, is valid for graphql
             var graphName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.OBJECT);
-            return new SchemaItemPath(SchemaItemPath.Join(GraphCollection.Types, graphName));
+            return new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, graphName));
         }
 
         /// <inheritdoc />
@@ -242,7 +256,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalFullName} ({x.Route.RootCollection.ToString()})'"));
                 throw new GraphTypeDeclarationException(
                     $"Invalid field declarations.  The type '{this.InternalFullName}' declares fields belonging to a graph collection not allowed given its context. This type can " +
-                    $"only declare the following graph collections: '{string.Join(", ", this.AllowedGraphCollectionTypes.Select(x => x.ToString()))}'. " +
+                    $"only declare the following graph collections: '{string.Join(", ", this.AllowedSchemaItemCollections.Select(x => x.ToString()))}'. " +
                     $"If this field is declared on an object (not a controller) be sure to use '{nameof(GraphFieldAttribute)}' instead " +
                     $"of '{nameof(QueryAttribute)}' or '{nameof(MutationAttribute)}'.\n---------\n " + fieldNames,
                     this.ObjectType);
@@ -296,10 +310,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override string InternalName => this.ObjectType?.FriendlyName();
 
         /// <summary>
-        /// Gets operation types to which this object can declare a field.
+        /// Gets a set of item collections to which this object template can be declared.
         /// </summary>
-        /// <value>The allowed operation types.</value>
-        protected virtual HashSet<GraphCollection> AllowedGraphCollectionTypes { get; } = new HashSet<GraphCollection>() { GraphCollection.Types };
+        /// <value>The allowed schema item collections.</value>
+        protected virtual HashSet<SchemaItemCollections> AllowedSchemaItemCollections { get; }
 
         /// <summary>
         /// Gets the declared interfaces on this item.
@@ -307,13 +321,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value>The declared interfaces.</value>
         public IEnumerable<Type> DeclaredInterfaces => _interfaces;
 
-#if DEBUG
         /// <summary>
         /// Gets a string representing the name of the parameter's concrete type.
         /// This is an an internal helper property for helpful debugging information only.
         /// </summary>
         /// <value>The name of the parameter type friendly.</value>
         private string FriendlyObjectTypeName => this.ObjectType.FriendlyName();
-#endif
     }
 }

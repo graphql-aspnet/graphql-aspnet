@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Attributes
         /// <param name="returnType">The type of the object returned from this method. If this type implements
         /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type.</param>
         public MutationAttribute(string template, Type returnType)
-            : base(false, GraphCollection.Mutation, template, returnType)
+            : base(false, SchemaItemCollections.Mutation, template, returnType)
         {
         }
 
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Attributes
         /// be sure to supply any additional concrete types so that they may be included in the object graph.</param>
         /// <param name="additionalTypes">Any additional types to include in the object graph on behalf of this method.</param>
         public MutationAttribute(string template, Type returnType, params Type[] additionalTypes)
-            : base(false, GraphCollection.Mutation, template, returnType.AsEnumerable().Concat(additionalTypes).ToArray())
+            : base(false, SchemaItemCollections.Mutation, template, returnType.AsEnumerable().Concat(additionalTypes).ToArray())
         {
         }
 
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Attributes
         public MutationAttribute(string template, string unionTypeName, Type unionTypeA, Type unionTypeB, params Type[] additionalUnionTypes)
             : base(
                 false,
-                GraphCollection.Mutation,
+                SchemaItemCollections.Mutation,
                 template,
                 unionTypeName,
                 unionTypeA.AsEnumerable().Concat(unionTypeB.AsEnumerable()).Concat(additionalUnionTypes).ToArray())

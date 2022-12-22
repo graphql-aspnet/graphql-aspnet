@@ -24,6 +24,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <param name="operation">The operation to inspect.</param>
         /// <returns>The complexity score for the given operation.</returns>
-        float Calculate(IGraphFieldExecutableOperation operation);
+        float Calculate(IExecutableOperation operation);
     }
 }

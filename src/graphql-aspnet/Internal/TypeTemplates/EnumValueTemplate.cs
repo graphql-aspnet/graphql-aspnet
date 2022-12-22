@@ -18,8 +18,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// A class used to templatize a single option (a label) within an
-    /// <see cref="EnumGraphTypeTemplate"/>.
+    /// A template describing a single value within an ENUM graph type.
     /// </summary>
     public class EnumValueTemplate : SchemaItemTemplateBase, IEnumValueTemplate
     {

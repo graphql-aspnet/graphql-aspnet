@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 typeof(TReturn),
                 FieldResolutionMode.PerSourceItem,
-                new GraphDataValueResolver<TSource, TReturn>(resolver));
+                new FunctionValueResolver<TSource, TReturn>(resolver));
             field.Description = description;
 
             return graphType.Extend(field);

@@ -35,14 +35,7 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        /// <summary>
-        /// Processes the given <see cref="IGraphFieldRequest" /> against this instance
-        /// performing the operation as defined by this entity and generating a response.
-        /// </summary>
-        /// <param name="resolutionContext">The resolution context containing the request and the
-        /// runtime information needed to resolve it.</param>
-        /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
-        /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
+        /// <inheritdoc />
         public Task ResolveAsync(FieldResolutionContext resolutionContext, CancellationToken cancelToken = default)
         {
             if (!resolutionContext.Arguments.TryGetArgument<string>("name", out var name))
@@ -65,11 +58,7 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Gets the concrete type this resolver attempts to create as a during its invocation. If this
-        /// resolver may generate a list, this type should represent a single list item. (i.e. 'string' not 'List[string]').
-        /// </summary>
-        /// <value>The type of the return.</value>
+        /// <inheritdoc />
         public Type ObjectType => typeof(IntrospectedType);
     }
 }

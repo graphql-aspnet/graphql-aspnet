@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A base template defining common attribute across all template definitions.
+    /// A base template defining common functionality across all template definitions.
     /// </summary>
     public abstract class SchemaItemTemplateBase : ISchemaItemTemplate
     {

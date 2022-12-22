@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // before parsing we have to determine the expected source data
             // when an event is raised targeting this field
             // In order, we should check:
-            //   1. Is Any field explicitly decorated with [SubscriptionSource]
+            //   1. Is any field explicitly decorated with [SubscriptionSource]
             //   2. If the return type of this field is not a union, use the object type of the field
             //   3. If the return type is a union, the source is any ol' object (can't deteremine input, up to the user)
 
@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc/>
         protected override GraphArgumentTemplate CreateInputArgument(ParameterInfo paramInfo)
         {
-            if (this.Route.RootCollection == Execution.GraphCollection.Subscription)
+            if (this.Route.RootCollection == Execution.SchemaItemCollections.Subscription)
             {
                 return new GraphSubscriptionArgumentTemplate(
                     this,

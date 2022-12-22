@@ -9,21 +9,20 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
-    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A parsed operation from a query document that contains the resolvers and argument references that
+    /// A parsed operation from a query document that contains the all resolver references, argument references etc. that
     /// can fulfill a request for data from the system.
     /// </summary>
-    public interface IGraphFieldExecutableOperation
+    public interface IExecutableOperation
     {
         /// <summary>
         /// Gets the top level group of field contexts that need to be resolved to fulfill the operation
         /// requirements.
         /// </summary>
-        /// <value>The field contexts.</value>
+        /// <value>The field contexts that will be executed when this operation is fulfilled.</value>
         IFieldInvocationContextCollection FieldContexts { get; }
 
         /// <summary>
@@ -40,16 +39,16 @@ namespace GraphQL.AspNet.Interfaces.Execution
         string OperationName { get; }
 
         /// <summary>
-        /// Gets the messages generated during the creation of this operation.
+        /// Gets the messages, if any, generated during the construction of this operation.
         /// </summary>
-        /// <value>The messages.</value>
+        /// <value>A set of messages generated during the operation construction.</value>
         IGraphMessageCollection Messages { get; }
 
         /// <summary>
-        /// Gets the declared variables that must be resolved for this operation to be
+        /// Gets the variables declared on the query that must be resolved for this operation to be
         /// executed.
         /// </summary>
-        /// <value>The declared variables.</value>
+        /// <value>The know set of declared variables.</value>
         IVariableCollectionDocumentPart Variables { get; }
     }
 }

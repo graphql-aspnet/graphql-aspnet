@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public float Calculate(IGraphFieldExecutableOperation operation)
+        public float Calculate(IExecutableOperation operation)
         {
             Validation.ThrowIfNull(operation, nameof(operation));
 
