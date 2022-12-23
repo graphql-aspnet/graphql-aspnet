@@ -164,15 +164,15 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             return this;
         }
 
-        private IGraphExecutionContext CreateFakeParentMiddlewareContext()
+        private IExecutionContext CreateFakeParentMiddlewareContext()
         {
-            var operationRequest = new Mock<IGraphOperationRequest>();
-            var parentContext = new Mock<IGraphExecutionContext>();
+            var operationRequest = new Mock<IQueryOperationRequest>();
+            var parentContext = new Mock<IExecutionContext>();
 
             parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
             parentContext.Setup(x => x.SecurityContext).Returns(_securityContext);
-            parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);
+            parentContext.Setup(x => x.Metrics).Returns(null as IQueryExecutionMetrics);
             parentContext.Setup(x => x.Logger).Returns(null as IGraphEventLogger);
             parentContext.Setup(x => x.Messages).Returns(_messageCollection);
             parentContext.Setup(x => x.IsValid).Returns(_messageCollection.IsSucessful);
@@ -184,12 +184,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// Creates an authorization context to validate the field request this builder is creating.
         /// </summary>
         /// <returns>GraphFieldAuthorizationContext.</returns>
-        public GraphSchemaItemSecurityChallengeContext CreateSecurityContext()
+        public SchemaItemSecurityChallengeContext CreateSecurityContext()
         {
             var parent = this.CreateFakeParentMiddlewareContext();
 
             var request = new GraphSchemaItemSecurityRequest(this.FieldRequest);
-            return new GraphSchemaItemSecurityChallengeContext(
+            return new SchemaItemSecurityChallengeContext(
                 parent,
                 request);
         }

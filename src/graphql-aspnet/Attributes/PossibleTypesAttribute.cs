@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>
-    /// When an graph field (method or property) returns an interface, use this attribute
+    /// When an graph field returns an interface, use this attribute
     /// to inform GraphQL of all the possible types that implement the interface and
     /// are returned by this method. This ensures that the schema can correctly resolve
     /// all the items returned. This attribute is optional, if your application

@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
 
     /// <summary>
     /// A rule package for doing a wholistic validation pass at parsed query document before the final
-    /// <see cref="IGraphQueryDocument"/> is generated. Performs deeper validations (such as no unused variables) across
+    /// <see cref="IQueryDocument"/> is generated. Performs deeper validations (such as no unused variables) across
     /// the fully parsed operations.
     /// </summary>
     internal sealed class DocumentValidationRulePackage : IRulePackage<DocumentValidationContext>

@@ -12,14 +12,15 @@ namespace GraphQL.AspNet.Interfaces.Execution.Response
     using System.Collections.Generic;
 
     /// <summary>
-    /// An item that is part of a graphql query response representing a list of other items.
+    /// Represents a dictionary of nested items to be included in a
+    /// GraphQL response.
     /// </summary>
-    public interface IResponseList : IResponseItem
+    public interface IQueryResponseFieldSet : IQueryResponseItem
     {
         /// <summary>
-        /// Gets the list items.
+        /// Gets the dictionary of fields defined for this response item.
         /// </summary>
-        /// <value>The list items.</value>
-        IReadOnlyList<IResponseItem> Items { get; }
+        /// <value>The fields.</value>
+        IReadOnlyDictionary<string, IQueryResponseItem> Fields { get; }
     }
 }

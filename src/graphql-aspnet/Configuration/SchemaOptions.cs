@@ -244,10 +244,10 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Registers a extension for this schema option.
+        /// Registers a server extension for this schema.
         /// </summary>
-        /// <typeparam name="TExtensionType">The type of the t extension type.</typeparam>
-        /// <param name="extension">The extension.</param>
+        /// <typeparam name="TExtensionType">The type of the extension to register.</typeparam>
+        /// <param name="extension">The extension instance.</param>
         public void RegisterExtension<TExtensionType>(TExtensionType extension)
             where TExtensionType : class, IGraphQLServerExtension
         {

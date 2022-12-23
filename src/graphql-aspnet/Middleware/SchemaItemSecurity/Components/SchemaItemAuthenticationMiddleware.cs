@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         }
 
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphSchemaItemSecurityChallengeContext context, GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityChallengeContext> next, CancellationToken cancelToken = default)
+        public async Task InvokeAsync(SchemaItemSecurityChallengeContext context, GraphMiddlewareInvocationDelegate<SchemaItemSecurityChallengeContext> next, CancellationToken cancelToken = default)
         {
             context.Logger?.SchemaItemAuthenticationChallenge(context);
 
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         }
 
         private async Task<(ClaimsPrincipal, IAuthenticationResult, SchemaItemSecurityChallengeResult)>
-            AuthenticateUser(GraphSchemaItemSecurityChallengeContext context, CancellationToken cancelToken)
+            AuthenticateUser(SchemaItemSecurityChallengeContext context, CancellationToken cancelToken)
         {
             // Step 1: Initial check for null requirements or allowed anonymous access
             if (context.SecurityRequirements == null)

@@ -21,13 +21,13 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Docum
     /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Operation-Name-Uniqueness" /> .</para>
     /// </summary>
     internal class Rule_5_2_2_1_LoneAnonymousOperation
-        : DocumentPartValidationRuleStep<IGraphQueryDocument>
+        : DocumentPartValidationRuleStep<IQueryDocument>
     {
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
             // anonymous operations will all present as ReadOnlyMemory<char>.Empty
-            var document = (IGraphQueryDocument)context.ActivePart;
+            var document = (IQueryDocument)context.ActivePart;
 
             var allFoundOperations = document.Children[DocumentPartType.Operation]
                 .OfType<IOperationDocumentPart>()

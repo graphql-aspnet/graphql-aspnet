@@ -31,7 +31,7 @@ namespace GraphQL.AspNet
         /// across all schemas registered to this application domain.
         /// </summary>
         /// <value>The global scalar provider.</value>
-        public static IScalarTypeProvider ScalarProvider { get; set; } = new DefaultScalarTypeProvider();
+        public static IScalarGraphTypeProvider ScalarProvider { get; set; } = new DefaultScalarGraphTypeProvider();
 
         /// <summary>
         /// Gets or sets an abstract factory that generates "type makers" that can create a new instance of

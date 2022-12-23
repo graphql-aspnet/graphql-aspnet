@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Configuration.Startup
         public static Func<IServiceProvider, ISchemaPipeline<TSchema, TContext>>
             CreatePipelineFactory<TMiddleware, TContext>(ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> pipelineBuilder)
                 where TMiddleware : class, IGraphMiddlewareComponent<TContext>
-                where TContext : class, IGraphExecutionContext
+                where TContext : class, IExecutionContext
         {
             return (sp) =>
             {
@@ -154,12 +154,12 @@ namespace GraphQL.AspNet.Configuration.Startup
         private void RegisterEngineComponents()
         {
             // "per schema" engine components
-            _options.ServiceCollection.TryAddSingleton<IQueryOperationComplexityCalculator<TSchema>, DefaultOperationComplexityCalculator<TSchema>>();
-            _options.ServiceCollection.TryAddSingleton<IQueryOperationDepthCalculator<TSchema>, DefaultOperationDepthCalculator<TSchema>>();
-            _options.ServiceCollection.TryAddSingleton<IGraphQueryResponseWriter<TSchema>, DefaultQueryResponseWriter<TSchema>>();
-            _options.ServiceCollection.TryAddSingleton<IGraphQueryDocumentGenerator<TSchema>, DefaultGraphQueryDocumentGenerator<TSchema>>();
-            _options.ServiceCollection.TryAddSingleton<IGraphQueryPlanGenerator<TSchema>, DefaultGraphQueryPlanGenerator<TSchema>>();
-            _options.ServiceCollection.TryAddSingleton<IGraphQueryExecutionMetricsFactory<TSchema>, DefaultGraphQueryExecutionMetricsFactory<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IQueryOperationComplexityCalculator<TSchema>, DefaultQueryOperationComplexityCalculator<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IQueryOperationDepthCalculator<TSchema>, DefaultQueryOperationDepthCalculator<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IQueryResponseWriter<TSchema>, DefaultQueryResponseWriter<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IQueryDocumentGenerator<TSchema>, DefaultQueryDocumentGenerator<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IQueryPlanGenerator<TSchema>, DefaultQueryPlanGenerator<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IQueryExecutionMetricsFactory<TSchema>, DefaultQueryExecutionMetricsFactory<TSchema>>();
 
             // "per request per schema" components
             _options.ServiceCollection.TryAddTransient(typeof(IGraphQLHttpProcessor<TSchema>), _options.QueryHandler.HttpProcessorType);
@@ -172,7 +172,7 @@ namespace GraphQL.AspNet.Configuration.Startup
                 if (factory == null)
                     return null;
 
-                return new DefaultGraphQLEventLogger(factory);
+                return new DefaultGraphEventLogger(factory);
             });
         }
 

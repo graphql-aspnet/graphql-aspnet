@@ -156,7 +156,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var request = builder.OperationRequest;
             var context = builder.Build();
 
-            var mock = new Mock<IGraphOperationResult>();
+            var mock = new Mock<IQueryOperationResult>();
             mock.Setup(x => x.Request).Returns(request);
             mock.Setup(x => x.Data).Returns(new ResponseFieldSet());
             mock.Setup(x => x.Messages).Returns(new GraphMessageCollection());

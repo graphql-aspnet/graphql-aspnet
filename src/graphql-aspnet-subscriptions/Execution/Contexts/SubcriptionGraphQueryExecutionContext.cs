@@ -20,10 +20,10 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A wrapper on <see cref="GraphQueryExecutionContext"/> to provide property access
-    /// to the meta data items added to the <see cref="GraphQueryExecutionContext"/> during execution.
+    /// A wrapper on <see cref="QueryExecutionContext"/> to provide property access
+    /// to the meta data items added to the <see cref="QueryExecutionContext"/> during execution.
     /// </summary>
-    public class SubcriptionGraphQueryExecutionContext : GraphQueryExecutionContext
+    public class SubcriptionGraphQueryExecutionContext : QueryExecutionContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SubcriptionGraphQueryExecutionContext" /> class.
@@ -40,14 +40,14 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="metrics">The metrics package to profile this request, if any.</param>
         /// <param name="logger">The logger instance to record events related to this context.</param>
         public SubcriptionGraphQueryExecutionContext(
-            IGraphOperationRequest request,
+            IQueryOperationRequest request,
             ISubscriptionClientProxy client,
             IServiceProvider serviceProvider,
             IQuerySession querySession,
             IUserSecurityContext securityContext,
             string subscriptionId,
             MetaDataCollection items = null,
-            IGraphQueryExecutionMetrics metrics = null,
+            IQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null)
             : base(request, serviceProvider, querySession, items, securityContext, metrics, logger)
         {

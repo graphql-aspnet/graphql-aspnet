@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Execution.Parsing
         /// <param name="minBlockCapacity">The minmum allocated number node blocks
         /// that can be contained within this tree.</param>
         /// <returns>The newly created syntax tree.</returns>
-        public static SyntaxTree FromDocumentRoot(int minBlockCapacity = 4)
+        public static SyntaxTree WithDocumentRoot(int minBlockCapacity = 4)
         {
             var rootNode = new SyntaxNode(SyntaxNodeType.Document, SourceLocation.None);
             return FromNode(rootNode, minBlockCapacity);

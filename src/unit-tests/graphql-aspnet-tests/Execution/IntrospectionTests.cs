@@ -1347,7 +1347,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
-            GraphQLProviders.ScalarProvider = new DefaultScalarTypeProvider();
+            GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
             GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(CustomSpecifiedScalar));
             var serverBuilder = new TestServerBuilder();
             var server = serverBuilder.AddGraphQL(o =>

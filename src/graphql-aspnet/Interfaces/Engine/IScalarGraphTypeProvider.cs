@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
     /// and must be explicitly defined. The object implementing this provider should be designed in a thread-safe, singleton fashion. Only one
     /// instance of this provider exists for the application instance.
     /// </summary>
-    public interface IScalarTypeProvider
+    public interface IScalarGraphTypeProvider
     {
         /// <summary>
         /// Determines whether the specified type is considered a leaf type in the graph system (Scalars and enumerations).
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
 
         /// <summary>
         /// Gets a list of all registered scalar instance types (i.e. the types that
-        /// implement <see cref="IScalarTypeProvider"/>).
+        /// implement <see cref="IScalarGraphTypeProvider"/>).
         /// </summary>
         /// <value>An enumeration of all registered scalar instance types.</value>
         IEnumerable<Type> ScalarInstanceTypes { get; }

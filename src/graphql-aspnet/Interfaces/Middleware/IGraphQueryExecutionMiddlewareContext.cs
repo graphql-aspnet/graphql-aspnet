@@ -19,13 +19,13 @@ namespace GraphQL.AspNet.Interfaces.Middleware
     /// An interface representing a core context required to complete the primary
     /// query execution pipeline.
     /// </summary>
-    public interface IGraphQueryExecutionMiddlewareContext : IGraphExecutionContext
+    public interface IGraphQueryExecutionMiddlewareContext : IExecutionContext
     {
         /// <summary>
         /// Gets the query text defining the query document to be executed.
         /// </summary>
         /// <value>The query text.</value>
-        IGraphOperationRequest Request { get; }
+        IQueryOperationRequest Request { get; }
 
         /// <summary>
         /// Gets or sets the active query plan this context will use to complete the request.
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Interfaces.Middleware
         /// Gets or sets the operation result created during the query pipeline execution.
         /// </summary>
         /// <value>The result.</value>
-        IGraphOperationResult Result { get; set; }
+        IQueryOperationResult Result { get; set; }
 
         /// <summary>
         /// Gets the collection of top level field results produced by executing the operation on this

@@ -50,14 +50,14 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// Enables the query cache locally, in memory, to retain parsed query plans. When enabled, use the configuration
         /// settings for each added schema to determine how each will interact with the cache. Implement your own cache provider
-        /// by inheriting from <see cref="IGraphQueryPlanCacheProvider" /> and registering it to the <see cref="IServiceCollection" />.
+        /// by inheriting from <see cref="IQueryPlanCacheProvider" /> and registering it to the <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="serviceCollection">The service collection to add the local cache to.</param>
         /// <returns>IServiceCollection.</returns>
         public static IServiceCollection AddGraphQLLocalQueryCache(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<IGraphQueryPlanCacheProvider, DefaultQueryPlanCacheProvider>();
-            serviceCollection.AddSingleton<IGraphQueryPlanCacheKeyManager, DefaultQueryPlanCacheKeyManager>();
+            serviceCollection.AddSingleton<IQueryPlanCacheProvider, DefaultQueryPlanCacheProvider>();
+            serviceCollection.AddSingleton<IQueryPlanCacheKeyManager, DefaultQueryPlanCacheKeyManager>();
             return serviceCollection;
         }
 

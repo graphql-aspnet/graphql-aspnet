@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     {
         private readonly TSchema _schema;
         private readonly ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> _directivePipeline;
-        private readonly IGraphQueryDocumentGenerator<TSchema> _documentGenerator;
+        private readonly IQueryDocumentGenerator<TSchema> _documentGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplyExecutionDirectivesMiddleware{TSchema}" /> class.
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         public ApplyExecutionDirectivesMiddleware(
             TSchema schema,
             ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> directivePipeline,
-            IGraphQueryDocumentGenerator<TSchema> documentGenerator)
+            IQueryDocumentGenerator<TSchema> documentGenerator)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _directivePipeline = Validation.ThrowIfNullOrReturn(directivePipeline, nameof(directivePipeline));
@@ -61,8 +61,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
         /// <inheritdoc />
         public async Task InvokeAsync(
-            GraphQueryExecutionContext context,
-            GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next,
+            QueryExecutionContext context,
+            GraphMiddlewareInvocationDelegate<QueryExecutionContext> next,
             CancellationToken cancelToken = default)
         {
             if (context.IsValid && context.QueryPlan == null && context.Operation != null)
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             await next(context, cancelToken).ConfigureAwait(false);
         }
 
-        private List<IDirectiveDocumentPart> DetermineDirectiveToExecute(GraphQueryExecutionContext context)
+        private List<IDirectiveDocumentPart> DetermineDirectiveToExecute(QueryExecutionContext context)
         {
             var list = new List<IDirectiveDocumentPart>(context.Operation.AllDirectives.Count);
             list.AddRange(context.Operation.AllDirectives);
@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         private async Task<int> ApplyDirectivesAsync(
-            GraphQueryExecutionContext context,
+            QueryExecutionContext context,
             List<IDirectiveDocumentPart> directivesToExecute,
             CancellationToken cancelToken)
         {
@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         private async Task ApplyDirectiveToItemAsync(
-            GraphQueryExecutionContext queryContext,
+            QueryExecutionContext queryContext,
             IDocumentPart targetDocumentPart,
             IDirectiveDocumentPart directiveDocumentPart,
             CancellationToken cancelToken)
@@ -233,7 +233,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         private IInputArgumentCollection GatherInputArguments(
-            GraphQueryExecutionContext queryContext,
+            QueryExecutionContext queryContext,
             IDirective targetDirective,
             IDirectiveDocumentPart directivePart)
         {

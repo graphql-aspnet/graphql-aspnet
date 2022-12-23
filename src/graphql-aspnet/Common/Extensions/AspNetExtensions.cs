@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Common.Extensions
     /// <summary>
     /// Extensions and helpful methods surrounding ASP.NET framework items.
     /// </summary>
-    public static class AspNetExtensions
+    internal static class AspNetExtensions
     {
         /// <summary>
         /// Retrieves the username of the first attached identity that has a non-null and not-empty username.

@@ -22,12 +22,12 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Docum
     /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Operation-Name-Uniqueness" /> .</para>
     /// </summary>
     internal class Rule_5_2_1_1_OperationNamesMustBeUnique
-        : DocumentPartValidationRuleStep<IGraphQueryDocument>
+        : DocumentPartValidationRuleStep<IQueryDocument>
     {
         /// <inheritdoc/>
         public override bool Execute(DocumentValidationContext context)
         {
-            var document = context.ActivePart as IGraphQueryDocument;
+            var document = context.ActivePart as IQueryDocument;
 
             var allNamesUnique = true;
             var names = new HashSet<string>();

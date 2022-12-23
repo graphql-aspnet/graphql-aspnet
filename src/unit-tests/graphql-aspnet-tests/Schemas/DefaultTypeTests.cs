@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             {
                 Assert.IsTrue(
                     GraphQLProviders.ScalarProvider.IsScalar(fi.GetRawConstantValue()?.ToString()),
-                    $"The scalar name '{fi.GetRawConstantValue()}' does not exist in the {{{nameof(DefaultScalarTypeProvider)}}} collection.");
+                    $"The scalar name '{fi.GetRawConstantValue()}' does not exist in the {{{nameof(DefaultScalarGraphTypeProvider)}}} collection.");
             }
         }
     }

@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Execution
         /// Sets the completed data response to the result.
         /// </summary>
         /// <param name="data">The data.</param>
-        public void SetDataResponse(IResponseFieldSet data)
+        public void SetDataResponse(IQueryResponseFieldSet data)
         {
             this.Data = data;
         }
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Execution
         /// Gets the top level field set generated as a result of executing the operating.
         /// </summary>
         /// <value>The data item generated.</value>
-        public IResponseFieldSet Data { get; private set; }
+        public IQueryResponseFieldSet Data { get; private set; }
 
         /// <summary>
         /// Gets a collection of messages that may have occured during the resolution of the data request.

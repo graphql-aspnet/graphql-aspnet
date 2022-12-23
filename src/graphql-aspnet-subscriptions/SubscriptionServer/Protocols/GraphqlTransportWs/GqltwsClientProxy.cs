@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
             IClientConnection clientConnection,
             TSchema schema,
             ISubscriptionEventRouter router,
-            IGraphQueryResponseWriter<TSchema> responseWriter,
+            IQueryResponseWriter<TSchema> responseWriter,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
             : base(SubscriptionClientId.NewClientId(), schema, clientConnection, router, logger)
@@ -327,7 +327,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        protected override GqltwsMessage CreateDataMessage(string subscriptionId, IGraphOperationResult operationResult)
+        protected override GqltwsMessage CreateDataMessage(string subscriptionId, IQueryOperationResult operationResult)
         {
             return new GqltwsServerNextDataMessage(subscriptionId, operationResult);
         }

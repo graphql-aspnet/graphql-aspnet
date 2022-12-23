@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 
     /// <summary>
     /// A represention of a set of operations to be fulfilled to generate data for a
-    /// <see cref="IGraphOperationRequest"/>.
+    /// <see cref="IQueryOperationRequest"/>.
     /// </summary>
     public interface IGraphQueryPlan
     {

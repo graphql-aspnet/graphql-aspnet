@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Common
     using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>
-    /// An ssync friendly Timer implementation. Provides a mechanism for executing an
+    /// An async friendly Timer implementation. Provides a mechanism for executing an
     /// async method on a thread pool thread at specified intervals.
     /// </summary>
     /// <remarks>

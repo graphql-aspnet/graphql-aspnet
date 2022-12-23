@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document
     /// An interface representing a query document that can be
     /// executed by a graphql schema.
     /// </summary>
-    public interface IGraphQueryDocument : IDocumentPart
+    public interface IQueryDocument : IDocumentPart
     {
         /// <summary>
         /// Gets any messages generated during the generation of this document.

@@ -31,8 +31,8 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
             {
                 var parser = new GraphQLParser();
                 var sourceText = new SourceText(qualifiedQuery);
-                var syntaxTree = SyntaxTree.FromDocumentRoot();
-                parser.CreateSyntaxTree(ref syntaxTree, ref sourceText);
+                var syntaxTree = SyntaxTree.WithDocumentRoot();
+                parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
             });
         }
 
@@ -43,8 +43,8 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
 
             var parser = new GraphQLParser();
             var sourceText = new SourceText(qualifiedQuery);
-            var syntaxTree = SyntaxTree.FromDocumentRoot();
-            parser.CreateSyntaxTree(ref syntaxTree, ref sourceText);
+            var syntaxTree = SyntaxTree.WithDocumentRoot();
+            parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
 
             // RootNode | Operation -> Empty Field Set
             Assert.AreEqual(2, syntaxTree.BlockLength);
@@ -59,8 +59,8 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
             {
                 var parser = new GraphQLParser();
                 var sourceText = new SourceText(text);
-                var syntaxTree = SyntaxTree.FromDocumentRoot();
-                parser.CreateSyntaxTree(ref syntaxTree, ref sourceText);
+                var syntaxTree = SyntaxTree.WithDocumentRoot();
+                parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
             });
         }
 
@@ -71,8 +71,8 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
 
             var parser = new GraphQLParser();
             var sourceText = new SourceText(qualifiedQuery);
-            var syntaxTree = SyntaxTree.FromDocumentRoot();
-            parser.CreateSyntaxTree(ref syntaxTree, ref sourceText);
+            var syntaxTree = SyntaxTree.WithDocumentRoot();
+            parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
             Assert.IsTrue(syntaxTree.BlockLength > 0);
 
             SyntaxTreeOperations.Release(ref syntaxTree);

@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System.Linq;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -68,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             field.IsDeprecated = true;
             field.DeprecationReason = "Because I said so";
             field.Publish = false;
-            field.FieldSource = AspNet.Internal.TypeTemplates.GraphFieldSource.Method;
+            field.FieldSource = GraphFieldSource.Method;
 
             var clonedParent = new Mock<IGraphType>();
             clonedParent.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/BobType"));

@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A middleware context targeting the field execution pipeline.
     /// </summary>
     [DebuggerDisplay("Field: {Field.Route.Path} (Mode = {Field.Mode})")]
-    public class GraphFieldExecutionContext : GraphExecutionContextBase
+    public class GraphFieldExecutionContext : ExecutionContextBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldExecutionContext" /> class.
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="resultCapacity">The initial capacity
         /// of the list that will contain the results from executing this context.</param>
         public GraphFieldExecutionContext(
-            IGraphExecutionContext parentContext,
+            IExecutionContext parentContext,
             IGraphFieldRequest fieldRequest,
             IResolvedVariableCollection variableData,
             FieldSourceCollection defaultFieldSources = null,

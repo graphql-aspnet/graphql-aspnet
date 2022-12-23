@@ -354,7 +354,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// <param name="result">The result object that was generated.</param>
         /// <returns><c>true</c> if the result was generated and should be included in any up stream responses. <c>false</c> if this result should be ignored
         /// and not included.</returns>
-        public bool GenerateResult(out IResponseItem result)
+        public bool GenerateResult(out IQueryResponseItem result)
         {
             result = null;
 
@@ -409,7 +409,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns><c>true</c> if the leaf value was successfully rendered, <c>false</c> otherwise.</returns>
-        private bool GenerateSingleValueResult(out IResponseItem result)
+        private bool GenerateSingleValueResult(out IQueryResponseItem result)
         {
             result = null;
             var resultData = this.ResultData;
@@ -434,7 +434,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// <param name="result">The result that was generated.</param>
         /// <returns><c>true</c> if the result that was generated is valid and should
         /// be included in a final result, <c>false</c> otherwise.</returns>
-        private bool GenerateListItemResult(out IResponseItem result)
+        private bool GenerateListItemResult(out IQueryResponseItem result)
         {
             result = null;
             var includeResult = false;
@@ -471,7 +471,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// <param name="result">The result that was generated.</param>
         /// <returns><c>true</c> if the result that was generated is valid and should
         /// be included in a final result, <c>false</c> otherwise.</returns>
-        private bool GenerateFieldListResult(out IResponseItem result)
+        private bool GenerateFieldListResult(out IQueryResponseItem result)
         {
             result = null;
             var includeResult = false;

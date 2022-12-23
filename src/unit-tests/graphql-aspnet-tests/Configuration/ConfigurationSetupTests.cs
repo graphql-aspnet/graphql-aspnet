@@ -64,13 +64,13 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(IGraphQLHttpProcessor<GraphSchema>)));
 
             Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphFieldExecutionContext>)));
-            Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphSchemaItemSecurityChallengeContext>)));
-            Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphQueryExecutionContext>)));
+            Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, SchemaItemSecurityChallengeContext>)));
+            Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, QueryExecutionContext>)));
 
             // objects injected for by standard pipeline components
-            Assert.IsNotNull(sp.GetService(typeof(IGraphQueryPlanGenerator<GraphSchema>)) as DefaultGraphQueryPlanGenerator<GraphSchema>);
-            Assert.IsNotNull(sp.GetService(typeof(IGraphQueryResponseWriter<GraphSchema>)) as DefaultQueryResponseWriter<GraphSchema>);
-            Assert.IsNotNull(sp.GetService(typeof(IGraphQueryExecutionMetricsFactory<GraphSchema>)) as DefaultGraphQueryExecutionMetricsFactory<GraphSchema>);
+            Assert.IsNotNull(sp.GetService(typeof(IQueryPlanGenerator<GraphSchema>)) as DefaultQueryPlanGenerator<GraphSchema>);
+            Assert.IsNotNull(sp.GetService(typeof(IQueryResponseWriter<GraphSchema>)) as DefaultQueryResponseWriter<GraphSchema>);
+            Assert.IsNotNull(sp.GetService(typeof(IQueryExecutionMetricsFactory<GraphSchema>)) as DefaultQueryExecutionMetricsFactory<GraphSchema>);
 
             GraphQLProviders.TemplateProvider.Clear();
         }

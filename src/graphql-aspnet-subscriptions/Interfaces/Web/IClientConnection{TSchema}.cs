@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Web
     /// <summary>
     /// A <see cref="IClientConnection"/> targeting a specific schema.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the t schema.</typeparam>
+    /// <typeparam name="TSchema">The type of the schema this client is connected to.</typeparam>
     public interface IClientConnection<TSchema> : IClientConnection
         where TSchema : class, ISchema
     {

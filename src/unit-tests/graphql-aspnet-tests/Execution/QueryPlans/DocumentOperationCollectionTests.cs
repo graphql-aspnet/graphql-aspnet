@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = null;
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);
@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = "long name     ";
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = "thename";
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);
@@ -142,7 +142,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = "thename";
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);
@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = string.Empty;
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);
@@ -176,7 +176,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = string.Empty;
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);
@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = string.Empty;
 
-            var owner = new Mock<IGraphQueryDocument>();
+            var owner = new Mock<IQueryDocument>();
 
             var operation = new Mock<IOperationDocumentPart>();
             operation.Setup(x => x.Name).Returns(name);

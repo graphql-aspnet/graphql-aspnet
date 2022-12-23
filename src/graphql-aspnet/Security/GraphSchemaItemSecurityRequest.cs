@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Security
     /// A request to authorize and authenticate given user security context against
     /// a secured schema item.
     /// </summary>
-    public sealed class GraphSchemaItemSecurityRequest : IGraphSchemaItemSecurityRequest
+    public sealed class GraphSchemaItemSecurityRequest : ISchemaItemSecurityRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityRequest"/> class.

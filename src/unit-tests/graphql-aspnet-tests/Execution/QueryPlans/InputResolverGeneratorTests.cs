@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         private ISchema CreateSchema()
         {
             var builder = new TestServerBuilder();
-            var defaultScalars = new DefaultScalarTypeProvider();
+            var defaultScalars = new DefaultScalarGraphTypeProvider();
 
             foreach (var scalarConcreteType in defaultScalars.ConcreteTypes)
             {
@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             if (inputText != null)
                 text = inputText.AsSpan();
 
-            var tree = SyntaxTree.FromDocumentRoot();
+            var tree = SyntaxTree.WithDocumentRoot();
             var rootNode = tree.RootNode;
             var source = new SourceText(text);
             var tokenStream = Lexer.Tokenize(source);
@@ -215,7 +215,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             if (inputText != null)
                 text = inputText.AsSpan();
 
-            var tree = SyntaxTree.FromDocumentRoot();
+            var tree = SyntaxTree.WithDocumentRoot();
             var rootNode = tree.RootNode;
             var source = new SourceText(text);
             var tokenStream = Lexer.Tokenize(source);

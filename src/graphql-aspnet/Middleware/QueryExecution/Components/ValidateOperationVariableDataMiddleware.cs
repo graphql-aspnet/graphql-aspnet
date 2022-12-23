@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         /// <inheritdoc />
-        public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.IsValid)
             {
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         private void ResolveVariables(
-            GraphQueryExecutionContext context,
+            QueryExecutionContext context,
             IVariableCollectionDocumentPart declaredVariables,
             IInputVariableCollection suppliedVariableData)
         {

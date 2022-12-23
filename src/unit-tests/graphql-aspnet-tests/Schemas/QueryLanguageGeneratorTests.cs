@@ -234,7 +234,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // ensure all scalars represented
             _unUsedScalarTypes = new List<Type>();
-            var scalarProvider = new DefaultScalarTypeProvider();
+            var scalarProvider = new DefaultScalarGraphTypeProvider();
             foreach (var type in scalarProvider.ConcreteTypes)
             {
                 if (Validation.IsNullableOfT(type))

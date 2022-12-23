@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Framework
     public class GraphQLGlobalRestorePoint : IDisposable
     {
         private readonly IGraphTypeTemplateProvider _templateProvider;
-        private readonly IScalarTypeProvider _scalarTypeProvider;
+        private readonly IScalarGraphTypeProvider _scalarTypeProvider;
         private readonly IGraphTypeMakerProvider _makerProvider;
         private readonly ServiceLifetime _controllerServiceLifetime;
         private readonly int? _maxSubConnectedClient;

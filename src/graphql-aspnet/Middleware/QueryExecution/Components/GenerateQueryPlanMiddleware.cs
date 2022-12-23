@@ -25,8 +25,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
-        private readonly IGraphQueryDocumentGenerator<TSchema> _documentGenerator;
-        private readonly IGraphQueryPlanGenerator<TSchema> _planGenerator;
+        private readonly IQueryDocumentGenerator<TSchema> _documentGenerator;
+        private readonly IQueryPlanGenerator<TSchema> _planGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenerateQueryPlanMiddleware{TSchema}" /> class.
@@ -37,8 +37,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <param name="planGenerator">The plan generator.</param>
         public GenerateQueryPlanMiddleware(
             TSchema schema,
-            IGraphQueryDocumentGenerator<TSchema> documentGenerator,
-            IGraphQueryPlanGenerator<TSchema> planGenerator)
+            IQueryDocumentGenerator<TSchema> documentGenerator,
+            IQueryPlanGenerator<TSchema> planGenerator)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.IsValid && context.QueryPlan == null && context.Operation != null)
             {

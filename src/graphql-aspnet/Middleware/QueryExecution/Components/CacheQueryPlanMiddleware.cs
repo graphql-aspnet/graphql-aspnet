@@ -26,8 +26,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class CacheQueryPlanMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly IGraphQueryPlanCacheKeyManager _keyManager;
-        private readonly IGraphQueryPlanCacheProvider _cacheProvider;
+        private readonly IQueryPlanCacheKeyManager _keyManager;
+        private readonly IQueryPlanCacheProvider _cacheProvider;
         private readonly ISchemaQueryPlanCacheConfiguration _cacheOptions;
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <param name="schema">The schema.</param>
         /// <param name="keyManager">The key manager.</param>
         /// <param name="cacheProvider">The cache provider.</param>
-        public CacheQueryPlanMiddleware(TSchema schema, IGraphQueryPlanCacheKeyManager keyManager, IGraphQueryPlanCacheProvider cacheProvider)
+        public CacheQueryPlanMiddleware(TSchema schema, IQueryPlanCacheKeyManager keyManager, IQueryPlanCacheProvider cacheProvider)
         {
             Validation.ThrowIfNull(schema, nameof(schema));
             _cacheOptions = schema.Configuration.QueryCacheOptions;
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             bool planFound = false;
             string key = null;

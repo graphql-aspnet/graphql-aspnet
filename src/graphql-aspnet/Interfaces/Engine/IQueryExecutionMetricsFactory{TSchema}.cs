@@ -15,12 +15,12 @@ namespace GraphQL.AspNet.Interfaces.Engine
     /// An factory that can generate a new collection of metrics that can be used for performance monitoring a request.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this factory is registered for.</typeparam>
-    public interface IGraphQueryExecutionMetricsFactory<TSchema>
+    public interface IQueryExecutionMetricsFactory<TSchema>
     {
         /// <summary>
         /// Creates a new instance of the metrics package this factory can create.
         /// </summary>
         /// <returns>IQueryExecutionMetrics.</returns>
-        IGraphQueryExecutionMetrics CreateMetricsPackage();
+        IQueryExecutionMetrics CreateMetricsPackage();
     }
 }

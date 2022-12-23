@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Contexts
 
     /// <summary>
     /// A context managing the translation of a <see cref="SyntaxNode"/> to a properly structured
-    /// <see cref="IDocumentPart"/> with a <see cref="IGraphQueryDocument"/>.
+    /// <see cref="IDocumentPart"/> with a <see cref="IQueryDocument"/>.
     /// </summary>
     [DebuggerDisplay("Node Type: {ActiveNode.NodeType}")]
     internal readonly ref struct DocumentConstructionContext
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         public DocumentConstructionContext(
             SyntaxTree syntaxTree,
             SourceText sourceText,
-            IGraphQueryDocument documentToFill,
+            IQueryDocument documentToFill,
             ISchema targetSchema)
         {
             this.SyntaxTree = syntaxTree;
@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Execution.Contexts
             IDocumentPart parentPart,
             IGraphMessageCollection messageCollection,
             ISchema schema,
-            IGraphQueryDocument rootDocumentPart,
+            IQueryDocument rootDocumentPart,
             int depth,
             IList<IFragmentSpreadDocumentPart> fragSpreads,
             IOperationDocumentPart activeOperation)
@@ -190,7 +190,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets the query document being constructed.
         /// </summary>
         /// <value>The document.</value>
-        public IGraphQueryDocument Document { get; }
+        public IQueryDocument Document { get; }
 
         /// <summary>
         /// Gets the active part that was constructed with this context. May be null

@@ -28,69 +28,6 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
             Assert.AreEqual(item, asEnumerable.ElementAt(0));
         }
 
-        [Test]
-        public void WhereIf_True_FiltersItems()
-        {
-            var lst = new[] { 1, 2, 3, 5, 6, 7, 8 };
-            var filtered = lst.AsQueryable().WhereIf(true, x => x < 5);
-            Assert.AreEqual(3, filtered.Count());
-            Assert.IsTrue(filtered.Any(x => x == 1));
-            Assert.IsTrue(filtered.Any(x => x == 2));
-            Assert.IsTrue(filtered.Any(x => x == 3));
-        }
-
-        [Test]
-        public void WhereIf_False_FiltersItems()
-        {
-            var lst = new[] { 1, 2, 3, 5, 6, 7, 8 };
-            var orig = lst.AsQueryable();
-            var filtered = orig.WhereIf(false, x => x < 5);
-            Assert.AreEqual(filtered, orig);
-            Assert.AreEqual(7, filtered.Count());
-            Assert.IsTrue(filtered.Any(x => x == 1));
-            Assert.IsTrue(filtered.Any(x => x == 2));
-            Assert.IsTrue(filtered.Any(x => x == 3));
-            Assert.IsTrue(filtered.Any(x => x == 5));
-            Assert.IsTrue(filtered.Any(x => x == 6));
-            Assert.IsTrue(filtered.Any(x => x == 7));
-            Assert.IsTrue(filtered.Any(x => x == 8));
-        }
-
-        [TestCase(new[] { 1, 2, 3, 4, 5, 6, 7, 8 }, 15, 2, new int[] { })]
-        [TestCase(new[] { 1, 2, 3, 4, 5, 6, 7, 8 }, 3, 0, new int[] { })]
-        [TestCase(new[] { 1, 2, 3, 4, 5, 6, 7, 8 }, 3, 2, new[] { 5, 6 })]
-        [TestCase(new[] { 1, 2, 3, 4, 5, 6, 7, 8 }, 1, 50, new[] { 1, 2, 3, 4, 5, 6, 7, 8 })]
-        public void Page(int[] data, int page, int pageSize, int[] expectedOutput)
-        {
-            var pageReturned = data.AsQueryable().Page(page, pageSize);
-
-            Assert.AreEqual(expectedOutput.Length, pageReturned.Count());
-            for (var i = 0; i < expectedOutput.Length; i++)
-            {
-                Assert.AreEqual(expectedOutput[i], pageReturned.ElementAt(i));
-            }
-        }
-
-        [Test]
-        public void Page_InvalidPageNumber_ThrowsException()
-        {
-            var array = new int[] { 1, 2, 3 };
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var pageReturned = array.AsQueryable().Page(0, 1);
-            });
-        }
-
-        [Test]
-        public void Page_InvalidPageSize_ThrowsException()
-        {
-            var array = new int[] { 1, 2, 3 };
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var pageReturned = array.AsQueryable().Page(1, -5);
-            });
-        }
-
         [TestCase(new[] { 1, 2, 3, 4, 5, 6, 7, 8 }, 7, new int[] { 1 })]
         [TestCase(new[] { 1, 2, 3, 4, 5, 6, 7, 8 }, 8, new int[] { })]
         [TestCase(new[] { 1, 2, 3, 4, 5, 6, 7, 8 }, 45, new int[] { })]

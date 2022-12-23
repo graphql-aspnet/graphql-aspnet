@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         /// Initializes a new instance of the <see cref="DocumentOperationCollection"/> class.
         /// </summary>
         /// <param name="owner">The query document that owns this set of operations.</param>
-        public DocumentOperationCollection(IGraphQueryDocument owner)
+        public DocumentOperationCollection(IQueryDocument owner)
         {
             this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
             _operations = new Dictionary<string, IOperationDocumentPart>();
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         public IOperationDocumentPart this[string key] => _operations[key];
 
         /// <inheritdoc />
-        public IGraphQueryDocument Owner { get; }
+        public IQueryDocument Owner { get; }
 
         /// <inheritdoc />
         public IEnumerable<string> Keys => _operations.Keys;

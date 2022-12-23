@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the top level field set generated as a result of executing the operating.
         /// </summary>
         /// <value>The data item generated.</value>
-        IResponseFieldSet Data { get; }
+        IQueryResponseFieldSet Data { get; }
 
         /// <summary>
         /// Gets a collection of messages that may have occured during the resolution of the data request.

@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Initializes a new instance of the <see cref="RequestCompletedLogEntry" /> class.
         /// </summary>
         /// <param name="context">The primary query context.</param>
-        public RequestCompletedLogEntry(GraphQueryExecutionContext context)
+        public RequestCompletedLogEntry(QueryExecutionContext context)
             : base(LogEventIds.RequestCompleted)
         {
             this.OperationRequestId = context?.OperationRequest?.Id.ToString();

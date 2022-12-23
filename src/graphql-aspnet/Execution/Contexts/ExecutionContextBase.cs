@@ -20,15 +20,15 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// <summary>
     /// A base middleware context containing the core items required of all contexts.
     /// </summary>
-    public abstract class GraphExecutionContextBase : IGraphExecutionContext
+    public abstract class ExecutionContextBase : IExecutionContext
     {
         private bool _isCancelled;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphExecutionContextBase"/> class.
+        /// Initializes a new instance of the <see cref="ExecutionContextBase"/> class.
         /// </summary>
         /// <param name="otherContext">The other context.</param>
-        protected GraphExecutionContextBase(IGraphExecutionContext otherContext)
+        protected ExecutionContextBase(IExecutionContext otherContext)
             : this(
                     otherContext?.OperationRequest,
                     otherContext?.ServiceProvider,
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphExecutionContextBase" /> class.
+        /// Initializes a new instance of the <see cref="ExecutionContextBase" /> class.
         /// </summary>
         /// <param name="operationRequest">The original operation request.</param>
         /// <param name="serviceProvider">The service provider passed on the HttpContext.</param>
@@ -53,13 +53,13 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="metrics">The metrics package to profile this request, if any.</param>
         /// <param name="logger">The logger instance to record events related to this context.</param>
         /// <param name="cancelToken">The cancel token governing this execution context.</param>
-        protected GraphExecutionContextBase(
-            IGraphOperationRequest operationRequest,
+        protected ExecutionContextBase(
+            IQueryOperationRequest operationRequest,
             IServiceProvider serviceProvider,
             IQuerySession querySession,
             IUserSecurityContext securityContext = null,
             MetaDataCollection items = null,
-            IGraphQueryExecutionMetrics metrics = null,
+            IQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             CancellationToken cancelToken = default)
         {
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         public IUserSecurityContext SecurityContext { get; }
 
         /// <inheritdoc />
-        public IGraphQueryExecutionMetrics Metrics { get; }
+        public IQueryExecutionMetrics Metrics { get; }
 
         /// <inheritdoc />
         public IGraphEventLogger Logger { get; }
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         public bool IsValid => !this.Messages.Severity.IsCritical();
 
         /// <inheritdoc />
-        public IGraphOperationRequest OperationRequest { get; }
+        public IQueryOperationRequest OperationRequest { get; }
 
         /// <inheritdoc />
         public CancellationToken CancellationToken { get; set; }

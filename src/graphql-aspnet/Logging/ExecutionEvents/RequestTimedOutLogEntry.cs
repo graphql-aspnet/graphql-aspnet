@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Initializes a new instance of the <see cref="RequestTimedOutLogEntry" /> class.
         /// </summary>
         /// <param name="context">The primary query context.</param>
-        public RequestTimedOutLogEntry(GraphQueryExecutionContext context)
+        public RequestTimedOutLogEntry(QueryExecutionContext context)
             : base(LogEventIds.RequestTimeout)
         {
             var startDate = context?.OperationRequest?.StartTimeUTC ?? DateTimeOffset.MinValue;

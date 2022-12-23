@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
     /// and subsitute it in the <see cref="GraphQLProviders"/> at start up. This cache instance is a singleton reference
     /// per server instance.
     /// </summary>
-    public interface IGraphQueryPlanCacheProvider
+    public interface IQueryPlanCacheProvider
     {
         /// <summary>
         /// Attempts to retrieve a query plan from the cache for the given schema if it sexists.

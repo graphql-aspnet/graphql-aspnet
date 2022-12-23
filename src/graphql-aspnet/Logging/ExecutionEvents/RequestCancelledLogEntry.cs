@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Initializes a new instance of the <see cref="RequestCancelledLogEntry" /> class.
         /// </summary>
         /// <param name="context">The primary query context.</param>
-        public RequestCancelledLogEntry(GraphQueryExecutionContext context)
+        public RequestCancelledLogEntry(QueryExecutionContext context)
             : base(LogEventIds.RequestCancelled)
         {
             this.OperationRequestId = context?.OperationRequest?.Id.ToString();

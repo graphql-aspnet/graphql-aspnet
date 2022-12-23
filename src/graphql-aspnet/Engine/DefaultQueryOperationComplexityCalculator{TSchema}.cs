@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Engine
     /// A calculator that can determine the estimated complexity for a given operation.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema for this calculator exists.</typeparam>
-    public class DefaultOperationComplexityCalculator<TSchema> : IQueryOperationComplexityCalculator<TSchema>
+    public class DefaultQueryOperationComplexityCalculator<TSchema> : IQueryOperationComplexityCalculator<TSchema>
         where TSchema : class, ISchema
     {
         private const float QUERY_WEIGHT = 1;
@@ -38,9 +38,9 @@ namespace GraphQL.AspNet.Engine
         private const float RETURN_TYPE_LIST_WEIGHT = 2;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultOperationComplexityCalculator{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="DefaultQueryOperationComplexityCalculator{TSchema}" /> class.
         /// </summary>
-        public DefaultOperationComplexityCalculator()
+        public DefaultQueryOperationComplexityCalculator()
         {
         }
 

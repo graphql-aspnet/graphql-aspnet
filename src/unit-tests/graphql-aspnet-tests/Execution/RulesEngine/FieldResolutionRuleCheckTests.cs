@@ -184,7 +184,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             Assert.AreEqual("6.4.3", ruleBroke.ToString());
 
             Assert.IsNotNull(result.Data);
-            var data = result.Data as IResponseFieldSet;
+            var data = result.Data as IQueryResponseFieldSet;
             Assert.IsNull(data.Fields["invalidMovers"]);
             Assert.IsNotNull(data.Fields["validMovers"]);
         }

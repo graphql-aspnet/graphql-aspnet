@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Engine
     /// <summary>
     /// The default query cache implementation using local memory to store query plan data.
     /// </summary>
-    public class DefaultQueryPlanCacheProvider : IGraphQueryPlanCacheProvider, IDisposable
+    public class DefaultQueryPlanCacheProvider : IQueryPlanCacheProvider, IDisposable
     {
         /// <summary>
         /// The number of minutes to use as a default sliding expiration on any cached plans

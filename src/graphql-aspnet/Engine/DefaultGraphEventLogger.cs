@@ -26,11 +26,11 @@ namespace GraphQL.AspNet.Engine
 
     /// <summary>
     /// The default logger implementation for use in graphql operations. This logger will automatically append
-    /// a unique instance id to each log entry created ogged through it. When injected into a DI container as a
+    /// a unique instance id to each log entry created through it. When injected into a DI container as a
     /// "scoped" lifetime (the default behavior) this has an effect of attaching a unique id to all messages generated for each graphql request coming
     /// through the system for easy tracking.
     /// </summary>
-    public class DefaultGraphQLEventLogger : IGraphEventLogger
+    public class DefaultGraphEventLogger : IGraphEventLogger
     {
         private readonly ILogger _logger;
 
@@ -40,10 +40,10 @@ namespace GraphQL.AspNet.Engine
         private readonly Guid _loggerInstanceId;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultGraphQLEventLogger" /> class.
+        /// Initializes a new instance of the <see cref="DefaultGraphEventLogger" /> class.
         /// </summary>
         /// <param name="loggerFactory">The logger factory from which to generate the underlying <see cref="ILogger" />.</param>
-        public DefaultGraphQLEventLogger(ILoggerFactory loggerFactory)
+        public DefaultGraphEventLogger(ILoggerFactory loggerFactory)
         {
             Validation.ThrowIfNull(loggerFactory, nameof(loggerFactory));
             _logger = loggerFactory.CreateLogger(Constants.Logging.LOG_CATEGORY);
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void RequestReceived(GraphQueryExecutionContext queryContext)
+        public virtual void RequestReceived(QueryExecutionContext queryContext)
         {
             if (!this.IsEnabled(LogLevel.Debug))
                 return;
@@ -158,7 +158,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void SchemaItemAuthorizationChallenge(GraphSchemaItemSecurityChallengeContext context)
+        public virtual void SchemaItemAuthorizationChallenge(SchemaItemSecurityChallengeContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void SchemaItemAuthorizationChallengeResult(GraphSchemaItemSecurityChallengeContext context)
+        public virtual void SchemaItemAuthorizationChallengeResult(SchemaItemSecurityChallengeContext context)
         {
             var logLevel = context?.Result == null || context.Result.Status == SchemaItemSecurityChallengeStatus.Unauthorized
                 ? LogLevel.Warning
@@ -182,7 +182,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityChallengeContext context)
+        public virtual void SchemaItemAuthenticationChallenge(SchemaItemSecurityChallengeContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
@@ -192,7 +192,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityChallengeContext context, IAuthenticationResult authResult)
+        public virtual void SchemaItemAuthenticationChallengeResult(SchemaItemSecurityChallengeContext context, IAuthenticationResult authResult)
         {
             LogLevel logLevel;
             if (context?.Result != null)
@@ -274,7 +274,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void RequestCompleted(GraphQueryExecutionContext queryContext)
+        public virtual void RequestCompleted(QueryExecutionContext queryContext)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
@@ -284,7 +284,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void RequestTimedOut(GraphQueryExecutionContext queryContext)
+        public virtual void RequestTimedOut(QueryExecutionContext queryContext)
         {
             if (!this.IsEnabled(LogLevel.Warning))
                 return;
@@ -294,7 +294,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void RequestCancelled(GraphQueryExecutionContext queryContext)
+        public virtual void RequestCancelled(QueryExecutionContext queryContext)
         {
             if (!this.IsEnabled(LogLevel.Information))
                 return;

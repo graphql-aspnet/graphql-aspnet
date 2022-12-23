@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Initializes a new instance of the <see cref="SchemaItemAuthorizationCompletedLogEntry" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public SchemaItemAuthorizationCompletedLogEntry(GraphSchemaItemSecurityChallengeContext context)
+        public SchemaItemAuthorizationCompletedLogEntry(SchemaItemSecurityChallengeContext context)
             : base(LogEventIds.SchemaItemAuthorizationCompleted)
         {
             this.PipelineRequestId = context?.Request.Id.ToString();

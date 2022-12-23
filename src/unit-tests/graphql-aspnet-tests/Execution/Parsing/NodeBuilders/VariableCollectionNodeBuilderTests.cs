@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders
             var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
-            var tree = SyntaxTree.FromDocumentRoot();
+            var tree = SyntaxTree.WithDocumentRoot();
             var docNode = tree.RootNode;
 
             VariableCollectionNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders
             var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
-            var tree = SyntaxTree.FromDocumentRoot();
+            var tree = SyntaxTree.WithDocumentRoot();
             var docNode = tree.RootNode;
 
             try
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders
             var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
-            var tree = SyntaxTree.FromDocumentRoot();
+            var tree = SyntaxTree.WithDocumentRoot();
             var docNode = tree.RootNode;
 
             try

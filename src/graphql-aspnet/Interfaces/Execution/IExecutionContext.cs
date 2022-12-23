@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// An execution context defining a set of items supported by all
     /// middleware pipelines.
     /// </summary>
-    public interface IGraphExecutionContext
+    public interface IExecutionContext
     {
         /// <summary>
         /// Marks this context as being cancelled. This does not terminate a pipeline directly, rather it sets a
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// generated from an HTTP request.
         /// </summary>
         /// <value>The top level request.</value>
-        IGraphOperationRequest OperationRequest { get; }
+        IQueryOperationRequest OperationRequest { get; }
 
         /// <summary>
         /// Gets the service provider assigned to this context to use for any required
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the metrics package attached to this operation, if any.
         /// </summary>
         /// <value>The metrics package.</value>
-        IGraphQueryExecutionMetrics Metrics { get; }
+        IQueryExecutionMetrics Metrics { get; }
 
         /// <summary>
         /// Gets the logger instance assigned to this context. All events written to the logger will

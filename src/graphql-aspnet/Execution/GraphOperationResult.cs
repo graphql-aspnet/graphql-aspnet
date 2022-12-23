@@ -18,9 +18,9 @@ namespace GraphQL.AspNet.Execution
     /// <summary>
     /// The default implementation of the object returned at the end of a graph operation.
     /// </summary>
-    /// <seealso cref="GraphQL.AspNet.Interfaces.Execution.IGraphOperationResult" />
+    /// <seealso cref="GraphQL.AspNet.Interfaces.Execution.IQueryOperationResult" />
     [DebuggerDisplay("Messages = {Messages.Count}, Has Data = {HasData}")]
-    public class GraphOperationResult : IGraphOperationResult
+    public class GraphOperationResult : IQueryOperationResult
     {
         /// <summary>
         /// Creates a new operation result from a collection of generated messages and optional raw data
@@ -49,10 +49,10 @@ namespace GraphQL.AspNet.Execution
         /// <param name="dataItem">The top level field set resolved during the operation.</param>
         /// <param name="metrics">The metrics package that was filled during the operation execution.</param>
         public GraphOperationResult(
-            IGraphOperationRequest originalRequest,
+            IQueryOperationRequest originalRequest,
             IGraphMessageCollection messages = null,
-            IResponseFieldSet dataItem = null,
-            IGraphQueryExecutionMetrics metrics = null)
+            IQueryResponseFieldSet dataItem = null,
+            IQueryExecutionMetrics metrics = null)
         {
             this.Request = originalRequest;
             this.Data = dataItem;
@@ -67,13 +67,13 @@ namespace GraphQL.AspNet.Execution
         /// Gets the original operation request that was executed to produce this result.
         /// </summary>
         /// <value>The request.</value>
-        public IGraphOperationRequest Request { get; }
+        public IQueryOperationRequest Request { get; }
 
         /// <summary>
         /// Gets the resultant data item that was generated as a result of completing the operation.
         /// </summary>
         /// <value>The data item that was generated.</value>
-        public IResponseFieldSet Data { get; }
+        public IQueryResponseFieldSet Data { get; }
 
         /// <summary>
         /// Gets the sum total collection of messages generated at the various executed phases of
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Execution
         /// Gets the collection of metrics that were generated during the execution of the operation.
         /// </summary>
         /// <value>The metrics.</value>
-        public IGraphQueryExecutionMetrics Metrics { get; }
+        public IQueryExecutionMetrics Metrics { get; }
 
         private bool HasData => this.Data != null;
     }

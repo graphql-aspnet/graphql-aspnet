@@ -126,10 +126,10 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var response = await server.ExecuteQuery(builder);
             Assert.AreEqual(0, response.Messages.Count);
-            var query = response.Data.Fields["query"] as IResponseFieldSet;
-            var inputFields = query.Fields["inputFields"] as IResponseList;
-            var inputField = inputFields.Items[0] as IResponseFieldSet;
-            var defaultValue = inputField.Fields["defaultValue"] as IResponseSingleValue;
+            var query = response.Data.Fields["query"] as IQueryResponseFieldSet;
+            var inputFields = query.Fields["inputFields"] as IQueryResponseItemList;
+            var inputField = inputFields.Items[0] as IQueryResponseFieldSet;
+            var defaultValue = inputField.Fields["defaultValue"] as IQueryResponseSingleValue;
             Assert.AreEqual(expectedDefaultValue, defaultValue?.Value);
         }
     }

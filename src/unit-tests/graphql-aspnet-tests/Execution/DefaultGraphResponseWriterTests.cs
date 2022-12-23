@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Execution
     [TestFixture]
     public class DefaultGraphResponseWriterTests
     {
-        private async Task<string> WriteResponse(IGraphQueryResponseWriter writer, IGraphOperationResult result, ResponseOptions options = null)
+        private async Task<string> WriteResponse(IQueryResponseWriter writer, IQueryOperationResult result, ResponseOptions options = null)
         {
             var stream = new MemoryStream();
             options = options ?? new ResponseOptions()
@@ -263,7 +263,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var dic = new ResponseFieldSet();
             dic.Add("testKey", new ResponseSingleValue(testValue));
 
-            var mockResult = new Mock<IGraphOperationResult>();
+            var mockResult = new Mock<IQueryOperationResult>();
             mockResult.Setup(x => x.Data).Returns(dic);
             mockResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             mockResult.Setup(x => x.Request).Returns(queryBuilder.OperationRequest);

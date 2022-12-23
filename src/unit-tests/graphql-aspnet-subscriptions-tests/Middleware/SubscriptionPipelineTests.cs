@@ -24,7 +24,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
-    using ExecutionPipelineBuilder = GraphQL.AspNet.Interfaces.Configuration.ISchemaPipelineBuilder<GraphQL.AspNet.Schemas.GraphSchema, GraphQL.AspNet.Interfaces.Middleware.IQueryExecutionMiddleware, GraphQL.AspNet.Execution.Contexts.GraphQueryExecutionContext>;
+    using ExecutionPipelineBuilder = GraphQL.AspNet.Interfaces.Configuration.ISchemaPipelineBuilder<GraphQL.AspNet.Schemas.GraphSchema, GraphQL.AspNet.Interfaces.Middleware.IQueryExecutionMiddleware, GraphQL.AspNet.Execution.Contexts.QueryExecutionContext>;
 
     [TestFixture]
     public class SubscriptionPipelineTests
@@ -42,10 +42,10 @@ namespace GraphQL.Subscriptions.Tests.Middleware
                 return this;
             }
 
-            public ExecutionPipelineBuilder AddMiddleware(Func<GraphQueryExecutionContext, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>, CancellationToken, Task> operation, string name = null)
+            public ExecutionPipelineBuilder AddMiddleware(Func<QueryExecutionContext, GraphMiddlewareInvocationDelegate<QueryExecutionContext>, CancellationToken, Task> operation, string name = null)
                 => throw new NotImplementedException();
 
-            public ISchemaPipeline<GraphSchema, GraphQueryExecutionContext> Build() => throw new NotImplementedException();
+            public ISchemaPipeline<GraphSchema, QueryExecutionContext> Build() => throw new NotImplementedException();
 
             public ExecutionPipelineBuilder Clear()
                 => throw new NotImplementedException();

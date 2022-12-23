@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             // the first component in the series
             Assert.ThrowsAsync<GraphExecutionException>(async () =>
             {
-                await server.ExecuteQuery(null as GraphQueryExecutionContext);
+                await server.ExecuteQuery(null as QueryExecutionContext);
             });
         }
 
@@ -50,8 +50,8 @@ namespace GraphQL.AspNet.Tests.Middleware
             var cache = new DefaultQueryPlanCacheProvider(cacheInstance);
             var builder = new TestServerBuilder()
               .AddType<SimpleExecutionController>();
-            builder.AddSingleton<IGraphQueryPlanCacheProvider>(cache);
-            builder.AddSingleton<IGraphQueryPlanCacheKeyManager>(keyManager);
+            builder.AddSingleton<IQueryPlanCacheProvider>(cache);
+            builder.AddSingleton<IQueryPlanCacheKeyManager>(keyManager);
 
             // configure an absolute expriation of a few seconds to ensure the plan remains in cache
             // long enough to be fetched by tis expected key

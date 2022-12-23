@@ -50,7 +50,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
         public void ClientMessageSent_PropertyCheck()
         {
             var client = new Mock<ISubscriptionClientProxy>();
-            var result = new Mock<IGraphOperationResult>();
+            var result = new Mock<IQueryOperationResult>();
 
             var id = SubscriptionClientId.NewClientId();
             client.Setup(x => x.Id).Returns(id);

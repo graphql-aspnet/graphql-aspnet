@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Middleware.Common
     /// </summary>
     /// <typeparam name="TContext">The type of context this middleware component handles.</typeparam>
     internal class SingleFunctionMiddleware<TContext> : IGraphMiddlewareComponent<TContext>
-        where TContext : class, IGraphExecutionContext
+        where TContext : class, IExecutionContext
     {
         private readonly Func<TContext, GraphMiddlewareInvocationDelegate<TContext>, CancellationToken, Task> _invocationFunc;
 

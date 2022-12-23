@@ -25,17 +25,17 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using Moq;
 
     /// <summary>
-    /// A subclassed <see cref="GraphQueryExecutionContext"/> allowing for inline mocked replacements
+    /// A subclassed <see cref="QueryExecutionContext"/> allowing for inline mocked replacements
     /// of various contained data to setup a test scenario.
     /// </summary>
     public class QueryContextBuilder
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly Mock<IGraphOperationRequest> _mockRequest;
+        private readonly Mock<IQueryOperationRequest> _mockRequest;
         private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
 
         private IUserSecurityContext _userSecurityContext;
-        private IGraphQueryExecutionMetrics _metrics;
+        private IQueryExecutionMetrics _metrics;
         private IGraphEventLogger _eventLogger;
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         {
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
             _userSecurityContext = userSecurityContext;
-            _mockRequest = new Mock<IGraphOperationRequest>();
+            _mockRequest = new Mock<IQueryOperationRequest>();
             _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
         }
 
@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// </summary>
         /// <param name="metricsPackage">The metrics package.</param>
         /// <returns>QueryContextBuilder.</returns>
-        public QueryContextBuilder AddMetrics(IGraphQueryExecutionMetrics metricsPackage)
+        public QueryContextBuilder AddMetrics(IQueryExecutionMetrics metricsPackage)
         {
             _metrics = metricsPackage;
             return this;
@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// Creates this query context instance that can be executed against the test server.
         /// </summary>
         /// <returns>GraphQueryContext.</returns>
-        public virtual GraphQueryExecutionContext Build()
+        public virtual QueryExecutionContext Build()
         {
             var startDate = DateTimeOffset.UtcNow;
             _mockRequest.Setup(x => x.StartTimeUTC).Returns(startDate);
@@ -145,11 +145,11 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             var metaData = new MetaDataCollection();
 
             // unchangable items about the request
-            var request = new Mock<IGraphOperationRequest>();
+            var request = new Mock<IQueryOperationRequest>();
             request.Setup(x => x.Items).Returns(metaData);
 
             // updateable items about the request
-            var context = new GraphQueryExecutionContext(
+            var context = new QueryExecutionContext(
                 this.OperationRequest,
                 _serviceProvider,
                 new QuerySession(),
@@ -172,6 +172,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// Gets the mocked operation request as its currently defined by this builder.
         /// </summary>
         /// <value>The operation request.</value>
-        public IGraphOperationRequest OperationRequest => _mockRequest.Object;
+        public IQueryOperationRequest OperationRequest => _mockRequest.Object;
     }
 }

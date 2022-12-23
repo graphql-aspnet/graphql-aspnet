@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Security
     /// <summary>
     /// An request to authentication and authorize a user to a schema item.
     /// </summary>
-    public interface IGraphSchemaItemSecurityRequest : IDataRequest
+    public interface ISchemaItemSecurityRequest : IDataRequest
     {
         /// <summary>
         /// Gets the secured schema item being checked with this request.

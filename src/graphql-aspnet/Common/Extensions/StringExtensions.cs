@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Common.Extensions
     /// <summary>
     /// A collection of common string extensions.
     /// </summary>
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         [ThreadStatic]
         private static StringBuilder _threadStringBuilder;
@@ -46,8 +46,8 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Extracts a sub string from the right side.
         /// </summary>
-        /// <param name="str">The string.</param>
-        /// <param name="length">The length.</param>
+        /// <param name="str">The string to extract from.</param>
+        /// <param name="length">The length to extract.</param>
         /// <returns>System.String.</returns>
         public static string SubstringRight(this string str, int length)
         {
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Returns the index of the first alpha character in the string. Returns -1 if no alphabetic characters are found.
         /// </summary>
-        /// <param name="text">The text.</param>
+        /// <param name="text">The text to inspect.</param>
         /// <returns>System.Int32.</returns>
         public static int IndexOfFirstAlphaChar(this string text)
         {
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Returns the index of the last digit in the string. Returns -1 if no digits are found.
         /// </summary>
-        /// <param name="text">The text.</param>
+        /// <param name="text">The text to inspect.</param>
         /// <returns>System.Int32.</returns>
         public static int IndexOfLastDigit(this string text)
         {
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// Replaced the old text with the new text regardless of the casing of the letters in the source
         /// and old string values.
         /// </summary>
-        /// <param name="text">The text.</param>
+        /// <param name="text">The text to replace within.</param>
         /// <param name="oldValue">The old value.</param>
         /// <param name="newValue">The new value.</param>
         /// <returns>System.String.</returns>
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Checks if two strings are equal in a case-insensitive manner. Utilizes <see cref="StringComparison.OrdinalIgnoreCase" />.
         /// </summary>
-        /// <param name="text">The text.</param>
+        /// <param name="text">The text to analyze.</param>
         /// <param name="otherText">The other text.</param>
         /// <returns><c>true</c> if strings are both null or both equal regardless of casing, <c>false</c> otherwise.</returns>
         public static bool EqualsCaseInvariant(this string text, string otherText)

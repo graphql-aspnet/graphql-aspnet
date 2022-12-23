@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
 {
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
     using System.Threading.Tasks;
@@ -41,16 +42,20 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
         /// </summary>
         /// <param name="searchText">The text to search for.</param>
         /// <returns>Task&lt;IGraphActionResult&gt;.</returns>
-        [QueryRoot("search", "SearchResults", typeof(Droid), typeof(Human), typeof(Starship), TypeExpression = "[Type]")]
-        [Description("Searches for the specified text as the name of a starship or or character (not case sensitive).")]
-        [Authorize]
+        [QueryRoot("search","SearchResults", typeof(Droid), typeof(Human), typeof(Starship), TypeExpression = "[Type]")]
+        [Description("Searches for the specified text as the name of a starship or character (not case sensitive).")]
         public async Task<IGraphActionResult> GlobalSearch(string searchText = "*")
         {
             var characters = await _starWarsData.SearchCharacters(searchText).ConfigureAwait(false);
             var ships = await _starWarsData.SearchStarships(searchText).ConfigureAwait(false);
+            var droids = await _starWarsData.SearchDroids(searchText).ConfigureAwait(false);
 
-            var data = characters.Cast<object>().Concat(ships).ToList();
-            return this.Ok(data);
+            var results = new List<object>();
+            results.AddRange(characters);
+            results.AddRange(ships);
+            results.AddRange(droids);
+
+            return this.Ok(results);
         }
     }
 }

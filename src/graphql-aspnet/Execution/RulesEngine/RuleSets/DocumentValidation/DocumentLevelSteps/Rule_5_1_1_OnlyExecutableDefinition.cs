@@ -21,14 +21,14 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Docum
     /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Executable-Definitions" />.</para>
     /// </summary>
     internal class Rule_5_1_1_OnlyExecutableDefinition
-        : DocumentPartValidationRuleStep<IGraphQueryDocument>
+        : DocumentPartValidationRuleStep<IQueryDocument>
     {
         /// <inheritdoc/>
         public override bool Execute(DocumentValidationContext context)
         {
             // the parser can't fail this rule, but an injected child by a directive
             // could, so it must exist
-            var docPart = context.ActivePart as IGraphQueryDocument;
+            var docPart = context.ActivePart as IQueryDocument;
             var invalidPartFound = false;
             foreach (var part in docPart.Children)
             {

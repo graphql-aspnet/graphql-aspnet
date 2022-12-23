@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Execution
         /// the graph items referenced by said input data.</param>
         /// <param name="origin">The place in a source document where this request appeared.</param>
         public GraphFieldRequest(
-            IGraphOperationRequest parentOperationRequest,
+            IQueryOperationRequest parentOperationRequest,
             IGraphFieldInvocationContext invocationContext,
             GraphDataContainer dataSource,
             SourceOrigin origin = default)
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <inheritdoc />
-        public IGraphOperationRequest OperationRequest { get; }
+        public IQueryOperationRequest OperationRequest { get; }
 
         /// <inheritdoc />
         public Guid Id { get; }

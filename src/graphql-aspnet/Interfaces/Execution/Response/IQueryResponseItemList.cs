@@ -6,13 +6,21 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Interfaces.Execution.Response
 {
+    using System.Collections.Generic;
+
     /// <summary>
-    /// A marker interface identifying an item as being part of a generated
+    /// An item representing a list of items to be included in a
     /// GraphQL response.
     /// </summary>
-    public interface IResponseItem
+    public interface IQueryResponseItemList : IQueryResponseItem
     {
+        /// <summary>
+        /// Gets the list items.
+        /// </summary>
+        /// <value>The list items.</value>
+        IReadOnlyList<IQueryResponseItem> Items { get; }
     }
 }

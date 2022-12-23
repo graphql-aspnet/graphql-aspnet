@@ -64,12 +64,12 @@ namespace GraphQL.AspNet.Tests.Middleware
             _usersByScheme.Add(DEFAULT_SCHEME, new ClaimsPrincipal());
         }
 
-        public Task EmptyNextDelegate(GraphSchemaItemSecurityChallengeContext context, CancellationToken token)
+        public Task EmptyNextDelegate(SchemaItemSecurityChallengeContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
 
-        private async Task<GraphSchemaItemSecurityChallengeContext> ExecuteTest(SchemaItemSecurityRequirements secRequirements)
+        private async Task<SchemaItemSecurityChallengeContext> ExecuteTest(SchemaItemSecurityRequirements secRequirements)
         {
             var defaultSet = false;
             foreach (var kvp in _usersByScheme)
@@ -103,11 +103,11 @@ namespace GraphQL.AspNet.Tests.Middleware
             var queryContext = contextBuilder.Build();
 
             var field = new Mock<IGraphField>();
-            var fieldSecurityRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var fieldSecurityRequest = new Mock<ISchemaItemSecurityRequest>();
             fieldSecurityRequest.Setup(x => x.SecureSchemaItem)
                 .Returns(field.Object);
 
-            var fieldSecurityContext = new GraphSchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest.Object);
+            var fieldSecurityContext = new SchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest.Object);
             fieldSecurityContext.SecurityRequirements = secRequirements;
 
             var middleware = new SchemaItemAuthenticationMiddleware(_provider?.Object);

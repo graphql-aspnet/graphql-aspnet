@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// <summary>
     /// A base set of options used by all resolution-scoped contexts in the library.
     /// </summary>
-    /// <typeparam name="TRequest">The type of the t request.</typeparam>
+    /// <typeparam name="TRequest">The type of the request to be resolved.</typeparam>
     public abstract class SchemaItemResolutionContext<TRequest> : SchemaItemResolutionContext
         where TRequest : class, IDataRequest
     {
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// resolution context.</param>
         protected SchemaItemResolutionContext(
             ISchema targetSchema,
-            IGraphExecutionContext parentContext,
+            IExecutionContext parentContext,
             TRequest request,
             IExecutionArgumentCollection arguments,
             ClaimsPrincipal user = null)

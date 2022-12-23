@@ -15,14 +15,14 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.S
     /// <summary>
     /// A representation of the 'GQL_DATA' message sent when new data is available for the subscription.
     /// </summary>
-    public class GraphqlWsLegacyServerDataMessage : GraphqlWsLegacyMessage<IGraphOperationResult>
+    public class GraphqlWsLegacyServerDataMessage : GraphqlWsLegacyMessage<IQueryOperationResult>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyServerDataMessage" /> class.
         /// </summary>
         /// <param name="clientProvidedSubscriptionId">The client provided subscription identifier.</param>
         /// <param name="result">The result that needs to be sent to the client.</param>
-        public GraphqlWsLegacyServerDataMessage(string clientProvidedSubscriptionId, IGraphOperationResult result)
+        public GraphqlWsLegacyServerDataMessage(string clientProvidedSubscriptionId, IQueryOperationResult result)
             : base(GraphqlWsLegacyMessageType.DATA)
         {
             this.Id = clientProvidedSubscriptionId;

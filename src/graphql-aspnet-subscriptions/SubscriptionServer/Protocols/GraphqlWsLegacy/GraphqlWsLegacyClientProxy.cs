@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
             IClientConnection clientConnection,
             ISubscriptionEventRouter router,
             string protocolName,
-            IGraphQueryResponseWriter<TSchema> responseWriter,
+            IQueryResponseWriter<TSchema> responseWriter,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
             : base(SubscriptionClientId.NewClientId(), schema, clientConnection, router, logger)
@@ -313,7 +313,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
         }
 
         /// <inheritdoc />
-        protected override GraphqlWsLegacyMessage CreateDataMessage(string subscriptionId, IGraphOperationResult operationResult)
+        protected override GraphqlWsLegacyMessage CreateDataMessage(string subscriptionId, IQueryOperationResult operationResult)
         {
             return new GraphqlWsLegacyServerDataMessage(subscriptionId, operationResult);
         }

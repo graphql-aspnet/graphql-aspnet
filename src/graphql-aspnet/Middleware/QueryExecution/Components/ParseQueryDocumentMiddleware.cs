@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class ParseQueryDocumentMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly IGraphQueryDocumentGenerator<TSchema> _documentGenerator;
+        private readonly IQueryDocumentGenerator<TSchema> _documentGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParseQueryDocumentMiddleware{TSchema}" /> class.
@@ -40,13 +40,13 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <param name="documentGenerator">The document generator used to convert syntax
         /// trees into functional documents.</param>
         public ParseQueryDocumentMiddleware(
-            IGraphQueryDocumentGenerator<TSchema> documentGenerator)
+            IQueryDocumentGenerator<TSchema> documentGenerator)
         {
             _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));
         }
 
         /// <inheritdoc />
-        public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.QueryPlan == null)
             {

@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// When overridden in a child class, this metyhod builds the route that will be assigned to this method
         /// using the implementation rules of the concrete type.
         /// </summary>
-        /// <returns>GraphRoutePath.</returns>
+        /// <returns>SchemaItemPath.</returns>
         protected override SchemaItemPath GenerateFieldPath()
         {
             var skipControllerLevelField = this.ObjectType.SingleAttributeOrDefault<GraphRootAttribute>();

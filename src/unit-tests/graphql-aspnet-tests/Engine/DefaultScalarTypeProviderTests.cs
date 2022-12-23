@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void EachInvocationOfaScalarIsANewInstance()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
             var instances = new List<object>();
 
             for (var i = 0; i < 3; i++)
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AllRegisteredTypesProduceSameScalar()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
 
             var primary = provider.CreateScalar(typeof(int));
             var secondary = provider.CreateScalar(typeof(int?));
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void IsLeaf_NullType_IsFalse()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
 
             var result = provider.IsLeaf(null);
             Assert.IsFalse(result);
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void RegisterCustomScalar_ValidScalarIsRegistered()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
 
             provider.RegisterCustomScalar(typeof(ScalarFullyValid));
 
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AllDefaultScalars_CanBeInstantiatedAndSearched()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
 
             foreach (var instanceType in provider.ConcreteTypes)
             {
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void CreateScalar_ForUnRegisteredScalarName_ReturnsNull()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
             var instance = provider.CreateScalar("NotAScalarName");
 
             Assert.IsNull(instance);
@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void CreateScalar_ForUnRegisteredScalarType_ReturnsNull()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
             var instance = provider.CreateScalar(typeof(DefaultScalarTypeProviderTests));
 
             Assert.IsNull(instance);
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void RetrieveConcreteType_ByScalarName_ReturnsScalar()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
             var type = provider.RetrieveConcreteType(Constants.ScalarNames.INT);
 
             Assert.AreEqual(typeof(int), type);
@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void RetrieveConcreteType_ByScalarName_ReturnsNull()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
             var type = provider.RetrieveConcreteType("not a scalar name");
 
             Assert.IsNull(type);
@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void RetrieveScalarName_ByConcreteType_ReturnsnUll()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
             var type = provider.RetrieveScalarName(typeof(DefaultScalarTypeProviderTests));
 
             Assert.IsNull(type);
@@ -136,7 +136,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void RetrieveScalarName_ByConcreteType()
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
             var name = provider.RetrieveScalarName(typeof(int));
 
             Assert.AreEqual(Constants.ScalarNames.INT, name);
@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [TestCase(typeof(ScalarOtherTypeInUse), typeof(GraphTypeDeclarationException))]
         public void RegisterCustomScalar_ExpectedDeclarationException(Type scalarType, Type expectedExceptionType)
         {
-            var provider = new DefaultScalarTypeProvider();
+            var provider = new DefaultScalarGraphTypeProvider();
             try
             {
                 provider.RegisterCustomScalar(scalarType);

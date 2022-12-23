@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.C
     /// </summary>
     public class GraphqlWsLegacyServerDataMessageConverter : JsonConverter<GraphqlWsLegacyServerDataMessage>
     {
-        private readonly IGraphQueryResponseWriter _responseWriter;
+        private readonly IQueryResponseWriter _responseWriter;
         private readonly ISchema _schema;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.C
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <param name="responseWriter">The response writer.</param>
-        public GraphqlWsLegacyServerDataMessageConverter(ISchema schema, IGraphQueryResponseWriter responseWriter)
+        public GraphqlWsLegacyServerDataMessageConverter(ISchema schema, IQueryResponseWriter responseWriter)
         {
             _responseWriter = Validation.ThrowIfNullOrReturn(responseWriter, nameof(responseWriter));
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));

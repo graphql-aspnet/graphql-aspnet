@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Engine
     /// to a stream.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this writer works for.</typeparam>
-    public class DefaultQueryResponseWriter<TSchema> : ResponseWriterBase, IGraphQueryResponseWriter<TSchema>
+    public class DefaultQueryResponseWriter<TSchema> : ResponseWriterBase, IQueryResponseWriter<TSchema>
          where TSchema : class, ISchema
     {
         private readonly GraphMessageSeverity _minSeverityLevel;
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual async Task WriteAsync(Stream streamToWriteTo, IGraphOperationResult resultToWrite, ResponseOptions options = null, CancellationToken cancelToken = default)
+        public virtual async Task WriteAsync(Stream streamToWriteTo, IQueryOperationResult resultToWrite, ResponseOptions options = null, CancellationToken cancelToken = default)
         {
             options = options ?? ResponseOptions.Default;
 
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void Write(Utf8JsonWriter jsonWriter, IGraphOperationResult resultToWrite, ResponseOptions options = null)
+        public virtual void Write(Utf8JsonWriter jsonWriter, IQueryOperationResult resultToWrite, ResponseOptions options = null)
         {
             this.WriteResult(jsonWriter, resultToWrite, options);
         }
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Engine
         /// <param name="writer">The json writer to output the reslts to.</param>
         /// <param name="resultToWrite">The operation result to write.</param>
         /// <param name="options">A set options to customize how the response is serialized to the stream.</param>
-        protected virtual void WriteResult(Utf8JsonWriter writer, IGraphOperationResult resultToWrite, ResponseOptions options)
+        protected virtual void WriteResult(Utf8JsonWriter writer, IQueryOperationResult resultToWrite, ResponseOptions options)
         {
             writer.WriteStartObject();
 
@@ -119,7 +119,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="writer">The writer to stream to.</param>
         /// <param name="dataItem">The data item to serialize.</param>
-        protected virtual void WriteResponseItem(Utf8JsonWriter writer, IResponseItem dataItem)
+        protected virtual void WriteResponseItem(Utf8JsonWriter writer, IQueryResponseItem dataItem)
         {
             if (dataItem == null)
             {
@@ -129,19 +129,19 @@ namespace GraphQL.AspNet.Engine
 
             switch (dataItem)
             {
-                case IResponseFieldSet fieldSet:
+                case IQueryResponseFieldSet fieldSet:
                     this.WriteObjectCollection(writer, fieldSet);
                     break;
-                case IResponseList list:
+                case IQueryResponseItemList list:
                     this.WriteList(writer, list);
                     break;
-                case IResponseSingleValue singleValue:
+                case IQueryResponseSingleValue singleValue:
                     this.WriteLeafValue(writer, singleValue.Value);
                     break;
 
                 default:
                     throw new ArgumentOutOfRangeException(
-                        $"Unknown {nameof(IResponseItem)} type. " +
+                        $"Unknown {nameof(IQueryResponseItem)} type. " +
                         $"Default writer is unable to write type '{dataItem.GetType().FriendlyName()}' to the output stream.");
             }
         }
@@ -151,7 +151,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="writer">The json writer to output the reslts to.</param>
         /// <param name="data">The dictionary to output to the writer.</param>
-        private void WriteObjectCollection(Utf8JsonWriter writer, IResponseFieldSet data)
+        private void WriteObjectCollection(Utf8JsonWriter writer, IQueryResponseFieldSet data)
         {
             if (data == null)
             {
@@ -175,7 +175,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="writer">The writer to stream to.</param>
         /// <param name="list">The list to write.</param>
-        private void WriteList(Utf8JsonWriter writer, IResponseList list)
+        private void WriteList(Utf8JsonWriter writer, IQueryResponseItemList list)
         {
             if (list?.Items == null)
             {

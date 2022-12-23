@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Execution
     /// A context object representing a single request, by a single requestor, to use through the query execution process.
     /// </summary>
     [DebuggerDisplay("Query Length = {QueryLength} (Operation = {OperationName})")]
-    public class GraphOperationRequest : IGraphOperationRequest
+    public class GraphOperationRequest : IQueryOperationRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphOperationRequest"/> class.
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Execution
         /// Initializes a new instance of the <see cref="GraphOperationRequest"/> class.
         /// </summary>
         /// <param name="request">The request to injest into this request.</param>
-        protected GraphOperationRequest(IGraphOperationRequest request)
+        protected GraphOperationRequest(IQueryOperationRequest request)
         {
             Validation.ThrowIfNull(request, nameof(request));
             this.Id = request.Id;

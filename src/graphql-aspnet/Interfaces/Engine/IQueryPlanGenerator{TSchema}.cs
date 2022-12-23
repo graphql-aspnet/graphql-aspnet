@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
     /// query plan executable by a the query pipeline.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this plan generator is registered for.</typeparam>
-    public interface IGraphQueryPlanGenerator<TSchema>
+    public interface IQueryPlanGenerator<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>

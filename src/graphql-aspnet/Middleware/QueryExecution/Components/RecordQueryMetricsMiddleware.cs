@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class RecordQueryMetricsMiddleware : IQueryExecutionMiddleware
     {
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             context?.Metrics?.Start();
             await next(context, cancelToken).ConfigureAwait(false);

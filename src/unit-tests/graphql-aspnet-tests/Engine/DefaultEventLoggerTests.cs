@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Engine
     public class DefaultEventLoggerTests
     {
         public void ExecuteTest(
-            Action<DefaultGraphQLEventLogger> execute,
+            Action<DefaultGraphEventLogger> execute,
             bool shouldLogLevelBeEnabled,
             Type logEntryType = null,
             LogLevel? expectedLogLevel = null,
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Engine
                     });
             }
 
-            var eventLogger = new DefaultGraphQLEventLogger(loggerFactory.Object);
+            var eventLogger = new DefaultGraphEventLogger(loggerFactory.Object);
             execute(eventLogger);
 
             if (shouldLogLevelBeEnabled)
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.SchemaInstanceCreated<GraphSchema>(
+                    (DefaultGraphEventLogger x) => x.SchemaInstanceCreated<GraphSchema>(
                         new GraphSchema()),
                     true,
                     typeof(SchemaInstanceCreatedLogEntry<GraphSchema>),
@@ -117,7 +117,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.SchemaInstanceCreated<GraphSchema>(
+                    (DefaultGraphEventLogger x) => x.SchemaInstanceCreated<GraphSchema>(
                         new GraphSchema()),
                     false,
                     null,
@@ -128,7 +128,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.SchemaPipelineRegistered<GraphSchema>(
+                    (DefaultGraphEventLogger x) => x.SchemaPipelineRegistered<GraphSchema>(
                         new Mock<ISchemaPipeline>().Object),
                     true,
                     typeof(SchemaPipelineRegisteredLogEntry<GraphSchema>),
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.SchemaPipelineRegistered<GraphSchema>(
+                    (DefaultGraphEventLogger x) => x.SchemaPipelineRegistered<GraphSchema>(
                         new Mock<ISchemaPipeline>().Object),
                     false,
                     null,
@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.SchemaRouteRegistered<GraphSchema>(null),
+                    (DefaultGraphEventLogger x) => x.SchemaRouteRegistered<GraphSchema>(null),
                     true,
                     typeof(SchemaRouteRegisteredLogEntry<GraphSchema>),
                     LogLevel.Debug,
@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.SchemaRouteRegistered<GraphSchema>(null),
+                    (DefaultGraphEventLogger x) => x.SchemaRouteRegistered<GraphSchema>(null),
                     false,
                     null,
                     null,
@@ -170,7 +170,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.RequestReceived(null),
+                    (DefaultGraphEventLogger x) => x.RequestReceived(null),
                     true,
                     typeof(RequestReceivedLogEntry),
                     LogLevel.Trace,
@@ -180,7 +180,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.RequestReceived(null),
+                    (DefaultGraphEventLogger x) => x.RequestReceived(null),
                     false,
                     null,
                     null,
@@ -190,7 +190,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.QueryPlanCacheFetchHit<GraphSchema>(null),
+                    (DefaultGraphEventLogger x) => x.QueryPlanCacheFetchHit<GraphSchema>(null),
                     true,
                     typeof(QueryPlanCacheHitLogEntry<GraphSchema>),
                     LogLevel.Trace,
@@ -200,7 +200,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.QueryPlanCacheFetchHit<GraphSchema>(null),
+                    (DefaultGraphEventLogger x) => x.QueryPlanCacheFetchHit<GraphSchema>(null),
                     false,
                     null,
                     null,
@@ -210,7 +210,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.QueryPlanCacheFetchMiss<GraphSchema>(null),
+                    (DefaultGraphEventLogger x) => x.QueryPlanCacheFetchMiss<GraphSchema>(null),
                     true,
                     typeof(QueryPlanCacheMissLogEntry<GraphSchema>),
                     LogLevel.Trace,
@@ -220,7 +220,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.QueryPlanCacheFetchMiss<GraphSchema>(null),
+                    (DefaultGraphEventLogger x) => x.QueryPlanCacheFetchMiss<GraphSchema>(null),
                     false,
                     null,
                     null,
@@ -230,7 +230,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.QueryPlanCached(null, null),
+                    (DefaultGraphEventLogger x) => x.QueryPlanCached(null, null),
                     true,
                     typeof(QueryPlanCacheAddLogEntry),
                     LogLevel.Debug,
@@ -240,7 +240,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.QueryPlanCached(null, null),
+                    (DefaultGraphEventLogger x) => x.QueryPlanCached(null, null),
                     false,
                     null,
                     null,
@@ -250,7 +250,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.QueryPlanGenerated(null),
+                    (DefaultGraphEventLogger x) => x.QueryPlanGenerated(null),
                     true,
                     typeof(QueryPlanGeneratedLogEntry),
                     LogLevel.Trace,
@@ -260,7 +260,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.QueryPlanGenerated(null),
+                    (DefaultGraphEventLogger x) => x.QueryPlanGenerated(null),
                     false,
                     null,
                     null,
@@ -270,7 +270,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.FieldResolutionStarted(null),
+                    (DefaultGraphEventLogger x) => x.FieldResolutionStarted(null),
                     true,
                     typeof(FieldResolutionStartedLogEntry),
                     LogLevel.Trace,
@@ -280,7 +280,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.FieldResolutionStarted(null),
+                    (DefaultGraphEventLogger x) => x.FieldResolutionStarted(null),
                     false,
                     null,
                     null,
@@ -290,7 +290,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthorizationChallenge(null),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthorizationChallenge(null),
                     true,
                     typeof(SchemaItemAuthorizationStartedLogEntry),
                     LogLevel.Trace,
@@ -300,7 +300,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthorizationChallenge(null),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthorizationChallenge(null),
                     false,
                     null,
                     null,
@@ -310,7 +310,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                new object[]
                {
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthorizationChallengeResult(null),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthorizationChallengeResult(null),
                     false,
                     null,
                     null,
@@ -320,7 +320,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthenticationChallenge(null),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallenge(null),
                     true,
                     typeof(SchemaItemAuthenticationStartedLogEntry),
                     LogLevel.Trace,
@@ -330,7 +330,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthenticationChallenge(null),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallenge(null),
                     false,
                     null,
                     null,
@@ -340,7 +340,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
               new object[]
               {
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, null),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, null),
                     false,
                     null,
                     null,
@@ -350,7 +350,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.FieldResolutionCompleted(null),
+                    (DefaultGraphEventLogger x) => x.FieldResolutionCompleted(null),
                     true,
                     typeof(FieldResolutionCompletedLogEntry),
                     LogLevel.Trace,
@@ -360,7 +360,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.FieldResolutionCompleted(null),
+                    (DefaultGraphEventLogger x) => x.FieldResolutionCompleted(null),
                     false,
                     null,
                     null,
@@ -370,7 +370,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ActionMethodInvocationRequestStarted(null, null),
+                    (DefaultGraphEventLogger x) => x.ActionMethodInvocationRequestStarted(null, null),
                     true,
                     typeof(ActionMethodInvocationStartedLogEntry),
                     LogLevel.Trace,
@@ -380,7 +380,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ActionMethodInvocationRequestStarted(null, null),
+                    (DefaultGraphEventLogger x) => x.ActionMethodInvocationRequestStarted(null, null),
                     false,
                     null,
                     null,
@@ -390,7 +390,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ActionMethodModelStateValidated(null, null, null),
+                    (DefaultGraphEventLogger x) => x.ActionMethodModelStateValidated(null, null, null),
                     true,
                     typeof(ActionMethodModelStateValidatedLogEntry),
                     LogLevel.Trace,
@@ -400,7 +400,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ActionMethodModelStateValidated(null, null, null),
+                    (DefaultGraphEventLogger x) => x.ActionMethodModelStateValidated(null, null, null),
                     false,
                     null,
                     null,
@@ -410,7 +410,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ActionMethodInvocationException(null, null, null),
+                    (DefaultGraphEventLogger x) => x.ActionMethodInvocationException(null, null, null),
                     true,
                     typeof(ActionMethodInvocationExceptionLogEntry),
                     LogLevel.Error,
@@ -420,7 +420,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ActionMethodInvocationException(null, null, null),
+                    (DefaultGraphEventLogger x) => x.ActionMethodInvocationException(null, null, null),
                     false,
                     null,
                     null,
@@ -430,7 +430,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ActionMethodUnhandledException(null, null, null),
+                    (DefaultGraphEventLogger x) => x.ActionMethodUnhandledException(null, null, null),
                     true,
                     typeof(ActionMethodUnhandledExceptionLogEntry),
                     LogLevel.Error,
@@ -440,7 +440,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ActionMethodUnhandledException(null, null, null),
+                    (DefaultGraphEventLogger x) => x.ActionMethodUnhandledException(null, null, null),
                     false,
                     null,
                     null,
@@ -450,7 +450,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ActionMethodInvocationCompleted(null, null, null),
+                    (DefaultGraphEventLogger x) => x.ActionMethodInvocationCompleted(null, null, null),
                     true,
                     typeof(ActionMethodInvocationCompletedLogEntry),
                     LogLevel.Trace,
@@ -460,7 +460,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ActionMethodInvocationCompleted(null, null, null),
+                    (DefaultGraphEventLogger x) => x.ActionMethodInvocationCompleted(null, null, null),
                     false,
                     null,
                     null,
@@ -470,7 +470,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.RequestCompleted(null),
+                    (DefaultGraphEventLogger x) => x.RequestCompleted(null),
                     true,
                     typeof(RequestCompletedLogEntry),
                     LogLevel.Trace,
@@ -480,7 +480,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.RequestCompleted(null),
+                    (DefaultGraphEventLogger x) => x.RequestCompleted(null),
                     false,
                     null,
                     null,
@@ -490,7 +490,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.RequestTimedOut(null),
+                    (DefaultGraphEventLogger x) => x.RequestTimedOut(null),
                     true,
                     typeof(RequestTimedOutLogEntry),
                     LogLevel.Warning,
@@ -500,7 +500,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.RequestTimedOut(null),
+                    (DefaultGraphEventLogger x) => x.RequestTimedOut(null),
                     false,
                     null,
                     null,
@@ -510,7 +510,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.RequestCancelled(null),
+                    (DefaultGraphEventLogger x) => x.RequestCancelled(null),
                     true,
                     typeof(RequestCancelledLogEntry),
                     LogLevel.Information,
@@ -520,7 +520,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.RequestCancelled(null),
+                    (DefaultGraphEventLogger x) => x.RequestCancelled(null),
                     false,
                     null,
                     null,
@@ -530,7 +530,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.TypeSystemDirectiveApplied<GraphSchema>(null, null),
+                    (DefaultGraphEventLogger x) => x.TypeSystemDirectiveApplied<GraphSchema>(null, null),
                     true,
                     typeof(TypeSystemDirectiveAppliedLogEntry<GraphSchema>),
                     LogLevel.Debug,
@@ -540,7 +540,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.TypeSystemDirectiveApplied<GraphSchema>(null, null),
+                    (DefaultGraphEventLogger x) => x.TypeSystemDirectiveApplied<GraphSchema>(null, null),
                     false,
                     null,
                     null,
@@ -550,7 +550,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ExecutionDirectiveApplied<GraphSchema>(
+                    (DefaultGraphEventLogger x) => x.ExecutionDirectiveApplied<GraphSchema>(
                         new Mock<IDirective>().Object,
                         new Mock<IDocumentPart>().Object),
                     true,
@@ -562,7 +562,7 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphQLEventLogger x) => x.ExecutionDirectiveApplied<GraphSchema>(
+                    (DefaultGraphEventLogger x) => x.ExecutionDirectiveApplied<GraphSchema>(
                         new Mock<IDirective>().Object,
                         new Mock<IDocumentPart>().Object),
                     false,
@@ -574,7 +574,7 @@ namespace GraphQL.AspNet.Tests.Engine
 
         [TestCaseSource(nameof(_eventLoggerTestData))]
         public void GeneralTests(
-            Action<DefaultGraphQLEventLogger> testAction,
+            Action<DefaultGraphEventLogger> testAction,
             bool shouldBeLogged,
             Type recordedLogType = null,
             LogLevel? logLevel = null,
@@ -586,19 +586,19 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthorizationChallengeResult_Unauthorized()
         {
-            var context = new Mock<IGraphExecutionContext>();
-            var secRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var context = new Mock<IExecutionContext>();
+            var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IGraphOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
-            var failedAuthResult = new GraphSchemaItemSecurityChallengeContext(
+            var failedAuthResult = new SchemaItemSecurityChallengeContext(
                             context.Object,
                             secRequest.Object);
             failedAuthResult.Result = SchemaItemSecurityChallengeResult.Unauthorized("fail");
 
             this.ExecuteTest(
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthorizationChallengeResult(failedAuthResult),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthorizationChallengeResult(failedAuthResult),
                     true,
                     typeof(SchemaItemAuthorizationCompletedLogEntry),
                     LogLevel.Warning,
@@ -608,19 +608,19 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthorizationChallengeResult_Success()
         {
-            var context = new Mock<IGraphExecutionContext>();
-            var secRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var context = new Mock<IExecutionContext>();
+            var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IGraphOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
-            var nonFailResult = new GraphSchemaItemSecurityChallengeContext(
+            var nonFailResult = new SchemaItemSecurityChallengeContext(
                           context.Object,
                           secRequest.Object);
             nonFailResult.Result = SchemaItemSecurityChallengeResult.Success(new ClaimsPrincipal());
 
             this.ExecuteTest(
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthorizationChallengeResult(nonFailResult),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthorizationChallengeResult(nonFailResult),
                     true,
                     typeof(SchemaItemAuthorizationCompletedLogEntry),
                     LogLevel.Trace,
@@ -630,19 +630,19 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthorizationChallengeResult_Skip()
         {
-            var context = new Mock<IGraphExecutionContext>();
-            var secRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var context = new Mock<IExecutionContext>();
+            var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IGraphOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
-            var nonResult = new GraphSchemaItemSecurityChallengeContext(
+            var nonResult = new SchemaItemSecurityChallengeContext(
                           context.Object,
                           secRequest.Object);
             nonResult.Result = SchemaItemSecurityChallengeResult.Skipped(new ClaimsPrincipal());
 
             this.ExecuteTest(
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthorizationChallengeResult(nonResult),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthorizationChallengeResult(nonResult),
                     true,
                     typeof(SchemaItemAuthorizationCompletedLogEntry),
                     LogLevel.Trace,
@@ -652,19 +652,19 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_FailedResult_LoggedAtWarning()
         {
-            var context = new Mock<IGraphExecutionContext>();
-            var secRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var context = new Mock<IExecutionContext>();
+            var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IGraphOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
-            var nonResult = new GraphSchemaItemSecurityChallengeContext(
+            var nonResult = new SchemaItemSecurityChallengeContext(
                           context.Object,
                           secRequest.Object);
             nonResult.Result = SchemaItemSecurityChallengeResult.Fail("null");
 
             this.ExecuteTest(
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthenticationChallengeResult(nonResult, null),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallengeResult(nonResult, null),
                     true,
                     typeof(SchemaItemAuthenticationCompletedLogEntry),
                     LogLevel.Warning,
@@ -674,19 +674,19 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_SuccessResult_LoggedAtTrace()
         {
-            var context = new Mock<IGraphExecutionContext>();
-            var secRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var context = new Mock<IExecutionContext>();
+            var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IGraphOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
-            var nonResult = new GraphSchemaItemSecurityChallengeContext(
+            var nonResult = new SchemaItemSecurityChallengeContext(
                           context.Object,
                           secRequest.Object);
             nonResult.Result = SchemaItemSecurityChallengeResult.Success(new ClaimsPrincipal());
 
             this.ExecuteTest(
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthenticationChallengeResult(nonResult, null),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallengeResult(nonResult, null),
                     true,
                     typeof(SchemaItemAuthenticationCompletedLogEntry),
                     LogLevel.Trace,
@@ -697,7 +697,7 @@ namespace GraphQL.AspNet.Tests.Engine
         public void AuthenticationChallengeResult_NullEverything_LoggedAtWarning()
         {
             this.ExecuteTest(
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, null),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, null),
                     true,
                     typeof(SchemaItemAuthenticationCompletedLogEntry),
                     LogLevel.Warning,
@@ -707,17 +707,17 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_UnSucessfulAuthenticationResult_LoggedAtTrace()
         {
-            var context = new Mock<IGraphExecutionContext>();
-            var secRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var context = new Mock<IExecutionContext>();
+            var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IGraphOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
             var authResult = new Mock<IAuthenticationResult>();
             authResult.Setup(x => x.Suceeded).Returns(false);
 
             this.ExecuteTest(
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, authResult.Object),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, authResult.Object),
                     true,
                     typeof(SchemaItemAuthenticationCompletedLogEntry),
                     LogLevel.Warning,
@@ -727,17 +727,17 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_SucessfulAuthenticationResult_LoggedAtTrace()
         {
-            var context = new Mock<IGraphExecutionContext>();
-            var secRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var context = new Mock<IExecutionContext>();
+            var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IGraphOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
             var authResult = new Mock<IAuthenticationResult>();
             authResult.Setup(x => x.Suceeded).Returns(true);
 
             this.ExecuteTest(
-                    (DefaultGraphQLEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, authResult.Object),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, authResult.Object),
                     true,
                     typeof(SchemaItemAuthenticationCompletedLogEntry),
                     LogLevel.Trace,

@@ -13,11 +13,11 @@ namespace GraphQL.AspNet.Interfaces.Engine
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// An entity that can take a <see cref="IGraphOperationResult" /> and generate a graphql compliant
+    /// An entity that can take a <see cref="IQueryOperationResult" /> and generate a graphql compliant
     /// and formatted response to send to the requestor.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this writer is registered for.</typeparam>
-    public interface IGraphQueryResponseWriter<TSchema> : IGraphQueryResponseWriter
+    public interface IQueryResponseWriter<TSchema> : IQueryResponseWriter
          where TSchema : class, ISchema
     {
     }

@@ -57,9 +57,9 @@ namespace GraphQL.AspNet.Tests.Execution
 
             // a timeout should log the timeout operation as well as complete the request
             // with an error message
-            logger.Verify(x => x.RequestCancelled(It.IsAny<GraphQueryExecutionContext>()), Times.Never());
-            logger.Verify(x => x.RequestTimedOut(It.IsAny<GraphQueryExecutionContext>()), Times.Once());
-            logger.Verify(x => x.RequestCompleted(It.IsAny<GraphQueryExecutionContext>()), Times.Once());
+            logger.Verify(x => x.RequestCancelled(It.IsAny<QueryExecutionContext>()), Times.Never());
+            logger.Verify(x => x.RequestTimedOut(It.IsAny<QueryExecutionContext>()), Times.Once());
+            logger.Verify(x => x.RequestCompleted(It.IsAny<QueryExecutionContext>()), Times.Once());
         }
 
         [Test]
@@ -104,9 +104,9 @@ namespace GraphQL.AspNet.Tests.Execution
 
             // since the query started, the runtime should process the cancellation
             // but not a request completed
-            logger.Verify(x => x.RequestCancelled(It.IsAny<GraphQueryExecutionContext>()), Times.Once());
-            logger.Verify(x => x.RequestTimedOut(It.IsAny<GraphQueryExecutionContext>()), Times.Never());
-            logger.Verify(x => x.RequestCompleted(It.IsAny<GraphQueryExecutionContext>()), Times.Never());
+            logger.Verify(x => x.RequestCancelled(It.IsAny<QueryExecutionContext>()), Times.Once());
+            logger.Verify(x => x.RequestTimedOut(It.IsAny<QueryExecutionContext>()), Times.Never());
+            logger.Verify(x => x.RequestCompleted(It.IsAny<QueryExecutionContext>()), Times.Never());
         }
 
         [Test]
@@ -139,9 +139,9 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(0, context.Messages.Count); // no messages should be recorded
 
             // the runtime should never process the message so nothing can be logged.
-            logger.Verify(x => x.RequestCancelled(It.IsAny<GraphQueryExecutionContext>()), Times.Never());
-            logger.Verify(x => x.RequestTimedOut(It.IsAny<GraphQueryExecutionContext>()), Times.Never());
-            logger.Verify(x => x.RequestCompleted(It.IsAny<GraphQueryExecutionContext>()), Times.Never());
+            logger.Verify(x => x.RequestCancelled(It.IsAny<QueryExecutionContext>()), Times.Never());
+            logger.Verify(x => x.RequestTimedOut(It.IsAny<QueryExecutionContext>()), Times.Never());
+            logger.Verify(x => x.RequestCompleted(It.IsAny<QueryExecutionContext>()), Times.Never());
         }
     }
 }

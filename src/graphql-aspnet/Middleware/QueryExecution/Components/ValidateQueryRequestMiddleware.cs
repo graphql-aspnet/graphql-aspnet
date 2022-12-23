@@ -23,14 +23,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class ValidateQueryRequestMiddleware : IQueryExecutionMiddleware
     {
         /// <inheritdoc />
-        public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context?.ServiceProvider == null)
             {
                 throw new GraphExecutionException(
                     "No context and/or service provider was supplied on which to process the request",
                     SourceOrigin.None,
-                    new InvalidOperationException($"The {nameof(GraphQueryExecutionContext)} governing the execution of the pipeline was provided as null. Operation failed."));
+                    new InvalidOperationException($"The {nameof(QueryExecutionContext)} governing the execution of the pipeline was provided as null. Operation failed."));
             }
 
             if (context.OperationRequest == null || string.IsNullOrWhiteSpace(context.OperationRequest.QueryText))

@@ -31,21 +31,21 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNull(options, nameof(options));
 
             this.FieldExecutionPipeline = new SchemaPipelineBuilder<TSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext>(options, Constants.Pipelines.FIELD_EXECUTION_PIPELINE);
-            this.SchemaItemSecurityPipeline = new SchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext>(options, Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
-            this.QueryExecutionPipeline = new SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext>(options, Constants.Pipelines.QUERY_PIPELINE);
+            this.SchemaItemSecurityPipeline = new SchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, SchemaItemSecurityChallengeContext>(options, Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
+            this.QueryExecutionPipeline = new SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, QueryExecutionContext>(options, Constants.Pipelines.QUERY_PIPELINE);
             this.DirectiveExecutionPipeline = new SchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext>(options, Constants.Pipelines.DIRECTIVE_PIPELINE);
 
             this.Options = options;
         }
 
         /// <inheritdoc cref="ISchemaBuilder{TSchema}.QueryExecutionPipeline" />
-        public SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> QueryExecutionPipeline { get; }
+        public SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, QueryExecutionContext> QueryExecutionPipeline { get; }
 
         /// <inheritdoc cref="ISchemaBuilder{TSchema}.FieldExecutionPipeline" />
         public SchemaPipelineBuilder<TSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext> FieldExecutionPipeline { get; }
 
         /// <inheritdoc cref="ISchemaBuilder{TSchema}.SchemaItemSecurityPipeline" />
-        public SchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> SchemaItemSecurityPipeline { get; }
+        public SchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, SchemaItemSecurityChallengeContext> SchemaItemSecurityPipeline { get; }
 
         /// <inheritdoc cref="ISchemaBuilder{TSchema}.DirectiveExecutionPipeline" />
         public SchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> DirectiveExecutionPipeline { get; }
@@ -54,10 +54,10 @@ namespace GraphQL.AspNet.Configuration
         ISchemaPipelineBuilder<TSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext> ISchemaBuilder<TSchema>.FieldExecutionPipeline => this.FieldExecutionPipeline;
 
         /// <inheritdoc />
-        ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> ISchemaBuilder<TSchema>.SchemaItemSecurityPipeline => this.SchemaItemSecurityPipeline;
+        ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, SchemaItemSecurityChallengeContext> ISchemaBuilder<TSchema>.SchemaItemSecurityPipeline => this.SchemaItemSecurityPipeline;
 
         /// <inheritdoc />
-        ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> ISchemaBuilder<TSchema>.QueryExecutionPipeline => this.QueryExecutionPipeline;
+        ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, QueryExecutionContext> ISchemaBuilder<TSchema>.QueryExecutionPipeline => this.QueryExecutionPipeline;
 
         /// <inheritdoc />
         ISchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> ISchemaBuilder<TSchema>.DirectiveExecutionPipeline => this.DirectiveExecutionPipeline;

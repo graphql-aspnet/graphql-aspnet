@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <summary>
         /// Generates a controller template.
         /// </summary>
-        /// <typeparam name="TController">The type of the t controller.</typeparam>
+        /// <typeparam name="TController">The type of the controller to include.</typeparam>
         /// <returns>IGraphControllerTemplate.</returns>
         public static IGraphControllerTemplate CreateControllerTemplate<TController>()
              where TController : GraphController

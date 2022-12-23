@@ -50,8 +50,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task.</returns>
         public Task InvokeAsync(
-            GraphQueryExecutionContext context,
-            GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next,
+            QueryExecutionContext context,
+            GraphMiddlewareInvocationDelegate<QueryExecutionContext> next,
             CancellationToken cancelToken)
         {
             if (context?.Session?.Items != null

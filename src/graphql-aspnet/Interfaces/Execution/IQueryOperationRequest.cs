@@ -16,13 +16,19 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// <summary>
     /// A request to execute a query through the runtime.
     /// </summary>
-    public interface IGraphOperationRequest : IGraphQLRequest, IMetaDataContainer
+    public interface IQueryOperationRequest : IMetaDataContainer
     {
         /// <summary>
         /// Extracts a raw data package from this request.
         /// </summary>
         /// <returns>GraphQueryData.</returns>
         GraphQueryData ToDataPackage();
+
+        /// <summary>
+        /// Gets a globally unique identifier assigned to this request when it was created.
+        /// </summary>
+        /// <value>The identifier of this request.</value>
+        Guid Id { get; }
 
         /// <summary>
         /// Gets the name of the operation, from the supplied query document, to execute.

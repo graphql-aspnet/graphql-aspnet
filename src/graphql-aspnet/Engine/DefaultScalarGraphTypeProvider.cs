@@ -26,16 +26,16 @@ namespace GraphQL.AspNet.Engine
     /// A built-in, default collection of instances of <see cref="IScalarGraphType"/> objects;
     /// the most fundamental unit of graphql.
     /// </summary>
-    public class DefaultScalarTypeProvider : IScalarTypeProvider
+    public class DefaultScalarGraphTypeProvider : IScalarGraphTypeProvider
     {
         private readonly List<ScalarReference> _scalarReferences;
         private readonly IDictionary<Type, ScalarReference> _scalarsByConcreteType;
         private readonly IDictionary<string, ScalarReference> _scalarsByName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultScalarTypeProvider"/> class.
+        /// Initializes a new instance of the <see cref="DefaultScalarGraphTypeProvider"/> class.
         /// </summary>
-        public DefaultScalarTypeProvider()
+        public DefaultScalarGraphTypeProvider()
         {
             _scalarReferences = new List<ScalarReference>();
             _scalarsByConcreteType = new Dictionary<Type, ScalarReference>();

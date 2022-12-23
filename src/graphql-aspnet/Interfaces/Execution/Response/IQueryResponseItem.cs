@@ -9,15 +9,10 @@
 namespace GraphQL.AspNet.Interfaces.Execution.Response
 {
     /// <summary>
-    /// An interface representing a single scalar or enum value generated
-    /// in a graphql response.
+    /// A marker interface identifying a single item as being part of a generated
+    /// GraphQL response.
     /// </summary>
-    internal interface IResponseSingleValue : IResponseItem
+    public interface IQueryResponseItem
     {
-        /// <summary>
-        /// Gets the generated value for this single item instance.
-        /// </summary>
-        /// <value>The value.</value>
-        object Value { get; }
     }
 }

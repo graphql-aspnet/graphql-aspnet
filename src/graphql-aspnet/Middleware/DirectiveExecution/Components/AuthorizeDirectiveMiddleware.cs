@@ -27,13 +27,13 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
     public class AuthorizeDirectiveMiddleware<TSchema> : IDirectiveExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipeline<TSchema, GraphSchemaItemSecurityChallengeContext> _authPipeline;
+        private readonly ISchemaPipeline<TSchema, SchemaItemSecurityChallengeContext> _authPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeDirectiveMiddleware{TSchema}"/> class.
         /// </summary>
         /// <param name="authPipeline">The authentication pipeline.</param>
-        public AuthorizeDirectiveMiddleware(ISchemaPipeline<TSchema, GraphSchemaItemSecurityChallengeContext> authPipeline)
+        public AuthorizeDirectiveMiddleware(ISchemaPipeline<TSchema, SchemaItemSecurityChallengeContext> authPipeline)
         {
             _authPipeline = Validation.ThrowIfNullOrReturn(authPipeline, nameof(authPipeline));
         }
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
             {
                 // execute the authorization pipeline
                 var authRequest = new GraphSchemaItemSecurityRequest(context.Request);
-                var authContext = new GraphSchemaItemSecurityChallengeContext(context, authRequest);
+                var authContext = new SchemaItemSecurityChallengeContext(context, authRequest);
                 await _authPipeline.InvokeAsync(authContext, cancelToken).ConfigureAwait(false);
 
                 result = authContext.Result ?? SchemaItemSecurityChallengeResult.Default();

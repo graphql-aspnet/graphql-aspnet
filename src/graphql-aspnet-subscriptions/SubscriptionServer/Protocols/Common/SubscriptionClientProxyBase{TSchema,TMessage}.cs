@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.Common
         /// that identifies what series of operations this result belongs to.</param>
         /// <param name="operationResult">The data result to transmit.</param>
         /// <returns>TMessage.</returns>
-        protected abstract TMessage CreateDataMessage(string subscriptionId, IGraphOperationResult operationResult);
+        protected abstract TMessage CreateDataMessage(string subscriptionId, IQueryOperationResult operationResult);
 
         /// <summary>
         /// Creates a message consistant with this proxy's underlying protocol

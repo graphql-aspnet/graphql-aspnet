@@ -26,19 +26,19 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class AuthorizeQueryOperationMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipeline<TSchema, GraphSchemaItemSecurityChallengeContext> _authPipeline;
+        private readonly ISchemaPipeline<TSchema, SchemaItemSecurityChallengeContext> _authPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeQueryOperationMiddleware{TSchema}"/> class.
         /// </summary>
         /// <param name="authPipeline">The authentication pipeline.</param>
-        public AuthorizeQueryOperationMiddleware(ISchemaPipeline<TSchema, GraphSchemaItemSecurityChallengeContext> authPipeline)
+        public AuthorizeQueryOperationMiddleware(ISchemaPipeline<TSchema, SchemaItemSecurityChallengeContext> authPipeline)
         {
             _authPipeline = Validation.ThrowIfNullOrReturn(authPipeline, nameof(authPipeline));
         }
 
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.IsValid && context.Operation != null)
             {
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <param name="context">The primary query context.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns><c>true</c> if authorization was successful, otherwise false.</returns>
-        private async Task<bool> AuthorizeOperationAsync(GraphQueryExecutionContext context, CancellationToken cancelToken)
+        private async Task<bool> AuthorizeOperationAsync(QueryExecutionContext context, CancellationToken cancelToken)
         {
             var authTasks = new List<Task>();
             bool isAuthorized = true;
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     continue;
 
                 var authRequest = new GraphSchemaItemSecurityRequest(securePart);
-                var authContext = new GraphSchemaItemSecurityChallengeContext(context, authRequest);
+                var authContext = new SchemaItemSecurityChallengeContext(context, authRequest);
 
                 var pipelineTask = _authPipeline.InvokeAsync(authContext, cancelToken)
                     .ContinueWith(

@@ -21,16 +21,16 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A context for handling a security challenge through the authorization pipeline.
     /// </summary>
     [DebuggerDisplay("Auth Context, Item: {SecureSchemaItem.Route.Path}")]
-    public class GraphSchemaItemSecurityChallengeContext : GraphExecutionContextBase
+    public class SchemaItemSecurityChallengeContext : ExecutionContextBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityChallengeContext" /> class.
+        /// Initializes a new instance of the <see cref="SchemaItemSecurityChallengeContext" /> class.
         /// </summary>
         /// <param name="parentContext">The parent context which created this instance.</param>
         /// <param name="authRequest">The auth request to process.</param>
-        public GraphSchemaItemSecurityChallengeContext(
-            IGraphExecutionContext parentContext,
-            IGraphSchemaItemSecurityRequest authRequest)
+        public SchemaItemSecurityChallengeContext(
+            IExecutionContext parentContext,
+            ISchemaItemSecurityRequest authRequest)
              : base(parentContext)
         {
             this.Request = Validation.ThrowIfNullOrReturn(authRequest, nameof(authRequest));
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets the request that is being passed through this pipeline.
         /// </summary>
         /// <value>The request.</value>
-        public IGraphSchemaItemSecurityRequest Request { get; }
+        public ISchemaItemSecurityRequest Request { get; }
 
         /// <summary>
         /// Gets or sets the final response generated from a middleware component

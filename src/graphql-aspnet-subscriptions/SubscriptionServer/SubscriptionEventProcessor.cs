@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// <param name="subscription">The subscription to process the event against.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>GraphQueryExecutionContext.</returns>
-        public async Task<GraphQueryExecutionContext> ProcessEventAsync(
+        public async Task<QueryExecutionContext> ProcessEventAsync(
             IUserSecurityContext securityContext,
             SubscriptionEvent evt,
             ISubscription<TSchema> subscription,
@@ -67,16 +67,16 @@ namespace GraphQL.AspNet.SubscriptionServer
             var runtime = _serviceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
             var schema = _serviceProvider.GetRequiredService<TSchema>();
 
-            IGraphQueryExecutionMetrics metricsPackage = null;
+            IQueryExecutionMetrics metricsPackage = null;
             IGraphEventLogger logger = _serviceProvider.GetService<IGraphEventLogger>();
 
             if (schema.Configuration.ExecutionOptions.EnableMetrics)
             {
-                var factory = _serviceProvider.GetRequiredService<IGraphQueryExecutionMetricsFactory<TSchema>>();
+                var factory = _serviceProvider.GetRequiredService<IQueryExecutionMetricsFactory<TSchema>>();
                 metricsPackage = factory.CreateMetricsPackage();
             }
 
-            var context = new GraphQueryExecutionContext(
+            var context = new QueryExecutionContext(
                 runtime.CreateRequest(subscription.QueryData),
                 _serviceProvider,
                 new QuerySession(),

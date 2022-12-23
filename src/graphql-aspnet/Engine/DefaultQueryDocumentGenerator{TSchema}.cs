@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Engine
     /// to generate a graphql result.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this generator is registered for.</typeparam>
-    public class DefaultGraphQueryDocumentGenerator<TSchema> : IGraphQueryDocumentGenerator<TSchema>
+    public class DefaultQueryDocumentGenerator<TSchema> : IQueryDocumentGenerator<TSchema>
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
@@ -33,10 +33,10 @@ namespace GraphQL.AspNet.Engine
         private readonly GraphQLParser _parser;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultGraphQueryDocumentGenerator{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="DefaultQueryDocumentGenerator{TSchema}" /> class.
         /// </summary>
-        /// <param name="schema">The schema to use when generating validating a document.</param>
-        public DefaultGraphQueryDocumentGenerator(TSchema schema)
+        /// <param name="schema">The schema to use when generating a document.</param>
+        public DefaultQueryDocumentGenerator(TSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _nodeProcessor = new DocumentConstructionRuleProcessor();
@@ -44,15 +44,14 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual IGraphQueryDocument CreateDocument(ReadOnlySpan<char> queryText)
+        public virtual IQueryDocument CreateDocument(ReadOnlySpan<char> queryText)
         {
             var sourceText = new SourceText(queryText);
-            var syntaxTree = SyntaxTree.FromDocumentRoot();
+            var syntaxTree = SyntaxTree.WithDocumentRoot();
 
             try
             {
-                _parser.CreateSyntaxTree(ref syntaxTree, ref sourceText);
-                Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
+                _parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
 
                 var document = this.CreateNewDocumentInstance();
                 this.FillDocument(document, syntaxTree, sourceText);
@@ -65,7 +64,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual bool ValidateDocument(IGraphQueryDocument document)
+        public virtual bool ValidateDocument(IQueryDocument document)
         {
             Validation.ThrowIfNull(document, nameof(document));
 
@@ -76,12 +75,12 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <summary>
-        /// A factory method to generate a new <see cref="IGraphQueryDocument"/>.
+        /// A factory method to generate a new <see cref="IQueryDocument"/>.
         /// This method should just instantiate a document, not perform any work
         /// against it.
         /// </summary>
-        /// <returns>IGraphQueryDocument.</returns>
-        protected virtual IGraphQueryDocument CreateNewDocumentInstance()
+        /// <returns>A new instance of a query document.</returns>
+        protected virtual IQueryDocument CreateNewDocumentInstance()
         {
             return new QueryDocument();
         }
@@ -94,7 +93,7 @@ namespace GraphQL.AspNet.Engine
         /// <param name="syntaxTree">The syntax tree to convert into document parts.</param>
         /// <param name="sourceText">The source text to extract referenced
         /// values from.</param>
-        private void FillDocument(IGraphQueryDocument document, SyntaxTree syntaxTree, SourceText sourceText)
+        private void FillDocument(IQueryDocument document, SyntaxTree syntaxTree, SourceText sourceText)
         {
             Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
             Validation.ThrowIfNull(document, nameof(document));

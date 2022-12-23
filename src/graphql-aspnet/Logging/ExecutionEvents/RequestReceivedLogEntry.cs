@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Initializes a new instance of the <see cref="RequestReceivedLogEntry" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public RequestReceivedLogEntry(GraphQueryExecutionContext context)
+        public RequestReceivedLogEntry(QueryExecutionContext context)
             : base(LogEventIds.RequestReceived)
         {
             this.OperationRequestId = context?.OperationRequest?.Id.ToString();

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// to produce a collection of metrics describing a query's execution path and timing information. The
     /// class implementing this interface MUST BE thread-safe as multiple resolvers will be started simultaniously.
     /// </summary>
-    public interface IGraphQueryExecutionMetrics
+    public interface IQueryExecutionMetrics
     {
         /// <summary>
         /// The first method called when the query first begins processing. This method
@@ -66,6 +66,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// It is recommended to return a single toplevel key containing the entirety of your metrics data.
         /// </summary>
         /// <returns>IResponseFieldSet.</returns>
-        IResponseFieldSet GenerateResult();
+        IQueryResponseFieldSet GenerateResult();
     }
 }

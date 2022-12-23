@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Engine
                     name
                 }";
 
-            var generator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var generator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = generator.CreateDocument(text.AsSpan());
 
             var spread = Enumerable.OfType<IFragmentSpreadDocumentPart>(Enumerable.OfType<IFieldDocumentPart>(document.Operations[string.Empty].FieldSelectionSet
@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Engine
                     name
                 }";
 
-            var generator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var generator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = generator.CreateDocument(text.AsSpan());
 
             var spread = Enumerable.OfType<IFragmentSpreadDocumentPart>(Enumerable.OfType<IFieldDocumentPart>(document.Operations[string.Empty].FieldSelectionSet
@@ -117,7 +117,7 @@ namespace GraphQL.AspNet.Tests.Engine
                         flavor
                     }";
 
-            var generator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var generator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = generator.CreateDocument(text.AsSpan());
 
             var retrieveDonut = document.Operations[0]

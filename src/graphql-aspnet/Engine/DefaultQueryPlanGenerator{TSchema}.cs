@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Engine
     /// executable operatiopn by a the query pipeline.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this plan generator is registered for.</typeparam>
-    public class DefaultGraphQueryPlanGenerator<TSchema> : IGraphQueryPlanGenerator<TSchema>
+    public class DefaultQueryPlanGenerator<TSchema> : IQueryPlanGenerator<TSchema>
         where TSchema : class, ISchema
     {
         private readonly ISchema _schema;
@@ -31,14 +31,14 @@ namespace GraphQL.AspNet.Engine
         private readonly IQueryOperationDepthCalculator<TSchema> _depthCalculator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultGraphQueryPlanGenerator{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="DefaultQueryPlanGenerator{TSchema}" /> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <param name="depthCalculator">The depth calculator for this plan generator to use when
         /// detereming node depths in generated query documents.</param>
         /// <param name="complexityCalculator">The complexity calculator for this plan generator to use
         /// when computing complexity scores for query documents.</param>
-        public DefaultGraphQueryPlanGenerator(
+        public DefaultQueryPlanGenerator(
             TSchema schema,
             IQueryOperationDepthCalculator<TSchema> depthCalculator,
             IQueryOperationComplexityCalculator<TSchema> complexityCalculator)

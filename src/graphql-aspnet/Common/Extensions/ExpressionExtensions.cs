@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Common.Extensions
     /// <summary>
     /// Extension methods for working with Expression trees.
     /// </summary>
-    public static class ExpressionExtensions
+    internal static class ExpressionExtensions
     {
         /// <summary>
         /// Retrieves the Type declared <see cref="PropertyInfo"/> expressed by the

@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Execution.Response
     /// An instance of a resolved scalar or enum included in a response package.
     /// </summary>
     [DebuggerDisplay("Value = {Value}")]
-    internal class ResponseSingleValue : IResponseSingleValue
+    internal class ResponseSingleValue : IQueryResponseSingleValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponseSingleValue"/> class.

@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="baseRequest">Another formed request from
         /// which this web request should be generated.</param>
         /// <param name="context">The http context that originated this operation request.</param>
-        public GraphOperationWebRequest(IGraphOperationRequest baseRequest, HttpContext context)
+        public GraphOperationWebRequest(IQueryOperationRequest baseRequest, HttpContext context)
             : base(baseRequest)
         {
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));

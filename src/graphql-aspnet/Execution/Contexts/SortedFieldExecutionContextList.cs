@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
-    /// A scaled down, customized priority queue for ordering <see cref="IGraphExecutionContext"/>
+    /// A scaled down, customized priority queue for ordering <see cref="IExecutionContext"/>
     /// for execution.
     /// </summary>
     public class SortedFieldExecutionContextList

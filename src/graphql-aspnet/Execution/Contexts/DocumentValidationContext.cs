@@ -24,14 +24,14 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A context used to validate all the created parts of a document generated during construction.
     /// </summary>
     [DebuggerDisplay("Part: {ActivePart.PartType}")]
-    public class DocumentValidationContext : IChildContextGenerator<DocumentValidationContext>
+    public class DocumentValidationContext : IRuleProcessorChildContextGenerator<DocumentValidationContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentValidationContext" /> class.
         /// </summary>
         /// <param name="targetSchema">The target schema the query document is validated against.</param>
         /// <param name="queryDocument">The query document to validate.</param>
-        public DocumentValidationContext(ISchema targetSchema, IGraphQueryDocument queryDocument)
+        public DocumentValidationContext(ISchema targetSchema, IQueryDocument queryDocument)
         {
             this.Schema = Validation.ThrowIfNullOrReturn(targetSchema, nameof(targetSchema));
             this.ActivePart = Validation.ThrowIfNullOrReturn(queryDocument, nameof(queryDocument));
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets a reference to the document being validated.
         /// </summary>
         /// <value>The document.</value>
-        public IGraphQueryDocument Document { get; }
+        public IQueryDocument Document { get; }
 
         /// <summary>
         /// Gets a metadata object (by rule id) to carry information

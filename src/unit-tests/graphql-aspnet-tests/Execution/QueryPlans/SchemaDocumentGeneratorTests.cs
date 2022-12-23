@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     [TestFixture]
     public class SchemaDocumentGeneratorTests
     {
-        private IGraphQueryDocument CreateDocument(string text, out ISchema schema)
+        private IQueryDocument CreateDocument(string text, out ISchema schema)
         {
             var server = new TestServerBuilder()
                 .AddType<TestUserController>()
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             return server.CreateDocument(text);
         }
 
-        private IGraphQueryDocument CreateDocument(string text)
+        private IQueryDocument CreateDocument(string text)
         {
             return this.CreateDocument(text, out var _);
         }

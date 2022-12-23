@@ -30,13 +30,13 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         public async Task NoItemsOnContext_YieldsNothingPublished()
         {
             var nextCalled = false;
-            Task CallNext(GraphQueryExecutionContext context, CancellationToken token)
+            Task CallNext(QueryExecutionContext context, CancellationToken token)
             {
                 nextCalled = true;
                 return Task.CompletedTask;
             }
 
-            var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
+            var next = new GraphMiddlewareInvocationDelegate<QueryExecutionContext>(CallNext);
             var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
@@ -54,13 +54,13 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         public async Task EmptyCollectionOnContext_YieldsNothingPublished()
         {
             var nextCalled = false;
-            Task CallNext(GraphQueryExecutionContext context, CancellationToken token)
+            Task CallNext(QueryExecutionContext context, CancellationToken token)
             {
                 nextCalled = true;
                 return Task.CompletedTask;
             }
 
-            var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
+            var next = new GraphMiddlewareInvocationDelegate<QueryExecutionContext>(CallNext);
             var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
@@ -80,12 +80,12 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         [Test]
         public void CollectionKeyIsNotACollection_ThrowsException()
         {
-            Task CallNext(GraphQueryExecutionContext context, CancellationToken token)
+            Task CallNext(QueryExecutionContext context, CancellationToken token)
             {
                 return Task.CompletedTask;
             }
 
-            var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
+            var next = new GraphMiddlewareInvocationDelegate<QueryExecutionContext>(CallNext);
             var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
@@ -108,13 +108,13 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         public async Task QueuedEventProxy_IsPublishedToEventQueue()
         {
             var nextCalled = false;
-            Task CallNext(GraphQueryExecutionContext context, CancellationToken token)
+            Task CallNext(QueryExecutionContext context, CancellationToken token)
             {
                 nextCalled = true;
                 return Task.CompletedTask;
             }
 
-            var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
+            var next = new GraphMiddlewareInvocationDelegate<QueryExecutionContext>(CallNext);
             var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 

@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Execution.Parsing
         /// </summary>
         /// <param name="syntaxTree">The syntax tree to fill.</param>
         /// <param name="sourceText">The source text to parse and query a tree from.</param>
-        public void CreateSyntaxTree(ref SyntaxTree syntaxTree, ref SourceText sourceText)
+        public void FillSyntaxTree(ref SyntaxTree syntaxTree, ref SourceText sourceText)
         {
             // if an exception occurs during parsing just let it bubble up
             // the owner of the parse request will handle it accordingly

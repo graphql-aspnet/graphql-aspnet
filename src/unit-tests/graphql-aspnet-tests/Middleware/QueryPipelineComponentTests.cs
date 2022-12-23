@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Tests.Middleware
     [TestFixture]
     public class QueryPipelineComponentTests
     {
-        public Task EmptyNextDelegate(GraphQueryExecutionContext context, CancellationToken token)
+        public Task EmptyNextDelegate(QueryExecutionContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
@@ -44,9 +44,9 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task ValidateRequestMiddleware_EmptyQueryText_YieldsCriticalMessage()
         {
             var component = new ValidateQueryRequestMiddleware();
-            var req = new Mock<IGraphOperationRequest>();
+            var req = new Mock<IQueryOperationRequest>();
             req.Setup(x => x.QueryText).Returns(null as string);
-            var context = new GraphQueryExecutionContext(
+            var context = new QueryExecutionContext(
                 req.Object,
                 new Mock<IServiceProvider>().Object,
                 new Mock<IQuerySession>().Object);

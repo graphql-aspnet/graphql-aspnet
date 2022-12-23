@@ -9,17 +9,16 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution.Response
 {
-    using System.Collections.Generic;
-
     /// <summary>
-    /// Represents a dictionary of nested response items.
+    /// An interface representing a single scalar or enum value
+    /// to be included in a GraphQL response.
     /// </summary>
-    public interface IResponseFieldSet : IResponseItem
+    internal interface IQueryResponseSingleValue : IQueryResponseItem
     {
         /// <summary>
-        /// Gets the dictionary of fields defined for this response item.
+        /// Gets the generated value for this single item instance.
         /// </summary>
-        /// <value>The fields.</value>
-        IReadOnlyDictionary<string, IResponseItem> Fields { get; }
+        /// <value>A value to be included in a query response.</value>
+        object Value { get; }
     }
 }

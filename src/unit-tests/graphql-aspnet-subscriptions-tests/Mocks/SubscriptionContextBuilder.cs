@@ -31,12 +31,12 @@ namespace GraphQL.Subscriptions.Tests.Mocks
     public class SubscriptionContextBuilder
     {
         private readonly IUserSecurityContext _seceurityContext;
-        private readonly Mock<IGraphOperationRequest> _mockRequest;
+        private readonly Mock<IQueryOperationRequest> _mockRequest;
 
         private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
 
         private IServiceProvider _serviceProvider;
-        private IGraphQueryExecutionMetrics _metrics;
+        private IQueryExecutionMetrics _metrics;
         private IGraphEventLogger _eventLogger;
         private ISubscriptionClientProxy _client;
 
@@ -54,7 +54,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
             _client = client;
             _serviceProvider = serviceProvider;
             _seceurityContext = securityContext;
-            _mockRequest = new Mock<IGraphOperationRequest>();
+            _mockRequest = new Mock<IQueryOperationRequest>();
             _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
 
             _mockRequest.Setup(x => x.ToDataPackage()).Returns(
@@ -94,7 +94,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
         /// </summary>
         /// <param name="metricsPackage">The metrics package.</param>
         /// <returns>SubscriptionContextBuilder.</returns>
-        public SubscriptionContextBuilder AddMetrics(IGraphQueryExecutionMetrics metricsPackage)
+        public SubscriptionContextBuilder AddMetrics(IQueryExecutionMetrics metricsPackage)
         {
             _metrics = metricsPackage;
             return this;
@@ -145,7 +145,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
             var metaData = new MetaDataCollection();
 
             // unchangable items about the request
-            var request = new Mock<IGraphOperationRequest>();
+            var request = new Mock<IQueryOperationRequest>();
 
             // updateable items about the request
             var context = new SubcriptionGraphQueryExecutionContext(
@@ -173,6 +173,6 @@ namespace GraphQL.Subscriptions.Tests.Mocks
         /// Gets the mocked operation request as its currently defined by this builder.
         /// </summary>
         /// <value>The operation request.</value>
-        public IGraphOperationRequest OperationRequest => _mockRequest.Object;
+        public IQueryOperationRequest OperationRequest => _mockRequest.Object;
     }
 }

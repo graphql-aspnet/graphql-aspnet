@@ -14,19 +14,19 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// <summary>
     /// Represents a generated response to a query.
     /// </summary>
-    public interface IGraphOperationResult
+    public interface IQueryOperationResult
     {
         /// <summary>
         /// Gets the original operation request that was executed to produce this result.
         /// </summary>
         /// <value>The request.</value>
-        IGraphOperationRequest Request { get; }
+        IQueryOperationRequest Request { get; }
 
         /// <summary>
         /// Gets the resultant data item that was generated as a result of completing the operation.
         /// </summary>
         /// <value>The data item that was generated.</value>
-        IResponseFieldSet Data { get; }
+        IQueryResponseFieldSet Data { get; }
 
         /// <summary>
         /// Gets the sum total collection of messages generated at the various executed phases of
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the collection of metrics that were generated during the execution of the operation.
         /// </summary>
         /// <value>The metrics.</value>
-        IGraphQueryExecutionMetrics Metrics { get; }
+        IQueryExecutionMetrics Metrics { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether any exceptions thrown as a result of a graph operation

@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A validation context used to perform final validation of this context and all its children.
     /// </summary>
     [DebuggerDisplay("{DataItem}")]
-    public class FieldValidationContext : IChildContextGenerator<FieldValidationContext>
+    public class FieldValidationContext : IRuleProcessorChildContextGenerator<FieldValidationContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldValidationContext" /> class.

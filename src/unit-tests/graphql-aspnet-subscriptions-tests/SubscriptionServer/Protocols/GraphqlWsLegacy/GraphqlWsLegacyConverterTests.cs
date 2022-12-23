@@ -190,7 +190,7 @@ namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlWsLega
 
             var converter = new GraphqlWsLegacyServerDataMessageConverter(
                 server.Schema,
-                server.ServiceProvider.GetRequiredService<IGraphQueryResponseWriter<GraphSchema>>());
+                server.ServiceProvider.GetRequiredService<IQueryResponseWriter<GraphSchema>>());
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);

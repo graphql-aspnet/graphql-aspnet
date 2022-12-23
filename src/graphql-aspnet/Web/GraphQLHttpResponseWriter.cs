@@ -18,8 +18,8 @@ namespace GraphQL.AspNet.Web
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// A helper class that will translate <see cref="IGraphOperationResult"/> into a properly structured <see cref="HttpResponse"/>
-    /// using the provided flags and DI retrieved <see cref="IGraphQueryResponseWriter"/>.
+    /// A helper class that will translate <see cref="IQueryOperationResult"/> into a properly structured <see cref="HttpResponse"/>
+    /// using the provided flags and DI retrieved <see cref="IQueryResponseWriter"/>.
     /// </summary>
     public class GraphQLHttpResponseWriter
     {
@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Web
         /// When exceptions are exposed, this is the text phrase sent to the client as the complete response when no graphql
         /// writer is supplied to this action result.
         /// </summary>
-        public const string NO_WRITER_WITH_DETAIL = "Invalid result. No " + nameof(IGraphQueryResponseWriter) + " was " +
+        public const string NO_WRITER_WITH_DETAIL = "Invalid result. No " + nameof(IQueryResponseWriter) + " was " +
                                                     "provided so the resultant data could not be serialized.";
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Web
         /// When exceptions are exposed, this is the text phrase sent to the client as the complete response when no graphql
         /// operation result is supplied to this action result.
         /// </summary>
-        public const string NO_RESULT_WITH_DETAIL = "Invalid result. The " + nameof(IGraphOperationResult) + " passed to the " +
+        public const string NO_RESULT_WITH_DETAIL = "Invalid result. The " + nameof(IQueryOperationResult) + " passed to the " +
                                                     "the " + nameof(GraphQLHttpResponseWriter) + " was null.";
 
         /// <summary>
@@ -49,8 +49,8 @@ namespace GraphQL.AspNet.Web
         /// </summary>
         public const string NO_RESULT_NO_DETAIL = "An error occured processing your graphql query. Contact an administrator.";
 
-        private readonly IGraphOperationResult _result;
-        private readonly IGraphQueryResponseWriter _documentWriter;
+        private readonly IQueryOperationResult _result;
+        private readonly IQueryResponseWriter _documentWriter;
         private readonly ResponseOptions _options;
 
         /// <summary>
@@ -61,8 +61,8 @@ namespace GraphQL.AspNet.Web
         /// <param name="exposeMetrics">if set to <c>true</c> any metrics contained on the result will be exposed and sent to the requestor.</param>
         /// <param name="exposeExceptions">if set to <c>true</c> exceptions will be writen to the response stream; otherwise false.</param>
         public GraphQLHttpResponseWriter(
-            IGraphOperationResult result,
-            IGraphQueryResponseWriter documentWriter,
+            IQueryOperationResult result,
+            IQueryResponseWriter documentWriter,
             bool exposeMetrics,
             bool exposeExceptions)
         {

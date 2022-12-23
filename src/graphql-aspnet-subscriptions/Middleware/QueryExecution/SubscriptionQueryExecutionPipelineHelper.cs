@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// </summary>
         /// <param name="pipelineBuilder">The pipeline builder.</param>
         public SubscriptionQueryExecutionPipelineHelper(
-            ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> pipelineBuilder)
+            ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, QueryExecutionContext> pipelineBuilder)
             : base(pipelineBuilder)
         {
         }

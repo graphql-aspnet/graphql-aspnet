@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Common.Extensions
     /// <para>A collection of helper methods for dealing with enumerations.</para>
     /// <para>Many have been adapted from Jeff Mercado's solution: https://stackoverflow.com/a/4171168 .</para>
     /// </summary>
-    public static class EnumExtensions
+    internal static class EnumExtensions
     {
         /// <summary>
         /// <para>Gets the flags that are set on the enum value. Composite flags (those "or'd" together) are held

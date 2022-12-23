@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine
         private bool ProcessChildContexts(TContext parentContext, int parentDepth)
         {
             var completedAllSteps = true;
-            if (parentContext is IChildContextGenerator<TContext> childGenerator)
+            if (parentContext is IRuleProcessorChildContextGenerator<TContext> childGenerator)
             {
                 foreach (var childContext in childGenerator.CreateChildContexts())
                     completedAllSteps = this.ProcessContext(childContext, parentDepth + 1) && completedAllSteps;

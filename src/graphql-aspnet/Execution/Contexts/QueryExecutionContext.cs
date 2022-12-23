@@ -29,10 +29,10 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// through asp.net.
     /// </remarks>
     [DebuggerDisplay("IsValid = {IsValid} (Messages = {Messages.Count})")]
-    public class GraphQueryExecutionContext : GraphExecutionContextBase
+    public class QueryExecutionContext : ExecutionContextBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphQueryExecutionContext" /> class.
+        /// Initializes a new instance of the <see cref="QueryExecutionContext" /> class.
         /// </summary>
         /// <param name="request">The request to be processed through the query pipeline.</param>
         /// <param name="serviceProvider">The service provider passed on the HttpContext.</param>
@@ -46,13 +46,13 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// If not supplied, no profiling will take place.</param>
         /// <param name="logger">(optional) The logger instance to record events related to this context.
         /// If not provided, no logging events will be recorded.</param>
-        public GraphQueryExecutionContext(
-            IGraphOperationRequest request,
+        public QueryExecutionContext(
+            IQueryOperationRequest request,
             IServiceProvider serviceProvider,
             IQuerySession querySession,
             MetaDataCollection items = null,
             IUserSecurityContext securityContext = null,
-            IGraphQueryExecutionMetrics metrics = null,
+            IQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null)
             : base(request, serviceProvider, querySession, securityContext, items, metrics, logger)
         {
@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets or sets the operation result created during the query pipeline execution.
         /// </summary>
         /// <value>The final result containing the data produced during the query.</value>
-        public IGraphOperationResult Result { get; set; }
+        public IQueryOperationResult Result { get; set; }
 
         /// <summary>
         /// Gets or sets the active query plan this context will use to complete the request.
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// supplied by the user on the request.
         /// </summary>
         /// <value>The completed query document.</value>
-        public IGraphQueryDocument QueryDocument { get; set; }
+        public IQueryDocument QueryDocument { get; set; }
 
         /// <summary>
         /// Gets or sets the chosen operation, extracted from the <see cref="QueryDocument"/> to

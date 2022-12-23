@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
     /// targeting a specific schema.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this generator is registered for.</typeparam>
-    public interface IGraphQueryDocumentGenerator<TSchema>
+    public interface IQueryDocumentGenerator<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// </summary>
         /// <param name="queryText">The raw query text from which to generate a document.</param>
         /// <returns>IGraphQueryDocument.</returns>
-        IGraphQueryDocument CreateDocument(ReadOnlySpan<char> queryText);
+        IQueryDocument CreateDocument(ReadOnlySpan<char> queryText);
 
         /// <summary>
         /// Validates a query document as being valid against the given <typeparamref name="TSchema"/>.
@@ -39,6 +39,6 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// Inspect the document's messages collection for any validation failures.</remarks>
         /// <param name="document">The document.</param>
         /// <returns><c>true</c> if the validation completed, <c>false</c> otherwise.</returns>
-        bool ValidateDocument(IGraphQueryDocument document);
+        bool ValidateDocument(IQueryDocument document);
     }
 }

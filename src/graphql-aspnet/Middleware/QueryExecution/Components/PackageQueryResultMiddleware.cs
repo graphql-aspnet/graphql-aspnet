@@ -24,10 +24,10 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class PackageQueryResultMiddleware : IQueryExecutionMiddleware
     {
         /// <inheritdoc />
-        public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             // create and attach the result
-            IResponseFieldSet fieldSet = null;
+            IQueryResponseFieldSet fieldSet = null;
             if (context.FieldResults != null && context.FieldResults.Any())
             {
                 fieldSet = this.CreateFinalDictionary(context);
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// </summary>
         /// <param name="context">The execution context to extract reponse info from.</param>
         /// <returns>GraphQL.AspNet.Interfaces.Response.IResponseFieldSet.</returns>
-        private IResponseFieldSet CreateFinalDictionary(GraphQueryExecutionContext context)
+        private IQueryResponseFieldSet CreateFinalDictionary(QueryExecutionContext context)
         {
             var topFieldResponses = new ResponseFieldSet();
             foreach (var fieldResult in context.FieldResults)

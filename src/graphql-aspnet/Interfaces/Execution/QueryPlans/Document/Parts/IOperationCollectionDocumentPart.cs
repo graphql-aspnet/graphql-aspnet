@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts
         /// Gets the query document that owns this collection of operations.
         /// </summary>
         /// <value>The owner.</value>
-        IGraphQueryDocument Owner { get; }
+        IQueryDocument Owner { get; }
 
         /// <summary>
         /// Gets the <see cref="IOperationDocumentPart"/> at the specified index.

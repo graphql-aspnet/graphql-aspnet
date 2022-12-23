@@ -29,13 +29,13 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="queryData">The data package contaning the raw values
         /// that need to be packaged. When null an empty request is generated.</param>
         /// <returns>A fully qualified request context that can be executed.</returns>
-        IGraphOperationRequest CreateRequest(GraphQueryData queryData = null);
+        IQueryOperationRequest CreateRequest(GraphQueryData queryData = null);
 
         /// <summary>
         /// Creates a new metrics package using the default means available to this runtime instance.
         /// </summary>
         /// <returns>Task&lt;IGraphQueryExecutionMetrics&gt;.</returns>
-        IGraphQueryExecutionMetrics CreateMetricsPackage();
+        IQueryExecutionMetrics CreateMetricsPackage();
 
         /// <summary>
         /// Accepts a query context to execute and renders the result.
@@ -43,8 +43,8 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="context">The execution context to process.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
-        Task<IGraphOperationResult> ExecuteRequestAsync(
-            GraphQueryExecutionContext context,
+        Task<IQueryOperationResult> ExecuteRequestAsync(
+            QueryExecutionContext context,
             CancellationToken cancelToken = default);
 
         /// <summary>
@@ -60,11 +60,11 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// one will be generated if not supplied.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
-        Task<IGraphOperationResult> ExecuteRequestAsync(
+        Task<IQueryOperationResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
-            IGraphOperationRequest request,
+            IQueryOperationRequest request,
             IUserSecurityContext securityContext = null,
-            IGraphQueryExecutionMetrics metricsPackage = null,
+            IQueryExecutionMetrics metricsPackage = null,
             IQuerySession session = null,
             CancellationToken cancelToken = default);
 
@@ -80,9 +80,9 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// metrics package factory for the runtime.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
-        Task<IGraphOperationResult> ExecuteRequestAsync(
+        Task<IQueryOperationResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
-            IGraphOperationRequest request,
+            IQueryOperationRequest request,
             IUserSecurityContext securityContext = null,
             bool enableMetrics = false,
             CancellationToken cancelToken = default);
@@ -95,9 +95,9 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="request">The primary data request.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
-        Task<IGraphOperationResult> ExecuteRequestAsync(
+        Task<IQueryOperationResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
-            IGraphOperationRequest request,
+            IQueryOperationRequest request,
             CancellationToken cancelToken = default);
     }
 }

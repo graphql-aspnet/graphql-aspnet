@@ -39,7 +39,7 @@ namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlWsLega
             collection.AddSingleton(new SubscriptionServerOptions<GraphSchema>());
             collection.AddSingleton(new Mock<IGraphEventLogger>().Object);
             collection.AddSingleton(new Mock<ISubscriptionEventRouter>().Object);
-            collection.AddSingleton(new Mock<IGraphQueryResponseWriter<GraphSchema>>().Object);
+            collection.AddSingleton(new Mock<IQueryResponseWriter<GraphSchema>>().Object);
 
             var connect = new Mock<IClientConnection>();
             connect.Setup(x => x.ServiceProvider).Returns(collection.BuildServiceProvider());

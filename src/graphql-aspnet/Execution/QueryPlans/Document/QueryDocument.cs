@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
     /// <summary>
     /// A document representing the query text as supplied by the user matched against a schema.
     /// </summary>
-    internal class QueryDocument : IGraphQueryDocument, IDecdendentDocumentPartSubscriber
+    internal class QueryDocument : IQueryDocument, IDecdendentDocumentPartSubscriber
     {
         private readonly DocumentOperationCollection _operations;
         private readonly DocumentNamedFragmentCollection _fragmentCollection;

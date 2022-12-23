@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// Requests implementing this interface declare that they originate from an http request and
     /// contain a valid <see cref="Microsoft.AspNetCore.Http.HttpContext"/>.
     /// </summary>
-    public interface IGraphOperationWebRequest : IGraphOperationRequest
+    public interface IGraphOperationWebRequest : IQueryOperationRequest
     {
         /// <summary>
         /// Gets the <see cref="Microsoft.AspNetCore.Http.HttpContext"/> from which this operation request was generated.

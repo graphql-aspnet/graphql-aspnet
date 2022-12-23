@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Message
     /// </summary>
     internal class GqltwsServerDataMessageConverter : JsonConverter<GqltwsServerNextDataMessage>
     {
-        private readonly IGraphQueryResponseWriter _responseWriter;
+        private readonly IQueryResponseWriter _responseWriter;
         private readonly ISchema _schema;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Message
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <param name="responseWriter">The response writer.</param>
-        public GqltwsServerDataMessageConverter(ISchema schema, IGraphQueryResponseWriter responseWriter)
+        public GqltwsServerDataMessageConverter(ISchema schema, IQueryResponseWriter responseWriter)
         {
             _responseWriter = Validation.ThrowIfNullOrReturn(responseWriter, nameof(responseWriter));
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));

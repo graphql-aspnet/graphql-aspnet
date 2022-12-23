@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// resolution context.</param>
         public DirectiveResolutionContext(
             ISchema targetSchema,
-            IGraphExecutionContext parentContext,
+            IExecutionContext parentContext,
             IGraphDirectiveRequest request,
             IExecutionArgumentCollection arguments,
             ClaimsPrincipal user = null)

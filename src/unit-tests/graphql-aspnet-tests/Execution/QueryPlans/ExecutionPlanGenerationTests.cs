@@ -26,9 +26,9 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     [TestFixture]
     public class ExecutionPlanGenerationTests
     {
-        private IGraphQueryDocument CreateDocument(GraphSchema schema, string text)
+        private IQueryDocument CreateDocument(GraphSchema schema, string text)
         {
-            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(schema);
+            var docGenerator = new DefaultQueryDocumentGenerator<GraphSchema>(schema);
             var doc = docGenerator.CreateDocument(text.AsSpan());
             docGenerator.ValidateDocument(doc);
             return doc;
@@ -38,10 +38,10 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var doc = this.CreateDocument(schema, text);
 
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
+            var planGenerator = new DefaultQueryPlanGenerator<GraphSchema>(
                 schema,
-                new DefaultOperationDepthCalculator<GraphSchema>(),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
+                new DefaultQueryOperationDepthCalculator<GraphSchema>(),
+                new DefaultQueryOperationComplexityCalculator<GraphSchema>());
 
             return await planGenerator.CreatePlanAsync(doc.Operations[0]);
         }

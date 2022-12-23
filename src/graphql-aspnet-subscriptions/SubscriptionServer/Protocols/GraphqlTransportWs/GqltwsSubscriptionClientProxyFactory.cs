@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
             var schema = connection.ServiceProvider.GetService<TSchema>();
             var router = connection.ServiceProvider.GetService<ISubscriptionEventRouter>();
             var logger = connection.ServiceProvider.GetService<IGraphEventLogger>();
-            var writer = connection.ServiceProvider.GetService<IGraphQueryResponseWriter<TSchema>>();
+            var writer = connection.ServiceProvider.GetService<IQueryResponseWriter<TSchema>>();
 
             var client = new GqltwsClientProxy<TSchema>(
                 connection,
