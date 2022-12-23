@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
-    /// A collection of all know, active subscription clients attached to this
+    /// A collection of all known, active subscription clients attached to this
     /// server instance.
     /// </summary>
     public interface IGlobalSubscriptionClientProxyCollection
@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// Attempts to add the client to the collection. If the collection
         /// is full the client will be rejected.
         /// </summary>
-        /// <param name="clientProxy">The client proxy.</param>
+        /// <param name="clientProxy">The client proxy to add to this collection.</param>
         /// <returns><c>true</c> if the client was successfully registered;
         /// otherwise, <c>false</c>.</returns>
         bool TryAddClient(ISubscriptionClientProxy clientProxy);
@@ -31,15 +31,15 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// Attempts to remove the client from the client. If it is not
         /// part of the collection, the operation is ignored.
         /// </summary>
-        /// <param name="clientId">The client identifier.</param>
-        /// <param name="clientProxy">The client proxy that was removed, if any.</param>
+        /// <param name="clientId">A client identifier.</param>
+        /// <param name="clientProxy">The client proxy that was removed, if found, otherwise null.</param>
         /// <returns><c>true</c> if the client was removed from the collection, <c>false</c> otherwise.</returns>
         bool TryRemoveClient(SubscriptionClientId clientId, out ISubscriptionClientProxy clientProxy);
 
         /// <summary>
         /// Tries to retrieve a client with the given id.
         /// </summary>
-        /// <param name="clientId">The client identifier.</param>
+        /// <param name="clientId">A client identifier.</param>
         /// <param name="clientProxy">When the <paramref name="clientId"/> is found,
         /// this parameter will be filled with the appropriate proxy instance.</param>
         /// <returns><c>true</c> if the client was found in the collection;

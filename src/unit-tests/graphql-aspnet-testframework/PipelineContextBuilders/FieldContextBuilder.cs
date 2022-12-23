@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         {
             var parent = this.CreateFakeParentMiddlewareContext();
 
-            var request = new GraphSchemaItemSecurityRequest(this.FieldRequest);
+            var request = new SchemaItemSecurityRequest(this.FieldRequest);
             return new SchemaItemSecurityChallengeContext(
                 parent,
                 request);

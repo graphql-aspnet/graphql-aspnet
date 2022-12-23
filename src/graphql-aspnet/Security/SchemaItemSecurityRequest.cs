@@ -21,13 +21,13 @@ namespace GraphQL.AspNet.Security
     /// A request to authorize and authenticate given user security context against
     /// a secured schema item.
     /// </summary>
-    public sealed class GraphSchemaItemSecurityRequest : ISchemaItemSecurityRequest
+    public sealed class SchemaItemSecurityRequest : ISchemaItemSecurityRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityRequest"/> class.
+        /// Initializes a new instance of the <see cref="SchemaItemSecurityRequest"/> class.
         /// </summary>
         /// <param name="parentRequest">The parent directive execution request that invoked this authorization check.</param>
-        public GraphSchemaItemSecurityRequest(IGraphDirectiveRequest parentRequest)
+        public SchemaItemSecurityRequest(IGraphDirectiveRequest parentRequest)
         {
             Validation.ThrowIfNull(parentRequest, nameof(parentRequest));
             this.Id = parentRequest.Id;
@@ -36,10 +36,10 @@ namespace GraphQL.AspNet.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityRequest" /> class.
+        /// Initializes a new instance of the <see cref="SchemaItemSecurityRequest" /> class.
         /// </summary>
         /// <param name="parentRequest">The parent field execution request that invoked this authorization check.</param>
-        public GraphSchemaItemSecurityRequest(IGraphFieldRequest parentRequest)
+        public SchemaItemSecurityRequest(IGraphFieldRequest parentRequest)
         {
             Validation.ThrowIfNull(parentRequest, nameof(parentRequest));
             this.Id = parentRequest.Id;
@@ -48,11 +48,11 @@ namespace GraphQL.AspNet.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityRequest"/> class.
+        /// Initializes a new instance of the <see cref="SchemaItemSecurityRequest"/> class.
         /// </summary>
         /// <param name="invocationContext">The invocation context through which this authorization request
         /// is occuring.</param>
-        public GraphSchemaItemSecurityRequest(IGraphFieldInvocationContext invocationContext)
+        public SchemaItemSecurityRequest(IGraphFieldInvocationContext invocationContext)
         {
             Validation.ThrowIfNull(invocationContext, nameof(invocationContext));
             this.Id = Guid.NewGuid();
@@ -61,11 +61,11 @@ namespace GraphQL.AspNet.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityRequest" /> class.
+        /// Initializes a new instance of the <see cref="SchemaItemSecurityRequest" /> class.
         /// </summary>
         /// <param name="securedDocumentPart">The secured document part that must
         /// be authorized.</param>
-        public GraphSchemaItemSecurityRequest(ISecurableDocumentPart securedDocumentPart)
+        public SchemaItemSecurityRequest(ISecurableDocumentPart securedDocumentPart)
         {
             Validation.ThrowIfNull(securedDocumentPart, nameof(securedDocumentPart));
             this.Id = Guid.NewGuid();

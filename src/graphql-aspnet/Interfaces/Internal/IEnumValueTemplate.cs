@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
 
         /// <summary>
         /// Gets the numeric value (the underlying number)
-        /// of the enum option as a string.
+        /// of the enum option as a string (e.g. "3", "4").
         /// </summary>
         /// <value>The numeric value as string.</value>
         string NumericValueAsString { get;  }

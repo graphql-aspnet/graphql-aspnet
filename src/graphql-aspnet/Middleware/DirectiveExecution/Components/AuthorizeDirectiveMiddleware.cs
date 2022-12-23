@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
             if (context.IsValid)
             {
                 // execute the authorization pipeline
-                var authRequest = new GraphSchemaItemSecurityRequest(context.Request);
+                var authRequest = new SchemaItemSecurityRequest(context.Request);
                 var authContext = new SchemaItemSecurityChallengeContext(context, authRequest);
                 await _authPipeline.InvokeAsync(authContext, cancelToken).ConfigureAwait(false);
 

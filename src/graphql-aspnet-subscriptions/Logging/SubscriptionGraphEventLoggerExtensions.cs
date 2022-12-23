@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Logging
     /// <summary>
     /// Extensions to the <see cref="IGraphLogger"/> to process subscription related events.
     /// </summary>
-    public static class GraphLoggerSubscriptionExtensions
+    public static class SubscriptionGraphEventLoggerExtensions
     {
         /// <summary>
         /// Recorded when the startup services registers a publically available ASP.NET route to which

@@ -26,7 +26,7 @@ namespace GraphQL.Subscriptions.Tests.Internal.Templating
     [TestFixture]
     public class GraphActionTemplateTests
     {
-        private ControllerSubscriptionActionGraphFieldTemplate CreateActionTemplate<TControllerType>(string actionName)
+        private SubscriptionControllerActionGraphFieldTemplate CreateActionTemplate<TControllerType>(string actionName)
             where TControllerType : GraphController
         {
             var mockController = new Mock<IGraphControllerTemplate>();
@@ -36,7 +36,7 @@ namespace GraphQL.Subscriptions.Tests.Internal.Templating
             mockController.Setup(x => x.ObjectType).Returns(typeof(TControllerType));
 
             var methodInfo = typeof(TControllerType).GetMethod(actionName);
-            var action = new ControllerSubscriptionActionGraphFieldTemplate(mockController.Object, methodInfo);
+            var action = new SubscriptionControllerActionGraphFieldTemplate(mockController.Object, methodInfo);
             action.Parse();
             action.ValidateOrThrow();
 

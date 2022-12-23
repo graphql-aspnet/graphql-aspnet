@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     /// additional events will be raised.
     /// </summary>
     [DebuggerDisplay("Has Object: {_result?.GetType().FriendlyName()}")]
-    public class CompleteSubscriptionActionResult : ObjectReturnedGraphActionResult
+    public class CompleteSubscriptionGraphActionResult : ObjectReturnedGraphActionResult
     {
         /// <summary>
         /// Applies the appropriate session information to the field context to instruct
@@ -36,10 +36,10 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CompleteSubscriptionActionResult"/> class.
+        /// Initializes a new instance of the <see cref="CompleteSubscriptionGraphActionResult"/> class.
         /// </summary>
         /// <param name="objectToReturn">The object to return.</param>
-        public CompleteSubscriptionActionResult(object objectToReturn)
+        public CompleteSubscriptionGraphActionResult(object objectToReturn)
             : base(objectToReturn)
         {
         }
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
 
             context.Cancel();
             context.Messages.Critical(
-                $"Invalid Action Result. {nameof(CompleteSubscriptionActionResult)} can only " +
+                $"Invalid Action Result. {nameof(CompleteSubscriptionGraphActionResult)} can only " +
                 "be used on subscription actions.",
                 Constants.ErrorCodes.INVALID_ACTION_RESULT,
                 context.Request.Origin);

@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             IGraphFieldTemplate template,
             List<AppliedSecurityPolicyGroup> securityGroups)
         {
-            var subTemplate = template as ControllerSubscriptionActionGraphFieldTemplate;
+            var subTemplate = template as SubscriptionControllerActionGraphFieldTemplate;
             if (subTemplate != null
                 && subTemplate.FieldSource == GraphFieldSource.Action
                 && subTemplate.Route.RootCollection == SchemaItemCollections.Subscription)

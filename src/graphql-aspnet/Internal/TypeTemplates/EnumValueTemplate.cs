@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumValueTemplate" /> class.
         /// </summary>
-        /// <param name="parentTemplate">The parent template.</param>
+        /// <param name="parentTemplate">The parent enum type template.</param>
         /// <param name="enumFieldInfo">The enum field information.</param>
         public EnumValueTemplate(IEnumGraphTypeTemplate parentTemplate, FieldInfo enumFieldInfo)
             : base(enumFieldInfo)

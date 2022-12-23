@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// <summary>
     /// An extended field invocation context with additional properties related to subscriptions.
     /// </summary>
-    public interface IGraphSubscriptionFieldInvocationContext : IGraphFieldInvocationContext
+    public interface ISubscriptionGraphFieldInvocationContext : IGraphFieldInvocationContext
     {
         /// <summary>
         /// Gets the name of the event that maps to this field.

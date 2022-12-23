@@ -25,16 +25,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// as a graphql field.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public class ControllerSubscriptionActionGraphFieldTemplate : ControllerActionGraphFieldTemplate
+    public class SubscriptionControllerActionGraphFieldTemplate : ControllerActionGraphFieldTemplate
     {
         private Type _explicitlyDeclaredAsSubscriptionSourceType;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ControllerSubscriptionActionGraphFieldTemplate"/> class.
+        /// Initializes a new instance of the <see cref="SubscriptionControllerActionGraphFieldTemplate"/> class.
         /// </summary>
         /// <param name="parent">The parent.</param>
         /// <param name="methodInfo">The method information.</param>
-        public ControllerSubscriptionActionGraphFieldTemplate(
+        public SubscriptionControllerActionGraphFieldTemplate(
             IGraphControllerTemplate parent,
             MethodInfo methodInfo)
             : base(parent, methodInfo)
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             if (this.Route.RootCollection == Execution.SchemaItemCollections.Subscription)
             {
-                return new GraphSubscriptionArgumentTemplate(
+                return new SubscriptionGraphArgumentTemplate(
                     this,
                     paramInfo,
                     _explicitlyDeclaredAsSubscriptionSourceType != null);

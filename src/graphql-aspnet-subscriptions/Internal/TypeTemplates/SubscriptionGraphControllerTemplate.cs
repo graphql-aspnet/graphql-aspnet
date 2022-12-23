@@ -22,13 +22,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// populate graphQL fields from action methods, including subscription fields.
     /// </summary>
     [DebuggerDisplay("Controller: '{ObjectType.Name}', Route: '{Route.Path}'")]
-    public class GraphSubscriptionControllerTemplate : GraphControllerTemplate
+    public class SubscriptionGraphControllerTemplate : GraphControllerTemplate
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSubscriptionControllerTemplate"/> class.
+        /// Initializes a new instance of the <see cref="SubscriptionGraphControllerTemplate"/> class.
         /// </summary>
         /// <param name="controllerType">Type of the controller.</param>
-        public GraphSubscriptionControllerTemplate(Type controllerType)
+        public SubscriptionGraphControllerTemplate(Type controllerType)
             : base(controllerType)
         {
         }
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 return null;
 
             if (methodInfo.HasAttribute<SubscriptionAttribute>() || methodInfo.HasAttribute<SubscriptionRootAttribute>())
-                return new ControllerSubscriptionActionGraphFieldTemplate(this, methodInfo);
+                return new SubscriptionControllerActionGraphFieldTemplate(this, methodInfo);
 
             return base.CreateMethodFieldTemplate(methodInfo);
         }

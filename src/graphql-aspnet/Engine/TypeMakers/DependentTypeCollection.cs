@@ -94,25 +94,17 @@ namespace GraphQL.AspNet.Engine.TypeMakers
         /// <summary>
         /// Adds the set of abstract graph types (Unions and interfaces) to this instance.
         /// </summary>
-        /// <param name="abstractTypes">The set of abstract types.</param>
+        /// <param name="abstractTypes">The set of abstract types to add to this set.</param>
         public void AddAbstractDependentRange(IEnumerable<IGraphType> abstractTypes)
         {
             if (abstractTypes != null)
                 _abstractTypes.AddRange(abstractTypes);
         }
 
-        /// <summary>
-        /// Gets a collection of concrete types (and their associated type kinds) that this graph type is dependent on if/when a resolution against a field
-        /// of this type occurs.
-        /// </summary>
-        /// <value>The dependent types.</value>
+        /// <inheritdoc />
         public IEnumerable<DependentType> DependentTypes => _dependentTypes;
 
-        /// <summary>
-        /// Gets A collection of pre-created, abstract graph (Unions and Interfaces) types that this graph type is dependent on if/when a resolution
-        /// against this type occurs.
-        /// </summary>
-        /// <value>The dependent graph types.</value>
+        /// <inheritdoc />
         public IEnumerable<IGraphType> AbstractGraphTypes => _abstractTypes;
     }
 }

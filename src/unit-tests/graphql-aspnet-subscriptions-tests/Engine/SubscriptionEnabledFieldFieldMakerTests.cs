@@ -32,7 +32,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
             mockController.Setup(x => x.ObjectType).Returns(typeof(SubscriptionTestController));
 
             var methodInfo = typeof(SubscriptionTestController).GetMethod(nameof(SubscriptionTestController.DoSub));
-            var actionTemplate = new ControllerSubscriptionActionGraphFieldTemplate(mockController.Object, methodInfo);
+            var actionTemplate = new SubscriptionControllerActionGraphFieldTemplate(mockController.Object, methodInfo);
             actionTemplate.Parse();
             actionTemplate.ValidateOrThrow();
 

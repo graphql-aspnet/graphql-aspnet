@@ -29,18 +29,13 @@ namespace GraphQL.AspNet.Engine.TypeMakers
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumGraphTypeMaker"/> class.
         /// </summary>
-        /// <param name="schema">The schema defining the graph type creation rules this generator should follow.</param>
+        /// <param name="schema">The schema this generator should follow.</param>
         public EnumGraphTypeMaker(ISchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        /// <summary>
-        /// Inspects the given type and, in accordance with the rules of this maker, will
-        /// generate a complete set of necessary graph types required to support it.
-        /// </summary>
-        /// <param name="concreteType">The concrete type to incorporate into the schema.</param>
-        /// <returns>GraphTypeCreationResult.</returns>
+        /// <inheritdoc />
         public GraphTypeCreationResult CreateGraphType(Type concreteType)
         {
             var template = GraphQLProviders.TemplateProvider.ParseType(concreteType, TypeKind.ENUM) as IEnumGraphTypeTemplate;

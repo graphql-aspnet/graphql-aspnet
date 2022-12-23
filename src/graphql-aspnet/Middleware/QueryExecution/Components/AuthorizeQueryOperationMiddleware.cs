@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 if (securePart?.SecureItem == null)
                     continue;
 
-                var authRequest = new GraphSchemaItemSecurityRequest(securePart);
+                var authRequest = new SchemaItemSecurityRequest(securePart);
                 var authContext = new SchemaItemSecurityChallengeContext(context, authRequest);
 
                 var pipelineTask = _authPipeline.InvokeAsync(authContext, cancelToken)

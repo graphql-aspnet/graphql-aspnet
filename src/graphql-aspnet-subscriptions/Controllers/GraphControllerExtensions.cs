@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Controllers
         /// and no data should be sent to the connected client.</returns>
         public static IGraphActionResult SkipSubscriptionEvent(this GraphController controller, bool completeSubscirption = false)
         {
-            return new SkipSubscriptionEventActionResult(completeSubscirption);
+            return new SkipSubscriptionEventGraphActionResult(completeSubscirption);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Controllers
         /// once processing is completed.</returns>
         public static IGraphActionResult OkAndComplete(this GraphController controller, object item = null)
         {
-            return new CompleteSubscriptionActionResult(item);
+            return new CompleteSubscriptionGraphActionResult(item);
         }
     }
 }

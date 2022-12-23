@@ -19,12 +19,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     /// </summary>
     public class ScalarGraphTypeMaker : IGraphTypeMaker
     {
-        /// <summary>
-        /// Inspects the given type and, in accordance with the rules of this maker, will
-        /// generate a complete set of necessary graph types required to support it.
-        /// </summary>
-        /// <param name="concreteType">The concrete type to incorporate into the schema.</param>
-        /// <returns>GraphTypeCreationResult.</returns>
+        /// <inheritdoc />
         public GraphTypeCreationResult CreateGraphType(Type concreteType)
         {
             var scalarType = GraphQLProviders.ScalarProvider.CreateScalar(concreteType);

@@ -20,17 +20,17 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     /// event data to be dropped and no data will be sent to the connection client.
     /// </para>
     /// </summary>
-    public class SkipSubscriptionEventActionResult : IGraphActionResult
+    public class SkipSubscriptionEventGraphActionResult : IGraphActionResult
     {
         private readonly bool _shouldCompleteSubscription;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SkipSubscriptionEventActionResult"/> class.
+        /// Initializes a new instance of the <see cref="SkipSubscriptionEventGraphActionResult"/> class.
         /// </summary>
         /// <param name="shouldCompleteSubscription">if this action result
         /// should also signal that the subscription be closed/completed when the event is ultimately
         /// skipped.</param>
-        public SkipSubscriptionEventActionResult(bool shouldCompleteSubscription = false)
+        public SkipSubscriptionEventGraphActionResult(bool shouldCompleteSubscription = false)
         {
             _shouldCompleteSubscription = shouldCompleteSubscription;
         }
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
                 {
                     frc.Session.Items.TryAdd(SubscriptionConstants.ContextDataKeys.SKIP_EVENT, true);
                     if (_shouldCompleteSubscription)
-                        CompleteSubscriptionActionResult.ConfigureForCompletedSubscription(frc);
+                        CompleteSubscriptionGraphActionResult.ConfigureForCompletedSubscription(frc);
 
                     return Task.CompletedTask;
                 }
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
 
             context.Cancel();
             context.Messages.Critical(
-                $"Invalid Action Result. {nameof(SkipSubscriptionEventActionResult)} can only " +
+                $"Invalid Action Result. {nameof(SkipSubscriptionEventGraphActionResult)} can only " +
                 "be used on subscription actions.",
                 Constants.ErrorCodes.INVALID_ACTION_RESULT,
                 context.Request.Origin);

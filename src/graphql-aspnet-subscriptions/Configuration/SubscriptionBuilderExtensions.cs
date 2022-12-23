@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Configuration
             // then publishing adds one additional middleware component
             return schemaBuilder
                 .AddSubscriptionServer(options)
-                .AddSubscriptionPublishing();
+                .AddSubscriptionPublishing(options);
         }
 
         /// <summary>
@@ -54,9 +54,11 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <typeparam name="TSchema">The type of schema being configured.</typeparam>
         /// <param name="schemaBuilder">The schema builder.</param>
+        /// <param name="options">An action function to configure the subscription options.</param>
         /// <returns>GraphQL.AspNet.Interfaces.Configuration.ISchemaBuilder&lt;TSchema&gt;.</returns>
         public static ISchemaBuilder<TSchema> AddSubscriptionPublishing<TSchema>(
-                    this ISchemaBuilder<TSchema> schemaBuilder)
+                    this ISchemaBuilder<TSchema> schemaBuilder,
+                    Action<SubscriptionServerOptions<TSchema>> options = null)
                     where TSchema : class, ISchema
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
