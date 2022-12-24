@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Tests.Common.Extensions.AttributeTestData;
     using GraphQL.AspNet.Tests.Common.Extensions.ReflectionExtensionTestData;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.ThirdPartyDll;
@@ -269,6 +270,126 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
         public void Type_IsStruct(Type typeToCheck, bool isStruct)
         {
             Assert.AreEqual(isStruct, typeToCheck.IsStruct());
+        }
+
+        [Test]
+        public void AttributesOfType_WhenPresent_IsReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithAttribute));
+
+            var attribs = method.AttributesOfType<BaseTestAttribute>();
+
+            Assert.AreEqual(2, attribs.Count());
+            Assert.IsTrue(attribs.Any(x => x.GetType() == typeof(InheritsFromBaseTestAttribute)));
+            Assert.IsTrue(attribs.Any(x => x.GetType() == typeof(Inherits2FromBaseTestAttribute)));
+        }
+
+        [Test]
+        public void AttributesOfType_WhenNotPresent_IsNotReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithoutAttribute));
+            var attribs = method.AttributesOfType<BaseTestAttribute>();
+            Assert.AreEqual(0, attribs.Count());
+        }
+
+        [Test]
+        public void AttributesOfType_WhenNotPresentButWithOtherAttribute_IsNotReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithNotInheritedAttributeAttribute));
+            var attribs = method.AttributesOfType<BaseTestAttribute>();
+            Assert.AreEqual(0, attribs.Count());
+        }
+
+        [Test]
+        public void SingleAttributeOrDefault_WhenSingleAttributeDeclared_IsReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithAttribute));
+            var attrib = method.SingleAttributeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNotNull(attrib);
+        }
+
+        [Test]
+        public void SingleAttributeOrDefault_WhenMultipleAttributesDeclared_NullReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithTwoInstancesOfAttribute));
+            var attrib = method.SingleAttributeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNull(attrib);
+        }
+
+        [Test]
+        public void SingleAttributeOrDefault_WhenOtherAttributesDeclared_NullReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithNotInheritedAttributeAttribute));
+            var attrib = method.SingleAttributeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNull(attrib);
+        }
+
+        [Test]
+        public void SingleAttributeOrDefault_WhenSingleAttributeNotDeclared_NullReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithoutAttribute));
+            var attrib = method.SingleAttributeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNull(attrib);
+        }
+
+        [Test]
+        public void EnumValue_SingleAttributeOrDefault_WhenSingleAttributeDeclared_IsReturned()
+        {
+            var attrib = EnumWithAttributes.ValueWithOneAttribute.SingleAttributeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNotNull(attrib);
+        }
+
+        [Test]
+        public void EnumValue_SingleAttributeOrDefault_WhenMultipleAttributesDeclared_NullReturned()
+        {
+            var attrib = EnumWithAttributes.ValueWith2Attributes.SingleAttributeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNull(attrib);
+        }
+
+        [Test]
+        public void EnumValue_SingleAttributeOrDefault_WhenOtherAttributesDeclared_NullReturned()
+        {
+            var attrib = EnumWithAttributes.ValueWithNoAttributes.SingleAttributeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNull(attrib);
+        }
+
+        [Test]
+        public void EnumValue_SingleAttributeOrDefault_WhenSingleAttributeNotDeclared_NullReturned()
+        {
+            var attrib = EnumWithAttributes.ValueWithOtherAttribute.SingleAttributeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNull(attrib);
+        }
+
+        [Test]
+        public void FirstAttributeOfTypeOrDefault_WhenSingleAttributeDeclared_IsReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithAttribute));
+            var attrib = method.FirstAttributeOfTypeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNotNull(attrib);
+        }
+
+        [Test]
+        public void FirstAttributeOfTypeOrDefault_WhenMultipleAttributesDeclared_IsReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithTwoInstancesOfAttribute));
+            var attrib = method.FirstAttributeOfTypeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNotNull(attrib);
+        }
+
+        [Test]
+        public void FirstAttributeOfTypeOrDefault_WhenOtherAttributesDeclared_NullReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithNotInheritedAttributeAttribute));
+            var attrib = method.FirstAttributeOfTypeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNull(attrib);
+        }
+
+        [Test]
+        public void FirstAttributeOfTypeOrDefault_WhenAttributeNotDeclared_NullReturned()
+        {
+            var method = typeof(AttributeTestObject).GetMethod(nameof(AttributeTestObject.MethodWithoutAttribute));
+            var attrib = method.FirstAttributeOfTypeOrDefault<InheritsFromBaseTestAttribute>();
+            Assert.IsNull(attrib);
         }
     }
 }

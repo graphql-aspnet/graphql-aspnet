@@ -83,25 +83,28 @@ namespace GraphQL.AspNet.Common.Extensions
         }
 
         /// <summary>
-        /// Gets a single attribute of a given type on an enum field value.
+        /// Returns a single attribute of the exact given type from the enum value. If the enum value declares
+        /// more than one instance of the attribute type, null is returned. If the enum value declares no instances
+        /// of the given attribute type, null is also returned.
         /// </summary>
-        /// <typeparam name="T">The type of the attribute to retrieve.</typeparam>
+        /// <typeparam name="TAttribute">The type of the attribute to retrieve.</typeparam>
         /// <param name="enumValue">The enum value to inspect.</param>
         /// <returns>The attribute of type T that exists on the enum value.</returns>
-        public static T SingleAttributeOrDefault<T>(this Enum enumValue)
-            where T : Attribute
+        public static TAttribute SingleAttributeOrDefault<TAttribute>(this Enum enumValue)
+            where TAttribute : Attribute
         {
             var type = enumValue.GetType();
             var memInfo = type.GetMember(enumValue.ToString());
             if (memInfo == null)
                 return null;
 
-            return memInfo[0].SingleAttributeOfTypeOrDefault<T>(false);
+            return memInfo[0].SingleAttributeOfTypeOrDefault<TAttribute>(false);
         }
 
         /// <summary>
-        /// Returns a single attribute of a given type or null. If the type declares more than one instance
-        /// of the attribute type, null is returned.
+        /// Returns a single attribute of the exact given type. If the type declares more than one instance
+        /// of the attribute type, null is returned. If the type declares no instances of the given attribute type, null
+        /// is also returned.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute to check for.</typeparam>
         /// <param name="type">The type to inspect.</param>
@@ -113,7 +116,10 @@ namespace GraphQL.AspNet.Common.Extensions
             if (type == null)
                 return null;
 
-            var attribs = type.GetCustomAttributes(typeof(TAttribute), inherit).Where(x => x.GetType() == typeof(TAttribute)).Take(2);
+            var attribs = type.GetCustomAttributes(typeof(TAttribute), inherit)
+                .Where(x => x.GetType() == typeof(TAttribute))
+                .Take(2);
+
             if (attribs.Count() == 1)
                 return attribs.Single() as TAttribute;
 
@@ -121,8 +127,8 @@ namespace GraphQL.AspNet.Common.Extensions
         }
 
         /// <summary>
-        /// Returns a single attribute of a given type or null. If the type declares more than one instance
-        /// of the attribute type, the first instance encountered is returned.
+        /// Returns the first attribute that is castable to the given type or null. If the type declares more than one instance
+        /// that is castable to the given type, the first instance encountered is returned.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute to check for.</typeparam>
         /// <param name="type">The type to inspect.</param>
@@ -164,7 +170,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// the given <typeparamref name="TAttribute"/> an empty set is returned.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute to check for.</typeparam>
-        /// <param name="type">The type to inspect.</param>
+        /// <param name="type">The type from which to extract attributes.</param>
         /// <param name="inherit">When true, look up the hierarchy chain for the inherited custom attribute..</param>
         /// <returns>TAttribute.</returns>
         public static IEnumerable<TAttribute> AttributesOfType<TAttribute>(this ICustomAttributeProvider type, bool inherit = false)
@@ -184,7 +190,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// Determines if the given type had the attribute defined at least once.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="type">The type.</param>
+        /// <param name="type">The type from which to check.</param>
         /// <param name="inherit">When true, look up the hierarchy chain for the inherited custom attribute..</param>
         /// <returns>TAttribute.</returns>
         public static bool HasAttribute<TAttribute>(this ICustomAttributeProvider type, bool inherit = false)
@@ -211,7 +217,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Determines whether the given type represents a <see cref="Nullable{T}"/>.
         /// </summary>
-        /// <param name="type">The type.</param>
+        /// <param name="type">The type to inspect.</param>
         /// <returns><c>true</c> if the type of a <see cref="Nullable{T}"/>; otherwise, <c>false</c>.</returns>
         public static bool IsNullableOfT(this Type type)
         {
