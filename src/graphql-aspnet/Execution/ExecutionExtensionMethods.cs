@@ -23,9 +23,9 @@ namespace GraphQL.AspNet.Execution
     public static class ExecutionExtensionMethods
     {
         /// <summary>
-        /// Converts the value into its equivilant routing constant.
+        /// Converts the supplied collection value into its equivilant routing constant.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The value to convert.</param>
         /// <returns>System.String.</returns>
         internal static string ToRouteRoot(this SchemaItemCollections value)
         {
@@ -55,18 +55,18 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <summary>
-        /// Extends the resolver, executing the supplied function
-        /// after the resolver completes. This method is executed regardless
-        /// of the state of the context (successfully completed or failed).
+        /// Extends the provided resolver by executing the supplied function
+        /// after the initial resolver completes. This functon is executed regardless
+        /// of the state of the context; successfully completed or failed.
         /// </summary>
-        /// <param name="resolver">The resolver.</param>
-        /// <param name="extension">The extension.</param>
-        /// <returns>IGraphFieldResolver.</returns>
+        /// <param name="resolver">The base resolver to extend.</param>
+        /// <param name="extensionFunction">A function to extend the resolver with.</param>
+        /// <returns>The extended resolver.</returns>
         public static IGraphFieldResolver Extend(
             this IGraphFieldResolver resolver,
-            Func<FieldResolutionContext, CancellationToken, Task> extension)
+            Func<FieldResolutionContext, CancellationToken, Task> extensionFunction)
         {
-            return new ExtendedGraphFieldResolver(resolver, extension);
+            return new ExtendedGraphFieldResolver(resolver, extensionFunction);
         }
     }
 }

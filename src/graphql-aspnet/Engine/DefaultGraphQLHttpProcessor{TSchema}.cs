@@ -228,7 +228,7 @@ namespace GraphQL.AspNet.Engine
             // repackage the runtime request to carry the
             // HttpContext along. It's not used or needed by the runtime
             // but its useful within controller action method invocations
-            request = new GraphOperationWebRequest(request, this.HttpContext);
+            request = new QueryOperationWebRequest(request, this.HttpContext);
             return Task.FromResult(request);
         }
 
@@ -321,7 +321,7 @@ namespace GraphQL.AspNet.Engine
             string message,
             string errorCode = Constants.ErrorCodes.GENERAL_ERROR)
         {
-            var response = new GraphOperationResult(this.GraphQLOperationRequest);
+            var response = new QueryOperationResult(this.GraphQLOperationRequest);
             response.Messages.Add(GraphMessageSeverity.Critical, message, errorCode);
             return response;
         }

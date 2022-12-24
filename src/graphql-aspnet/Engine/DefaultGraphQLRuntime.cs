@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Engine
         /// <inheritdoc />
         public IQueryOperationRequest CreateRequest(GraphQueryData queryData = null)
         {
-            return new GraphOperationRequest(queryData ?? GraphQueryData.Empty);
+            return new QueryOperationRequest(queryData ?? GraphQueryData.Empty);
         }
 
         /// <inheritdoc />
@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Engine
             var queryResponse = context.Result;
             if (queryResponse == null)
             {
-                queryResponse = new GraphOperationResult(context.OperationRequest);
+                queryResponse = new QueryOperationResult(context.OperationRequest);
                 queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
                 context.Result = queryResponse;
             }

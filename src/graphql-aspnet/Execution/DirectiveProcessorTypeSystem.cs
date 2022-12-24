@@ -119,7 +119,7 @@ namespace GraphQL.AspNet.Execution
 
                 var inputArgs = this.GatherInputArguments(targetDirective, appliedDirective.ArgumentValues);
 
-                var operationRequest = new GraphOperationRequest(GraphQueryData.Empty);
+                var operationRequest = new QueryOperationRequest(GraphQueryData.Empty);
 
                 var invocationContext = new DirectiveInvocationContext(
                     targetDirective,

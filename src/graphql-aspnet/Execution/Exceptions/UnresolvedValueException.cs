@@ -13,18 +13,18 @@ namespace GraphQL.AspNet.Execution.Exceptions
     using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>
-    /// An exception thrown when an value (to a field argument or an input object)
-    /// is not valid for its target graph type.
+    /// An exception thrown during query parsing when an input value is not valid for
+    /// its target argument or input object field.
     /// </summary>
     public class UnresolvedValueException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UnresolvedValueException" /> class.
         /// </summary>
-        /// <param name="message">The friendly message that describes the error. This message
-        /// is shared with all requestors.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference. If supplied this
-        /// exception will be attached to a graphql error message and only supplied if the schema exposes exceptions.</param>
+        /// <param name="message">A friendly message that describes the error. This message
+        /// is shared with the requestor.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or null. If supplied this
+        /// exception will shared with the requestor if the current schema exposes exceptions.</param>
         public UnresolvedValueException(string message, Exception innerException = null)
              : base(message, innerException)
         {
@@ -33,10 +33,10 @@ namespace GraphQL.AspNet.Execution.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="UnresolvedValueException" /> class.
         /// </summary>
-        /// <param name="value">The value to pass along with the exception.</param>
-        /// <param name="targetType">The target type the value was being resolved to.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference. If supplied this
-        /// exception will be attached to a graphql error message and only supplied if the schema exposes exceptions.</param>
+        /// <param name="value">The value from the query text that was unresolvable.</param>
+        /// <param name="targetType">The target type the value was being resolved to (e.g. int, string, Donut etc.).</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or null. If supplied this
+        /// exception will shared with the requestor if the current schema exposes exceptions.</param>
         public UnresolvedValueException(ReadOnlySpan<char> value, Type targetType, Exception innerException = null)
              : this(
                    value.ToString(),
@@ -49,24 +49,24 @@ namespace GraphQL.AspNet.Execution.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="UnresolvedValueException"/> class.
         /// </summary>
-        /// <param name="value">The value that was left unresolved.</param>
-        /// <param name="message">The friendly message that describes the error. This message
-        /// is shared with all requestors.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference. If supplied this
-        /// exception will be attached to a graphql error message and only supplied if the schema exposes exceptions.</param>
+        /// <param name="value">The value from the query text that was unresolvable.</param>
+        /// <param name="message">A friendly message that describes the error. This message
+        /// is shared with the requestor.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or null. If supplied this
+        /// exception will shared with the requestor if the current schema exposes exceptions.</param>
         public UnresolvedValueException(ReadOnlySpan<char> value, string message, Exception innerException = null)
             : this(value.ToString(), message, innerException)
         {
         }
 
-         /// <summary>
+        /// <summary>
         /// Initializes a new instance of the <see cref="UnresolvedValueException"/> class.
         /// </summary>
-        /// <param name="value">The value that was left unresolved.</param>
-        /// <param name="message">The friendly message that describes the error. This message
-        /// is shared with all requestors.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference. If supplied this
-        /// exception will be attached to a graphql error message and only supplied if the schema exposes exceptions.</param>
+        /// <param name="value">The value from the query text that was unresolvable.</param>
+        /// <param name="message">A friendly message that describes the error. This message
+        /// is shared with the requestor.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or null. If supplied this
+        /// exception will shared with the requestor if the current schema exposes exceptions.</param>
         public UnresolvedValueException(string value, string message, Exception innerException = null)
             : this(message, innerException)
         {
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Execution.Exceptions
         /// <summary>
         /// Gets the value, from a query text, that was not resolved correctly.
         /// </summary>
-        /// <value>The value.</value>
+        /// <value>The value that was left unresolved in the source text, if supplied.</value>
         public string Value { get; }
 
         /// <summary>

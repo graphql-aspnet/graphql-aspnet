@@ -169,7 +169,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
                     }
                     else
                     {
-                        var response = GraphOperationResult.FromMessages(result.Messages, message.Payload);
+                        var response = QueryOperationResult.FromErrorMessages(result.Messages, message.Payload);
 
                         await this.SendMessageAsync(new GqltwsServerNextDataMessage(message.Id, response))
                             .ConfigureAwait(false);

@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.Execution.Exceptions
     using System;
 
     /// <summary>
-    /// Thrown when reading a graph type via reflection fails to complete.
+    /// An execption thrown during startup while trying to create a graph type for a given
+    /// schema.
     /// </summary>
-    /// <seealso cref="System.Exception" />
     public class GraphTypeDeclarationException : Exception
     {
         /// <summary>

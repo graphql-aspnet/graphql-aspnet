@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Controllers
 
             _schemaItemContext.Logger?.ActionMethodInvocationRequestStarted(_action, this.Request);
 
-            if (_schemaItemContext.OperationRequest is IGraphOperationWebRequest webRequest)
+            if (_schemaItemContext.OperationRequest is IQueryOperationWebRequest webRequest)
                 this.HttpContext = webRequest.HttpContext;
 
             if (_action?.Method == null)

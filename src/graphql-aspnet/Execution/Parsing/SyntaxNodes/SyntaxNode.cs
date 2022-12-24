@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         /// <summary>
         /// Gets a syntax node that represents nothing.
         /// </summary>
-        /// <value>The none.</value>
+        /// <value>A syntax node representing nothing.</value>
         public static SyntaxNode None { get; } = new SyntaxNode(SyntaxNodeType.Empty, SourceLocation.None);
 
         /// <summary>

@@ -13,10 +13,10 @@ namespace GraphQL.AspNet.Execution.Exceptions
     using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
-    /// An exception thrown in context of processing a graph pipeline action. The data contained
-    /// in this exception is "internal" and not expected to be part of the graph query output.
+    /// An exception thrown in context of processing a query. The data contained
+    /// in this exception is "internal" and may contain sensitive information that
+    /// should not be shared..
     /// </summary>
-    /// <seealso cref="System.Exception" />
     public class GraphExecutionException : Exception
     {
         /// <summary>
@@ -25,7 +25,8 @@ namespace GraphQL.AspNet.Execution.Exceptions
         /// <param name="message">The message to capture on this exception.</param>
         /// <param name="origin">The origin in a query document or execution context where this exception
         /// occured.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception if any.</param>
+        /// <param name="innerException">The exception that is the cause of the current
+        /// exception, if any.</param>
         public GraphExecutionException(
             string message,
             SourceOrigin origin = default,
@@ -36,7 +37,7 @@ namespace GraphQL.AspNet.Execution.Exceptions
         }
 
         /// <summary>
-        /// Gets the origin location being processed in the source document where this exception was thrown.
+        /// Gets the location being processed in the source document when this exception was thrown.
         /// </summary>
         /// <value>The origin.</value>
         public SourceOrigin Origin { get; }

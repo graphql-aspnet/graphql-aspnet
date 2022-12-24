@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A base context used by all field and directive resolvers in order to successfully invoke
-    /// a controller method or object property and retrieve a data value for a field.
+    /// A base context used by all field and directive resolution contexts in order to successfully invoke
+    /// a controller action, object method or object property and retrieve a data value for a field.
     /// </summary>
     public abstract class SchemaItemResolutionContext : MiddlewareExecutionContextBase
     {

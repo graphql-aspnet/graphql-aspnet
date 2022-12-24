@@ -9,46 +9,45 @@
 
 namespace GraphQL.AspNet.Execution
 {
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.Response;
 
     /// <summary>
-    /// The default implementation of the object returned at the end of a graph operation.
+    /// Represents a generated response to a query.
     /// </summary>
-    /// <seealso cref="GraphQL.AspNet.Interfaces.Execution.IQueryOperationResult" />
     [DebuggerDisplay("Messages = {Messages.Count}, Has Data = {HasData}")]
-    public class GraphOperationResult : IQueryOperationResult
+    public class QueryOperationResult : IQueryOperationResult
     {
         /// <summary>
-        /// Creates a new operation result from a collection of generated messages and optional raw data
-        /// provided by a requestor. If no error level messages are supplied a generic one is created.
+        /// Creates a new operation result from a collection of messages. If no messages are included a
+        /// general purpose error message is added to the collection.
         /// </summary>
-        /// <param name="errorMessages">The collection of messages. Must be not null and contain at least one message.</param>
-        /// <param name="queryData">The original query data.</param>
+        /// <param name="errorMessages">The set of messages to create a result from.</param>
+        /// <param name="queryData">The original, raw query data.</param>
         /// <returns>GraphOperationResult.</returns>
-        public static GraphOperationResult FromMessages(IGraphMessageCollection errorMessages, GraphQueryData queryData = null)
+        public static QueryOperationResult FromErrorMessages(IGraphMessageCollection errorMessages, GraphQueryData queryData = null)
         {
             Validation.ThrowIfNull(errorMessages, nameof(errorMessages));
             if (errorMessages.Count < 1)
                 errorMessages.Critical("An unknown error occured.");
 
-            return new GraphOperationResult(
-                new GraphOperationRequest(queryData),
+            return new QueryOperationResult(
+                new QueryOperationRequest(queryData),
                 errorMessages);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphOperationResult" /> class.
+        /// Initializes a new instance of the <see cref="QueryOperationResult" /> class.
         /// </summary>
         /// <param name="originalRequest">The original request.</param>
         /// <param name="messages">The message collection containing any messages that may
         /// have been generated during execution.</param>
-        /// <param name="dataItem">The top level field set resolved during the operation.</param>
-        /// <param name="metrics">The metrics package that was filled during the operation execution.</param>
-        public GraphOperationResult(
+        /// <param name="dataItem">The root resolved data item (The "data" field common to all graphql
+        /// query responses).</param>
+        /// <param name="metrics">The metrics package that was filled during the operation execution, if any.</param>
+        public QueryOperationResult(
             IQueryOperationRequest originalRequest,
             IGraphMessageCollection messages = null,
             IQueryResponseFieldSet dataItem = null,

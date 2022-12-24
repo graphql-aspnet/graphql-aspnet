@@ -19,9 +19,9 @@ namespace GraphQL.AspNet.Interfaces.Execution
     public interface IQueryOperationRequest : IMetaDataContainer
     {
         /// <summary>
-        /// Extracts a raw data package from this request.
+        /// Extracts the original raw data package from this request.
         /// </summary>
-        /// <returns>GraphQueryData.</returns>
+        /// <returns>The orignal raw query.</returns>
         GraphQueryData ToDataPackage();
 
         /// <summary>
@@ -31,19 +31,20 @@ namespace GraphQL.AspNet.Interfaces.Execution
         Guid Id { get; }
 
         /// <summary>
-        /// Gets the name of the operation, from the supplied query document, to execute.
+        /// Gets the name of the operation, from the supplied query document, to execute. May
+        /// be null for an anonymous operation.
         /// </summary>
-        /// <value>The name of the operation.</value>
+        /// <value>The name of the operation to execute.</value>
         string OperationName { get; }
 
         /// <summary>
-        /// Gets the query text that was supplied by the end user to be parsed and processed.
+        /// Gets the query text that was supplied by the requestor to be parsed and processed.
         /// </summary>
         /// <value>The query text.</value>
         string QueryText { get; }
 
         /// <summary>
-        /// Gets the variables, if any, supplied by the end user.
+        /// Gets the variables, if any, supplied by the requestor.
         /// </summary>
         /// <value>The variables.</value>
         IInputVariableCollection VariableData { get; }
@@ -51,7 +52,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <summary>
         /// Gets the start time, in UTC-0, when this operation began.
         /// </summary>
-        /// <value>The start time UTC.</value>
+        /// <value>The start time of this request, in UTC-0.</value>
         DateTimeOffset StartTimeUTC { get; }
     }
 }

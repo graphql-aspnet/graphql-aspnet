@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
-    /// A scaled down, customized priority queue for ordering <see cref="IMiddlewareExecutionContext"/>
+    /// A customized queue for ordering <see cref="IMiddlewareExecutionContext"/>
     /// for execution.
     /// </summary>
     public class SortedFieldExecutionContextList
@@ -32,11 +32,11 @@ namespace GraphQL.AspNet.Execution.Contexts
         }
 
         /// <summary>
-        /// Adds a new context to the collection.
+        /// Adds a new execution context to the collection.
         /// </summary>
         /// <param name="context">The context to insert.</param>
         /// <param name="executeInIsolation">if set to <c>true</c> the context will be flagged
-        /// as running in isolation.</param>
+        /// as needing to be run in isolation, not in parralel with others.</param>
         public void Add(GraphFieldExecutionContext context, bool executeInIsolation)
         {
             Validation.ThrowIfNull(context, nameof(context));

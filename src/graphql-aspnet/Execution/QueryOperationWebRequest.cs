@@ -15,24 +15,19 @@ namespace GraphQL.AspNet.Execution
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// <para>
-    /// A context object representing a single graphql request,
-    /// by a single requestor, to use through the query execution process.
-    /// </para>
-    /// <para>
-    /// This request originated as a result of an HTTP request.
-    /// </para>
+    /// A wrapper on a <see cref="IQueryOperationRequest"/> to provide
+    /// additional details related to an ASP.NET web request.
     /// </summary>
     [DebuggerDisplay("Query Length = {QueryLength} (Operation = {OperationName})")]
-    public class GraphOperationWebRequest : GraphOperationRequest, IGraphOperationWebRequest
+    public class QueryOperationWebRequest : QueryOperationRequest, IQueryOperationWebRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphOperationWebRequest" /> class.
+        /// Initializes a new instance of the <see cref="QueryOperationWebRequest" /> class.
         /// </summary>
         /// <param name="baseRequest">Another formed request from
         /// which this web request should be generated.</param>
         /// <param name="context">The http context that originated this operation request.</param>
-        public GraphOperationWebRequest(IQueryOperationRequest baseRequest, HttpContext context)
+        public QueryOperationWebRequest(IQueryOperationRequest baseRequest, HttpContext context)
             : base(baseRequest)
         {
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));

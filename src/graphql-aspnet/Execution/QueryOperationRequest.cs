@@ -17,16 +17,16 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A context object representing a single request, by a single requestor, to use through the query execution process.
+    /// A request to execute a graphql query.
     /// </summary>
     [DebuggerDisplay("Query Length = {QueryLength} (Operation = {OperationName})")]
-    public class GraphOperationRequest : IQueryOperationRequest
+    public class QueryOperationRequest : IQueryOperationRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphOperationRequest"/> class.
+        /// Initializes a new instance of the <see cref="QueryOperationRequest"/> class.
         /// </summary>
-        /// <param name="queryData">The query data.</param>
-        public GraphOperationRequest(GraphQueryData queryData)
+        /// <param name="queryData">The raw query data to process.</param>
+        public QueryOperationRequest(GraphQueryData queryData)
         {
             this.Id = Guid.NewGuid();
             this.OperationName = queryData.OperationName?.Trim();
@@ -38,10 +38,10 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphOperationRequest"/> class.
+        /// Initializes a new instance of the <see cref="QueryOperationRequest"/> class.
         /// </summary>
         /// <param name="request">The request to injest into this request.</param>
-        protected GraphOperationRequest(IQueryOperationRequest request)
+        protected QueryOperationRequest(IQueryOperationRequest request)
         {
             Validation.ThrowIfNull(request, nameof(request));
             this.Id = request.Id;
