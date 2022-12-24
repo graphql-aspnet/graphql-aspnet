@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
+namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;

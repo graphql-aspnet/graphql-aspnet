@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Security.SecurityTestData
+namespace GraphQL.AspNet.Tests.Security.SecurityTestData
 {
     public class SubscriptionSecureWidget
     {

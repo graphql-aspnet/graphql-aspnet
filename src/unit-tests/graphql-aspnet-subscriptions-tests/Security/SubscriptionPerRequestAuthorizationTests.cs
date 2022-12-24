@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Security
+namespace GraphQL.AspNet.Tests.Security
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.Mocks;
-    using GraphQL.Subscriptions.Tests.Security.SecurityTestData;
+    using GraphQL.AspNet.Tests.Mocks;
+    using GraphQL.AspNet.Tests.Security.SecurityTestData;
     using NUnit.Framework;
 
     [TestFixture]

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Integration
+namespace GraphQL.AspNet.Tests.Integration
 {
     using System.Threading.Tasks;
     using NUnit.Framework;

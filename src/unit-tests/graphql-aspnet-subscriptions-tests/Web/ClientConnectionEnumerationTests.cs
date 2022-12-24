@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Web
+namespace GraphQL.AspNet.Tests.Web
 {
     using System.Net.WebSockets;
     using GraphQL.AspNet.Web;

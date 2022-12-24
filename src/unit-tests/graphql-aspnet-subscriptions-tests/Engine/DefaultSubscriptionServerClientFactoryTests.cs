@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Engine
+namespace GraphQL.AspNet.Tests.Engine
 {
     using System;
     using System.Collections.Generic;

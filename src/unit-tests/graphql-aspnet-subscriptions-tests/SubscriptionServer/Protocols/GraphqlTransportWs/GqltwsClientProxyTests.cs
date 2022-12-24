@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
+namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
 {
     using System;
     using System.Linq;
@@ -24,8 +24,8 @@ namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransp
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Web;
-    using GraphQL.Subscriptions.Tests.Mocks;
-    using GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs.GraphqlTransportWsData;
+    using GraphQL.AspNet.Tests.Mocks;
+    using GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs.GraphqlTransportWsData;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;

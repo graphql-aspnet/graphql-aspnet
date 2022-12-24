@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.SubscriptionServer
+namespace GraphQL.AspNet.Tests.SubscriptionServer
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.Execution.SubscriptionQueryExecutionData;
-    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.AspNet.Tests.Execution.SubscriptionQueryExecutionData;
+    using GraphQL.AspNet.Tests.Mocks;
     using NUnit.Framework;
 
     [TestFixture]

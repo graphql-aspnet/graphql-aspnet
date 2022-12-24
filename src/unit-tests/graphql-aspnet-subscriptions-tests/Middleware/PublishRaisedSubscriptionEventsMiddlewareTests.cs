@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Middleware
+namespace GraphQL.AspNet.Tests.Middleware
 {
     using System.Collections.Generic;
     using System.Threading;

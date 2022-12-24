@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Configuration
+namespace GraphQL.AspNet.Tests.Configuration
 {
     using System;
     using GraphQL.AspNet;
@@ -22,7 +22,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
     using GraphQL.AspNet.SubscriptionServer.BackgroundServices;
     using GraphQL.AspNet.SubscriptionServer.Exceptions;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.Configuration.ConfigurationTestData;
+    using GraphQL.AspNet.Tests.Configuration.ConfigurationTestData;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Moq;

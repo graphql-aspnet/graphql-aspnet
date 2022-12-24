@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Logging
+namespace GraphQL.AspNet.Tests.Logging
 {
     using System;
     using System.Collections.Generic;

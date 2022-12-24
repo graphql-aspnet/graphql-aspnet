@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.SubscriptionServer.ClientSubscriptionTestData
+namespace GraphQL.AspNet.Tests.SubscriptionServer.ClientSubscriptionTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;

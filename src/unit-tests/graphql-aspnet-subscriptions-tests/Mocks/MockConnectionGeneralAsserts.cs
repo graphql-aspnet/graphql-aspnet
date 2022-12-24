@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Mocks
+namespace GraphQL.AspNet.Tests.Mocks
 {
     using GraphQL.AspNet.Web;
     using NUnit.Framework;

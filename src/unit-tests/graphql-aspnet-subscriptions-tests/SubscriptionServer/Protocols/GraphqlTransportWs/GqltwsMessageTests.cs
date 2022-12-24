@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
+namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
 {
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging.Common;

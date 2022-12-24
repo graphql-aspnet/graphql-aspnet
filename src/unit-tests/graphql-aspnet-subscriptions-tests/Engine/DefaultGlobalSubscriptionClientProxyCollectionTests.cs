@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Engine
+namespace GraphQL.AspNet.Tests.Engine
 {
     using Castle.Components.DictionaryAdapter.Xml;
     using GraphQL.AspNet.Engine;

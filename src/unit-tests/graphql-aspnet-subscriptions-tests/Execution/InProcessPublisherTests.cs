@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution
+namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Engine;

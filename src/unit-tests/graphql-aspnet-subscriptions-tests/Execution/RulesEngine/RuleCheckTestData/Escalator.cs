@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution.RulesEngine.RuleCheckTestData
+namespace GraphQL.AspNet.Tests.Execution.RulesEngine.RuleCheckTestData
 {
     public class Escalator : IPeopleMover, IHorizontalMover
     {

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Engine
+namespace GraphQL.AspNet.Tests.Engine
 {
     using System;
     using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.SubscriptionServer.Exceptions;
-    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.AspNet.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
     using Moq;
     using NUnit.Framework;

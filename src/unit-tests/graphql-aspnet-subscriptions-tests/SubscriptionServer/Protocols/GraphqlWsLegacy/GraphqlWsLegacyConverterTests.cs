@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
+namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
 {
     using System;
     using System.Text.Json;
@@ -21,8 +21,8 @@ namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlWsLega
     using GraphQL.AspNet.Common.Extensions;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
-    using GraphQL.Subscriptions.Tests.Mocks;
-    using GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.GraphqlWsLegacyData;
+    using GraphQL.AspNet.Tests.Mocks;
+    using GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.GraphqlWsLegacyData;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Messages;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Converters;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging;

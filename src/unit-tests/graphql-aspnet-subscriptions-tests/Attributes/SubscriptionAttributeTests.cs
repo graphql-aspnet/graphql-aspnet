@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Attributes
+namespace GraphQL.AspNet.Tests.Attributes
 {
     using GraphQL.AspNet;
     using GraphQL.AspNet.Attributes;
