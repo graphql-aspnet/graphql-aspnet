@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Common.Generics
     /// </summary>
     /// <typeparam name="TKey">The type of the key of the dictionary.</typeparam>
     /// <typeparam name="TValue">The type of the value of the dictionary.</typeparam>
-    public sealed class DictionaryEnumerator<TKey, TValue> : IDictionaryEnumerator, IDisposable
+    internal sealed class DictionaryEnumerator<TKey, TValue> : IDictionaryEnumerator, IDisposable
     {
         private readonly IEnumerator<KeyValuePair<TKey, TValue>> _impl;
 

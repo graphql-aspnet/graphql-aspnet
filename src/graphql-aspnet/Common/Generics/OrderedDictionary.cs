@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Common.Generics
     /// <typeparam name="TValue">The type of the value.</typeparam>
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(OrderedDictionaryDebugBrowser))]
-    public sealed class OrderedDictionary<TKey, TValue> : IOrderedDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
+    internal sealed class OrderedDictionary<TKey, TValue> : IOrderedDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
         private DelegateKeyedCollection<TKey, KeyValuePair<TKey, TValue>> _keyedCollection;
 
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Common.Generics
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderedDictionary{TKey, TValue}"/> class.
         /// </summary>
-        /// <param name="comparer">The comparer.</param>
+        /// <param name="comparer">A comparer used to determine key equality.</param>
         public OrderedDictionary(IEqualityComparer<TKey> comparer)
         {
             this.Initialize(comparer);

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Common.Generics
     /// Helper method for displaying the ordered dictionary in the debugger.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    public class OrderedDictionaryDebugBrowser
+    internal class OrderedDictionaryDebugBrowser
     {
         private readonly List<KeyValuePair<object, object>> _data;
         private readonly List<object> _keys;

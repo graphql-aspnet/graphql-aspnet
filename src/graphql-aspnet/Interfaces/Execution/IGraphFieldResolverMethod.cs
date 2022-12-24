@@ -26,22 +26,22 @@ namespace GraphQL.AspNet.Interfaces.Execution
     public interface IGraphFieldResolverMethod
     {
         /// <summary>
-        /// Gets the type that contains this method.
+        /// Gets the type template from which this method was generated.
         /// </summary>
         /// <value>The type template that owns this method.</value>
         IGraphTypeTemplate Parent { get; }
 
         /// <summary>
-        /// Gets the singular concrete type this definition represents.
+        /// Gets the singular concrete type this method is defined on.
         /// </summary>
-        /// <value>The type of the object.</value>
+        /// <value>The objec type that defines this method.</value>
         Type ObjectType { get; }
 
         /// <summary>
         /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
         /// represents the implementation return type as opposed to the expected graph type.
         /// </summary>
-        /// <value>The type of the return.</value>
+        /// <value>The expected type of data returned by this method.</value>
         Type ExpectedReturnType { get; }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         MethodInfo Method { get; }
 
         /// <summary>
-        /// Gets the raw parameters (in order) that exist on the <see cref="Method"/>
+        /// Gets the raw parameters that exist on the <see cref="Method"/>
         /// that must be supplied at invocation.
         /// </summary>
         /// <value>The parameters of the target <see cref="Method"/>.</value>
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the fully qualified name, including namespace, of this item as it exists in the
         /// .NET code (e.g. <c>Namespace.ObjectType.MethodName</c>).
         /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <value>The fully qualified name given to this item.</value>
         string InternalFullName { get; }
 
         /// <summary>
@@ -85,15 +85,15 @@ namespace GraphQL.AspNet.Interfaces.Execution
         string InternalName { get; }
 
         /// <summary>
-        /// Gets the qualified, unique route that points to the field in the object graph.
+        /// Gets the unique route that points to the field in the object graph.
         /// </summary>
         /// <value>The route.</value>
         SchemaItemPath Route { get; }
 
         /// <summary>
-        /// Gets the templatized arguments representing the field.
+        /// Gets the templatized field arguments representing the field (if any).
         /// </summary>
-        /// <value>The arguments.</value>
+        /// <value>The arguments defined on this field.</value>
         IReadOnlyList<IGraphArgumentTemplate> Arguments { get; }
     }
 }

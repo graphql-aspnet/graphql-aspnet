@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Common.Generics.Interfaces
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    public interface IOrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IOrderedDictionary
+    internal interface IOrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IOrderedDictionary
     {
         /// <summary>
         /// Gets a value indicating whether this instance is read only.
