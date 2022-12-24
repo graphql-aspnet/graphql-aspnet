@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.InputModel
+namespace GraphQL.AspNet.Controllers.InputModel
 {
     using System;
 

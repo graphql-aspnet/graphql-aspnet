@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.Controllers
     using System;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Controllers.ActionResults.Batching;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
 

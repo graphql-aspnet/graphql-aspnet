@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Execution.QueryPlans;
     using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
     using GraphQL.AspNet.Interfaces.Schema;

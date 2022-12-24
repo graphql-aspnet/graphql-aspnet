@@ -7,11 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.InputModel
+namespace GraphQL.AspNet.Controllers.InputModel
 {
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution;
 
     /// <summary>
     /// An entry in a model state dictionary describing the internal (non-graphql) validation of an input argument to an action method.

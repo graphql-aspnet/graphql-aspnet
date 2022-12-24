@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.InputModel;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;

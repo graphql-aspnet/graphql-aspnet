@@ -7,12 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.InputModel
+namespace GraphQL.AspNet.Controllers.InputModel
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas.TypeSystem;
 

@@ -11,8 +11,8 @@ namespace GraphQL.AspNet.Engine
 {
     using System;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
     using GraphQL.AspNet.Interfaces.Logging;

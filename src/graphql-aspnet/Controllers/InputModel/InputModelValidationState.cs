@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.InputModel
+namespace GraphQL.AspNet.Controllers.InputModel
 {
     /// <summary>
     /// An enumeraton indicating the validation state of a single model item.

@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Controllers
     using System.Reflection;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Controllers.ActionResults;
-    using GraphQL.AspNet.Execution.InputModel;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Tests.Controllers.ControllerTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;

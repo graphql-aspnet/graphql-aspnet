@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet.Controllers.ActionResults
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Controllers;
 
     /// <summary>

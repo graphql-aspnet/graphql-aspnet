@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
 {
-    using GraphQL.AspNet.Execution.InputModel;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Interfaces.Logging;
 
     /// <summary>
