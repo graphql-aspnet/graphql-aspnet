@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     [DebuggerDisplay("{Description}")]
     internal class DocumentFieldSelectionSet : DocumentPartBase, IFieldSelectionSetDocumentPart, IDocumentPart, IDecdendentDocumentPartSubscriber
     {
-        private ExecutionFieldSet _executionSet;
+        private ExecutableFieldSelectionSet _executionSet;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldSelectionSet" /> class.
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
             : base(parent, location)
         {
             this.AssignGraphType(parent.GraphType);
-            _executionSet = new ExecutionFieldSet(this);
+            _executionSet = new ExecutableFieldSelectionSet(this);
         }
 
         /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />

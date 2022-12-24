@@ -9,26 +9,26 @@
 
 namespace GraphQL.AspNet.Execution.ValueResolvers
 {
-    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A resolver that will convert a source value into a valid <see cref="Enum"/>.
+    /// A resolver that operates in context of a field input value that can
+    /// generate a qualified .NET object for the provided scalar data.
     /// </summary>
-    internal class EnumValueInputResolver : IInputValueResolver
+    internal class ScalarInputValueResolver : IInputValueResolver
     {
-        private readonly ILeafValueResolver _enumResolver;
+        private readonly ILeafValueResolver _scalarResolver;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EnumValueInputResolver" /> class.
+        /// Initializes a new instance of the <see cref="ScalarInputValueResolver"/> class.
         /// </summary>
-        /// <param name="resolver">The base resolver for the enum.</param>
-        public EnumValueInputResolver(ILeafValueResolver resolver)
+        /// <param name="scalarResolver">The resolver to resolve a scalar leaf value.</param>
+        public ScalarInputValueResolver(ILeafValueResolver scalarResolver)
         {
-            _enumResolver = Validation.ThrowIfNullOrReturn(resolver, nameof(resolver));
+            _scalarResolver = Validation.ThrowIfNullOrReturn(scalarResolver, nameof(scalarResolver));
         }
 
         /// <inheritdoc />
@@ -43,12 +43,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
             }
 
             if (resolvableItem is IResolvableValue resolvableValue)
-            {
-                // enums may be as delimited strings (read from variables collection)
-                // or as non-delimited strings (read from a query document)
-                var value = GraphQLStrings.UnescapeAndTrimDelimiters(resolvableValue.ResolvableValue, false);
-                return _enumResolver.Resolve(value.AsSpan());
-            }
+                return _scalarResolver.Resolve(resolvableValue.ResolvableValue);
 
             return null;
         }

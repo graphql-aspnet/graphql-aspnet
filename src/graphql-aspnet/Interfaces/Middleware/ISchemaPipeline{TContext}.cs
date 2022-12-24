@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.Middleware
     /// </summary>
     /// <typeparam name="TContext">The type of the context the pipeline can process.</typeparam>
     public interface ISchemaPipeline<TContext> : ISchemaPipeline
-        where TContext : class, IExecutionContext
+        where TContext : class, IMiddlewareExecutionContext
     {
         /// <summary>
         /// Gets the delegate function representing the start of the pipeline.

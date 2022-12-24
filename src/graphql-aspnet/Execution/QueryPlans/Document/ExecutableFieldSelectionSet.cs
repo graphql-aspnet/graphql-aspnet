@@ -20,18 +20,18 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
     /// a given field selection set. This includes fields directly included as well as those
     /// that would be incorporated via a fragment spread or inline fragment.
     /// </summary>
-    internal class ExecutionFieldSet : IExecutableFieldSelectionSet
+    internal class ExecutableFieldSelectionSet : IExecutableFieldSelectionSet
     {
         private int _sequence;
         private int _lastBuiltSequence;
         private List<IFieldDocumentPart> _cachedExecutableFields;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExecutionFieldSet"/> class.
+        /// Initializes a new instance of the <see cref="ExecutableFieldSelectionSet"/> class.
         /// </summary>
         /// <param name="owner">The master field selection set on which this instance
         /// is based.</param>
-        public ExecutionFieldSet(IFieldSelectionSetDocumentPart owner)
+        public ExecutableFieldSelectionSet(IFieldSelectionSetDocumentPart owner)
         {
             this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
             _cachedExecutableFields = null;
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
 
             var newList = new List<IFieldDocumentPart>((_cachedExecutableFields?.Count ?? 8) * 2);
 
-            var iterator = new ExecutableFieldSetEnumerator(this.Owner);
+            var iterator = new ExecutableFieldSelectionSetEnumerator(this.Owner);
             while (iterator.MoveNext())
                 newList.Add(iterator.Current);
 

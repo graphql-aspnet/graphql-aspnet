@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
                 FIELD_PATH)
         {
             Validation.ThrowIfNull(graphTypeName, nameof(graphTypeName));
-            this.UpdateResolver(new FunctionValueResolver<object, string>((obj) => graphTypeName.AsCompletedTask()), FieldResolutionMode.PerSourceItem);
+            this.UpdateResolver(new FunctionGraphFieldResolver<object, string>((obj) => graphTypeName.AsCompletedTask()), FieldResolutionMode.PerSourceItem);
         }
 
         /// <inheritdoc />

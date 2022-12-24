@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     /// if necessary.
     /// </summary>
     [DebuggerDisplay("Input Object: {_objectType.Name}")]
-    internal class InputObjectResolver : IInputValueResolver
+    internal class InputObjectValueResolver : IInputValueResolver
     {
         private readonly IInputObjectGraphType _graphType;
         private readonly Type _objectType;
@@ -38,12 +38,12 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
         private readonly ISchema _schema;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InputObjectResolver" /> class.
+        /// Initializes a new instance of the <see cref="InputObjectValueResolver" /> class.
         /// </summary>
         /// <param name="graphType">The graph type in the target schema for the object in question.</param>
         /// <param name="concreteType">The concrete type to render the data as.</param>
         /// <param name="schema">The schema that owns the supplied <paramref name="graphType"/>.</param>
-        public InputObjectResolver(IInputObjectGraphType graphType, Type concreteType, ISchema schema)
+        public InputObjectValueResolver(IInputObjectGraphType graphType, Type concreteType, ISchema schema)
         {
             _graphType = Validation.ThrowIfNullOrReturn(graphType, nameof(graphType));
             _objectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
@@ -56,8 +56,8 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
         /// Adds a field resolver, as deteremined by input fields on a query document, that will be needed
         /// to resolve an object requested of this instance.
         /// </summary>
-        /// <param name="fieldName">Name of the field.</param>
-        /// <param name="resolver">The resolver.</param>
+        /// <param name="fieldName">Name of the field on the input object.</param>
+        /// <param name="resolver">The input value resolver to use for the given field.</param>
         public void AddFieldResolver(string fieldName, IInputValueResolver resolver)
         {
             _fieldResolvers.Add(fieldName, resolver);

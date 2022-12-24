@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
 
@@ -26,16 +25,16 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// <remarks>
     /// This resolver is used heavily by the introspection system.
     /// </remarks>
-    internal class FunctionValueResolver<TSource, TReturn> : IGraphFieldResolver
+    internal class FunctionGraphFieldResolver<TSource, TReturn> : IGraphFieldResolver
         where TSource : class
     {
         private readonly Func<TSource, Task<TReturn>> _func;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FunctionValueResolver{TSource,TReturn}" /> class.
+        /// Initializes a new instance of the <see cref="FunctionGraphFieldResolver{TSource,TReturn}" /> class.
         /// </summary>
         /// <param name="func">The function to execute to resolve the field.</param>
-        public FunctionValueResolver(Func<TSource, Task<TReturn>> func)
+        public FunctionGraphFieldResolver(Func<TSource, Task<TReturn>> func)
         {
             _func = Validation.ThrowIfNullOrReturn(func, nameof(func));
         }

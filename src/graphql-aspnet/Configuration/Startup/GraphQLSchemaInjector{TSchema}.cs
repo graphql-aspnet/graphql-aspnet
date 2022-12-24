@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Configuration.Startup
         public static Func<IServiceProvider, ISchemaPipeline<TSchema, TContext>>
             CreatePipelineFactory<TMiddleware, TContext>(ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> pipelineBuilder)
                 where TMiddleware : class, IGraphMiddlewareComponent<TContext>
-                where TContext : class, IExecutionContext
+                where TContext : class, IMiddlewareExecutionContext
         {
             return (sp) =>
             {

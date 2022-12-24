@@ -22,8 +22,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A generator capable of converting a single <see cref="IOperationDocumentPart"/> from a
-    /// query document into an actionable execution context containing the necessary data, steps,
+    /// A generator capable of converting a single <see cref="IOperationDocumentPart"/> into
+    /// an actionable execution context containing the necessary data, steps,
     /// resolvers, analyzers etc. to fulfill a request made from it.
     /// </summary>
     internal class ExecutableOperationGenerator

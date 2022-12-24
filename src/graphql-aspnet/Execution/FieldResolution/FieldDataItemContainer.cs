@@ -14,46 +14,46 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
-    /// A data item container, that may represent a collection of data items or just one singular item,
+    /// A field data item container, that may represent a collection of data items or just one singular item,
     /// that acts as a target to operate against for various invocations.
     /// </summary>
     [DebuggerDisplay("{Path} (Count: {Items.Count})")]
-    public class GraphDataContainer
+    public class FieldDataItemContainer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphDataContainer" /> class.
+        /// Initializes a new instance of the <see cref="FieldDataItemContainer" /> class.
         /// </summary>
         /// <param name="rawData">The singular raw data item which will be passed as the target data to the resolver of this request.</param>
         /// <param name="path">The path in the object graph pointed to by this data container.</param>
         /// <param name="dataItems">The set of data items making up the <paramref name="rawData"/> object. May be null
         /// if the <paramref name="rawData"/> is not an enumerable object.</param>
-        public GraphDataContainer(
+        public FieldDataItemContainer(
             object rawData,
             SourcePath path,
-            params GraphDataItem[] dataItems)
+            params FieldDataItem[] dataItems)
         {
             this.Path = path;
             this.Value = rawData;
-            this.Items = new List<GraphDataItem>(dataItems);
+            this.Items = new List<FieldDataItem>(dataItems);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphDataContainer" /> class.
+        /// Initializes a new instance of the <see cref="FieldDataItemContainer" /> class.
         /// </summary>
         /// <param name="rawData">The singular raw data item which will be passed as the target data to the resolver of this request.</param>
         /// <param name="path">The path in the object graph pointed to by this data container.</param>
         /// <param name="dataItems">The set of data items making up the <paramref name="rawData"/> object. May be null
         /// if the <paramref name="rawData"/> is not an enumerable object.</param>
-        public GraphDataContainer(
+        public FieldDataItemContainer(
             object rawData,
             SourcePath path,
-            IEnumerable<GraphDataItem> dataItems)
+            IEnumerable<FieldDataItem> dataItems)
         {
             this.Path = path;
             this.Value = rawData;
             this.Items = dataItems == null
-                ? new List<GraphDataItem>()
-                : new List<GraphDataItem>(dataItems);
+                ? new List<FieldDataItem>()
+                : new List<FieldDataItem>(dataItems);
         }
 
         /// <summary>
@@ -72,6 +72,6 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// Gets the collection of data items being passed with this container.
         /// </summary>
         /// <value>The set of individual data items represented by the <see cref="Value"/>.</value>
-        public List<GraphDataItem> Items { get; }
+        public List<FieldDataItem> Items { get; }
     }
 }

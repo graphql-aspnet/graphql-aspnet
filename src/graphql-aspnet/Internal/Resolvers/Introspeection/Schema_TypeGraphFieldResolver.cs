@@ -22,15 +22,15 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
     /// A resolver for the '__type' meta field returning an <see cref="IntrospectedType"/> model item
     /// representing any given <see cref="IGraphType"/> on a schema.
     /// </summary>
-    internal class Schema_TypeFieldResolver : IGraphFieldResolver
+    internal class Schema_TypeGraphFieldResolver : IGraphFieldResolver
     {
         private readonly IntrospectedSchema _schema;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Schema_TypeFieldResolver"/> class.
+        /// Initializes a new instance of the <see cref="Schema_TypeGraphFieldResolver"/> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        public Schema_TypeFieldResolver(IntrospectedSchema schema)
+        public Schema_TypeGraphFieldResolver(IntrospectedSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }

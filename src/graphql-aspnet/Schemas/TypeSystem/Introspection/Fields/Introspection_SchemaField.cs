@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
                 Constants.ReservedNames.SCHEMA_FIELD,
                 new GraphTypeExpression(Constants.ReservedNames.SCHEMA_TYPE),
                 FIELD_PATH,
-                resolver: new FunctionValueResolver<object, IntrospectedSchema>((x) => schema.AsCompletedTask()))
+                resolver: new FunctionGraphFieldResolver<object, IntrospectedSchema>((x) => schema.AsCompletedTask()))
         {
             this.IntrospectedSchema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }

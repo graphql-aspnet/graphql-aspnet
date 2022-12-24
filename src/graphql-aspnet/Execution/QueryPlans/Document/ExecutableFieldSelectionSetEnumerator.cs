@@ -19,25 +19,25 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
     /// executable field in its scope. This can be a directly attached field,
     /// or one that would be included via an inline fragment or named fragment spread.
     /// </summary>
-    internal class ExecutableFieldSetEnumerator : IEnumerator<IFieldDocumentPart>
+    internal class ExecutableFieldSelectionSetEnumerator : IEnumerator<IFieldDocumentPart>
     {
-        private readonly bool _activeOnly;
+        private readonly bool _includedOnly;
         private readonly List<IDocumentPart> _partsToIterator;
 
         private int _index;
         private HashSet<INamedFragmentDocumentPart> _traversedFragments;
         private INamedFragmentDocumentPart _activeNamedFragment;
-        private ExecutableFieldSetEnumerator _childEnumerator;
+        private ExecutableFieldSelectionSetEnumerator _childEnumerator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExecutableFieldSetEnumerator"/> class.
+        /// Initializes a new instance of the <see cref="ExecutableFieldSelectionSetEnumerator"/> class.
         /// </summary>
         /// <param name="selectionSet">The selection set.</param>
-        /// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+        /// <param name="includedOnly">if set to <c>true</c> only included parts are iterated on.</param>
         /// <param name="traversedFragments">The traversed fragments.</param>
-        public ExecutableFieldSetEnumerator(
+        public ExecutableFieldSelectionSetEnumerator(
             IFieldSelectionSetDocumentPart selectionSet,
-            bool activeOnly = false,
+            bool includedOnly = false,
             HashSet<INamedFragmentDocumentPart> traversedFragments = null)
         {
             // make static the children in this enumerator so that it doesnt accidently
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
                 _partsToIterator.AddRange(selectionSet.Children);
             }
 
-            _activeOnly = activeOnly;
+            _includedOnly = includedOnly;
             _traversedFragments = traversedFragments ?? new HashSet<INamedFragmentDocumentPart>();
             _index = -1;
             _childEnumerator = null;
@@ -66,16 +66,16 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
             {
                 if (_partsToIterator[_index] is IFieldDocumentPart fd)
                 {
-                    if (!_activeOnly || fd.IsIncluded)
+                    if (!_includedOnly || fd.IsIncluded)
                         return true;
                 }
                 else if (_partsToIterator[_index] is IInlineFragmentDocumentPart iif)
                 {
-                    if (!_activeOnly || iif.IsIncluded)
+                    if (!_includedOnly || iif.IsIncluded)
                     {
-                        _childEnumerator = new ExecutableFieldSetEnumerator(
+                        _childEnumerator = new ExecutableFieldSelectionSetEnumerator(
                             iif.FieldSelectionSet,
-                            _activeOnly,
+                            _includedOnly,
                             _traversedFragments);
 
                         if (_childEnumerator.MoveNext())
@@ -90,13 +90,13 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
                 {
                     if (fs.Fragment != null
                         && !_traversedFragments.Contains(fs.Fragment)
-                        && (!_activeOnly || fs.IsIncluded))
+                        && (!_includedOnly || fs.IsIncluded))
                     {
                         _traversedFragments.Add(fs.Fragment);
                         _activeNamedFragment = fs.Fragment;
-                        _childEnumerator = new ExecutableFieldSetEnumerator(
+                        _childEnumerator = new ExecutableFieldSelectionSetEnumerator(
                             fs.Fragment.FieldSelectionSet,
-                            _activeOnly,
+                            _includedOnly,
                             _traversedFragments);
 
                         if (_childEnumerator.MoveNext())

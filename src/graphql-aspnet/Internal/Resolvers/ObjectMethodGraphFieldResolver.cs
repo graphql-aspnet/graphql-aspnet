@@ -24,16 +24,16 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// A field resolver that will invoke a schema pipeline for whatever schema is beng processed
     /// resulting in the configured <see cref="IGraphFieldResolverMethod"/> handling the request.
     /// </summary>
-    internal class ObjectMethodResolver : IGraphFieldResolver
+    internal class ObjectMethodGraphFieldResolver : IGraphFieldResolver
     {
         private readonly IGraphFieldResolverMethod _graphMethod;
         private readonly MethodInfo _methodInfo;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectMethodResolver" /> class.
+        /// Initializes a new instance of the <see cref="ObjectMethodGraphFieldResolver" /> class.
         /// </summary>
-        /// <param name="graphMethod">The graph method.</param>
-        public ObjectMethodResolver(IGraphFieldResolverMethod graphMethod)
+        /// <param name="graphMethod">A resolver method that points to a .NET method.</param>
+        public ObjectMethodGraphFieldResolver(IGraphFieldResolverMethod graphMethod)
         {
             _graphMethod = Validation.ThrowIfNullOrReturn(graphMethod, nameof(graphMethod));
             _methodInfo = _graphMethod.Method;

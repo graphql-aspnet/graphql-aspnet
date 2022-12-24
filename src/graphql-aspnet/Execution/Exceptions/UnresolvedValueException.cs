@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Execution.Exceptions
         }
 
         /// <summary>
-        /// Gets the value that was not resolved.
+        /// Gets the value, from a query text, that was not resolved correctly.
         /// </summary>
         /// <value>The value.</value>
         public string Value { get; }

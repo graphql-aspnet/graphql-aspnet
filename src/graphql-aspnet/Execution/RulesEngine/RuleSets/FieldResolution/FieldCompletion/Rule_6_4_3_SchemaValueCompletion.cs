@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
         /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
         public override bool ShouldExecute(FieldValidationContext context)
         {
-            return context?.DataItem != null && context.DataItem.Status == FieldItemResolutionStatus.ResultAssigned;
+            return context?.DataItem != null && context.DataItem.Status == FieldDataItemResolutionStatus.ResultAssigned;
         }
 
         /// <summary>

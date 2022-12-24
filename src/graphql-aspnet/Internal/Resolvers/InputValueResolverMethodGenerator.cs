@@ -15,25 +15,24 @@ namespace GraphQL.AspNet.Execution.QueryPlans
     using GraphQL.AspNet.Execution.ValueResolvers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An object that, for a given schema, can generate a resolver function to evaluate
-    /// and properly build dynamic values expressed in graph queries as part of field arguments
+    /// and properly build incoming values expressed in graph queries as part of field arguments
     /// and input objects.
     /// </summary>
-    internal class InputResolverMethodGenerator
+    internal class InputValueResolverMethodGenerator
     {
         private readonly ISchema _schema;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InputResolverMethodGenerator"/> class.
+        /// Initializes a new instance of the <see cref="InputValueResolverMethodGenerator"/> class.
         /// </summary>
         /// <param name="schema">The schema this generator will reference when building
         /// the resolver.</param>
-        public InputResolverMethodGenerator(ISchema schema)
+        public InputValueResolverMethodGenerator(ISchema schema)
         {
             _schema = schema;
         }
@@ -64,12 +63,12 @@ namespace GraphQL.AspNet.Execution.QueryPlans
             if (graphType is IScalarGraphType scalar)
             {
                 coreType = _schema.KnownTypes.FindConcreteType(scalar);
-                coreResolver = new ScalarValueInputResolver(scalar.SourceResolver);
+                coreResolver = new ScalarInputValueResolver(scalar.SourceResolver);
             }
             else if (graphType is IEnumGraphType enumGraphType)
             {
                 coreType = _schema.KnownTypes.FindConcreteType(enumGraphType);
-                coreResolver = new EnumValueInputResolver(enumGraphType.SourceResolver);
+                coreResolver = new EnumInputValueResolver(enumGraphType.SourceResolver);
             }
             else if (graphType is IInputObjectGraphType inputType)
             {
@@ -82,7 +81,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
             {
                 if (expression.Wrappers[i] == MetaGraphTypes.IsList)
                 {
-                    coreResolver = new ListValueResolver(coreType, coreResolver);
+                    coreResolver = new ListInputValueResolver(coreType, coreResolver);
                     coreType = typeof(IEnumerable<>).MakeGenericType(coreType);
                 }
             }
@@ -92,7 +91,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
 
         private IInputValueResolver CreateObjectResolver(IInputObjectGraphType inputType, Type type)
         {
-            var inputObjectResolver = new InputObjectResolver(inputType, type, _schema);
+            var inputObjectResolver = new InputObjectValueResolver(inputType, type, _schema);
 
             foreach (var field in inputType.Fields)
             {

@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             public Task Task { get; set; }
 
-            public GraphDataItem DataItem { get; set; }
+            public FieldDataItem DataItem { get; set; }
 
             public GraphFieldExecutionContext FieldContext { get; set; }
         }
@@ -143,9 +143,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 if (!context.DefaultFieldSources.TryRetrieveSource(item.Context.Field, out dataSourceValue))
                     dataSourceValue = this.GenerateRootSourceData(operation.OperationType);
 
-                var topLevelDataItem = new GraphDataItem(item.Context, dataSourceValue, path);
+                var topLevelDataItem = new FieldDataItem(item.Context, dataSourceValue, path);
 
-                var sourceData = new GraphDataContainer(dataSourceValue, path, topLevelDataItem);
+                var sourceData = new FieldDataItemContainer(dataSourceValue, path, topLevelDataItem);
 
                 var fieldRequest = new GraphFieldRequest(
                     context.OperationRequest,

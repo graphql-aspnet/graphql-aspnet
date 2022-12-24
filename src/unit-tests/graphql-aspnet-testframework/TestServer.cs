@@ -250,7 +250,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
             var operationRequest = new Mock<IQueryOperationRequest>();
             var fieldInvocationContext = new Mock<IGraphFieldInvocationContext>();
-            var parentContext = new Mock<IExecutionContext>();
+            var parentContext = new Mock<IMiddlewareExecutionContext>();
             var graphFieldRequest = new Mock<IGraphFieldRequest>();
             var fieldDocumentPart = new Mock<IFieldDocumentPart>();
 
@@ -278,12 +278,12 @@ namespace GraphQL.AspNet.Tests.Framework
             fieldInvocationContext.Setup(x => x.Schema).Returns(this.Schema);
             fieldInvocationContext.Setup(x => x.FieldDocumentPart).Returns(fieldDocumentPart.Object);
 
-            var resolvedParentDataItem = new GraphDataItem(
+            var resolvedParentDataItem = new FieldDataItem(
                 fieldInvocationContext.Object,
                 sourceData,
                 SourcePath.None);
 
-            var sourceDataContainer = new GraphDataContainer(
+            var sourceDataContainer = new FieldDataItemContainer(
                 sourceData,
                 SourcePath.None,
                 resolvedParentDataItem);

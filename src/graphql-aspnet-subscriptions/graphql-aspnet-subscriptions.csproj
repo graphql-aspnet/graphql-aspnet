@@ -9,12 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="SubscirptionServer\**" />
-    <EmbeddedResource Remove="SubscirptionServer\**" />
-    <None Remove="SubscirptionServer\**" />
-  </ItemGroup>
-
-  <ItemGroup>
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.1.1" />

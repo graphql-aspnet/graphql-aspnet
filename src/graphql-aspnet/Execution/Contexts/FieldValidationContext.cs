@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="dataItem">The data item to process.</param>
         /// <param name="messageCollection">An optional message collection to use for this context, if not supplied
         /// a new one will be generated.</param>
-        public FieldValidationContext(ISchema schema, GraphDataItem dataItem, IGraphMessageCollection messageCollection = null)
+        public FieldValidationContext(ISchema schema, FieldDataItem dataItem, IGraphMessageCollection messageCollection = null)
         {
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             this.DataItem = dataItem;
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets the data item in scope for this context.
         /// </summary>
         /// <value>The data item.</value>
-        public GraphDataItem DataItem { get; }
+        public FieldDataItem DataItem { get; }
 
         /// <summary>
         /// Gets the result data (received from a resolver) being evaluated by this context.

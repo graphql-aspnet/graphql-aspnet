@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     /// <summary>
     /// A single argument to a field (or directive) as its represented in a parsed query
     /// document. This represents the marrying of the field's defined argument in the schema
-    /// and the run time context of the argument value.
+    /// and supplied argument value.
     /// </summary>
     [Serializable]
     [DebuggerDisplay("{Name}")]

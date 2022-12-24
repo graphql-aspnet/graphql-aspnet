@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void GraphFieldExecutionContext_PropertyCheck()
         {
-            var parentContext = new Mock<IExecutionContext>();
+            var parentContext = new Mock<IMiddlewareExecutionContext>();
 
             var operationRequest = new Mock<IQueryOperationRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void GraphQueryExecutionContext_PropertyCheck()
         {
-            var parentContext = new Mock<IExecutionContext>();
+            var parentContext = new Mock<IMiddlewareExecutionContext>();
 
             var operationRequest = new Mock<IQueryOperationRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();
@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void GraphDirectiveExecutionContext_PropertyCheck()
         {
-            var parentContext = new Mock<IExecutionContext>();
+            var parentContext = new Mock<IMiddlewareExecutionContext>();
 
             var operationRequest = new Mock<IQueryOperationRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();

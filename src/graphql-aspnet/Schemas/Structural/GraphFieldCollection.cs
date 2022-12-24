@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Schemas.Structural
                 GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 typeof(TReturn),
                 FieldResolutionMode.PerSourceItem,
-                new FunctionValueResolver<TSource, TReturn>(resolver));
+                new FunctionGraphFieldResolver<TSource, TReturn>(resolver));
             field.Description = description;
 
             return this.AddField(field);

@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public override IGraphFieldResolver CreateResolver()
         {
-            return new ObjectPropertyResolver(this);
+            return new ObjectPropertyGraphFieldResolver(this);
         }
 
         /// <inheritdoc />

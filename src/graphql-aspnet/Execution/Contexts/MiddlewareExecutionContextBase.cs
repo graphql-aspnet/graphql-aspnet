@@ -20,15 +20,15 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// <summary>
     /// A base middleware context containing the core items required of all contexts.
     /// </summary>
-    public abstract class ExecutionContextBase : IExecutionContext
+    public abstract class MiddlewareExecutionContextBase : IMiddlewareExecutionContext
     {
         private bool _isCancelled;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExecutionContextBase"/> class.
+        /// Initializes a new instance of the <see cref="MiddlewareExecutionContextBase"/> class.
         /// </summary>
-        /// <param name="otherContext">The other context.</param>
-        protected ExecutionContextBase(IExecutionContext otherContext)
+        /// <param name="otherContext">The other context on which this context is based.</param>
+        protected MiddlewareExecutionContextBase(IMiddlewareExecutionContext otherContext)
             : this(
                     otherContext?.OperationRequest,
                     otherContext?.ServiceProvider,
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExecutionContextBase" /> class.
+        /// Initializes a new instance of the <see cref="MiddlewareExecutionContextBase" /> class.
         /// </summary>
         /// <param name="operationRequest">The original operation request.</param>
         /// <param name="serviceProvider">The service provider passed on the HttpContext.</param>
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="metrics">The metrics package to profile this request, if any.</param>
         /// <param name="logger">The logger instance to record events related to this context.</param>
         /// <param name="cancelToken">The cancel token governing this execution context.</param>
-        protected ExecutionContextBase(
+        protected MiddlewareExecutionContextBase(
             IQueryOperationRequest operationRequest,
             IServiceProvider serviceProvider,
             IQuerySession querySession,

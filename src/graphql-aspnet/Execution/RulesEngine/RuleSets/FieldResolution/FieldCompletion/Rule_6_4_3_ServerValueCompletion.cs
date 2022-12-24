@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
         public override bool ShouldExecute(FieldValidationContext context)
         {
             return context?.DataItem != null
-                && context.DataItem.Status == FieldItemResolutionStatus.ResultAssigned
+                && context.DataItem.Status == FieldDataItemResolutionStatus.ResultAssigned
                 && context.ResultData != null
                 && !context.DataItem.TypeExpression.IsListOfItems;
         }

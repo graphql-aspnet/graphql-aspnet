@@ -9,10 +9,10 @@
 namespace GraphQL.AspNet.Execution.FieldResolution
 {
     /// <summary>
-    /// An enumeration of the various stati an data item can be in while its being processed by
+    /// An enumeration of the various stati a data item can be in while its being processed by
     /// the runtime.
     /// </summary>
-    public enum FieldItemResolutionStatus
+    public enum FieldDataItemResolutionStatus
     {
         /// <summary>
         /// The resolution pipeline for this specific instance has not yet begun

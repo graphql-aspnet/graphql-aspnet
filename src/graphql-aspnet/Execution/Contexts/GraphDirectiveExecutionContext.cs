@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A set of information needed to successiful execute a directive as part of a field resolution.
     /// </summary>
     [DebuggerDisplay("Directive Context: {Directive.Name}")]
-    public class GraphDirectiveExecutionContext : ExecutionContextBase
+    public class GraphDirectiveExecutionContext : MiddlewareExecutionContextBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveExecutionContext" /> class.
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="user">The user that has been preauthorized for this execution.</param>
         public GraphDirectiveExecutionContext(
             ISchema schema,
-            IExecutionContext parentContext,
+            IMiddlewareExecutionContext parentContext,
             IGraphDirectiveRequest request,
             IResolvedVariableCollection variableData = null,
             ClaimsPrincipal user = null)

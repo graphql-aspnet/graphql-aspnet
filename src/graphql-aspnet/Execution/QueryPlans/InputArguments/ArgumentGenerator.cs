@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     internal class ArgumentGenerator
     {
         private readonly IInputArgumentCollectionDocumentPart _suppliedArguments;
-        private readonly InputResolverMethodGenerator _inputResolverGenerator;
+        private readonly InputValueResolverMethodGenerator _inputResolverGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ArgumentGenerator" /> class.
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         {
             _suppliedArguments = Validation.ThrowIfNullOrReturn(suppliedArguments, nameof(suppliedArguments));
             Validation.ThrowIfNull(schema, nameof(schema));
-            _inputResolverGenerator = new InputResolverMethodGenerator(schema);
+            _inputResolverGenerator = new InputValueResolverMethodGenerator(schema);
         }
 
         /// <summary>

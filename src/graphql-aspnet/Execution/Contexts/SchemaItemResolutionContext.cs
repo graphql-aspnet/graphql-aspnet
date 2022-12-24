@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A base context used by all field and directive resolvers in order to successfully invoke
     /// a controller method or object property and retrieve a data value for a field.
     /// </summary>
-    public abstract class SchemaItemResolutionContext : ExecutionContextBase
+    public abstract class SchemaItemResolutionContext : MiddlewareExecutionContextBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaItemResolutionContext" /> class.
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// resolution context.</param>
         protected SchemaItemResolutionContext(
             ISchema targetSchema,
-            IExecutionContext parentContext,
+            IMiddlewareExecutionContext parentContext,
             IDataRequest request,
             IExecutionArgumentCollection arguments,
             ClaimsPrincipal user = null)

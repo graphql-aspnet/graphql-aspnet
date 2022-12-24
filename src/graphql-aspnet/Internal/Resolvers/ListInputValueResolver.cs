@@ -19,19 +19,20 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A higher order resolver that coerces the provided source data into a list of items of the provided singular value resolver.
+    /// A higher order resolver that coerces the provided source data into a list of
+    /// items of the provided singular input value resolver.
     /// </summary>
-    internal class ListValueResolver : IInputValueResolver
+    internal class ListInputValueResolver : IInputValueResolver
     {
         private readonly IInputValueResolver _itemResolver;
         private readonly Type _listItemType;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ListValueResolver" /> class.
+        /// Initializes a new instance of the <see cref="ListInputValueResolver" /> class.
         /// </summary>
         /// <param name="listItemType">The expected type of the item in the list.</param>
         /// <param name="itemResolver">The item resolver that can generate instances of <paramref name="listItemType"/>.</param>
-        public ListValueResolver(Type listItemType, IInputValueResolver itemResolver)
+        public ListInputValueResolver(Type listItemType, IInputValueResolver itemResolver)
         {
             _itemResolver = Validation.ThrowIfNullOrReturn(itemResolver, nameof(itemResolver));
             _listItemType = Validation.ThrowIfNullOrReturn(listItemType, nameof(listItemType));

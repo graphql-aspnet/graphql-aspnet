@@ -120,8 +120,8 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         public FieldContextBuilder AddSourceData(object sourceData, SourcePath path = null)
         {
             path = path ?? SourcePath.None;
-            var item = new GraphDataItem(_mockInvocationContext.Object, sourceData, path);
-            var dataSource = new GraphDataContainer(sourceData, path, item);
+            var item = new FieldDataItem(_mockInvocationContext.Object, sourceData, path);
+            var dataSource = new FieldDataItemContainer(sourceData, path, item);
             _mockRequest.Setup(x => x.Data).Returns(dataSource);
             return this;
         }
@@ -164,10 +164,10 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             return this;
         }
 
-        private IExecutionContext CreateFakeParentMiddlewareContext()
+        private IMiddlewareExecutionContext CreateFakeParentMiddlewareContext()
         {
             var operationRequest = new Mock<IQueryOperationRequest>();
-            var parentContext = new Mock<IExecutionContext>();
+            var parentContext = new Mock<IMiddlewareExecutionContext>();
 
             parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);

@@ -20,12 +20,12 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
     /// <summary>
     /// A resolver to extract fields from a __Type during an introspection query.
     /// </summary>
-    internal class Type_TypeFieldResolver : IGraphFieldResolver
+    internal class Type_TypeGraphFieldResolver : IGraphFieldResolver
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Type_TypeFieldResolver" /> class.
+        /// Initializes a new instance of the <see cref="Type_TypeGraphFieldResolver" /> class.
         /// </summary>
-        public Type_TypeFieldResolver()
+        public Type_TypeGraphFieldResolver()
         {
         }
 

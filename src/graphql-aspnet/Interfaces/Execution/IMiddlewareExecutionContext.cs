@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// An execution context defining a set of items supported by all
     /// middleware pipelines.
     /// </summary>
-    public interface IExecutionContext
+    public interface IMiddlewareExecutionContext
     {
         /// <summary>
         /// Marks this context as being cancelled. This does not terminate a pipeline directly, rather it sets a

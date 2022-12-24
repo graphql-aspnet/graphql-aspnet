@@ -9,26 +9,26 @@
 
 namespace GraphQL.AspNet.Execution.ValueResolvers
 {
+    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A resolver that operates in context of a field input value that can generate a qualified .NET object for the
-    /// provided scalar data.
+    /// A resolver that will convert a source value into a valid <see cref="Enum"/>.
     /// </summary>
-    internal class ScalarValueInputResolver : IInputValueResolver
+    internal class EnumInputValueResolver : IInputValueResolver
     {
-        private readonly ILeafValueResolver _scalarResolver;
+        private readonly ILeafValueResolver _enumResolver;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ScalarValueInputResolver"/> class.
+        /// Initializes a new instance of the <see cref="EnumInputValueResolver" /> class.
         /// </summary>
-        /// <param name="scalarResolver">The scalar resolver.</param>
-        public ScalarValueInputResolver(ILeafValueResolver scalarResolver)
+        /// <param name="resolver">The root resolver for the enum.</param>
+        public EnumInputValueResolver(ILeafValueResolver resolver)
         {
-            _scalarResolver = Validation.ThrowIfNullOrReturn(scalarResolver, nameof(scalarResolver));
+            _enumResolver = Validation.ThrowIfNullOrReturn(resolver, nameof(resolver));
         }
 
         /// <inheritdoc />
@@ -43,7 +43,12 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
             }
 
             if (resolvableItem is IResolvableValue resolvableValue)
-                return _scalarResolver.Resolve(resolvableValue.ResolvableValue);
+            {
+                // enums may be as delimited strings (read from variables collection)
+                // or as non-delimited strings (read from a query document)
+                var value = GraphQLStrings.UnescapeAndTrimDelimiters(resolvableValue.ResolvableValue, false);
+                return _enumResolver.Resolve(value.AsSpan());
+            }
 
             return null;
         }

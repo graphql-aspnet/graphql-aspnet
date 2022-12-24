@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// A special resolver for resolving intermediate fields created by controller action
+    /// A special resolver for resolving intermediate fields created from controller action
     /// path templates.
     /// </summary>
     /// <seealso cref="IGraphFieldResolver" />

@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(Constants.ReservedNames.FIELD_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "fields"),
                 mode: FieldResolutionMode.PerSourceItem,
-                resolver: new Type_TypeFieldResolver())
+                resolver: new Type_TypeGraphFieldResolver())
             {
                 Description = "A list of navigable fields, if any, this type declares.",
             };
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(Constants.ReservedNames.ENUM_VALUE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, Constants.ReservedNames.ENUM_VALUE_TYPE),
                 mode: FieldResolutionMode.PerSourceItem,
-                resolver: new Type_EnumValuesResolver())
+                resolver: new Type_EnumValuesGraphFieldResolver())
             {
                 Description = $"For {TypeKind.ENUM.ToString()} types, declares the possible values that can be used for the enumeration; otherwise null.",
             };

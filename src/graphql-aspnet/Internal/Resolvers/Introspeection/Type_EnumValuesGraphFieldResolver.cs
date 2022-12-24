@@ -20,12 +20,12 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
     /// <summary>
     /// A resolver to extract enum values from a __Type during an introspection query.
     /// </summary>
-    internal class Type_EnumValuesResolver : IGraphFieldResolver
+    internal class Type_EnumValuesGraphFieldResolver : IGraphFieldResolver
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Type_EnumValuesResolver" /> class.
+        /// Initializes a new instance of the <see cref="Type_EnumValuesGraphFieldResolver" /> class.
         /// </summary>
-        public Type_EnumValuesResolver()
+        public Type_EnumValuesGraphFieldResolver()
         {
         }
 

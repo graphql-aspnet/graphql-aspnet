@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var owner = new Mock<IDocumentPart>();
 
-            var generator = new InputResolverMethodGenerator(this.CreateSchema());
+            var generator = new InputValueResolverMethodGenerator(this.CreateSchema());
 
             var text = ReadOnlySpan<char>.Empty;
             if (inputText != null)
@@ -209,7 +209,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var owner = new Mock<IDocumentPart>();
 
-            var generator = new InputResolverMethodGenerator(this.CreateSchema());
+            var generator = new InputValueResolverMethodGenerator(this.CreateSchema());
 
             var text = ReadOnlySpan<char>.Empty;
             if (inputText != null)
@@ -257,7 +257,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "12", ScalarValueType.Unknown, SourceLocation.None));
 
             var typeExpression = GraphTypeExpression.FromDeclaration("[Int]");
-            var generator = new InputResolverMethodGenerator(this.CreateSchema());
+            var generator = new InputValueResolverMethodGenerator(this.CreateSchema());
 
             var resolver = generator.CreateResolver(typeExpression);
             var result = resolver.Resolve(sourceList) as IEnumerable;
@@ -283,7 +283,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             outerList.Children.Add(innerList2);
 
             var typeExpression = GraphTypeExpression.FromDeclaration("[[Int]]");
-            var generator = new InputResolverMethodGenerator(this.CreateSchema());
+            var generator = new InputValueResolverMethodGenerator(this.CreateSchema());
 
             var resolver = generator.CreateResolver(typeExpression);
             var result = resolver.Resolve(outerList) as IEnumerable;

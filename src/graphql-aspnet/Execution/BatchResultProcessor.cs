@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Execution
     {
         private readonly SourceOrigin _origin;
         private readonly IGraphField _field;
-        private readonly IEnumerable<GraphDataItem> _sourceItems;
+        private readonly IEnumerable<FieldDataItem> _sourceItems;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BatchResultProcessor" /> class.
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="field">The field.</param>
         /// <param name="sourceItems">The source items.</param>
         /// <param name="origin">The origin.</param>
-        public BatchResultProcessor(IGraphField field, IEnumerable<GraphDataItem> sourceItems, SourceOrigin origin)
+        public BatchResultProcessor(IGraphField field, IEnumerable<FieldDataItem> sourceItems, SourceOrigin origin)
         {
             _origin = origin;
             _field = Validation.ThrowIfNullOrReturn(field, nameof(field));
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="data">The data that needs to be resolved.</param>
         /// <returns>IEnumerable&lt;GraphDataItem&gt;.</returns>
-        public IEnumerable<GraphDataItem> Resolve(object data)
+        public IEnumerable<FieldDataItem> Resolve(object data)
         {
             var batch = this.CreateDataBatch(data);
             if (batch == null)
@@ -79,15 +79,15 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>FieldDataBatch.</returns>
-        private DataBatch CreateDataBatch(object data)
+        private BatchDataExtractor CreateDataBatch(object data)
         {
             if (data == null)
-                return new DataBatch(_field.TypeExpression, null);
+                return new BatchDataExtractor(_field.TypeExpression, null);
 
             if (!(data is IDictionary dictionary))
                 return null;
 
-            return new DataBatch(_field.TypeExpression, dictionary);
+            return new BatchDataExtractor(_field.TypeExpression, dictionary);
         }
 
         /// <summary>

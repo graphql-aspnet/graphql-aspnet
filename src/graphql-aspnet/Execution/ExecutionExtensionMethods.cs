@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Execution
             this IGraphFieldResolver resolver,
             Func<FieldResolutionContext, CancellationToken, Task> extension)
         {
-            return new ExtendedResolver(resolver, extension);
+            return new ExtendedGraphFieldResolver(resolver, extension);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// through asp.net.
     /// </remarks>
     [DebuggerDisplay("IsValid = {IsValid} (Messages = {Messages.Count})")]
-    public class QueryExecutionContext : ExecutionContextBase
+    public class QueryExecutionContext : MiddlewareExecutionContextBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryExecutionContext" /> class.
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Execution.Contexts
             IGraphEventLogger logger = null)
             : base(request, serviceProvider, querySession, securityContext, items, metrics, logger)
         {
-            this.FieldResults = new List<GraphDataItem>();
+            this.FieldResults = new List<FieldDataItem>();
             this.DefaultFieldSources = new FieldSourceCollection();
         }
 
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// operation on this context.
         /// </summary>
         /// <value>The top level field results.</value>
-        public IList<GraphDataItem> FieldResults { get; }
+        public IList<FieldDataItem> FieldResults { get; }
 
         /// <summary>
         /// Gets a collection of source objects that can, if needed, supply as the source input

@@ -17,8 +17,8 @@ namespace GraphQL.AspNet.Execution.Variables
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// Attempts to convert the untyped keyvalue pairs supplied with a request into context-sensitive variables for a
-    /// given operation.
+    /// An object that attempts to convert the untyped keyvalue pairs (usually pulled from a json doc)
+    /// into context-sensitive variables for a specific operation in a query document.
     /// </summary>
     public class ResolvedVariableGenerator
     {
@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Execution.Variables
         /// </summary>
         /// <param name="schema">A schema to resolve against.</param>
         /// <param name="variableCollection">A set of declared variable references
-        /// on a query document.</param>
+        /// on an operation (from a supplied query document).</param>
         public ResolvedVariableGenerator(ISchema schema, IVariableCollectionDocumentPart variableCollection)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
@@ -41,11 +41,12 @@ namespace GraphQL.AspNet.Execution.Variables
         /// Converts the input variable collection to their type-expression-bound values in context of the
         /// operation being executed.
         /// </summary>
-        /// <param name="inputVariables">The input variables.</param>
+        /// <param name="inputVariables">A set of values used to resolve the variable
+        /// definitions supplied to this instance.</param>
         /// <returns>IResolvedVariableCollection.</returns>
         public IResolvedVariableCollection Resolve(IInputVariableCollection inputVariables)
         {
-            var resolverGenerator = new InputResolverMethodGenerator(_schema);
+            var resolverGenerator = new InputValueResolverMethodGenerator(_schema);
             var result = new ResolvedVariableCollection();
 
             foreach (var variable in _variableCollection)

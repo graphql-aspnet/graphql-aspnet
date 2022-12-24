@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     public interface ISchemaPipelineBuilder<TSchema, in TMiddleware, TContext>
         where TSchema : class, ISchema
         where TMiddleware : class, IGraphMiddlewareComponent<TContext>
-        where TContext : class, IExecutionContext
+        where TContext : class, IMiddlewareExecutionContext
     {
         /// <summary>
         /// Adds the given type as a middleware component for the pipeline executed for this schema type. The middleware component

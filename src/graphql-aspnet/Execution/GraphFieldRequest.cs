@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Execution
         public GraphFieldRequest(
             IQueryOperationRequest parentOperationRequest,
             IGraphFieldInvocationContext invocationContext,
-            GraphDataContainer dataSource,
+            FieldDataItemContainer dataSource,
             SourceOrigin origin = default)
         {
             this.OperationRequest = Validation.ThrowIfNullOrReturn(parentOperationRequest, nameof(parentOperationRequest));
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Execution
         public SourceOrigin Origin { get; }
 
         /// <inheritdoc />
-        public GraphDataContainer Data { get; private set; }
+        public FieldDataItemContainer Data { get; private set; }
 
         /// <inheritdoc />
         public IGraphField Field => this.InvocationContext.Field;

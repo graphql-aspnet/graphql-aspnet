@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A represenetation of an argument to a field execution context that has already been fully realized
-    /// and will return a constant value.
+    /// A represenetation of an argument to a field execution context that has already been
+    /// fully realized and will return a constant value.
     /// </summary>
     [DebuggerDisplay("{Name}")]
     internal class ResolvedInputArgumentValue : IInputValue

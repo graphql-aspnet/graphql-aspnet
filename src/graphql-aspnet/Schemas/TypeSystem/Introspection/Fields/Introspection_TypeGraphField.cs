@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE),
                 FIELD_PATH,
                 mode: FieldResolutionMode.PerSourceItem,
-                resolver: new Schema_TypeFieldResolver(schema))
+                resolver: new Schema_TypeGraphFieldResolver(schema))
         {
             this.Arguments.AddArgument(
                 "name",

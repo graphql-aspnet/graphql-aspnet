@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// resolution context.</param>
         public FieldResolutionContext(
             ISchema targetSchema,
-            IExecutionContext parentContext,
+            IMiddlewareExecutionContext parentContext,
             IGraphFieldRequest fieldRequest,
             IExecutionArgumentCollection arguments,
             ClaimsPrincipal user = null)

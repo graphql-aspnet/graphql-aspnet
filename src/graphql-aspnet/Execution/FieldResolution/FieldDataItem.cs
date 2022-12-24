@@ -27,28 +27,28 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Internal;
 
     /// <summary>
-    /// An ecapsulation of a piece of source data submitted for processing by the field execution pipeline.
+    /// An ecapsulation of a piece of real data supplied to, or resolved from, a graph field.
     /// </summary>
     [DebuggerDisplay("{Path.ToString()} (Status = {Status})")]
-    public class GraphDataItem
+    public class FieldDataItem
     {
-        private List<GraphDataItem> _childListItems;
-        private List<GraphDataItem> _childFields;
+        private List<FieldDataItem> _childListItems;
+        private List<FieldDataItem> _childFields;
         private bool _resultsDiscarded;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphDataItem" /> class.
+        /// Initializes a new instance of the <see cref="FieldDataItem" /> class.
         /// </summary>
         /// <param name="context">The context where the <paramref name="sourceData"/>
         /// is being processed.</param>
         /// <param name="sourceData">The source data item being wrapped.</param>
         /// <param name="path">The path to the data item in the query.</param>
-        public GraphDataItem(IGraphFieldInvocationContext context, object sourceData, SourcePath path)
+        public FieldDataItem(IGraphFieldInvocationContext context, object sourceData, SourcePath path)
         {
             Validation.ThrowIfNull(path, nameof(path));
             this.SourceData = sourceData;
             this.FieldContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
-            this.Status = FieldItemResolutionStatus.NotStarted;
+            this.Status = FieldDataItemResolutionStatus.NotStarted;
             this.Origin = new SourceOrigin(context.Location, path);
             this.TypeExpression = context.Field.TypeExpression;
             this.Schema = Validation.ThrowIfNullOrReturn(context.Schema, nameof(context.Schema));
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// </summary>
         /// <param name="childInvocationContext">The child invocation context.</param>
         /// <returns>GraphDataItem.</returns>
-        public GraphDataItem AddChildField(IGraphFieldInvocationContext childInvocationContext)
+        public FieldDataItem AddChildField(IGraphFieldInvocationContext childInvocationContext)
         {
             if (this.IsListField)
             {
@@ -74,12 +74,12 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                     "a list of items, a child field context cannot be directly added to it.");
             }
 
-            _childFields = _childFields ?? new List<GraphDataItem>(_expectedChildFieldCount);
+            _childFields = _childFields ?? new List<FieldDataItem>(_expectedChildFieldCount);
 
             var path = this.Origin.Path.Clone();
             path.AddFieldName(childInvocationContext.Field.Name);
 
-            var childFieldItem = new GraphDataItem(childInvocationContext, this.ResultData, path);
+            var childFieldItem = new FieldDataItem(childInvocationContext, this.ResultData, path);
             _childFields.Add(childFieldItem);
             return childFieldItem;
         }
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// if this data item contains list items.
         /// </summary>
         /// <param name="childListItem">The child list item.</param>
-        public void AddListItem(GraphDataItem childListItem)
+        public void AddListItem(FieldDataItem childListItem)
         {
             if (!this.IsListField)
             {
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                     "a collection of fields, a child list item cannot be directly added to it.");
             }
 
-            _childListItems = _childListItems ?? new List<GraphDataItem>();
+            _childListItems = _childListItems ?? new List<FieldDataItem>();
             _childListItems.Add(childListItem);
         }
 
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// target item.
         /// </summary>
         /// <param name="item">The item to copy the state to.</param>
-        public void CopyTo(GraphDataItem item)
+        public void CopyTo(FieldDataItem item)
         {
             if (item == null)
                 return;
@@ -116,8 +116,8 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             item.TypeExpression = this.TypeExpression;
             item.ResultData = this.ResultData;
             item._resultsDiscarded = this._resultsDiscarded;
-            item._childFields = this._childFields == null ? null : new List<GraphDataItem>(this._childFields);
-            item._childListItems = this._childListItems == null ? null : new List<GraphDataItem>(this._childListItems);
+            item._childFields = this._childFields == null ? null : new List<FieldDataItem>(this._childFields);
+            item._childListItems = this._childListItems == null ? null : new List<FieldDataItem>(this._childListItems);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// them as an enumerable.  If this instance is not a list the instance itself is returned as an enumerable.
         /// </summary>
         /// <returns>System.Collections.Generic.IEnumerable&lt;GraphQL.AspNet.Execution.FieldResolution.GraphDataItem&gt;.</returns>
-        internal IEnumerable<GraphDataItem> FlattenListItemTree()
+        internal IEnumerable<FieldDataItem> FlattenListItemTree()
         {
             if (!this.IsListField)
             {
@@ -146,7 +146,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// </summary>
         public void RequireChildResolution()
         {
-            this.SetStatus(FieldItemResolutionStatus.NeedsChildResolution);
+            this.SetStatus(FieldDataItemResolutionStatus.NeedsChildResolution);
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// </summary>
         public void Cancel()
         {
-            this.SetStatus(FieldItemResolutionStatus.Canceled);
+            this.SetStatus(FieldDataItemResolutionStatus.Canceled);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// </summary>
         public void Fail()
         {
-            this.SetStatus(FieldItemResolutionStatus.Failed);
+            this.SetStatus(FieldDataItemResolutionStatus.Failed);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// </summary>
         public void Complete()
         {
-            this.SetStatus(FieldItemResolutionStatus.Complete);
+            this.SetStatus(FieldDataItemResolutionStatus.Complete);
         }
 
         /// <summary>
@@ -183,14 +183,14 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         public void InvalidateResult()
         {
             _resultsDiscarded = true;
-            this.SetStatus(FieldItemResolutionStatus.Invalid);
+            this.SetStatus(FieldDataItemResolutionStatus.Invalid);
         }
 
         /// <summary>
         /// Sets the status of this data item if/when allowed.
         /// </summary>
         /// <param name="newStatus">The new status.</param>
-        protected void SetStatus(FieldItemResolutionStatus newStatus)
+        protected void SetStatus(FieldDataItemResolutionStatus newStatus)
         {
             if (this.Status.CanBeAdvancedTo(newStatus))
                 this.Status = newStatus;
@@ -208,7 +208,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             _childFields = null;
 
             this.ResultData = data;
-            this.SetStatus(FieldItemResolutionStatus.ResultAssigned);
+            this.SetStatus(FieldDataItemResolutionStatus.ResultAssigned);
 
             // initialize the children of this instance from the assigned result
             if (this.IsListField)
@@ -222,7 +222,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                 if (!(this.ResultData is IEnumerable arraySource))
                     return;
 
-                _childListItems = new List<GraphDataItem>();
+                _childListItems = new List<FieldDataItem>();
 
                 // this instances's type expression is a list (or else we wouldnt be rendering out children)
                 // strip out that outer most list component
@@ -237,7 +237,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                 {
                     var indexedPath = path.Clone();
                     indexedPath.AddArrayIndex(index++);
-                    var childItem = new GraphDataItem(this.FieldContext, item, indexedPath)
+                    var childItem = new FieldDataItem(this.FieldContext, item, indexedPath)
                     {
                         TypeExpression = childTypeExpression.Clone(),
                     };
@@ -289,7 +289,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// Gets the status of processing for this source item.
         /// </summary>
         /// <value>The status.</value>
-        public FieldItemResolutionStatus Status { get; private set; }
+        public FieldDataItemResolutionStatus Status { get; private set; }
 
         /// <summary>
         /// Gets the full origin describing this item's location in the graph tree.
@@ -315,20 +315,20 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// Gets the list items of this instance that were generated from resolved data, if any.
         /// </summary>
         /// <value>The children.</value>
-        public IList<GraphDataItem> ListItems => _childListItems;
+        public IList<FieldDataItem> ListItems => _childListItems;
 
         /// <summary>
         /// Gets the fields generated from this instance.
         /// </summary>
         /// <value>The fields.</value>
-        public IList<GraphDataItem> Fields => _childFields;
+        public IList<FieldDataItem> Fields => _childFields;
 
         /// <summary>
-        /// Gets the collective set of child <see cref="GraphDataItem"/> generated
+        /// Gets the collective set of child <see cref="FieldDataItem"/> generated
         /// by this instance be that tracked down stream fields or a collection of list items.
         /// </summary>
         /// <value>The children.</value>
-        public IEnumerable<GraphDataItem> Children
+        public IEnumerable<FieldDataItem> Children
         {
             get
             {
@@ -337,7 +337,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                 else if (_childFields != null)
                     return _childFields;
 
-                return Enumerable.Empty<GraphDataItem>();
+                return Enumerable.Empty<FieldDataItem>();
             }
         }
 
