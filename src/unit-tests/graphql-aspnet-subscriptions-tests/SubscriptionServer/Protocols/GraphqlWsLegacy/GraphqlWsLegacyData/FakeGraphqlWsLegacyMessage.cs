@@ -9,7 +9,7 @@
 
 namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.GraphqlWsLegacyData
 {
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Common;
 
     public class FakeGraphqlWsLegacyMessage : GraphqlWsLegacyMessage
     {

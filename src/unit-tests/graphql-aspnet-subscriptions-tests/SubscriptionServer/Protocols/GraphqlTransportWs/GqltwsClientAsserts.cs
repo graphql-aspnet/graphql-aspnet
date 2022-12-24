@@ -11,7 +11,7 @@ namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransp
 {
     using System.Text;
     using System.Text.Json;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.Subscriptions.Tests.Mocks;
     using GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransportWs.GraphqlTransportWsData;

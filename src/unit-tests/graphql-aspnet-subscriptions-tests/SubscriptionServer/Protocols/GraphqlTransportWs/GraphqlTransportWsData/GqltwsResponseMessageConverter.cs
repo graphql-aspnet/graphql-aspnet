@@ -13,7 +13,7 @@ namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransp
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class GqltwsResponseMessageConverter : JsonConverter<GqltwsResponseMessage>

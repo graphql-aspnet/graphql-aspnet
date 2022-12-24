@@ -50,8 +50,7 @@ namespace GraphQL.AspNet.Schemas
                 return null;
 
             // the 'Type.AssemblyQualifiedName' property allocates a new
-            // string on each invocation of the property instead of using an interned
-            // or static value "because reasons"
+            // string on each invocation of the property
             //
             // in a high volume subscription server this produces A LOT
             // of unecessary strings and adds a lot of GC pressure unecessarily.

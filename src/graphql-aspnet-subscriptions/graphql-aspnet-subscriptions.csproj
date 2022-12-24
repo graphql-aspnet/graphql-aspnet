@@ -32,8 +32,4 @@
   <ItemGroup>
     <ProjectReference Include="..\graphql-aspnet\graphql-aspnet.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Common\Extensions\" />
-  </ItemGroup>
 </Project>

@@ -19,9 +19,8 @@ namespace GraphQL.Subscriptions.Tests.SubscriptionServer.Protocols.GraphqlTransp
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.BidirectionalMessages;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.ClientMessages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging.Messages;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Web;

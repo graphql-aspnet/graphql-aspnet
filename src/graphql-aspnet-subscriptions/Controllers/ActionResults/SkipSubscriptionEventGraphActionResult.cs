@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
 
     /// <summary>
     /// <para>

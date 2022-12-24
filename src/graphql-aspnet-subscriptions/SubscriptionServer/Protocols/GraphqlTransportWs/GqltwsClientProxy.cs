@@ -28,12 +28,10 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.SubscriptionServer.Protocols.Common;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.BidirectionalMessages;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.ClientMessages;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.Common;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.Converters;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messages.ServerMessages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging.Converters;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging.Messages;
     using GraphQL.AspNet.Web;
 
     /// <summary>

@@ -27,11 +27,10 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.SubscriptionServer.Protocols.Common;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.ClientMessages;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.Common;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.Converters;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messages.ServerMessages;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Common;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Converters;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Messages;
     using GraphQL.AspNet.Web;
 
     /// <summary>

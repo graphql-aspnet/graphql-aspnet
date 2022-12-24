@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Schema
+namespace GraphQL.AspNet.Interfaces.Schema.TypeSystem
 {
     /// <summary>
     /// A <see cref="IGraphField"/> containing information specificly related to subscriptions.

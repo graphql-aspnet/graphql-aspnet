@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.SubscriptionServer
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
     using GraphQL.AspNet.Schemas;
 
     /// <summary>
