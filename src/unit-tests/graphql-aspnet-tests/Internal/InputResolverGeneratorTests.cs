@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.QueryPlans
+namespace GraphQL.AspNet.Tests.Internal
 {
     using System;
     using System.Collections;
@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using GraphQL.AspNet.Tests.Framework;
     using Moq;
     using NUnit.Framework;
+    using GraphQL.AspNet.Internal.Resolvers;
 
     [TestFixture]
     public class InputResolverGeneratorTests

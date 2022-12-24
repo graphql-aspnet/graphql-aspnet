@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Execution.ValueResolvers
+namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System;
     using System.Diagnostics;

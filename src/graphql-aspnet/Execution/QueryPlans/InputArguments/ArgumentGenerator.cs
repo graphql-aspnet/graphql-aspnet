@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Internal.Resolvers;
 
     /// <summary>
     /// An object capable of taking a <see cref="DocumentSuppliedValue"/> from a document and converting it into a

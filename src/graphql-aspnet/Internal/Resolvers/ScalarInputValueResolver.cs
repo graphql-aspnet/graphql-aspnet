@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.ValueResolvers
+namespace GraphQL.AspNet.Internal.Resolvers
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;

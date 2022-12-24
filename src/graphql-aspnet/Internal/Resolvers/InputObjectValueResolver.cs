@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.ValueResolvers
+namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System;
     using System.Collections.Generic;
@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;

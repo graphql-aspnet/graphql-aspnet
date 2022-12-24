@@ -7,8 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Execution
+namespace GraphQL.AspNet.Interfaces.Engine
 {
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>

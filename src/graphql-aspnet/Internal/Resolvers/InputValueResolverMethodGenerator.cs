@@ -7,12 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.QueryPlans
+namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.ValueResolvers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
