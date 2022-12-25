@@ -18,6 +18,16 @@ namespace GraphQL.AspNet.SubscriptionServer
     public class SubscriptionClientId
     {
         /// <summary>
+        /// Creates a new subscription id from a guid.
+        /// </summary>
+        /// <param name="id">The guid to create the id from.</param>
+        /// <returns>SubscriptionClientId.</returns>
+        public static SubscriptionClientId FromGuid(Guid id)
+        {
+            return new SubscriptionClientId(id);
+        }
+
+        /// <summary>
         /// Gets a reference to an empty, or non-set, id value.
         /// </summary>
         /// <value>SubscriptionClientId.</value>

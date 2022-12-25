@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
         /// <summary>
         /// Converts this instance into its final, payload focused message.
         /// </summary>
-        /// <returns>IGraphQLOperationMessage.</returns>
+        /// <returns>A fully qualified message.</returns>
         public GqltwsMessage Convert()
         {
             switch (this.Type)

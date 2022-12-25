@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
         /// <summary>
         /// Converts this instance into its final, payload focused message.
         /// </summary>
-        /// <returns>IGraphQLOperationMessage.</returns>
+        /// <returns>A fully qualified message.</returns>
         public GraphqlWsLegacyMessage Convert()
         {
             switch (this.Type)
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
                     return new GraphqlWsLegacyClientConnectionTerminateMessage()
                     {
                         Id = this.Id,
-                        Payload = null, // terminate message has no expected
+                        Payload = null, // terminate message has no expected payload
                     };
 
                 default:

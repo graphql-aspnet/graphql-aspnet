@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy;
 
     [TestFixture]
     public partial class GqltwsClientProxyTests
@@ -723,6 +724,26 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
             // the connection should receive the complete message
             connection.AssertGqltwsResponse(GqltwsMessageType.COMPLETE, "abc");
 
+            graphqlWsClient.Dispose();
+        }
+
+        [Test]
+        public async Task Deserialize_InvalidMessage_ProcessesUnknownMessage()
+        {
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
+
+            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage(new GqltwsPingMessage());
+            connection.QueueClientMessage(new MockSocketMessage("{invalid-json-payload"));
+            connection.QueueConnectionClosedByClient();
+
+            await graphqlWsClient.StartConnectionAsync();
+
+            connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
+            connection.AssertGqltwsResponse(GqltwsMessageType.PONG);
+
+            // server closes with an error status
+            connection.AssertServerClosedConnection((ConnectionCloseStatus)GqltwsConstants.CustomCloseEventIds.InvalidMessageType);
             graphqlWsClient.Dispose();
         }
     }

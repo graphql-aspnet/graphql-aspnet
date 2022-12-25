@@ -482,5 +482,24 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
 
             socketClient.AssertClientClosedConnection();
         }
+
+        [Test]
+        public async Task Deserialize_InvalidMessage_ProcessesUnknownMessage()
+        {
+            using var restorePoint = new GraphQLGlobalRestorePoint();
+            (var socketClient, var client, var router) = this.CreateConnection();
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new MockSocketMessage("{ Non-deserialziable Json"));
+
+            socketClient.QueueConnectionClosedByClient();
+            await client.StartConnectionAsync(TimeSpan.FromSeconds(2));
+
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
+
+            // server responds with unknown message
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.ERROR);
+            socketClient.AssertClientClosedConnection();
+        }
     }
 }

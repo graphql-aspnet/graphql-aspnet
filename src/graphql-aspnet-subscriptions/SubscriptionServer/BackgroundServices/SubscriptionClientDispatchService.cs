@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.SubscriptionServer.BackgroundServices
     internal sealed class SubscriptionClientDispatchService : BackgroundService
     {
         private readonly ISubscriptionEventDispatchQueue _dispatchQueue;
+        private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionClientDispatchService"/> class.
@@ -42,9 +43,14 @@ namespace GraphQL.AspNet.SubscriptionServer.BackgroundServices
         /// <inheritdoc />
         public override void Dispose()
         {
-            _dispatchQueue.StopQueue();
-            _dispatchQueue.Dispose();
-            base.Dispose();
+            if (!_isDisposed)
+            {
+                _isDisposed = true;
+
+                _dispatchQueue.StopQueue();
+                _dispatchQueue.Dispose();
+                base.Dispose();
+            }
         }
     }
 }
