@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Web
     using NUnit.Framework;
 
     [TestFixture]
-    public class HttpContextParserTests
+    public class GraphQLHttpPayloadParserTests
     {
         public class HttpContextInputs
         {
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Web
 
         public static List<object[]> _testData;
 
-        static HttpContextParserTests()
+        static GraphQLHttpPayloadParserTests()
         {
             _testData = new List<object[]>();
 
@@ -204,7 +204,7 @@ namespace GraphQL.AspNet.Tests.Web
                 context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(inputs.Body));
             }
 
-            var parser = new HttpContextParser(context);
+            var parser = new GraphQLHttpPayloadParser(context);
             var result = await parser.ParseAsync();
 
             Assert.AreEqual(expectedOutput.Query, result.Query);
@@ -237,7 +237,7 @@ namespace GraphQL.AspNet.Tests.Web
             context.Request.Method = "POST";
             context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyText));
 
-            var parser = new HttpContextParser(context);
+            var parser = new GraphQLHttpPayloadParser(context);
 
             try
             {
@@ -267,7 +267,7 @@ namespace GraphQL.AspNet.Tests.Web
             // not valid json in the variables parameter
             context.Request.QueryString = new QueryString($"?{Constants.Web.QUERYSTRING_VARIABLES_KEY}={HttpUtility.UrlEncode("\"a\":\"b\"}")}");
 
-            var parser = new HttpContextParser(context);
+            var parser = new GraphQLHttpPayloadParser(context);
 
             try
             {
@@ -294,7 +294,7 @@ namespace GraphQL.AspNet.Tests.Web
             context.Request.Method = "DELETE";
             context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyText));
 
-            var parser = new HttpContextParser(context);
+            var parser = new GraphQLHttpPayloadParser(context);
 
             try
             {

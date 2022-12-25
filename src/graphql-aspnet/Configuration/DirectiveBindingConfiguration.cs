@@ -18,10 +18,10 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A class that encapsulates the late binding of a directive to a schema item
-    /// and relavant fields there in.
+    /// A configuration class used to apply a late-bound directive to a set of schema items
+    /// matching a filter.
     /// </summary>
-    public sealed class DirectiveApplicator : ISchemaConfigurationExtension
+    public sealed class DirectiveBindingConfiguration : ISchemaConfigurationExtension
     {
         // a set of default filters applied to any directive applicator unless explicitly removed
         // by the developer. Used to auto filter items down to those reasonably assumed
@@ -30,9 +30,9 @@ namespace GraphQL.AspNet.Configuration
         private static IReadOnlyList<Func<ISchemaItem, bool>> _defaultFilters;
 
         /// <summary>
-        /// Initializes static members of the <see cref="DirectiveApplicator"/> class.
+        /// Initializes static members of the <see cref="DirectiveBindingConfiguration"/> class.
         /// </summary>
-        static DirectiveApplicator()
+        static DirectiveBindingConfiguration()
         {
             var list = new List<Func<ISchemaItem, bool>>(4);
 
@@ -53,10 +53,10 @@ namespace GraphQL.AspNet.Configuration
         private List<Func<ISchemaItem, bool>> _customFilters;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectiveApplicator"/> class.
+        /// Initializes a new instance of the <see cref="DirectiveBindingConfiguration"/> class.
         /// </summary>
         /// <param name="directiveType">Type of the directive being applied in this instnace.</param>
-        public DirectiveApplicator(Type directiveType)
+        public DirectiveBindingConfiguration(Type directiveType)
             : this()
         {
             _directiveType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
@@ -64,17 +64,17 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectiveApplicator" /> class.
+        /// Initializes a new instance of the <see cref="DirectiveBindingConfiguration" /> class.
         /// </summary>
         /// <param name="directiveName">Name of the directive as it is declared in the schema
         /// where it is being applied.</param>
-        public DirectiveApplicator(string directiveName)
+        public DirectiveBindingConfiguration(string directiveName)
             : this()
         {
             _directiveName = Validation.ThrowIfNullWhiteSpaceOrReturn(directiveName, nameof(directiveName));
         }
 
-        private DirectiveApplicator()
+        private DirectiveBindingConfiguration()
         {
             _customFilters = new List<Func<ISchemaItem, bool>>();
             this.WithArguments();
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="arguments">The arguments to supply to the directive when its
         /// executed.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveApplicator WithArguments(params object[] arguments)
+        public DirectiveBindingConfiguration WithArguments(params object[] arguments)
         {
             arguments = arguments ?? new object[0];
             _argumentFunction = x => arguments;
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="argsCreator">A function that will be used to
         /// create a new unique set of arguments per schema item the directive is applied to.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveApplicator WithArguments(Func<ISchemaItem, object[]> argsCreator)
+        public DirectiveBindingConfiguration WithArguments(Func<ISchemaItem, object[]> argsCreator)
         {
             Validation.ThrowIfNull(argsCreator, nameof(argsCreator));
             _argumentFunction = argsCreator;
@@ -158,7 +158,7 @@ namespace GraphQL.AspNet.Configuration
         /// </remarks>
         /// <param name="itemFilter">The item filter.</param>
         /// <returns>DirectiveApplicator.</returns>
-        public DirectiveApplicator ToItems(Func<ISchemaItem, bool> itemFilter)
+        public DirectiveBindingConfiguration ToItems(Func<ISchemaItem, bool> itemFilter)
         {
             Validation.ThrowIfNull(itemFilter, nameof(itemFilter));
             _customFilters.Add(itemFilter);
@@ -169,7 +169,7 @@ namespace GraphQL.AspNet.Configuration
         /// Clears this instance of any directive arguments and filter criteria.
         /// </summary>
         /// <returns>DirectiveApplicator.</returns>
-        public DirectiveApplicator Clear()
+        public DirectiveBindingConfiguration Clear()
         {
             _customFilters.Clear();
             this.WithArguments();

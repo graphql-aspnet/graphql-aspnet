@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Engine
         /// graphql runtime or <c>null</c>.</returns>
         protected virtual async Task<GraphQueryData> ParseHttpContextAsync()
         {
-            var dataGenerator = new HttpContextParser(this.HttpContext);
+            var dataGenerator = new GraphQLHttpPayloadParser(this.HttpContext);
             return await dataGenerator.ParseAsync();
         }
 

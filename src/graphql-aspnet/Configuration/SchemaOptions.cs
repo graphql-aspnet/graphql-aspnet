@@ -276,7 +276,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <typeparam name="TDirectiveType">The type of the directive to apply.</typeparam>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveApplicator ApplyDirective<TDirectiveType>()
+        public DirectiveBindingConfiguration ApplyDirective<TDirectiveType>()
             where TDirectiveType : GraphDirective
         {
             return this.ApplyDirective(typeof(TDirectiveType));
@@ -288,13 +288,13 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="directiveType">The type of the directive to apply to schema items.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveApplicator ApplyDirective(Type directiveType)
+        public DirectiveBindingConfiguration ApplyDirective(Type directiveType)
         {
             Validation.ThrowIfNull(directiveType, nameof(directiveType));
             Validation.ThrowIfNotCastable<GraphDirective>(directiveType, nameof(directiveType));
 
             this.AddType(directiveType, null, null);
-            var applicator = new DirectiveApplicator(directiveType);
+            var applicator = new DirectiveBindingConfiguration(directiveType);
             this.AddConfigurationExtension(applicator);
 
             return applicator;
@@ -307,10 +307,10 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="directiveName">Name of the directive.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveApplicator ApplyDirective(string directiveName)
+        public DirectiveBindingConfiguration ApplyDirective(string directiveName)
         {
             directiveName = Validation.ThrowIfNullWhiteSpaceOrReturn(directiveName, nameof(directiveName));
-            var applicator = new DirectiveApplicator(directiveName);
+            var applicator = new DirectiveBindingConfiguration(directiveName);
             this.AddConfigurationExtension(applicator);
 
             return applicator;

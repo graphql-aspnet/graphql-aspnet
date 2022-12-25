@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Web
     /// <see cref="Microsoft.AspNetCore.Http.HttpContext"/> to create a <see cref="GraphQueryData" />
     /// object used by the graphql runtime.
     /// </summary>
-    public class HttpContextParser
+    public class GraphQLHttpPayloadParser
     {
         /// <summary>
         /// An error message constant, in english, providing the text  to return to the caller when they use any HTTP action verb
@@ -49,9 +49,9 @@ namespace GraphQL.AspNet.Web
         private static readonly JsonSerializerOptions _options;
 
         /// <summary>
-        /// Initializes static members of the <see cref="HttpContextParser"/> class.
+        /// Initializes static members of the <see cref="GraphQLHttpPayloadParser"/> class.
         /// </summary>
-        static HttpContextParser()
+        static GraphQLHttpPayloadParser()
         {
             // attempt to decode the body as a json object
             _options = new JsonSerializerOptions();
@@ -61,10 +61,10 @@ namespace GraphQL.AspNet.Web
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpContextParser"/> class.
+        /// Initializes a new instance of the <see cref="GraphQLHttpPayloadParser"/> class.
         /// </summary>
         /// <param name="context">The context to generate from.</param>
-        public HttpContextParser(HttpContext context)
+        public GraphQLHttpPayloadParser(HttpContext context)
         {
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
         }
