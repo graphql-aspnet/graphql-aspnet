@@ -23,7 +23,6 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// A standard implementation that writes the results of an executed document

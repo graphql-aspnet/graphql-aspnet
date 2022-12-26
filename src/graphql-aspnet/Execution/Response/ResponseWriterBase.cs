@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Web
+namespace GraphQL.AspNet.Execution.Response
 {
     using System;
     using System.Text.Encodings.Web;
@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Web
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
 
@@ -96,8 +95,8 @@ namespace GraphQL.AspNet.Web
             this.WriteLeaf(writer, "code", message.Code);
 
             var timestamp = this.TimeLocalizer?.Invoke(message.TimeStamp) ?? message.TimeStamp;
-            this.WriteLeaf(writer,  "timestamp", timestamp);
-            this.WriteLeaf(writer,  "severity", message.Severity);
+            this.WriteLeaf(writer, "timestamp", timestamp);
+            this.WriteLeaf(writer, "severity", message.Severity);
 
             if (message.MetaData != null && message.MetaData.Count > 0)
             {

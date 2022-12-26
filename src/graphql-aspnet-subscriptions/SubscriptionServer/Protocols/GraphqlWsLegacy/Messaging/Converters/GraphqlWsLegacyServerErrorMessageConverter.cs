@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Messages;
-    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// A json converter for the <see cref="GraphqlWsLegacyServerErrorMessage"/> type.

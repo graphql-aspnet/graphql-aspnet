@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging.Messages;
-    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// A json converter for the <see cref="GqltwsServerErrorMessage"/> type.
