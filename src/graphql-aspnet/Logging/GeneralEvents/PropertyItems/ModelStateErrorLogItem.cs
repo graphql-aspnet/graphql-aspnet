@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents.PropertyItems
     /// A single error that occured during the validation of a model state item (usually
     /// geenrated by a single validation property).
     /// </summary>
-    public class ModelStateErrorLogItem : GraphLogPropertyCollection
+    public class ModelStateErrorLogItem : GraphLogEntryPropertyCollection
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelStateErrorLogItem"/> class.
@@ -43,9 +43,9 @@ namespace GraphQL.AspNet.Logging.GeneralEvents.PropertyItems
        /// are because of generated exceptions.
         /// </summary>
         /// <value>The exception.</value>
-        public IGraphLogPropertyCollection Exception
+        public IGraphLogEntryPropertyCollection Exception
         {
-            get => this.GetProperty<IGraphLogPropertyCollection>(LogPropertyNames.EXCEPTION);
+            get => this.GetProperty<IGraphLogEntryPropertyCollection>(LogPropertyNames.EXCEPTION);
             private set => this.SetProperty(LogPropertyNames.EXCEPTION, value);
         }
     }

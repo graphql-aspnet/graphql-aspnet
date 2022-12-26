@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents.PropertyItems
     /// <summary>
     /// A loggable item representing an exception that was thrown or generated.
     /// </summary>
-    public class ExceptionLogItem : GraphLogPropertyCollection
+    public class ExceptionLogItem : GraphLogEntryPropertyCollection
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExceptionLogItem"/> class.

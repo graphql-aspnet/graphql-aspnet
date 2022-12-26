@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
     /// An interface describing a log entry that needs to be serialized for the log provider. Simply a wrapper
     /// on a collection of KeyValuePairs with a few required fields.
     /// </summary>
-    public interface IGraphLogEntry : IGraphLogPropertyCollection
+    public interface IGraphLogEntry : IGraphLogEntryPropertyCollection
     {
         /// <summary>
         /// Gets the unique id of this log entry.

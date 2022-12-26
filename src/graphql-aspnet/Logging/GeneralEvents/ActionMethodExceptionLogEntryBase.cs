@@ -76,9 +76,9 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// Gets the message of the exception that was thrown.
         /// </summary>
         /// <value>The exception message.</value>
-        public IGraphLogPropertyCollection Exception
+        public IGraphLogEntryPropertyCollection Exception
         {
-            get => this.GetProperty<IGraphLogPropertyCollection>(LogPropertyNames.EXCEPTION);
+            get => this.GetProperty<IGraphLogEntryPropertyCollection>(LogPropertyNames.EXCEPTION);
             private set => this.SetProperty(LogPropertyNames.EXCEPTION, value);
         }
 

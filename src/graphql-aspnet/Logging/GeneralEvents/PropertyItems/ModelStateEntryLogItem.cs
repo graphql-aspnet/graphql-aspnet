@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents.PropertyItems
     /// <summary>
     /// A collection of model state items that are part of a structured log entry.
     /// </summary>
-    public class ModelStateEntryLogItem : GraphLogPropertyCollection
+    public class ModelStateEntryLogItem : GraphLogEntryPropertyCollection
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelStateEntryLogItem" /> class.
@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents.PropertyItems
 
             if (modelStateItem?.Errors != null && modelStateItem.Errors.Count > 0)
             {
-                var errors = new List<IGraphLogPropertyCollection>();
+                var errors = new List<IGraphLogEntryPropertyCollection>();
                 foreach (var error in modelStateItem.Errors.Where(x => x != null))
                 {
                     errors.Add(new ModelStateErrorLogItem(error));
@@ -65,9 +65,9 @@ namespace GraphQL.AspNet.Logging.GeneralEvents.PropertyItems
         /// Gets a collection of errors generated during the validation of the model item.
         /// </summary>
         /// <value>The errors collection.</value>
-        public IList<IGraphLogPropertyCollection> Errors
+        public IList<IGraphLogEntryPropertyCollection> Errors
         {
-            get => this.GetProperty<IList<IGraphLogPropertyCollection>>(LogPropertyNames.MODEL_ITEM_ERRORS);
+            get => this.GetProperty<IList<IGraphLogEntryPropertyCollection>>(LogPropertyNames.MODEL_ITEM_ERRORS);
             private set => this.SetProperty(LogPropertyNames.MODEL_ITEM_ERRORS, value);
         }
     }

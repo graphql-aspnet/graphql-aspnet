@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents.PropertyItems
     /// <summary>
     /// A formatted entry for a graph type in a <see cref="ISchema"/> that can be safely logged.
     /// </summary>
-    public class SchemaGraphTypeLogItem : GraphLogPropertyCollection
+    public class SchemaGraphTypeLogItem : GraphLogEntryPropertyCollection
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaGraphTypeLogItem" /> class.

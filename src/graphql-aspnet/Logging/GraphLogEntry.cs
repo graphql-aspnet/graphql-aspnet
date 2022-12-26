@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Logging
     /// logging provider. This log entry is typically rendered to a JSON string.
     /// </summary>
     [DebuggerDisplay("{EventId} (Name: '{EventName}')")]
-    public class GraphLogEntry : GraphLogPropertyCollection, IGraphLogEntry
+    public class GraphLogEntry : GraphLogEntryPropertyCollection, IGraphLogEntry
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphLogEntry" /> class.

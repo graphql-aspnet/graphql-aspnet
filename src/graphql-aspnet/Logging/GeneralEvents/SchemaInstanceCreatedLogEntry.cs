@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
 
             orderedList = orderedList ?? new List<IGraphType>();
 
-            var graphTypeItems = new List<IGraphLogPropertyCollection>();
+            var graphTypeItems = new List<IGraphLogEntryPropertyCollection>();
             foreach (var graphType in orderedList)
             {
                 var concreteType = schemaInstance.KnownTypes.FindConcreteType(graphType);
@@ -111,9 +111,9 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// Gets the collection of graph types defined on the schema instance.
         /// </summary>
         /// <value>The graph types.</value>
-        public IList<IGraphLogPropertyCollection> GraphTypes
+        public IList<IGraphLogEntryPropertyCollection> GraphTypes
         {
-            get => this.GetProperty<IList<IGraphLogPropertyCollection>>(LogPropertyNames.SCHEMA_GRAPH_TYPE_COLLECTION);
+            get => this.GetProperty<IList<IGraphLogEntryPropertyCollection>>(LogPropertyNames.SCHEMA_GRAPH_TYPE_COLLECTION);
             private set => this.SetProperty(LogPropertyNames.SCHEMA_GRAPH_TYPE_COLLECTION, value);
         }
 

@@ -18,12 +18,12 @@ namespace GraphQL.AspNet.Logging
     /// A collection of keyvalue pairs used in log entries and their children.
     /// </summary>
     [DebuggerDisplay("Count = {Properties.Count}")]
-    public class GraphLogPropertyCollection : IGraphLogPropertyCollection
+    public class GraphLogEntryPropertyCollection : IGraphLogEntryPropertyCollection
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphLogPropertyCollection"/> class.
+        /// Initializes a new instance of the <see cref="GraphLogEntryPropertyCollection"/> class.
         /// </summary>
-        public GraphLogPropertyCollection()
+        public GraphLogEntryPropertyCollection()
         {
             this.Properties = new Dictionary<string, object>();
         }
@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Logging
 
         /// <summary>
         /// Flattens the property list of this collection. If any entries are they themselves
-        /// <see cref="IGraphLogPropertyCollection" />; those keys are unnested and prefixed
+        /// <see cref="IGraphLogEntryPropertyCollection" />; those keys are unnested and prefixed
         /// with the key of this entry in the parent collection.
         /// </summary>
         /// <returns>IEnumerable&lt;KeyValuePair&lt;System.String, System.Object&gt;&gt;.</returns>
@@ -129,7 +129,7 @@ namespace GraphQL.AspNet.Logging
         {
             foreach (var kvp in this)
             {
-                if (kvp.Value is IGraphLogPropertyCollection childCollection)
+                if (kvp.Value is IGraphLogEntryPropertyCollection childCollection)
                 {
                     var childItems = childCollection.FlattenProperties();
                     foreach (var child in childItems)
