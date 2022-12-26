@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// An object that can inspect a type, usually returned by a resolver, and determine which type in the target
     /// union it should be interpreted as.
     /// </summary>
-    public interface IUnionTypeMapper
+    public interface IUnionGraphTypeMapper
     {
         /// <summary>
         /// This method attempts to resolve the provided <paramref name="runtimeObjectType"/> into

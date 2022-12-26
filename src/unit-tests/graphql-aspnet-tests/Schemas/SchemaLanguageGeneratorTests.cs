@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using NUnit.Framework;
 
     [TestFixture]
-    public class QueryLanguageGeneratorTests
+    public class SchemaLanguageGeneratorTests
     {
         private List<Type> _unUsedScalarTypes;
         private static List<(object TestObject, string ExpectedResult)> _testValues;
@@ -210,12 +210,12 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add((new List<TwoPropertyObject>() { null, null, null }, "[null, null, null]"));
         }
 
-        static QueryLanguageGeneratorTests()
+        static SchemaLanguageGeneratorTests()
         {
             SetupTestData();
         }
 
-        public QueryLanguageGeneratorTests()
+        public SchemaLanguageGeneratorTests()
         {
             var typesUsed = _testValues
                 .Where(x => x.TestObject != null)
@@ -254,7 +254,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCaseSource(nameof(_testValues))]
         public void SerializeObject((object InputObject, string ExpectedValue) testData)
         {
-            var generator = new QueryLanguageGenerator(_schema);
+            var generator = new SchemaLanguageGenerator(_schema);
             var result = generator.SerializeObject(testData.InputObject);
             Assert.AreEqual(testData.ExpectedValue, result);
         }
@@ -277,7 +277,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var generator = new QueryLanguageGenerator(_schema);
+                var generator = new SchemaLanguageGenerator(_schema);
                 generator.SerializeObject(loopedPerson);
             });
         }
@@ -289,7 +289,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var generator = new QueryLanguageGenerator(_schema);
+                var generator = new SchemaLanguageGenerator(_schema);
                 generator.SerializeObject(dic);
             });
         }
@@ -306,7 +306,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var generator = new QueryLanguageGenerator(_schema);
+                var generator = new SchemaLanguageGenerator(_schema);
                 generator.SerializeObject(obj);
             });
         }
@@ -318,7 +318,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             {
                 // melancholy is declared on the enum with [GraphSkip]
                 // the schema won't know of the value, so it can't be serialzied
-                var generator = new QueryLanguageGenerator(_schema);
+                var generator = new SchemaLanguageGenerator(_schema);
                 generator.SerializeObject(Happiness.Melancholy);
             });
         }
@@ -331,7 +331,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             {
                 // melancholy is declared on the enum with [GraphSkip]
                 // the schema won't know of the value, so it can't be serialzied
-                var generator = new QueryLanguageGenerator(_schema);
+                var generator = new SchemaLanguageGenerator(_schema);
                 generator.SerializeObject(list);
             });
         }

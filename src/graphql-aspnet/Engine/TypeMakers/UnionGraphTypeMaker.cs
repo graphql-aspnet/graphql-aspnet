@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             var name = formatter.FormatGraphTypeName(proxy.Name);
             var union = new UnionGraphType(
                 name,
-                (IUnionTypeMapper)proxy,
+                (IUnionGraphTypeMapper)proxy,
                 new SchemaItemPath(SchemaItemCollections.Types, name),
                 directives)
             {

@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// to execute against this union when it is added to a schema.</param>
         public UnionGraphType(
             string name,
-            IUnionTypeMapper typeResolver,
+            IUnionGraphTypeMapper typeResolver,
             SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
         {
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public bool IsVirtual => false;
 
         /// <inheritdoc />
-        public IUnionTypeMapper TypeMapper { get; set; }
+        public IUnionGraphTypeMapper TypeMapper { get; set; }
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
