@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// <summary>
     /// A base middleware context containing the core items required of all contexts.
     /// </summary>
-    public abstract class MiddlewareExecutionContextBase : IMiddlewareExecutionContext
+    public abstract class MiddlewareExecutionContextBase : IGraphQLMiddlewareExecutionContext
     {
         private bool _isCancelled;
 
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Initializes a new instance of the <see cref="MiddlewareExecutionContextBase"/> class.
         /// </summary>
         /// <param name="otherContext">The other context on which this context is based.</param>
-        protected MiddlewareExecutionContextBase(IMiddlewareExecutionContext otherContext)
+        protected MiddlewareExecutionContextBase(IGraphQLMiddlewareExecutionContext otherContext)
             : this(
                     otherContext?.OperationRequest,
                     otherContext?.ServiceProvider,

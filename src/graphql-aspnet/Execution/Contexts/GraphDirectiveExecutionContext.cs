@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="user">The user that has been preauthorized for this execution.</param>
         public GraphDirectiveExecutionContext(
             ISchema schema,
-            IMiddlewareExecutionContext parentContext,
+            IGraphQLMiddlewareExecutionContext parentContext,
             IGraphDirectiveRequest request,
             IResolvedVariableCollection variableData = null,
             ClaimsPrincipal user = null)

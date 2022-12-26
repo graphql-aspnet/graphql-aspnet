@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Execution
     {
         private GraphFieldExecutionContext CreateFakeContext()
         {
-            var parentContext = new Mock<IMiddlewareExecutionContext>();
+            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
             parentContext.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
             parentContext.Setup(x => x.Session).Returns(new QuerySession());
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var list = new SortedFieldExecutionContextList();
 
-            var parentContext = new Mock<IMiddlewareExecutionContext>();
+            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
             var request = new Mock<IGraphFieldRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();
 

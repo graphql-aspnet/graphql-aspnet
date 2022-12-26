@@ -250,7 +250,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
             var operationRequest = new Mock<IQueryOperationRequest>();
             var fieldInvocationContext = new Mock<IGraphFieldInvocationContext>();
-            var parentContext = new Mock<IMiddlewareExecutionContext>();
+            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
             var graphFieldRequest = new Mock<IGraphFieldRequest>();
             var fieldDocumentPart = new Mock<IFieldDocumentPart>();
 

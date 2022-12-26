@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="resultCapacity">The initial capacity
         /// of the list that will contain the results from executing this context.</param>
         public GraphFieldExecutionContext(
-            IMiddlewareExecutionContext parentContext,
+            IGraphQLMiddlewareExecutionContext parentContext,
             IGraphFieldRequest fieldRequest,
             IResolvedVariableCollection variableData,
             FieldSourceCollection defaultFieldSources = null,

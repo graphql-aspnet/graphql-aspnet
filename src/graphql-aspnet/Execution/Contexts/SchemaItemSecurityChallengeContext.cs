@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="parentContext">The parent context which created this instance.</param>
         /// <param name="authRequest">The auth request to process.</param>
         public SchemaItemSecurityChallengeContext(
-            IMiddlewareExecutionContext parentContext,
+            IGraphQLMiddlewareExecutionContext parentContext,
             ISchemaItemSecurityRequest authRequest)
              : base(parentContext)
         {

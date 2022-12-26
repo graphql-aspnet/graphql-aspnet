@@ -41,12 +41,12 @@ namespace GraphQL.AspNet.Tests
     {
         private (
             Mock<ISchemaBuilder<GraphSchema>>,
-            Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>>,
-            Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>)
+            Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>>,
+            Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>)
             CreateSchemaBuilderMock(SchemaOptions<GraphSchema> options)
         {
-            var queryPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>>();
-            var fieldPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>();
+            var queryPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>>();
+            var fieldPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>();
 
             var builder = new Mock<ISchemaBuilder<GraphSchema>>();
             builder.Setup(x => x.QueryExecutionPipeline).Returns(queryPipeline.Object);
@@ -54,13 +54,13 @@ namespace GraphQL.AspNet.Tests
             builder.Setup(x => x.Options).Returns(options);
 
             queryPipeline.Setup(x => x.Clear());
-            queryPipeline.Setup(x => x.AddMiddleware<IGraphMiddlewareComponent<QueryExecutionContext>>(
+            queryPipeline.Setup(x => x.AddMiddleware<IGraphQLMiddlewareComponent<QueryExecutionContext>>(
                 It.IsAny<ServiceLifetime>(),
                 It.IsAny<string>())).Returns(queryPipeline.Object);
 
             queryPipeline.Setup(x => x.Clear());
             queryPipeline.Setup(x => x.AddMiddleware(
-                It.IsAny<IGraphMiddlewareComponent<QueryExecutionContext>>(),
+                It.IsAny<IGraphQLMiddlewareComponent<QueryExecutionContext>>(),
                 It.IsAny<string>())).Returns(queryPipeline.Object);
 
             return (builder, queryPipeline, fieldPipeline);
@@ -151,7 +151,7 @@ namespace GraphQL.AspNet.Tests
             queryPipeline.Verify(x => x.Clear());
             queryPipeline.Verify(
                 x =>
-                    x.AddMiddleware<IGraphMiddlewareComponent<QueryExecutionContext>>(
+                    x.AddMiddleware<IGraphQLMiddlewareComponent<QueryExecutionContext>>(
                             It.IsAny<ServiceLifetime>(),
                             It.IsAny<string>()),
                 Times.Exactly(12));
@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Tests
             queryPipeline.Verify(
                 x =>
                     x.AddMiddleware(
-                        It.IsAny<IGraphMiddlewareComponent<QueryExecutionContext>>(),
+                        It.IsAny<IGraphQLMiddlewareComponent<QueryExecutionContext>>(),
                         It.IsAny<string>()),
                 Times.Exactly(1));
 
@@ -175,7 +175,7 @@ namespace GraphQL.AspNet.Tests
             fieldPipeline.Verify(x => x.Clear());
             fieldPipeline.Verify(
                 x =>
-                    x.AddMiddleware<IGraphMiddlewareComponent<GraphFieldExecutionContext>>(It.IsAny<ServiceLifetime>(), It.IsAny<string>()),
+                    x.AddMiddleware<IGraphQLMiddlewareComponent<GraphFieldExecutionContext>>(It.IsAny<ServiceLifetime>(), It.IsAny<string>()),
                 Times.Exactly(3));
 
             // ensure field authroization component was NOT added

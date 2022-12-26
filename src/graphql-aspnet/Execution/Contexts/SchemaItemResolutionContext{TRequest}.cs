@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// resolution context.</param>
         protected SchemaItemResolutionContext(
             ISchema targetSchema,
-            IMiddlewareExecutionContext parentContext,
+            IGraphQLMiddlewareExecutionContext parentContext,
             TRequest request,
             IExecutionArgumentCollection arguments,
             ClaimsPrincipal user = null)

@@ -26,8 +26,8 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     /// <typeparam name="TContext">The type of the context the middleware components can handle.</typeparam>
     public interface ISchemaPipelineBuilder<TSchema, in TMiddleware, TContext>
         where TSchema : class, ISchema
-        where TMiddleware : class, IGraphMiddlewareComponent<TContext>
-        where TContext : class, IMiddlewareExecutionContext
+        where TMiddleware : class, IGraphQLMiddlewareComponent<TContext>
+        where TContext : class, IGraphQLMiddlewareExecutionContext
     {
         /// <summary>
         /// Adds the given type as a middleware component for the pipeline executed for this schema type. The middleware component

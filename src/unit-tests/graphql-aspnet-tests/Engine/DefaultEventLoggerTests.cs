@@ -586,7 +586,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthorizationChallengeResult_Unauthorized()
         {
-            var context = new Mock<IMiddlewareExecutionContext>();
+            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
             context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
@@ -608,7 +608,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthorizationChallengeResult_Success()
         {
-            var context = new Mock<IMiddlewareExecutionContext>();
+            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
             context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
@@ -630,7 +630,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthorizationChallengeResult_Skip()
         {
-            var context = new Mock<IMiddlewareExecutionContext>();
+            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
             context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
@@ -652,7 +652,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_FailedResult_LoggedAtWarning()
         {
-            var context = new Mock<IMiddlewareExecutionContext>();
+            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
             context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
@@ -674,7 +674,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_SuccessResult_LoggedAtTrace()
         {
-            var context = new Mock<IMiddlewareExecutionContext>();
+            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
             context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
@@ -707,7 +707,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_UnSucessfulAuthenticationResult_LoggedAtTrace()
         {
-            var context = new Mock<IMiddlewareExecutionContext>();
+            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
             context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
@@ -727,7 +727,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_SucessfulAuthenticationResult_LoggedAtTrace()
         {
-            var context = new Mock<IMiddlewareExecutionContext>();
+            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
             context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);

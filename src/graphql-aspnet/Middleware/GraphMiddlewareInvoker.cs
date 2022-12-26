@@ -25,10 +25,10 @@ namespace GraphQL.AspNet.Middleware
     /// <typeparam name="TContext">The type of the context the middleware component will accept on its invoke method.</typeparam>
     [DebuggerDisplay("Middleware Invoker '{ComponentDefinition.Name}'")]
     internal class GraphMiddlewareInvoker<TContext>
-        where TContext : class, IMiddlewareExecutionContext
+        where TContext : class, IGraphQLMiddlewareExecutionContext
     {
         private readonly object _locker = new object();
-        private IGraphMiddlewareComponent<TContext> _singletonInstance;
+        private IGraphQLMiddlewareComponent<TContext> _singletonInstance;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphMiddlewareInvoker{TContext}" /> class.
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Middleware
                 // If the compoent is generated as a singleton
                 // store it for use on subsequent calls
                 instance = context?.ServiceProvider?
-                    .GetService(this.ComponentDefinition.MiddlewareType) as IGraphMiddlewareComponent<TContext>;
+                    .GetService(this.ComponentDefinition.MiddlewareType) as IGraphQLMiddlewareComponent<TContext>;
 
                 if (this.ComponentDefinition.Lifetime == ServiceLifetime.Singleton)
                 {

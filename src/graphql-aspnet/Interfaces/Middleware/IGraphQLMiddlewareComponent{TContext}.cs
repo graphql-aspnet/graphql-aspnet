@@ -18,8 +18,8 @@ namespace GraphQL.AspNet.Interfaces.Middleware
     /// A single middleware component of a context-specific pipeline.
     /// </summary>
     /// <typeparam name="TContext">The type of context processed by this pipeline.</typeparam>
-    public interface IGraphMiddlewareComponent<TContext> : IGraphMiddlewareComponent
-        where TContext : class, IMiddlewareExecutionContext
+    public interface IGraphQLMiddlewareComponent<TContext>
+        where TContext : class, IGraphQLMiddlewareExecutionContext
     {
         /// <summary>
         /// Invokes this middleware component allowing it to perform its work against the supplied context.

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Logging
     /// <summary>
     /// Helper methods related to <see cref="IGraphLogger"/>.
     /// </summary>
-    public static class GraphLoggerExtensions
+    public static class LoggerExtensions
     {
         /// <summary>
         /// Creates a log entry a set of common information describing the unhandled exception.

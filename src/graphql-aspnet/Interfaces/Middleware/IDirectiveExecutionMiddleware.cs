@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Middleware
     /// <summary>
     /// A middleware component in the directive execution pipeline.
     /// </summary>
-    public interface IDirectiveExecutionMiddleware : IGraphMiddlewareComponent<GraphDirectiveExecutionContext>
+    public interface IDirectiveExecutionMiddleware : IGraphQLMiddlewareComponent<GraphDirectiveExecutionContext>
     {
     }
 }
