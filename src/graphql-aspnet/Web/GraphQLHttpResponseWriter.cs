@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Web
 
         private readonly IQueryOperationResult _result;
         private readonly IQueryResponseWriter _documentWriter;
-        private readonly ResponseOptions _options;
+        private readonly ResponseWriterOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLHttpResponseWriter" /> class.
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Web
         {
             _result = result;
             _documentWriter = documentWriter;
-            _options = new ResponseOptions()
+            _options = new ResponseWriterOptions()
             {
                 ExposeExceptions = exposeExceptions,
                 ExposeMetrics = exposeMetrics,

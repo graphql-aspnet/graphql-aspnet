@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// Converts the time to a RFC3339 formatted date string (e.g. hh:mm:ss.fff).
         /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt" /> .
         /// </summary>
-        /// <param name="time">The time.</param>
+        /// <param name="time">The time to convert.</param>
         /// <returns>System.String.</returns>
         public static string ToRfc3339String(this TimeOnly time)
         {
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// Converts the time to a RFC3339 formatted date string (e.g. hh:mm:ss.fff).
         /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt" /> .
         /// </summary>
-        /// <param name="time">The time.</param>
+        /// <param name="time">The time to convert.</param>
         /// <returns>System.String.</returns>
         public static string ToRfc3339String(this TimeOnly? time)
         {

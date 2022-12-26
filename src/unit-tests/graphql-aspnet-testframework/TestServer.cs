@@ -534,7 +534,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>Task&lt;System.String&gt;.</returns>
         private async Task<string> RenderResult(IQueryOperationResult result)
         {
-            var options = new ResponseOptions()
+            var options = new ResponseWriterOptions()
             {
                 ExposeExceptions = this.Schema.Configuration.ResponseOptions.ExposeExceptions,
                 ExposeMetrics = this.Schema.Configuration.ResponseOptions.ExposeMetrics,

@@ -30,10 +30,10 @@ namespace GraphQL.AspNet.Tests.Execution
     [TestFixture]
     public class DefaultGraphResponseWriterTests
     {
-        private async Task<string> WriteResponse(IQueryResponseWriter writer, IQueryOperationResult result, ResponseOptions options = null)
+        private async Task<string> WriteResponse(IQueryResponseWriter writer, IQueryOperationResult result, ResponseWriterOptions options = null)
         {
             var stream = new MemoryStream();
-            options = options ?? new ResponseOptions()
+            options = options ?? new ResponseWriterOptions()
             {
                 ExposeExceptions = true,
                 ExposeMetrics = true,

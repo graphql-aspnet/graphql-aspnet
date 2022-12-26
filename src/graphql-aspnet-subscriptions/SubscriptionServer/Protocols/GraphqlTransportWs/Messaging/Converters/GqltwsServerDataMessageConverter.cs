@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
                 _responseWriter.Write(
                        writer,
                        value.Payload,
-                       new ResponseOptions()
+                       new ResponseWriterOptions()
                        {
                            ExposeExceptions = _schema.Configuration.ResponseOptions.ExposeExceptions,
                            ExposeMetrics = _schema.Configuration.ResponseOptions.ExposeMetrics,

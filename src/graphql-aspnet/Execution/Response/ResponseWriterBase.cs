@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Web
         /// <param name="writer">The json writer to output the reslts to.</param>
         /// <param name="message">The message to render into the output.</param>
         /// <param name="options">A set options to customize how the response is serialized to the stream.</param>
-        protected virtual void WriteMessage(Utf8JsonWriter writer, IGraphMessage message, ResponseOptions options)
+        protected virtual void WriteMessage(Utf8JsonWriter writer, IGraphMessage message, ResponseWriterOptions options)
         {
             writer.WriteStartObject();
             this.WritePreEncodedString(writer, "message", message.Message);

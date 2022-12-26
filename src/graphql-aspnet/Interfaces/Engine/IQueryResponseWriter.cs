@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="options">A set options to customize how the response is serialized to the stream.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        Task WriteAsync(Stream streamToWriteTo, IQueryOperationResult resultToWrite, ResponseOptions options = null, CancellationToken cancelToken = default);
+        Task WriteAsync(Stream streamToWriteTo, IQueryOperationResult resultToWrite, ResponseWriterOptions options = null, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Attempts to serialize the provided <see cref="IQueryOperationResult" /> directly to the
@@ -40,6 +40,6 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="jsonWriter">The json writer.</param>
         /// <param name="resultToWrite">The result to write.</param>
         /// <param name="options">A set options to customize how the response is serialized to the stream.</param>
-        void Write(Utf8JsonWriter jsonWriter, IQueryOperationResult resultToWrite, ResponseOptions options = null);
+        void Write(Utf8JsonWriter jsonWriter, IQueryOperationResult resultToWrite, ResponseWriterOptions options = null);
     }
 }

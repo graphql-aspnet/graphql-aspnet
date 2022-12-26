@@ -14,20 +14,20 @@ namespace GraphQL.AspNet.Execution.Response
     /// <summary>
     /// A set of options for configuring the serialized contents of a <see cref="IQueryOperationResult"/> that is to be sent to a client.
     /// </summary>
-    public class ResponseOptions
+    public class ResponseWriterOptions
     {
         /// <summary>
         /// Gets a default set of options to use when none are supplied to a response writer.
         /// </summary>
         /// <value>The default.</value>
-        public static ResponseOptions Default { get; }
+        public static ResponseWriterOptions Default { get; }
 
         /// <summary>
-        /// Initializes static members of the <see cref="ResponseOptions"/> class.
+        /// Initializes static members of the <see cref="ResponseWriterOptions"/> class.
         /// </summary>
-        static ResponseOptions()
+        static ResponseWriterOptions()
         {
-            Default = new ResponseOptions()
+            Default = new ResponseWriterOptions()
             {
                 ExposeMetrics = false,
                 ExposeExceptions = false,
@@ -35,9 +35,9 @@ namespace GraphQL.AspNet.Execution.Response
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResponseOptions"/> class.
+        /// Initializes a new instance of the <see cref="ResponseWriterOptions"/> class.
         /// </summary>
-        public ResponseOptions()
+        public ResponseWriterOptions()
         {
         }
 

@@ -52,9 +52,9 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual async Task WriteAsync(Stream streamToWriteTo, IQueryOperationResult resultToWrite, ResponseOptions options = null, CancellationToken cancelToken = default)
+        public virtual async Task WriteAsync(Stream streamToWriteTo, IQueryOperationResult resultToWrite, ResponseWriterOptions options = null, CancellationToken cancelToken = default)
         {
-            options = options ?? ResponseOptions.Default;
+            options = options ?? ResponseWriterOptions.Default;
 
             Utf8JsonWriter writer = null;
             try
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void Write(Utf8JsonWriter jsonWriter, IQueryOperationResult resultToWrite, ResponseOptions options = null)
+        public virtual void Write(Utf8JsonWriter jsonWriter, IQueryOperationResult resultToWrite, ResponseWriterOptions options = null)
         {
             this.WriteResult(jsonWriter, resultToWrite, options);
         }
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Engine
         /// <param name="writer">The json writer to output the reslts to.</param>
         /// <param name="resultToWrite">The operation result to write.</param>
         /// <param name="options">A set options to customize how the response is serialized to the stream.</param>
-        protected virtual void WriteResult(Utf8JsonWriter writer, IQueryOperationResult resultToWrite, ResponseOptions options)
+        protected virtual void WriteResult(Utf8JsonWriter writer, IQueryOperationResult resultToWrite, ResponseWriterOptions options)
         {
             writer.WriteStartObject();
 

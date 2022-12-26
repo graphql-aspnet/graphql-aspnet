@@ -17,9 +17,9 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A represenetation of an argument to an execution context that has yet to be fully realized
-    /// and will need to make use of runtime data (variables provided by a user request) to finalize its
-    /// value so that it can provide it to the context.
+    /// A represenetation of a value to an input argument that has yet to be fully realized
+    /// and will need to make use of runtime data (variables provided by on user request) to finalize its
+    /// value so that it can provide data to a resolution context.
     /// </summary>
     [DebuggerDisplay("{_coreValue.OwnerArgument.Name}")]
     internal class DeferredInputArgumentValue : IInputValue

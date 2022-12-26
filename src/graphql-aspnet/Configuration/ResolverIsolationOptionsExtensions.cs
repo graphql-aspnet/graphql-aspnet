@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// Helper methods for working with <see cref="ResolverIsolationOptions"/>.
     /// </summary>
-    public static class ResolverIsolationOptionsHelpers
+    public static class ResolverIsolationOptionsExtensions
     {
         /// <summary>
         /// Indicates if the given <paramref name="fieldSource"/> is one that should be

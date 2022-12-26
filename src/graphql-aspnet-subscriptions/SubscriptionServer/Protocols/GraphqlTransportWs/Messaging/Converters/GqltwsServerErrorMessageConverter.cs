@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
                 messageWriter.WriteSingleMessage(
                     writer,
                     value.Payload,
-                    new ResponseOptions()
+                    new ResponseWriterOptions()
                     {
                         ExposeExceptions = _schema.Configuration.ResponseOptions.ExposeExceptions,
                         ExposeMetrics = _schema.Configuration.ResponseOptions.ExposeMetrics,
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
             /// <param name="message">The message to serialize.</param>
             /// <param name="options">The options to use to govern the exposure of message level
             /// metadata.</param>
-            public void WriteSingleMessage(Utf8JsonWriter writer, IGraphMessage message, ResponseOptions options)
+            public void WriteSingleMessage(Utf8JsonWriter writer, IGraphMessage message, ResponseWriterOptions options)
             {
                 this.WriteMessage(writer, message, options);
             }
