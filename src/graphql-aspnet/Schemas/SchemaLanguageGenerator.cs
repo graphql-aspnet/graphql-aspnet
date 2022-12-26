@@ -24,16 +24,16 @@ namespace GraphQL.AspNet.Schemas
     /// Converts supplied objects to strings representing how they would
     /// be defined if supplied in a query document or type system definition document.
     /// </summary>
-    public class QueryLanguageGenerator
+    public class SchemaLanguageGenerator
     {
         private ISchema _schema;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryLanguageGenerator"/> class.
+        /// Initializes a new instance of the <see cref="SchemaLanguageGenerator"/> class.
         /// </summary>
         /// <param name="schema">The schema to use when determining defined fields, serializers and other name
         /// formatters used during the serialization.</param>
-        public QueryLanguageGenerator(ISchema schema)
+        public SchemaLanguageGenerator(ISchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }

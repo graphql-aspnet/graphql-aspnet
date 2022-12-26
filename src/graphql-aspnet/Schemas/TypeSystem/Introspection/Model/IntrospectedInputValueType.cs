@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
 
             this.ValidateDefaultValueOrThrow(introspectedSchema.Schema, _rawDefaultValue, _inputValueTypeExpression);
 
-            var generator = new QueryLanguageGenerator(introspectedSchema.Schema);
+            var generator = new SchemaLanguageGenerator(introspectedSchema.Schema);
             this.DefaultValue = generator.SerializeObject(_rawDefaultValue);
         }
 
