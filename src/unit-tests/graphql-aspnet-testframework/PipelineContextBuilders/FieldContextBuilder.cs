@@ -20,12 +20,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Security;
     using Moq;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// A subclassed <see cref="GraphFieldExecutionContext"/> allowing for inline mocked replacements

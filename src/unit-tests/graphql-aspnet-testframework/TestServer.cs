@@ -33,8 +33,6 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -48,6 +46,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// A mocked server instance built for a given schema and with a service provider (such as would exist at runtime)

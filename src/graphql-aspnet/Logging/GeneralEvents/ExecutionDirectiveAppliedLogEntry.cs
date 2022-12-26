@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 

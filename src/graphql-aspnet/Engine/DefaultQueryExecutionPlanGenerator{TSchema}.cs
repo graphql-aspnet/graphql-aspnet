@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Execution.QueryPlans;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>

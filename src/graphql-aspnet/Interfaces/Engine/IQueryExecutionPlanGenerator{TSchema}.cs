@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>

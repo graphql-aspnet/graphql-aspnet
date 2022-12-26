@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System.Linq;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;

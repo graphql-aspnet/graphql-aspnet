@@ -7,19 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
 namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System;
-    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
     using Moq;
     using NUnit.Framework;

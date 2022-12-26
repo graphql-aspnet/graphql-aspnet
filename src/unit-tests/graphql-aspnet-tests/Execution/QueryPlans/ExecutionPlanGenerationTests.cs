@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData;

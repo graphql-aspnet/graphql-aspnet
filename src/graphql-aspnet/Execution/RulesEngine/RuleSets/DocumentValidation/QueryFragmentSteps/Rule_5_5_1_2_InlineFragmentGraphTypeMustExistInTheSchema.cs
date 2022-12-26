@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// An inlined fragmented spread's target type must exist within the target schema.

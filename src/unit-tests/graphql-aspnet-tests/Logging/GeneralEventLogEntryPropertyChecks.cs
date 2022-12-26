@@ -19,10 +19,9 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
@@ -38,6 +37,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using NUnit.Framework;
     using GraphQL.AspNet.Logging.GeneralEvents;
     using GraphQL.AspNet.Logging.GeneralEvents.PropertyItems;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// Ensure that the getters/setters that map to property name constants

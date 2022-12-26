@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;

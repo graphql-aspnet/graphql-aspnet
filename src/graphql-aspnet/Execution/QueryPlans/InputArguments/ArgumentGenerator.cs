@@ -13,8 +13,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Resolvers;
 

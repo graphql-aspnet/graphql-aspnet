@@ -14,11 +14,10 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
-    using GraphQL.AspNet.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
     using GraphQL.AspNet.Execution.RulesEngine;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;

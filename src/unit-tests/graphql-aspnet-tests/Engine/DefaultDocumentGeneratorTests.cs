@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Execution.RulesEngine.DocumentConstructionTestData;
     using GraphQL.AspNet.Tests.Framework;

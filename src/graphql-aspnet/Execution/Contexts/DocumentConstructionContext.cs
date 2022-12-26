@@ -17,9 +17,8 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>

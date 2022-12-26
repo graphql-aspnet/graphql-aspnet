@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Directives
 {
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>

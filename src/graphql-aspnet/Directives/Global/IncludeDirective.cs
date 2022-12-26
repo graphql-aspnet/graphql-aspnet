@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Directives.Global
     using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

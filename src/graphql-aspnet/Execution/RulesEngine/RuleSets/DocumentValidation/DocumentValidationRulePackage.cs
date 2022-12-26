@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.QueryPlans.Document;
     using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSetSteps;
@@ -22,7 +21,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputArgumentSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputValueSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// A rule package for doing a wholistic validation pass at parsed query document before the final

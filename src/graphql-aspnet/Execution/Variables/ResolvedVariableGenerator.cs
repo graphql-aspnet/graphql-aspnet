@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution.Variables
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.QueryPlans;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Schema;

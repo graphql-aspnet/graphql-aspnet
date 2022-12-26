@@ -20,8 +20,7 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
@@ -29,6 +28,7 @@ namespace GraphQL.AspNet.Tests.Internal
     using Moq;
     using NUnit.Framework;
     using GraphQL.AspNet.Internal.Resolvers;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     [TestFixture]
     public class InputResolverGeneratorTests

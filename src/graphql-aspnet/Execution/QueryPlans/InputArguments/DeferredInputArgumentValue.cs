@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 

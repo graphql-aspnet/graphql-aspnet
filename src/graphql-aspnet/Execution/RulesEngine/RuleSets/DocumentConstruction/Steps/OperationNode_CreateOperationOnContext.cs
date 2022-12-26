@@ -11,9 +11,9 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Common;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>

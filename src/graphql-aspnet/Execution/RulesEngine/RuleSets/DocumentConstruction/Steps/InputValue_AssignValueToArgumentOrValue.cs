@@ -11,9 +11,9 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Common;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// Assigns the active input value as a child of the active argument on the context.

@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
     using System;
     using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
