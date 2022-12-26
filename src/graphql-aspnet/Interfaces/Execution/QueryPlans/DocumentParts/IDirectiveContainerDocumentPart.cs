@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
 {
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
-
     /// <summary>
     /// An interface declaring the implementer as a document part that can contain directives.
     /// </summary>

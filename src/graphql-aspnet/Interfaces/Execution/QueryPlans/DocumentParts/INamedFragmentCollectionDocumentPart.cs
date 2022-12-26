@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// A collection of named fragments within a query document.

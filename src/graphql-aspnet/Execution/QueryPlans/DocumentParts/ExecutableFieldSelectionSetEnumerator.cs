@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     using System.Collections;
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// An enumerator that walks a field selection set looking for the next

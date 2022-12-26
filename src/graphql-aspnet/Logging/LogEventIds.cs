@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Logging
 {
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
     using Microsoft.Extensions.Logging;
 

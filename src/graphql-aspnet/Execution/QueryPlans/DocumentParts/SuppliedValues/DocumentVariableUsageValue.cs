@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues
     using System.Diagnostics;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// An input value that is a pointer to a variable defined in the operation that contains it.

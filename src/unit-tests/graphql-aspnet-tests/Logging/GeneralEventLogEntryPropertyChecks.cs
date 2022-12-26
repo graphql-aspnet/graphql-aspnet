@@ -16,16 +16,19 @@ namespace GraphQL.AspNet.Tests.Logging
     using System.Security.Principal;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.Response;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Logging;
+    using GraphQL.AspNet.Logging.GeneralEvents;
+    using GraphQL.AspNet.Logging.GeneralEvents.PropertyItems;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -35,9 +38,6 @@ namespace GraphQL.AspNet.Tests.Logging
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
-    using GraphQL.AspNet.Logging.GeneralEvents;
-    using GraphQL.AspNet.Logging.GeneralEvents.PropertyItems;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// Ensure that the getters/setters that map to property name constants

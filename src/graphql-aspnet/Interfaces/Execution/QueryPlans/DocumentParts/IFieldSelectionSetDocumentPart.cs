@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
 {
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
-
     /// <summary>
     /// A collection of fields to query <see cref="IFieldDocumentPart"/>
     /// from a source object.

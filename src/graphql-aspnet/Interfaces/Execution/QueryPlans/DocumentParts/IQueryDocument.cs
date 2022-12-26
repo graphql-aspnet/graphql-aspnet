@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
 {
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
-
     /// <summary>
     /// An interface representing a parsed query document generated from a graphql request.
     /// </summary>

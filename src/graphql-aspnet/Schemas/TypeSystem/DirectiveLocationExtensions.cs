@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>

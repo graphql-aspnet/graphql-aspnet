@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
 {
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
-
     /// <summary>
     /// A meta-interface identifying document parts that are conditionally included and
     /// may contribute to the resultant data object.

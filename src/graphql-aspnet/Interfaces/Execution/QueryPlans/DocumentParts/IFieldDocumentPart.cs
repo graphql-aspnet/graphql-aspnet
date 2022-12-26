@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>

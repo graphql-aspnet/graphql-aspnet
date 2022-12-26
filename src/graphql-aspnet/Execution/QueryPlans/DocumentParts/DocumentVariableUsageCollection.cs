@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// Class DocumentVariableUsageCollection.

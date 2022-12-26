@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// A collection of the usage of variables within another document part. Allows for easy

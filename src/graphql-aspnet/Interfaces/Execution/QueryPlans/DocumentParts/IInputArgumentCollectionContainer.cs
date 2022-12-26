@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
 {
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
-
     /// <summary>
     /// An interface that declares a given <see cref="IDocumentPart"/>
     /// declares a collection of arguments.

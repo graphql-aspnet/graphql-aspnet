@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <inheritdoc cref="IDocumentPartsCollection" />
     [DebuggerDisplay("Count = {Count}, Owner: {Owner.GetType().Name}")]

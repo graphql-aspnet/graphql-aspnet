@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>

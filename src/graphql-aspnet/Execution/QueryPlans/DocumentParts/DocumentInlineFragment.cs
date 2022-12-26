@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     using System.Diagnostics;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// A document part representing a fragment defined and spread locally in a field

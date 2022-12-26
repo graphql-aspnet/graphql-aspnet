@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// A collection of directives parsed and assigned to a given document part.

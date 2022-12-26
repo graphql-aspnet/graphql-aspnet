@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     using System.Diagnostics;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// A named fragment declared at the top of a query document.

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
 {
     /// <summary>
     /// An collection of document parts with a common owner.

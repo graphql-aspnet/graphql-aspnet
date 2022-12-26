@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// A collection of fragment spreads owned by another document part. Used to quickly access

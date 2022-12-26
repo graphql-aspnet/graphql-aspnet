@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// A collection of input arguments defined in a user's query document for a single field or directive.

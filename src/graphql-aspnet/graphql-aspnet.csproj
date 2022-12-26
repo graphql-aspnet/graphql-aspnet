@@ -23,4 +23,8 @@
     <PackageReference Include="System.Text.Json" Version="4.6.0" />
 
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Interfaces\Execution\QueryPlans\DocumentParts\Common\" />
+  </ItemGroup>
 </Project>

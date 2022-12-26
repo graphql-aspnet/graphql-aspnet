@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;

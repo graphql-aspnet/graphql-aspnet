@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues
     using System.Diagnostics;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// An input value representing a single enumeration value of data.

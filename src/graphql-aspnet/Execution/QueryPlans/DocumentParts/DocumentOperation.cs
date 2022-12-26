@@ -11,10 +11,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
 {
     using System.Collections.Generic;
     using System.Diagnostics;
-    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.Common;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

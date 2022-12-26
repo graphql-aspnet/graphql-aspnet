@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
 
     /// <summary>
     /// A factory to generate appropriate query input values for a parsed document.

@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// A base step with commmon logic for all document validation steps.
