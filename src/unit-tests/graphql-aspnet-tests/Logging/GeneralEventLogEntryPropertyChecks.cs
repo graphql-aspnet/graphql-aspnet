@@ -27,8 +27,6 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.ExecutionEvents;
-    using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -38,6 +36,8 @@ namespace GraphQL.AspNet.Tests.Logging
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
+    using GraphQL.AspNet.Logging.GeneralEvents;
+    using GraphQL.AspNet.Logging.GeneralEvents.PropertyItems;
 
     /// <summary>
     /// Ensure that the getters/setters that map to property name constants

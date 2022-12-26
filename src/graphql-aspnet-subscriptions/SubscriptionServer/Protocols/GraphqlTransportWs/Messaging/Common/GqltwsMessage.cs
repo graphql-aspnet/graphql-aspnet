@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// <summary>
     /// A common base class for all graphql-ws messages.
     /// </summary>
-    public abstract class GqltwsMessage : ILoggableClientProxyMessage
+    internal abstract class GqltwsMessage : ILoggableClientProxyMessage
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsMessage"/> class.

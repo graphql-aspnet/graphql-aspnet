@@ -25,8 +25,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.Extensions;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.Common;
+    using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Common;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Converters;
@@ -39,7 +38,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this client is built for.</typeparam>
     [DebuggerDisplay("Subscriptions = {_subscriptions.Count}")]
-    public class GraphqlWsLegacyClientProxy<TSchema> : SubscriptionClientProxyBase<TSchema, GraphqlWsLegacyMessage>
+    internal class GraphqlWsLegacyClientProxy<TSchema> : SubscriptionClientProxyBase<TSchema, GraphqlWsLegacyMessage>
         where TSchema : class, ISchema
     {
         private static readonly JsonSerializerOptions _deserializeOptions;
@@ -248,12 +247,12 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
 
             switch (result.Status)
             {
-                case SubscriptionOperationResultType.SubscriptionRegistered:
+                case SubscriptionQueryResultType.SubscriptionRegistered:
 
                     // nothing to do in this case
                     break;
 
-                case SubscriptionOperationResultType.IdInUse:
+                case SubscriptionQueryResultType.IdInUse:
                     var idInUseMessage = new GraphqlWsLegacyServerErrorMessage(
                         result.Messages?.FirstOrDefault(),
                         lastMessage: message,
@@ -261,8 +260,8 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
                     await this.SendMessageAsync(idInUseMessage).ConfigureAwait(false);
                     break;
 
-                case SubscriptionOperationResultType.OperationFailure:
-                case SubscriptionOperationResultType.SingleQueryCompleted:
+                case SubscriptionQueryResultType.OperationFailure:
+                case SubscriptionQueryResultType.SingleQueryCompleted:
                     GraphqlWsLegacyMessage responseMessage = null;
 
                     // report syntax errors as error messages

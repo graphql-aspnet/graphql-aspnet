@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs.G
     /// <summary>
     /// A general message to deserialize server sent messages into for inspection in testing.
     /// </summary>
-    public class GqltwsResponseMessage : GqltwsMessage<string>
+    internal class GqltwsResponseMessage : GqltwsMessage<string>
     {
         public GqltwsResponseMessage()
             : base(GqltwsMessageType.UNKNOWN)

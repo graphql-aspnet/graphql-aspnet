@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.Subscriptions;
+    using GraphQL.AspNet.Logging.SubscriptionEvents;
     using GraphQL.AspNet.Schemas;
     using Microsoft.Extensions.Logging;
     using NUnit.Framework;

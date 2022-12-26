@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// A message sent by the client or server when a given subscription (indicated by its client provided id)
     /// will be dropped and no more data will be sent for it.
     /// </summary>
-    public class GqltwsSubscriptionCompleteMessage : GqltwsMessage<GqltwsNullPayload>
+    internal class GqltwsSubscriptionCompleteMessage : GqltwsMessage<GqltwsNullPayload>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsSubscriptionCompleteMessage"/> class.

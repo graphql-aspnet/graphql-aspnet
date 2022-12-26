@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
-    using GraphQL.AspNet.Logging.Subscriptions;
+    using GraphQL.AspNet.Logging.SubscriptionEvents;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.SubscriptionServer;

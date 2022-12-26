@@ -22,7 +22,6 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.SubscriptionServer.Exceptions;
     using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Web.WebSockets;

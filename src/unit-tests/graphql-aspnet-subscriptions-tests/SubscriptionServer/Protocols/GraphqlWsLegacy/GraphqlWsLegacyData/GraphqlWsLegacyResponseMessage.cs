@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.Grap
     /// <summary>
     /// A general message to deserialize server sent messages into for inspection in testing.
     /// </summary>
-    public class GraphqlWsLegacyResponseMessage : GraphqlWsLegacyMessage<string>
+    internal class GraphqlWsLegacyResponseMessage : GraphqlWsLegacyMessage<string>
     {
         public GraphqlWsLegacyResponseMessage()
             : base(GraphqlWsLegacyMessageType.UNKNOWN)

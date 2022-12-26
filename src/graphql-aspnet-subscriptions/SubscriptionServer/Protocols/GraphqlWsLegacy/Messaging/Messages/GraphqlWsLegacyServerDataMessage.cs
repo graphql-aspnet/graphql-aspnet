@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// <summary>
     /// A representation of the 'GQL_DATA' message sent when new data is available for the subscription.
     /// </summary>
-    public class GraphqlWsLegacyServerDataMessage : GraphqlWsLegacyMessage<IQueryOperationResult>
+    internal class GraphqlWsLegacyServerDataMessage : GraphqlWsLegacyMessage<IQueryOperationResult>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyServerDataMessage" /> class.

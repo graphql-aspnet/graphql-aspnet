@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// <summary>
     /// A json converter for the <see cref="GraphqlWsLegacyServerErrorMessage"/> type.
     /// </summary>
-    public class GraphqlWsLegacyServerErrorMessageConverter : JsonConverter<GraphqlWsLegacyServerErrorMessage>
+    internal class GraphqlWsLegacyServerErrorMessageConverter : JsonConverter<GraphqlWsLegacyServerErrorMessage>
     {
         private readonly ISchema _schema;
 

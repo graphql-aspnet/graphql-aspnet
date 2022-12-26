@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.SubscriptionServer
     using GraphQL.AspNet.Common.Generics;
 
     /// <summary>
-    /// A thread safe container for tracking which connected clients have message Ids
-    /// in flight on the server.
+    /// A thread safe container for tracking which message Ids
+    /// a given client has in flight on the server.
     /// </summary>
     public class ClientTrackedMessageIdSet
     {

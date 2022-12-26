@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// An graphql-ws specific message containing one error that occured outside of any
     /// given graph query execution. This message terminates the connection.
     /// </summary>
-    public class GqltwsServerErrorMessage : GqltwsMessage<IGraphMessage>
+    internal class GqltwsServerErrorMessage : GqltwsMessage<IGraphMessage>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsServerErrorMessage" /> class.

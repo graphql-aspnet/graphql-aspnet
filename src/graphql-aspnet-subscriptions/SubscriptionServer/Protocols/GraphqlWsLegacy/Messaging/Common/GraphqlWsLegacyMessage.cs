@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// <summary>
     /// A common base class for all GraphqlWsLegacy messages.
     /// </summary>
-    public abstract class GraphqlWsLegacyMessage : ILoggableClientProxyMessage
+    internal abstract class GraphqlWsLegacyMessage : ILoggableClientProxyMessage
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyMessage"/> class.

@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// A representation of the PONG message sent by a client or server to the other
     /// end of the connection after receiving a PING message.
     /// </summary>
-    public class GqltwsPongMessage : GqltwsMessage<string>
+    internal class GqltwsPongMessage : GqltwsMessage<string>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsPongMessage"/> class.

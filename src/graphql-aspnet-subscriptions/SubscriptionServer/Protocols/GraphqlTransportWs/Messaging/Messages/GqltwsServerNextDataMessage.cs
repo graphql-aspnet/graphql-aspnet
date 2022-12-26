@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// <summary>
     /// A representation of the 'NEXT' message sent when new data is available for a subscription.
     /// </summary>
-    public class GqltwsServerNextDataMessage : GqltwsMessage<IQueryOperationResult>
+    internal class GqltwsServerNextDataMessage : GqltwsMessage<IQueryOperationResult>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsServerNextDataMessage" /> class.

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// <summary>
     /// A json converter for the <see cref="GraphqlWsLegacyServerCompleteMessage"/>.
     /// </summary>
-    public class GraphqlWsLegacyServerCompleteMessageConverter : JsonConverter<GraphqlWsLegacyServerCompleteMessage>
+    internal class GraphqlWsLegacyServerCompleteMessageConverter : JsonConverter<GraphqlWsLegacyServerCompleteMessage>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyServerCompleteMessageConverter" /> class.

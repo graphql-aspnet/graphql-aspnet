@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// </summary>
     ///
     [DebuggerDisplay("GraphqlWsLegacy Subscription Stop (Id: {Id})")]
-    public class GraphqlWsLegacyClientStopMessage : GraphqlWsLegacyMessage<GraphqlWsLegacyNullPayload>
+    internal class GraphqlWsLegacyClientStopMessage : GraphqlWsLegacyMessage<GraphqlWsLegacyNullPayload>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyClientStopMessage"/> class.

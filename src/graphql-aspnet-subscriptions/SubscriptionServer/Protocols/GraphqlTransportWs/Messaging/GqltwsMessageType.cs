@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// <para>An enumeration of the different types of messages carried over a presistent connection.</para>
     /// <para>Reference: <see href="https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md" />.</para>
     /// </summary>
-    public enum GqltwsMessageType
+    internal enum GqltwsMessageType
     {
         UNKNOWN = 0,
 

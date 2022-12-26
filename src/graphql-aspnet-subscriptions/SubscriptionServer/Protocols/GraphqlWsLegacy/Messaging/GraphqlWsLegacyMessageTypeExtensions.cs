@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging
     /// <summary>
     /// Helper methods for the <see cref="GraphqlWsLegacyMessageType"/>.
     /// </summary>
-    public static class GraphqlWsLegacyMessageTypeExtensions
+    internal static class GraphqlWsLegacyMessageTypeExtensions
     {
         /// <summary>
         /// A helper message to create a valid <see cref="GraphqlWsLegacyMessageType"/> accounting

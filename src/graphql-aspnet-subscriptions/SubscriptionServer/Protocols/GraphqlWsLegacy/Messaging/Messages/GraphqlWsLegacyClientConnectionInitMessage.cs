@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// session on the socket.
     /// </summary>
     [DebuggerDisplay("GraphqlWsLegacy Client Initialized")]
-    public class GraphqlWsLegacyClientConnectionInitMessage : GraphqlWsLegacyMessage<GraphqlWsLegacyNullPayload>
+    internal class GraphqlWsLegacyClientConnectionInitMessage : GraphqlWsLegacyMessage<GraphqlWsLegacyNullPayload>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyClientConnectionInitMessage"/> class.

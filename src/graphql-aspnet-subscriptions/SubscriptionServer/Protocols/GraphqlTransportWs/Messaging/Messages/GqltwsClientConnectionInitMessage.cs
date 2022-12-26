@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// session on the socket.
     /// </summary>
     [DebuggerDisplay("graphql-ws: Client Initialized")]
-    public class GqltwsClientConnectionInitMessage : GqltwsMessage<GqltwsNullPayload>
+    internal class GqltwsClientConnectionInitMessage : GqltwsMessage<GqltwsNullPayload>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsClientConnectionInitMessage"/> class.

@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// A message sent by the client when it wants to start a new subscription operation.
     /// </summary>
     [DebuggerDisplay("graphql-ws: Subscription Start (Id: {Id})")]
-    public class GqltwsClientSubscribeMessage : GqltwsMessage<GraphQueryData>
+    internal class GqltwsClientSubscribeMessage : GqltwsMessage<GraphQueryData>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsClientSubscribeMessage"/> class.

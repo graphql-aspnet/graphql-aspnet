@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.Grap
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class GraphqlWsLegacyResponseMessageConverter : JsonConverter<GraphqlWsLegacyResponseMessage>
+    internal class GraphqlWsLegacyResponseMessageConverter : JsonConverter<GraphqlWsLegacyResponseMessage>
     {
         public override GraphqlWsLegacyResponseMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

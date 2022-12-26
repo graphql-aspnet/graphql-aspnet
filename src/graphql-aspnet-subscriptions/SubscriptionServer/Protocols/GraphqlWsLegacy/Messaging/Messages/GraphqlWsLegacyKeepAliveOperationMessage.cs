@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// A keep alive message sent periodically by the server to keep the connection
     /// open a the application level.
     /// </summary>
-    public class GraphqlWsLegacyKeepAliveOperationMessage : GraphqlWsLegacyMessage<GraphqlWsLegacyNullPayload>
+    internal class GraphqlWsLegacyKeepAliveOperationMessage : GraphqlWsLegacyMessage<GraphqlWsLegacyNullPayload>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyKeepAliveOperationMessage"/> class.

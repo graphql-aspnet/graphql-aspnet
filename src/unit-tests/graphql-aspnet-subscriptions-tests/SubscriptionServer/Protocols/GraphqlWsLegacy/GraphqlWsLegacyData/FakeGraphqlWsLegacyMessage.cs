@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.Grap
 {
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Common;
 
-    public class FakeGraphqlWsLegacyMessage : GraphqlWsLegacyMessage
+    internal class FakeGraphqlWsLegacyMessage : GraphqlWsLegacyMessage
     {
         public new string Type { get; set; }
 

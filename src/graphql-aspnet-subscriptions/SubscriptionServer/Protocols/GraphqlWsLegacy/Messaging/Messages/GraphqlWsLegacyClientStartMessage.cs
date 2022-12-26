@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// A message sent by the client when it wants to start a new subscription operation.
     /// </summary>
     [DebuggerDisplay("GraphqlWsLegacy Subscription Start (Id: {Id})")]
-    public class GraphqlWsLegacyClientStartMessage : GraphqlWsLegacyMessage<GraphQueryData>
+    internal class GraphqlWsLegacyClientStartMessage : GraphqlWsLegacyMessage<GraphQueryData>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyClientStartMessage"/> class.

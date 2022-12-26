@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.SubscriptionServer.BackgroundServices
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.Extensions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 

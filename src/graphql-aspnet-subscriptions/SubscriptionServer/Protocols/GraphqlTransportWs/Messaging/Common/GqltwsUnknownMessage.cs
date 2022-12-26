@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// <summary>
     /// A message representing an unknown message type.
     /// </summary>
-    public class GqltwsUnknownMessage : GqltwsMessage<object>
+    internal class GqltwsUnknownMessage : GqltwsMessage<object>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsUnknownMessage" /> class.

@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.ExecutionEvents;
+    using GraphQL.AspNet.Logging.GeneralEvents;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Security;
     using Microsoft.Extensions.Logging;

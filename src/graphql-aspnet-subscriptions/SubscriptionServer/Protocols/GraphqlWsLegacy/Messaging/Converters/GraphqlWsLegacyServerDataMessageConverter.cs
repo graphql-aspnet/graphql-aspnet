@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// <summary>
     /// A json converter for the <see cref="GraphqlWsLegacyServerDataMessage"/>.
     /// </summary>
-    public class GraphqlWsLegacyServerDataMessageConverter : JsonConverter<GraphqlWsLegacyServerDataMessage>
+    internal class GraphqlWsLegacyServerDataMessageConverter : JsonConverter<GraphqlWsLegacyServerDataMessage>
     {
         private readonly IQueryResponseWriter _responseWriter;
         private readonly ISchema _schema;

@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.SubscriptionServer
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A client subscription containing the details of what event is being listened for.
+    /// A fully registered subscription by a single client.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema the subscription exists for.</typeparam>
     public class ClientSubscription<TSchema> : ISubscription<TSchema>

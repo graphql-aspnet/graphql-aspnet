@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs.G
 {
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging.Common;
 
-    public class FakeGqltwsMessage : GqltwsMessage
+    internal class FakeGqltwsMessage : GqltwsMessage
     {
         public new string Type { get; set; }
 

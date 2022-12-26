@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
     /// Extension methods used to register and startup the 'graphql-transport-ws'
     /// protocol.
     /// </summary>
-    internal static class GqltwsStartupExtensions
+    public static class GqltwsStartupExtensions
     {
         /// <summary>
         /// Adds the necessary components to properly handle the 'graphql-transport-ws' protocol

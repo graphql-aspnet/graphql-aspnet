@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.Common;
+    using GraphQL.AspNet.SubscriptionServer;
     using Moq;
     using NUnit.Framework;
 
@@ -24,11 +24,11 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols
         [Test]
         public void DuplicateId_PropCheck()
         {
-            var result = SubscriptionDataExecutionResult<GraphSchema>.DuplicateId("abc");
+            var result = SubscriptionQueryExecutionResult<GraphSchema>.DuplicateId("abc");
 
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages[0].Severity);
-            Assert.AreEqual(SubscriptionOperationResultType.IdInUse, result.Status);
+            Assert.AreEqual(SubscriptionQueryResultType.IdInUse, result.Status);
             Assert.AreEqual(SubscriptionConstants.ErrorCodes.DUPLICATE_MESSAGE_ID, result.Messages[0].Code);
         }
 
@@ -37,21 +37,21 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols
         {
             var sub = new Mock<IGraphMessageCollection>();
 
-            var result = SubscriptionDataExecutionResult<GraphSchema>.OperationFailure("abc", sub.Object);
+            var result = SubscriptionQueryExecutionResult<GraphSchema>.OperationFailure("abc", sub.Object);
 
             Assert.AreEqual("abc", result.SubscriptionId);
             Assert.IsNull(result.Subscription);
-            Assert.AreEqual(SubscriptionOperationResultType.OperationFailure, result.Status);
+            Assert.AreEqual(SubscriptionQueryResultType.OperationFailure, result.Status);
         }
 
         [Test]
         public void OperationFailure_PropCheck()
         {
-            var result = SubscriptionDataExecutionResult<GraphSchema>.DuplicateId("abc");
+            var result = SubscriptionQueryExecutionResult<GraphSchema>.DuplicateId("abc");
 
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages[0].Severity);
-            Assert.AreEqual(SubscriptionOperationResultType.IdInUse, result.Status);
+            Assert.AreEqual(SubscriptionQueryResultType.IdInUse, result.Status);
             Assert.AreEqual(SubscriptionConstants.ErrorCodes.DUPLICATE_MESSAGE_ID, result.Messages[0].Code);
         }
 
@@ -60,10 +60,10 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols
         {
             var operationResult = new Mock<IQueryOperationResult>();
 
-            var result = SubscriptionDataExecutionResult<GraphSchema>.SingleOperationCompleted("abc", operationResult.Object);
+            var result = SubscriptionQueryExecutionResult<GraphSchema>.SingleOperationCompleted("abc", operationResult.Object);
 
             Assert.AreEqual(operationResult.Object, result.OperationResult);
-            Assert.AreEqual(SubscriptionOperationResultType.SingleQueryCompleted, result.Status);
+            Assert.AreEqual(SubscriptionQueryResultType.SingleQueryCompleted, result.Status);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// <summary>
     /// A message representing an unknown message type.
     /// </summary>
-    public class GraphqlWsLegacyUnknownMessage : GraphqlWsLegacyMessage<object>
+    internal class GraphqlWsLegacyUnknownMessage : GraphqlWsLegacyMessage<object>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyUnknownMessage" /> class.

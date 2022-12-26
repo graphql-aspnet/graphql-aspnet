@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.
     /// An GraphqlWsLegacy specific message containing one error that occured outside of any
     /// given graph query execution.
     /// </summary>
-    public class GraphqlWsLegacyServerErrorMessage : GraphqlWsLegacyMessage<IGraphMessage>
+    internal class GraphqlWsLegacyServerErrorMessage : GraphqlWsLegacyMessage<IGraphMessage>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyServerErrorMessage" /> class.

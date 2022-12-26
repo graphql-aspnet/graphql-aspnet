@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// An implementation of the required operation message interface.
     /// </summary>
     /// <typeparam name="TPayloadType">The type of the payload this message expects.</typeparam>
-    public abstract class GqltwsMessage<TPayloadType> : GqltwsMessage
+    internal abstract class GqltwsMessage<TPayloadType> : GqltwsMessage
         where TPayloadType : class
     {
         private TPayloadType _payload;

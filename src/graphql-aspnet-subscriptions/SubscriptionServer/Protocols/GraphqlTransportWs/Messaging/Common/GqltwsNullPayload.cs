@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// <summary>
     /// An object representing a state such that no payload was or should be supplied with a message.
     /// </summary>
-    public class GqltwsNullPayload
+    internal class GqltwsNullPayload
     {
     }
 }

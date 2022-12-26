@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// double deserialization of a message via json deserializer.
     /// </summary>
     [DebuggerDisplay("Message Type: {Type}")]
-    public class GqltwsClientPartialMessage : GqltwsMessage<GraphQueryData>
+    internal class GqltwsClientPartialMessage : GqltwsMessage<GraphQueryData>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsClientPartialMessage"/> class.

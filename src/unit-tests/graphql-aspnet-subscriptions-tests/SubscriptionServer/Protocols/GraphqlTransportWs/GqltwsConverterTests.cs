@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
     [TestFixture]
     public class GqltwsConverterTests
     {
-        public class GQWSCustomMessage : GqltwsMessage<string>
+        internal class GQWSCustomMessage : GqltwsMessage<string>
         {
             public GQWSCustomMessage()
                 : base(GqltwsMessageType.COMPLETE)

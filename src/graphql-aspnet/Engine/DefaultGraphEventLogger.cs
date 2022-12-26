@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.ExecutionEvents;
+    using GraphQL.AspNet.Logging.GeneralEvents;
     using GraphQL.AspNet.Security;
     using Microsoft.Extensions.Logging;
 

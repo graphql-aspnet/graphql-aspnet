@@ -26,8 +26,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.Extensions;
-    using GraphQL.AspNet.SubscriptionServer.Protocols.Common;
+    using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging.Common;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging.Converters;
@@ -119,11 +118,11 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
             var result = await this.ExecuteQueryAsync(message.Id, message.Payload, _enableMetrics);
             switch (result.Status)
             {
-                case SubscriptionOperationResultType.SubscriptionRegistered:
+                case SubscriptionQueryResultType.SubscriptionRegistered:
                     // nothing to do in this case
                     break;
 
-                case SubscriptionOperationResultType.SingleQueryCompleted:
+                case SubscriptionQueryResultType.SingleQueryCompleted:
 
                     // report pre execution syntax errors as single error messages
                     if (result.Messages.Count == 1
@@ -148,7 +147,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
 
                     break;
 
-                case SubscriptionOperationResultType.IdInUse:
+                case SubscriptionQueryResultType.IdInUse:
                     var failureMessage = new GqltwsServerErrorMessage(
                         result.Messages?.FirstOrDefault(),
                         lastMessage: message,
@@ -157,7 +156,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
                     await this.SendMessageAsync(failureMessage).ConfigureAwait(false);
                     break;
 
-                case SubscriptionOperationResultType.OperationFailure:
+                case SubscriptionQueryResultType.OperationFailure:
 
                     if (result.Messages.Count == 1)
                     {

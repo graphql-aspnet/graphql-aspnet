@@ -28,8 +28,8 @@ namespace GraphQL.AspNet.SubscriptionServer
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this instance executes against.</typeparam>
     /// <remarks>
-    /// This class exists souly to reduce clutter and code in the primary
-    /// proxy base.
+    /// This class acts as a helper class for encapsulating common functionality relating to
+    /// sending subscriptions through the primary runtime.
     /// </remarks>
     public sealed class SubscriptionEventProcessor<TSchema>
         where TSchema : class, ISchema
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// <param name="evt">The subscription event to process.</param>
         /// <param name="subscription">The subscription to process the event against.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>GraphQueryExecutionContext.</returns>
+        /// <returns>The execution context that was processed through the graphql runtime.</returns>
         public async Task<QueryExecutionContext> ProcessEventAsync(
             IUserSecurityContext securityContext,
             SubscriptionEvent evt,
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.SubscriptionServer
                 logger: logger);
 
             // ------------------------------
-            // register the event data as a source input for the target subscription field
+            // register the subscription event data as a source input for the target subscription field
             // ------------------------------
             context.DefaultFieldSources.AddSource(subscription.Field, evt.Data);
             context.QueryPlan = subscription.QueryPlan;
