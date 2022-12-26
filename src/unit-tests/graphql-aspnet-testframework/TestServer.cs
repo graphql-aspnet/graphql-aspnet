@@ -156,10 +156,10 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="operationName">Name of the operation in the query text to formalize
         /// into the plan.</param>
         /// <returns>Task&lt;IGraphQueryPlan&gt;.</returns>
-        public Task<IGraphQueryPlan> CreateQueryPlan(string queryText, string operationName = null)
+        public Task<IQueryExecutionPlan> CreateQueryPlan(string queryText, string operationName = null)
         {
             var documentGenerator = this.ServiceProvider.GetService<IQueryDocumentGenerator<TSchema>>();
-            var planGenerator = this.ServiceProvider.GetService<IQueryPlanGenerator<TSchema>>();
+            var planGenerator = this.ServiceProvider.GetService<IQueryExecutionPlanGenerator<TSchema>>();
             var document = this.CreateDocument(queryText);
 
             documentGenerator.ValidateDocument(document);
@@ -248,7 +248,7 @@ namespace GraphQL.AspNet.Tests.Framework
             var messages = new GraphMessageCollection();
             var metaData = new MetaDataCollection();
 
-            var operationRequest = new Mock<IQueryOperationRequest>();
+            var operationRequest = new Mock<IQueryExecutionRequest>();
             var fieldInvocationContext = new Mock<IGraphFieldInvocationContext>();
             var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
             var graphFieldRequest = new Mock<IGraphFieldRequest>();
@@ -407,7 +407,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
             var targetDirective = server.Schema.KnownTypes.FindDirective(typeof(TDirective));
 
-            var operationRequest = new Mock<IQueryOperationRequest>();
+            var operationRequest = new Mock<IQueryExecutionRequest>();
             var directiveRequest = new Mock<IGraphDirectiveRequest>();
             var invocationContext = new Mock<IDirectiveInvocationContext>();
             var argCollection = new InputArgumentCollection();
@@ -465,7 +465,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="builder">The builder from which to generate the required query cotnext.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task<IQueryOperationResult> ExecuteQuery(QueryContextBuilder builder, CancellationToken cancelToken = default)
+        public async Task<IQueryExecutionResult> ExecuteQuery(QueryContextBuilder builder, CancellationToken cancelToken = default)
         {
             var context = builder.Build();
             await this.ExecuteQuery(context, cancelToken).ConfigureAwait(false);
@@ -532,7 +532,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <param name="result">The result of a previously completed operation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        private async Task<string> RenderResult(IQueryOperationResult result)
+        private async Task<string> RenderResult(IQueryExecutionResult result)
         {
             var options = new ResponseWriterOptions()
             {

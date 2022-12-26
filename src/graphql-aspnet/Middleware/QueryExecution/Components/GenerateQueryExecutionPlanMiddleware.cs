@@ -21,24 +21,24 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     /// Creates a new query plan from a parsed syntax tree when required.
     /// </summary>
     /// <typeparam name="TSchema">The type of schema this middleware component works for.</typeparam>
-    public class GenerateQueryPlanMiddleware<TSchema> : IQueryExecutionMiddleware
+    public class GenerateQueryExecutionPlanMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
         private readonly IQueryDocumentGenerator<TSchema> _documentGenerator;
-        private readonly IQueryPlanGenerator<TSchema> _planGenerator;
+        private readonly IQueryExecutionPlanGenerator<TSchema> _planGenerator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GenerateQueryPlanMiddleware{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="GenerateQueryExecutionPlanMiddleware{TSchema}" /> class.
         /// </summary>
         /// <param name="schema">The target schema.</param>
         /// <param name="documentGenerator">The document generator used to validate
         /// document instances.</param>
         /// <param name="planGenerator">The plan generator.</param>
-        public GenerateQueryPlanMiddleware(
+        public GenerateQueryExecutionPlanMiddleware(
             TSchema schema,
             IQueryDocumentGenerator<TSchema> documentGenerator,
-            IQueryPlanGenerator<TSchema> planGenerator)
+            IQueryExecutionPlanGenerator<TSchema> planGenerator)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));

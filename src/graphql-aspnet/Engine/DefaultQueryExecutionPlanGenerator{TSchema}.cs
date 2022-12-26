@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Engine
     /// executable operatiopn by a the query pipeline.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this plan generator is registered for.</typeparam>
-    public class DefaultQueryPlanGenerator<TSchema> : IQueryPlanGenerator<TSchema>
+    public class DefaultQueryExecutionPlanGenerator<TSchema> : IQueryExecutionPlanGenerator<TSchema>
         where TSchema : class, ISchema
     {
         private readonly ISchema _schema;
@@ -31,14 +31,14 @@ namespace GraphQL.AspNet.Engine
         private readonly IQueryOperationDepthCalculator<TSchema> _depthCalculator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultQueryPlanGenerator{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="DefaultQueryExecutionPlanGenerator{TSchema}" /> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <param name="depthCalculator">The depth calculator for this plan generator to use when
         /// detereming node depths in generated query documents.</param>
         /// <param name="complexityCalculator">The complexity calculator for this plan generator to use
         /// when computing complexity scores for query documents.</param>
-        public DefaultQueryPlanGenerator(
+        public DefaultQueryExecutionPlanGenerator(
             TSchema schema,
             IQueryOperationDepthCalculator<TSchema> depthCalculator,
             IQueryOperationComplexityCalculator<TSchema> complexityCalculator)
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public async Task<IGraphQueryPlan> CreatePlanAsync(IOperationDocumentPart operation)
+        public async Task<IQueryExecutionPlan> CreatePlanAsync(IOperationDocumentPart operation)
         {
             Validation.ThrowIfNull(operation, nameof(operation));
 
@@ -79,14 +79,14 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="IGraphQueryPlan"/>
+        /// Creates a new instance of the <see cref="IQueryExecutionPlan"/>
         /// this generator manages. Overload this method in a child class to inject
         /// your own plan type.
         /// </summary>
         /// <returns>IGraphQueryPlan.</returns>
-        protected virtual IGraphQueryPlan CreatePlanInstance()
+        protected virtual IQueryExecutionPlan CreatePlanInstance()
         {
-            return new GraphQueryExecutionPlan<TSchema>();
+            return new QueryExecutionPlan<TSchema>();
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="queryPlan">The query plan being generated.</param>
         /// <param name="operation">The operation to be included.</param>
-        protected virtual void InspectSyntaxDepth(IGraphQueryPlan queryPlan, IOperationDocumentPart operation)
+        protected virtual void InspectSyntaxDepth(IQueryExecutionPlan queryPlan, IOperationDocumentPart operation)
         {
             var maxAllowedDepth = _schema.Configuration?.ExecutionOptions?.MaxQueryDepth;
             if (maxAllowedDepth == null)
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Engine
         /// occur, a message is recorded to the plan and it is abandoned.
         /// </summary>
         /// <param name="plan">The plan.</param>
-        protected virtual void InspectQueryPlanComplexity(IGraphQueryPlan plan)
+        protected virtual void InspectQueryPlanComplexity(IQueryExecutionPlan plan)
         {
             var maxComplexity = _schema.Configuration?.ExecutionOptions?.MaxQueryComplexity;
             if (maxComplexity.HasValue && plan.EstimatedComplexity > maxComplexity.Value)

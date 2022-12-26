@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     /// <summary>
     /// A collection of configuration options for a given schema on how to configure query plan caching.
     /// </summary>
-    public interface ISchemaQueryPlanCacheConfiguration
+    public interface ISchemaQueryExecutionPlanCacheConfiguration
     {
         /// <summary>
         /// Gets or sets the total number of milliseconds from the point a query is cached until it is removed from the cache. This value takes precidence over

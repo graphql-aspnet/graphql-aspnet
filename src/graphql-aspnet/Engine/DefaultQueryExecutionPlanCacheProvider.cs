@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Engine
     /// <summary>
     /// The default query cache implementation using local memory to store query plan data.
     /// </summary>
-    public class DefaultQueryPlanCacheProvider : IQueryPlanCacheProvider, IDisposable
+    public class DefaultQueryExecutionPlanCacheProvider : IQueryExecutionPlanCacheProvider, IDisposable
     {
         /// <summary>
         /// The number of minutes to use as a default sliding expiration on any cached plans
@@ -30,20 +30,20 @@ namespace GraphQL.AspNet.Engine
         private readonly MemoryCache _cachedPlans;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultQueryPlanCacheProvider"/> class.
+        /// Initializes a new instance of the <see cref="DefaultQueryExecutionPlanCacheProvider"/> class.
         /// </summary>
         /// <param name="defaultSlidingExpiration">The default sliding expiration.</param>
-        public DefaultQueryPlanCacheProvider(TimeSpan? defaultSlidingExpiration = null)
+        public DefaultQueryExecutionPlanCacheProvider(TimeSpan? defaultSlidingExpiration = null)
              : this(MemoryCache.Default, defaultSlidingExpiration)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultQueryPlanCacheProvider" /> class.
+        /// Initializes a new instance of the <see cref="DefaultQueryExecutionPlanCacheProvider" /> class.
         /// </summary>
         /// <param name="cacheInstance">The cache instance to use for storing query plans.</param>
         /// <param name="defaultSlidingExpiration">The default sliding expiration.</param>
-        public DefaultQueryPlanCacheProvider(MemoryCache cacheInstance, TimeSpan? defaultSlidingExpiration = null)
+        public DefaultQueryExecutionPlanCacheProvider(MemoryCache cacheInstance, TimeSpan? defaultSlidingExpiration = null)
         {
             _cachedPlans = cacheInstance;
             if (defaultSlidingExpiration.HasValue)
@@ -60,14 +60,14 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public Task<bool> TryGetPlanAsync(string key, out IGraphQueryPlan plan)
+        public Task<bool> TryGetPlanAsync(string key, out IQueryExecutionPlan plan)
         {
-            plan = _cachedPlans.Get(key) as IGraphQueryPlan;
+            plan = _cachedPlans.Get(key) as IQueryExecutionPlan;
             return (plan != null).AsCompletedTask();
         }
 
         /// <inheritdoc />
-        public Task<bool> TryCachePlanAsync(string key, IGraphQueryPlan plan, DateTimeOffset? absoluteExpiration = null, TimeSpan? slidingExpiration = null)
+        public Task<bool> TryCachePlanAsync(string key, IQueryExecutionPlan plan, DateTimeOffset? absoluteExpiration = null, TimeSpan? slidingExpiration = null)
         {
             var policy = new CacheItemPolicy();
             if (absoluteExpiration.HasValue)

@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
     /// <summary>
     /// A document representing the query text as supplied by the user matched against a schema.
     /// </summary>
-    internal class QueryDocument : IQueryDocument, IDecdendentDocumentPartSubscriber
+    internal class QueryDocument : IQueryDocument, IDescendentDocumentPartSubscriber
     {
         private readonly DocumentOperationCollection _operations;
         private readonly DocumentNamedFragmentCollection _fragmentCollection;
@@ -42,8 +42,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
             _operations = new DocumentOperationCollection(this);
         }
 
-        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
-        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
+        /// <inheritdoc cref="IDescendentDocumentPartSubscriber.OnDescendentPartAdded" />
+        void IDescendentDocumentPartSubscriber.OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
             if (decendentPart is INamedFragmentDocumentPart nf)
                 _fragmentCollection.AddFragment(nf);

@@ -7,8 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Execution
+namespace GraphQL.AspNet.Interfaces.Web
 {
+    using GraphQL.AspNet.Interfaces.Execution;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -16,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// Requests implementing this interface declare that they originate from an http request and
     /// contain a valid <see cref="Microsoft.AspNetCore.Http.HttpContext"/>.
     /// </summary>
-    public interface IQueryOperationWebRequest : IQueryOperationRequest
+    public interface IQueryExecutionWebRequest : IQueryExecutionRequest
     {
         /// <summary>
         /// Gets the <see cref="Microsoft.AspNetCore.Http.HttpContext"/> from which this operation request was generated.

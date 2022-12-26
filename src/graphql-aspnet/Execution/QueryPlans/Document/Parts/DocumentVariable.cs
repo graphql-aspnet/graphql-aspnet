@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Variable: {Name}")]
-    internal class DocumentVariable : DocumentPartBase, IVariableDocumentPart, IDecdendentDocumentPartSubscriber
+    internal class DocumentVariable : DocumentPartBase, IVariableDocumentPart, IDescendentDocumentPartSubscriber
     {
         private DocumentDirectiveCollection _directives = null;
 
@@ -46,8 +46,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
             this.TypeExpression = typeExpression;
         }
 
-        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
-        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
+        /// <inheritdoc cref="IDescendentDocumentPartSubscriber.OnDescendentPartAdded" />
+        void IDescendentDocumentPartSubscriber.OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
             if (decendentPart.Parent == this && decendentPart is IDirectiveDocumentPart ddp)
             {

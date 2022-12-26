@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// generated from an HTTP request.
         /// </summary>
         /// <value>The top level request.</value>
-        IQueryOperationRequest OperationRequest { get; }
+        IQueryExecutionRequest OperationRequest { get; }
 
         /// <summary>
         /// Gets the service provider assigned to this context to use for any required

@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// Gets the generated query plan that was preparsed and represents the original subscription request.
         /// </summary>
         /// <value>The query plan.</value>
-        IGraphQueryPlan QueryPlan { get; }
+        IQueryExecutionPlan QueryPlan { get; }
 
         /// <summary>
         /// Gets the selected query operation that will be executed when new data is recieved for

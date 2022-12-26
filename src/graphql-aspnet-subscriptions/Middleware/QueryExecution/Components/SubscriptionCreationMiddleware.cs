@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <inheritdoc />
         public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
-            if (context is SubcriptionGraphQueryExecutionContext subContext
+            if (context is SubcriptionQueryExecutionContext subContext
                 && subContext.IsSubscriptionOperation
                 && subContext.QueryPlan != null)
             {

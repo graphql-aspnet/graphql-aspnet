@@ -20,13 +20,13 @@ namespace GraphQL.AspNet.Execution
     /// A request to execute a graphql query.
     /// </summary>
     [DebuggerDisplay("Query Length = {QueryLength} (Operation = {OperationName})")]
-    public class QueryOperationRequest : IQueryOperationRequest
+    public class QueryExecutionRequest : IQueryExecutionRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryOperationRequest"/> class.
+        /// Initializes a new instance of the <see cref="QueryExecutionRequest"/> class.
         /// </summary>
         /// <param name="queryData">The raw query data to process.</param>
-        public QueryOperationRequest(GraphQueryData queryData)
+        public QueryExecutionRequest(GraphQueryData queryData)
         {
             this.Id = Guid.NewGuid();
             this.OperationName = queryData.OperationName?.Trim();
@@ -38,10 +38,10 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryOperationRequest"/> class.
+        /// Initializes a new instance of the <see cref="QueryExecutionRequest"/> class.
         /// </summary>
         /// <param name="request">The request to injest into this request.</param>
-        protected QueryOperationRequest(IQueryOperationRequest request)
+        protected QueryExecutionRequest(IQueryExecutionRequest request)
         {
             Validation.ThrowIfNull(request, nameof(request));
             this.Id = request.Id;

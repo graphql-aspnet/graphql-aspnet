@@ -11,27 +11,28 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
-    /// Recorded when an executor attempts, and fails, to retrieve a query plan from its local cache.
+    /// Recorded when an executor successfully caches a newly created query plan to its
+    /// local cache for future use.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema for which the query hash was generated.</typeparam>
-    public class QueryPlanCacheMissLogEntry<TSchema> : GraphLogEntry
-        where TSchema : class, ISchema
+    public class QueryExecutionPlanCacheAddLogEntry : GraphLogEntry
     {
         private readonly string _schemaTypeShortName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryPlanCacheMissLogEntry{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="QueryExecutionPlanCacheAddLogEntry" /> class.
         /// </summary>
         /// <param name="queryHash">The query hash.</param>
-        public QueryPlanCacheMissLogEntry(string queryHash)
-            : base(LogEventIds.QueryCacheMiss)
+        /// <param name="queryPlan">The query plan.</param>
+        public QueryExecutionPlanCacheAddLogEntry(string queryHash, IQueryExecutionPlan queryPlan)
+            : base(LogEventIds.QueryCacheAdd)
         {
-            _schemaTypeShortName = typeof(TSchema).FriendlyName();
-            this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
             this.QueryPlanHashCode = queryHash;
+            _schemaTypeShortName = queryPlan?.SchemaType?.FriendlyName();
+            this.SchemaTypeName = queryPlan?.SchemaType?.FriendlyName(true);
+            this.QueryPlanId = queryPlan?.Id.ToString();
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         }
 
         /// <summary>
-        /// Gets the <see cref="Type" /> name of the target schema investigated for
+        /// Gets the <see cref="Type" /> name of the target schema for
         /// the query plan.
         /// </summary>
         /// <value>The name of the schema type.</value>
@@ -56,12 +57,22 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         }
 
         /// <summary>
+        /// Gets the unique id assigned to the query plan when it was generated.
+        /// </summary>
+        /// <value>The query plan identifier.</value>
+        public string QueryPlanId
+        {
+            get => this.GetProperty<string>(LogPropertyNames.QUERY_PLAN_ID);
+            private set => this.SetProperty(LogPropertyNames.QUERY_PLAN_ID, value);
+        }
+
+        /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return $"Query Cache Miss | Schema Type: '{_schemaTypeShortName}', Key: '[Redacted]' ";
+            return $"Query Cache Add | Schema Type: '{_schemaTypeShortName}', Key: '[Redacted]' ";
         }
     }
 }

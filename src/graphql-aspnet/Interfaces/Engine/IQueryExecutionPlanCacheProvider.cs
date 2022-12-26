@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
     /// and subsitute it in the <see cref="GraphQLProviders"/> at start up. This cache instance is a singleton reference
     /// per server instance.
     /// </summary>
-    public interface IQueryPlanCacheProvider
+    public interface IQueryExecutionPlanCacheProvider
     {
         /// <summary>
         /// Attempts to retrieve a query plan from the cache for the given schema if it sexists.
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="key">The unique key for the plan of a given schema.</param>
         /// <param name="plan">The plan that was retrieved or null if it was not found.</param>
         /// <returns><c>true</c> if the plan was successfully retrieved; otherwise, <c>false</c>.</returns>
-        Task<bool> TryGetPlanAsync(string key, out IGraphQueryPlan plan);
+        Task<bool> TryGetPlanAsync(string key, out IQueryExecutionPlan plan);
 
         /// <summary>
         /// Caches the plan instance for later retrieval.
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="slidingExpiration">A sliding expiration such that if the plan is not retreived within this timeframe
         /// the plan will be evicted from the cache (may not be supported by all cache implementations).</param>
         /// <returns><c>true</c> if the plan was successfully cached, <c>false</c> otherwise.</returns>
-        Task<bool> TryCachePlanAsync(string key, IGraphQueryPlan plan, DateTimeOffset? absoluteExpiration = null, TimeSpan? slidingExpiration = null);
+        Task<bool> TryCachePlanAsync(string key, IQueryExecutionPlan plan, DateTimeOffset? absoluteExpiration = null, TimeSpan? slidingExpiration = null);
 
         /// <summary>
         /// Immediately evicts the query plan from the cache.

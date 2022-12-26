@@ -22,13 +22,13 @@ namespace GraphQL.AspNet.Execution
     /// <typeparam name="TSchema">The type of the graphql schema to this plan exists for.</typeparam>
     [Serializable]
     [DebuggerDisplay("Operation {OperationName}")]
-    internal sealed class GraphQueryExecutionPlan<TSchema> : IGraphQueryPlan
+    internal sealed class QueryExecutionPlan<TSchema> : IQueryExecutionPlan
          where TSchema : class, ISchema
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphQueryExecutionPlan{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="QueryExecutionPlan{TSchema}" /> class.
         /// </summary>
-        public GraphQueryExecutionPlan()
+        public QueryExecutionPlan()
         {
             this.Id = Guid.NewGuid();
             this.Messages = new GraphMessageCollection();

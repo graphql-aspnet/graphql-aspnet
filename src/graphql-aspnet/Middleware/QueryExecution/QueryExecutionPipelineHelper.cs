@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryPlanCacheMiddleware()
         {
-            this.PipelineBuilder.AddMiddleware<CacheQueryPlanMiddleware<TSchema>>();
+            this.PipelineBuilder.AddMiddleware<CacheQueryExecutionPlanMiddleware<TSchema>>();
             return this;
         }
 
@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryPlanCreationMiddleware()
         {
-            this.PipelineBuilder.AddMiddleware<GenerateQueryPlanMiddleware<TSchema>>();
+            this.PipelineBuilder.AddMiddleware<GenerateQueryExecutionPlanMiddleware<TSchema>>();
             return this;
         }
 

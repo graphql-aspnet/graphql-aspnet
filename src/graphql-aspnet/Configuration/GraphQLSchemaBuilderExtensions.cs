@@ -50,14 +50,14 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// Enables the query cache locally, in memory, to retain parsed query plans. When enabled, use the configuration
         /// settings for each added schema to determine how each will interact with the cache. Implement your own cache provider
-        /// by inheriting from <see cref="IQueryPlanCacheProvider" /> and registering it to the <see cref="IServiceCollection" />.
+        /// by inheriting from <see cref="IQueryExecutionPlanCacheProvider" /> and registering it to the <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="serviceCollection">The service collection to add the local cache to.</param>
         /// <returns>IServiceCollection.</returns>
         public static IServiceCollection AddGraphQLLocalQueryCache(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<IQueryPlanCacheProvider, DefaultQueryPlanCacheProvider>();
-            serviceCollection.AddSingleton<IQueryPlanCacheKeyManager, DefaultQueryPlanCacheKeyManager>();
+            serviceCollection.AddSingleton<IQueryExecutionPlanCacheProvider, DefaultQueryExecutionPlanCacheProvider>();
+            serviceCollection.AddSingleton<IQueryExecutionPlanCacheKeyManager, DefaultQueryExecutionPlanCacheKeyManager>();
             return serviceCollection;
         }
 
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="serviceCollection">The service collection.</param>
         /// <param name="options">An action to configure or add additional options to the schema
         /// as its being built.</param>
-        /// <returns>GraphQLServiceCollectionBuilder&lt;TSchema&gt;.</returns>
+        /// <returns>ISchemaBuilder&lt;TSchema&gt;.</returns>
         public static ISchemaBuilder<TSchema> AddGraphQL<TSchema>(
             this IServiceCollection serviceCollection,
             Action<SchemaOptions<TSchema>> options = null)
@@ -78,8 +78,8 @@ namespace GraphQL.AspNet.Configuration
             if (SCHEMA_REGISTRATIONS.ContainsKey(typeof(TSchema)))
             {
                 throw new GraphTypeDeclarationException(
-                    $"A schema type {typeof(TSchema).FriendlyName()} has already been registered. " +
-                    "Eac schema type may only be registered once with GraphQL.");
+                    $"The schema type {typeof(TSchema).FriendlyName()} has already been registered. " +
+                    "Each schema type may only be registered once with GraphQL.");
             }
 
             var schemaOptions = new SchemaOptions<TSchema>(serviceCollection);
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="serviceCollection">The service collection.</param>
         /// <param name="options">An action to configure or add additional options to the schema as its being built.</param>
-        /// <returns>GraphQLServiceCollectionBuilder&lt;TSchema&gt;.</returns>
+        /// <returns>ISchemaBuilder&lt;TSchema&gt;.</returns>
         public static ISchemaBuilder<GraphSchema> AddGraphQL(
             this IServiceCollection serviceCollection,
             Action<SchemaOptions<GraphSchema>> options = null)

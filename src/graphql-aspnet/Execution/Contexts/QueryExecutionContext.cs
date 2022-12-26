@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="logger">(optional) The logger instance to record events related to this context.
         /// If not provided, no logging events will be recorded.</param>
         public QueryExecutionContext(
-            IQueryOperationRequest request,
+            IQueryExecutionRequest request,
             IServiceProvider serviceProvider,
             IQuerySession querySession,
             MetaDataCollection items = null,
@@ -64,13 +64,13 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets or sets the operation result created during the query pipeline execution.
         /// </summary>
         /// <value>The final result containing the data produced during the query.</value>
-        public IQueryOperationResult Result { get; set; }
+        public IQueryExecutionResult Result { get; set; }
 
         /// <summary>
         /// Gets or sets the active query plan this context will use to complete the request.
         /// </summary>
         /// <value>The query plan.</value>
-        public IGraphQueryPlan QueryPlan { get; set; }
+        public IQueryExecutionPlan QueryPlan { get; set; }
 
         /// <summary>
         /// Gets or sets the query document, lexed and parsed from the query text

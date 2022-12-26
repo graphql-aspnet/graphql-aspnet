@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="schema">The singleton instance of <typeparamref name="TSchema"/> representing this processor works against.</param>
         /// <param name="runtime">The primary runtime instance in which GraphQL requests are processed for <typeparamref name="TSchema"/>.</param>
-        /// <param name="writer">The result writer capable of converting a <see cref="IQueryOperationResult"/> into a serialized payload
+        /// <param name="writer">The result writer capable of converting a <see cref="IQueryExecutionResult"/> into a serialized payload
         /// for the given <typeparamref name="TSchema"/>.</param>
         /// <param name="logger">A logger instance where this object can write and record log entries.</param>
         public SecureGraphQLHttpProcessor(

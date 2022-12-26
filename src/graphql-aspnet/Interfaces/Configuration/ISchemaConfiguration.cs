@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// Gets the options related to how this schema caches and evicts query plans at runtime.
         /// </summary>
         /// <value>The query cache options.</value>
-        ISchemaQueryPlanCacheConfiguration QueryCacheOptions { get; }
+        ISchemaQueryExecutionPlanCacheConfiguration QueryCacheOptions { get; }
 
         /// <summary>
         /// Merges the specified schema configuration into this configuration as allowed by this instance.

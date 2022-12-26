@@ -12,10 +12,10 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using System;
 
     /// <summary>
-    /// A represention of a set of operations to be fulfilled to generate data for a
-    /// <see cref="IQueryOperationRequest"/>.
+    /// A plan telling the runtime how to fulfill a <see cref="IQueryExecutionRequest"/>
+    /// and produce a result.
     /// </summary>
-    public interface IGraphQueryPlan
+    public interface IQueryExecutionPlan
     {
         /// <summary>
         /// Gets or sets the executable operation that can be carried out by this query plan.
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IGraphMessageCollection Messages { get; }
 
         /// <summary>
-        /// Gets or sets a value representing a total estimate dcomplexity of the fields requested, their expected return values and nested dependencies there in. This value
+        /// Gets or sets a value representing a total estimated complexity of the fields requested, their expected return values and nested dependencies there in. This value
         /// is used as a measure for determining executability of a query and to disallow unreasonable queries from overwhelming the server.
         /// </summary>
         /// <value>The total estimated complexity of this query plan.</value>

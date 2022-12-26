@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -133,7 +133,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -195,7 +195,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -226,7 +226,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -257,7 +257,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -288,7 +288,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -319,7 +319,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -350,7 +350,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -381,7 +381,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 

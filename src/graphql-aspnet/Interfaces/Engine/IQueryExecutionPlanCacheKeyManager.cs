@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
     /// <summary>
     /// An object that generates guaranteed unique keys "per query, per schema".
     /// </summary>
-    public interface IQueryPlanCacheKeyManager
+    public interface IQueryExecutionPlanCacheKeyManager
     {
         /// <summary>
         /// Creates a garunteed unique key for the query text in context of hte schema.

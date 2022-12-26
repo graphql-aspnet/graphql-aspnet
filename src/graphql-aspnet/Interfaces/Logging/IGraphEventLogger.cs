@@ -108,14 +108,14 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// </summary>
         /// <param name="key">The key the plan is to be cached under.</param>
         /// <param name="queryPlan">The completed plan that was cached.</param>
-        void QueryPlanCached(string key, IGraphQueryPlan queryPlan);
+        void QueryPlanCached(string key, IQueryExecutionPlan queryPlan);
 
         /// <summary>
         /// Recorded when an executor finishes creating a query plan and is ready to
         /// cache and execute against it.
         /// </summary>
         /// <param name="queryPlan">The generated query plan.</param>
-        void QueryPlanGenerated(IGraphQueryPlan queryPlan);
+        void QueryPlanGenerated(IQueryExecutionPlan queryPlan);
 
         /// <summary>
         /// Recorded by a field resolver when it starts resolving a field context and

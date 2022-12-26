@@ -62,8 +62,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
             var relativeDepth = 1;
             while (parent != null)
             {
-                if (parent is IDecdendentDocumentPartSubscriber sub)
-                    sub.OnDecendentPartAdded(part, relativeDepth);
+                if (parent is IDescendentDocumentPartSubscriber sub)
+                    sub.OnDescendentPartAdded(part, relativeDepth);
 
                 relativeDepth++;
                 parent = parent.Parent;

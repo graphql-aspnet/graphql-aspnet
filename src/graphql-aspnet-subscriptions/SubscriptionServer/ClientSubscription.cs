@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.SubscriptionServer
         public ClientSubscription(
             ISubscriptionClientProxy clientProxy,
             GraphQueryData originalQuerydata,
-            IGraphQueryPlan queryPlan,
+            IQueryExecutionPlan queryPlan,
             string subscriptionid = null)
         {
             this.Client = Validation.ThrowIfNullOrReturn(clientProxy, nameof(clientProxy));
@@ -145,7 +145,7 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// Gets the generated query plan that was preparsed and represents the original subscription request.
         /// </summary>
         /// <value>The query plan.</value>
-        public IGraphQueryPlan QueryPlan { get; }
+        public IQueryExecutionPlan QueryPlan { get; }
 
         /// <summary>
         /// Gets the selected query operation that will be executed when new data is recieved for

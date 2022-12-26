@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Configuration
             _configExtensions = new List<ISchemaConfigurationExtension>();
 
             this.DeclarationOptions = new SchemaDeclarationConfiguration();
-            this.CacheOptions = new SchemaQueryPlanCacheConfiguration();
+            this.CacheOptions = new SchemaQueryExecutionPlanCacheConfiguration();
             this.AuthorizationOptions = new SchemaAuthorizationConfiguration();
             this.ExecutionOptions = new SchemaExecutionConfiguration();
             this.ResponseOptions = new SchemaResponseConfiguration();
@@ -365,7 +365,7 @@ namespace GraphQL.AspNet.Configuration
         /// Gets options related to how this schema utilizes the query cache.
         /// </summary>
         /// <value>The cache options.</value>
-        public SchemaQueryPlanCacheConfiguration CacheOptions { get; }
+        public SchemaQueryExecutionPlanCacheConfiguration CacheOptions { get; }
 
         /// <summary>
         /// Gets the options related to how the runtime will process field authorizations for this schema.

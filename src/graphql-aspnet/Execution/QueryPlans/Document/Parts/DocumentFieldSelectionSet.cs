@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     /// on their query document. Selected fields are keyed by the return value (a.k.a. the field alias) requested by the user.
     /// </summary>
     [DebuggerDisplay("{Description}")]
-    internal class DocumentFieldSelectionSet : DocumentPartBase, IFieldSelectionSetDocumentPart, IDocumentPart, IDecdendentDocumentPartSubscriber
+    internal class DocumentFieldSelectionSet : DocumentPartBase, IFieldSelectionSetDocumentPart, IDocumentPart, IDescendentDocumentPartSubscriber
     {
         private ExecutableFieldSelectionSet _executionSet;
 
@@ -39,8 +39,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
             _executionSet = new ExecutableFieldSelectionSet(this);
         }
 
-        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
-        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
+        /// <inheritdoc cref="IDescendentDocumentPartSubscriber.OnDescendentPartAdded" />
+        void IDescendentDocumentPartSubscriber.OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
             _executionSet.UpdateSnapshot();
         }

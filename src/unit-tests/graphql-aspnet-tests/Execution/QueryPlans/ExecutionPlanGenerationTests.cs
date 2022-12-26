@@ -34,11 +34,11 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             return doc;
         }
 
-        private async Task<IGraphQueryPlan> CreatePlan(GraphSchema schema, string text)
+        private async Task<IQueryExecutionPlan> CreatePlan(GraphSchema schema, string text)
         {
             var doc = this.CreateDocument(schema, text);
 
-            var planGenerator = new DefaultQueryPlanGenerator<GraphSchema>(
+            var planGenerator = new DefaultQueryExecutionPlanGenerator<GraphSchema>(
                 schema,
                 new DefaultQueryOperationDepthCalculator<GraphSchema>(),
                 new DefaultQueryOperationComplexityCalculator<GraphSchema>());

@@ -11,9 +11,9 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common
 {
     /// <summary>
     /// An interface describing a call back method to be invoked
-    /// when a known decendent is added to a parent part.
+    /// when a known descendent is added to a parent part.
     /// </summary>
-    internal interface IDecdendentDocumentPartSubscriber
+    internal interface IDescendentDocumentPartSubscriber
     {
         /// <summary>
         /// Called when a new document part has been added to this instance
@@ -21,6 +21,6 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common
         /// </summary>
         /// <param name="decendentPart">The decendent part that was added.</param>
         /// <param name="relativeDepth">The depth of the part relative to this part. (1 == a direct child).</param>
-        void OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth);
+        void OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth);
     }
 }

@@ -44,14 +44,14 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task WithAttachedQueryCache_RendersPlanToCache()
         {
-            var keyManager = new DefaultQueryPlanCacheKeyManager();
+            var keyManager = new DefaultQueryExecutionPlanCacheKeyManager();
 
             var cacheInstance = new MemoryCache(nameof(WithAttachedQueryCache_RendersPlanToCache));
-            var cache = new DefaultQueryPlanCacheProvider(cacheInstance);
+            var cache = new DefaultQueryExecutionPlanCacheProvider(cacheInstance);
             var builder = new TestServerBuilder()
               .AddType<SimpleExecutionController>();
-            builder.AddSingleton<IQueryPlanCacheProvider>(cache);
-            builder.AddSingleton<IQueryPlanCacheKeyManager>(keyManager);
+            builder.AddSingleton<IQueryExecutionPlanCacheProvider>(cache);
+            builder.AddSingleton<IQueryExecutionPlanCacheKeyManager>(keyManager);
 
             // configure an absolute expriation of a few seconds to ensure the plan remains in cache
             // long enough to be fetched by tis expected key

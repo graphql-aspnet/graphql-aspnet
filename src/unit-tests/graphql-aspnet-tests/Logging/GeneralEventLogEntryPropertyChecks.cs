@@ -156,7 +156,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var request = builder.OperationRequest;
             var context = builder.Build();
 
-            var mock = new Mock<IQueryOperationResult>();
+            var mock = new Mock<IQueryExecutionResult>();
             mock.Setup(x => x.Request).Returns(request);
             mock.Setup(x => x.Data).Returns(new ResponseFieldSet());
             mock.Setup(x => x.Messages).Returns(new GraphMessageCollection());
@@ -175,7 +175,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void QueryPlanCacheHitLogEntry()
         {
-            var entry = new QueryPlanCacheHitLogEntry<GraphSchema>("abc123");
+            var entry = new QueryExecutionPlanCacheHitLogEntry<GraphSchema>("abc123");
 
             Assert.AreEqual(LogEventIds.QueryCacheHit.Id, entry.EventId);
             Assert.AreEqual("abc123", entry.QueryPlanHashCode);
@@ -186,7 +186,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void QueryPlanCacheMissLogEntry()
         {
-            var entry = new QueryPlanCacheMissLogEntry<GraphSchema>("abc123");
+            var entry = new QueryExecutionPlanCacheMissLogEntry<GraphSchema>("abc123");
 
             Assert.AreEqual(LogEventIds.QueryCacheMiss.Id, entry.EventId);
             Assert.AreEqual("abc123", entry.QueryPlanHashCode);
@@ -204,7 +204,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 "query Operation1{ field1 } query Operation2 { fieldException }",
                 "Operation1");
 
-            var entry = new QueryPlanCacheAddLogEntry("abc123", queryPlan);
+            var entry = new QueryExecutionPlanCacheAddLogEntry("abc123", queryPlan);
 
             Assert.AreEqual(LogEventIds.QueryCacheAdd.Id, entry.EventId);
             Assert.AreEqual("abc123", entry.QueryPlanHashCode);
@@ -223,7 +223,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 "query Operation1{ field1 } query Operation2 { fieldException }",
                 "Operation1");
 
-            var entry = new QueryPlanGeneratedLogEntry(queryPlan);
+            var entry = new QueryExecutionPlanGeneratedLogEntry(queryPlan);
 
             Assert.AreEqual(LogEventIds.QueryPlanGenerationCompleted.Id, entry.EventId);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);

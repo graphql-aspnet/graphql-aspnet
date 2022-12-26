@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task ValidateRequestMiddleware_EmptyQueryText_YieldsCriticalMessage()
         {
             var component = new ValidateQueryRequestMiddleware();
-            var req = new Mock<IQueryOperationRequest>();
+            var req = new Mock<IQueryExecutionRequest>();
             req.Setup(x => x.QueryText).Returns(null as string);
             var context = new QueryExecutionContext(
                 req.Object,

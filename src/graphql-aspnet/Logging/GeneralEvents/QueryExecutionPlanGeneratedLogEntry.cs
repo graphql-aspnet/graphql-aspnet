@@ -17,13 +17,13 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
     /// Recorded when an executor finishes creating a query plan and is ready to
     /// cache and execute against it.
     /// </summary>
-    public class QueryPlanGeneratedLogEntry : GraphLogEntry
+    public class QueryExecutionPlanGeneratedLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryPlanGeneratedLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="QueryExecutionPlanGeneratedLogEntry" /> class.
         /// </summary>
         /// <param name="queryPlan">The query plan.</param>
-        public QueryPlanGeneratedLogEntry(IGraphQueryPlan queryPlan)
+        public QueryExecutionPlanGeneratedLogEntry(IQueryExecutionPlan queryPlan)
             : base(LogEventIds.QueryPlanGenerationCompleted)
         {
             this.SchemaTypeName = queryPlan?.SchemaType?.FriendlyName(true);

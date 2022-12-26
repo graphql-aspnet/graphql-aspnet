@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     /// <summary>
     /// A fragment that was parsed out of a submitted query document.
     /// </summary>
-    internal abstract class DocumentFragmentBase : DocumentPartBase, IFragmentDocumentPart, IDecdendentDocumentPartSubscriber
+    internal abstract class DocumentFragmentBase : DocumentPartBase, IFragmentDocumentPart, IDescendentDocumentPartSubscriber
     {
         private readonly DocumentDirectiveCollection _directives;
 
@@ -33,8 +33,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
             _directives = new DocumentDirectiveCollection(this);
         }
 
-        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
-        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
+        /// <inheritdoc cref="IDescendentDocumentPartSubscriber.OnDescendentPartAdded" />
+        void IDescendentDocumentPartSubscriber.OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
             this.OnDecendentPartAdded(decendentPart, relativeDepth);
         }

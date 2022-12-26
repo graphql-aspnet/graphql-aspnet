@@ -15,13 +15,13 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// A collection of configuration options for a given schema on how to configure query plan caching.
     /// </summary>
-    public class SchemaQueryPlanCacheConfiguration : ISchemaQueryPlanCacheConfiguration
+    public class SchemaQueryExecutionPlanCacheConfiguration : ISchemaQueryExecutionPlanCacheConfiguration
     {
         /// <summary>
         /// Merges the specified configuration setttings into this instance.
         /// </summary>
         /// <param name="config">The configuration.</param>
-        public void Merge(ISchemaQueryPlanCacheConfiguration config)
+        public void Merge(ISchemaQueryExecutionPlanCacheConfiguration config)
         {
             if (config == null)
                 return;

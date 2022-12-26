@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.Response
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
-    /// A set of options for configuring the serialized contents of a <see cref="IQueryOperationResult"/> that is to be sent to a client.
+    /// A set of options for configuring the serialized contents of a <see cref="IQueryExecutionResult"/> that is to be sent to a client.
     /// </summary>
     public class ResponseWriterOptions
     {

@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var httpContext = context;
             var response = httpContext.Response;
 
-            var operationResult = new Mock<IQueryOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             var result = new GraphQLHttpResponseWriter(operationResult.Object, null, false, exposeExceptions);
 
             await result.WriteResultAsync(httpContext);

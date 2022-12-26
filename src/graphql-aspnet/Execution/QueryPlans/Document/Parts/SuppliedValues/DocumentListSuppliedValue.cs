@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
     /// A representation of a list of other input values for a single argument.
     /// </summary>
     [DebuggerDisplay("{Description}")]
-    internal class DocumentListSuppliedValue : DocumentSuppliedValue, IListSuppliedValueDocumentPart, IDecdendentDocumentPartSubscriber
+    internal class DocumentListSuppliedValue : DocumentSuppliedValue, IListSuppliedValueDocumentPart, IDescendentDocumentPartSubscriber
     {
         private List<ISuppliedValueDocumentPart> _listItems;
 
@@ -91,8 +91,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
             return true;
         }
 
-        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
-        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
+        /// <inheritdoc cref="IDescendentDocumentPartSubscriber.OnDescendentPartAdded" />
+        void IDescendentDocumentPartSubscriber.OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
             if (decendentPart.Parent == this && decendentPart is ISuppliedValueDocumentPart svdp)
                 _listItems.Add(svdp);

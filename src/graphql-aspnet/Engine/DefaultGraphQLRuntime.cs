@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Engine
 
     /// <summary>
     /// The default implementation of the core graphql runtime responsible for generating
-    /// <see cref="IQueryOperationResult"/> from <see cref="IQueryOperationRequest"/>.
+    /// <see cref="IQueryExecutionResult"/> from <see cref="IQueryExecutionRequest"/>.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this runtime operates with.</typeparam>
     public class DefaultGraphQLRuntime<TSchema> : IGraphQLRuntime<TSchema>
@@ -59,15 +59,15 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public IQueryOperationRequest CreateRequest(GraphQueryData queryData = null)
+        public IQueryExecutionRequest CreateRequest(GraphQueryData queryData = null)
         {
-            return new QueryOperationRequest(queryData ?? GraphQueryData.Empty);
+            return new QueryExecutionRequest(queryData ?? GraphQueryData.Empty);
         }
 
         /// <inheritdoc />
-        public Task<IQueryOperationResult> ExecuteRequestAsync(
+        public Task<IQueryExecutionResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
-            IQueryOperationRequest request,
+            IQueryExecutionRequest request,
             CancellationToken cancelToken = default)
         {
             Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
@@ -83,9 +83,9 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public Task<IQueryOperationResult> ExecuteRequestAsync(
+        public Task<IQueryExecutionResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
-            IQueryOperationRequest request,
+            IQueryExecutionRequest request,
             IUserSecurityContext securityContext = null,
             bool enableMetrics = false,
             CancellationToken cancelToken = default)
@@ -103,9 +103,9 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public Task<IQueryOperationResult> ExecuteRequestAsync(
+        public Task<IQueryExecutionResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
-            IQueryOperationRequest request,
+            IQueryExecutionRequest request,
             IUserSecurityContext securityContext = null,
             IQueryExecutionMetrics metricsPackage = null,
             IQuerySession session = null,
@@ -129,7 +129,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public async Task<IQueryOperationResult> ExecuteRequestAsync(
+        public async Task<IQueryExecutionResult> ExecuteRequestAsync(
             QueryExecutionContext context,
             CancellationToken cancelToken = default)
         {
@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Engine
             var queryResponse = context.Result;
             if (queryResponse == null)
             {
-                queryResponse = new QueryOperationResult(context.OperationRequest);
+                queryResponse = new QueryExecutionResult(context.OperationRequest);
                 queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
                 context.Result = queryResponse;
             }

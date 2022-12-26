@@ -30,8 +30,8 @@ namespace GraphQL.AspNet.Tests.Execution
             serverBuilder.AddGraphQLLocalQueryCache();
             var server = serverBuilder.Build();
 
-            var cacheProvider = server.ServiceProvider.GetRequiredService<IQueryPlanCacheProvider>();
-            var cacheKeyProvider = server.ServiceProvider.GetRequiredService<IQueryPlanCacheKeyManager>();
+            var cacheProvider = server.ServiceProvider.GetRequiredService<IQueryExecutionPlanCacheProvider>();
+            var cacheKeyProvider = server.ServiceProvider.GetRequiredService<IQueryExecutionPlanCacheKeyManager>();
 
             var builder = server.CreateQueryContextBuilder();
 
@@ -74,8 +74,8 @@ namespace GraphQL.AspNet.Tests.Execution
             serverBuilder.AddGraphQLLocalQueryCache();
             var server = serverBuilder.Build();
 
-            var cacheProvider = server.ServiceProvider.GetRequiredService<IQueryPlanCacheProvider>();
-            var cacheKeyProvider = server.ServiceProvider.GetRequiredService<IQueryPlanCacheKeyManager>();
+            var cacheProvider = server.ServiceProvider.GetRequiredService<IQueryExecutionPlanCacheProvider>();
+            var cacheKeyProvider = server.ServiceProvider.GetRequiredService<IQueryExecutionPlanCacheKeyManager>();
 
             var builder = server.CreateQueryContextBuilder();
 

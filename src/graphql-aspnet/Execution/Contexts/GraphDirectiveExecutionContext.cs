@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         public GraphDirectiveExecutionContext(
             ISchema schema,
             IGraphDirectiveRequest directiveRequest,
-            IQueryOperationRequest operationRequest,
+            IQueryExecutionRequest operationRequest,
             IServiceProvider serviceProvider,
             IQuerySession querySession,
             IUserSecurityContext userSecurityContext = null,

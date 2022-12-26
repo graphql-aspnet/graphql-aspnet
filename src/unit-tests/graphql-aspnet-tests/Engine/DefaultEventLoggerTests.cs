@@ -192,7 +192,7 @@ namespace GraphQL.AspNet.Tests.Engine
                 {
                     (DefaultGraphEventLogger x) => x.QueryPlanCacheFetchHit<GraphSchema>(null),
                     true,
-                    typeof(QueryPlanCacheHitLogEntry<GraphSchema>),
+                    typeof(QueryExecutionPlanCacheHitLogEntry<GraphSchema>),
                     LogLevel.Trace,
                     LogEventIds.QueryCacheHit,
                 });
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Engine
                 {
                     (DefaultGraphEventLogger x) => x.QueryPlanCacheFetchMiss<GraphSchema>(null),
                     true,
-                    typeof(QueryPlanCacheMissLogEntry<GraphSchema>),
+                    typeof(QueryExecutionPlanCacheMissLogEntry<GraphSchema>),
                     LogLevel.Trace,
                     LogEventIds.QueryCacheMiss,
                 });
@@ -232,7 +232,7 @@ namespace GraphQL.AspNet.Tests.Engine
                 {
                     (DefaultGraphEventLogger x) => x.QueryPlanCached(null, null),
                     true,
-                    typeof(QueryPlanCacheAddLogEntry),
+                    typeof(QueryExecutionPlanCacheAddLogEntry),
                     LogLevel.Debug,
                     LogEventIds.QueryCacheAdd,
                 });
@@ -252,7 +252,7 @@ namespace GraphQL.AspNet.Tests.Engine
                 {
                     (DefaultGraphEventLogger x) => x.QueryPlanGenerated(null),
                     true,
-                    typeof(QueryPlanGeneratedLogEntry),
+                    typeof(QueryExecutionPlanGeneratedLogEntry),
                     LogLevel.Trace,
                     LogEventIds.QueryPlanGenerationCompleted,
                 });
@@ -589,7 +589,7 @@ namespace GraphQL.AspNet.Tests.Engine
             var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
             var failedAuthResult = new SchemaItemSecurityChallengeContext(
@@ -611,7 +611,7 @@ namespace GraphQL.AspNet.Tests.Engine
             var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
             var nonFailResult = new SchemaItemSecurityChallengeContext(
@@ -633,7 +633,7 @@ namespace GraphQL.AspNet.Tests.Engine
             var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
             var nonResult = new SchemaItemSecurityChallengeContext(
@@ -655,7 +655,7 @@ namespace GraphQL.AspNet.Tests.Engine
             var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
             var nonResult = new SchemaItemSecurityChallengeContext(
@@ -677,7 +677,7 @@ namespace GraphQL.AspNet.Tests.Engine
             var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
             var nonResult = new SchemaItemSecurityChallengeContext(
@@ -710,7 +710,7 @@ namespace GraphQL.AspNet.Tests.Engine
             var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
             var authResult = new Mock<IAuthenticationResult>();
@@ -730,7 +730,7 @@ namespace GraphQL.AspNet.Tests.Engine
             var context = new Mock<IGraphQLMiddlewareExecutionContext>();
             var secRequest = new Mock<ISchemaItemSecurityRequest>();
             context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryOperationRequest>().Object);
+            context.Setup(x => x.OperationRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
             context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
 
             var authResult = new Mock<IAuthenticationResult>();

@@ -158,7 +158,7 @@ namespace GraphQL.AspNet.Configuration.Startup
             _options.ServiceCollection.TryAddSingleton<IQueryOperationDepthCalculator<TSchema>, DefaultQueryOperationDepthCalculator<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IQueryResponseWriter<TSchema>, DefaultQueryResponseWriter<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IQueryDocumentGenerator<TSchema>, DefaultQueryDocumentGenerator<TSchema>>();
-            _options.ServiceCollection.TryAddSingleton<IQueryPlanGenerator<TSchema>, DefaultQueryPlanGenerator<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IQueryExecutionPlanGenerator<TSchema>, DefaultQueryExecutionPlanGenerator<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IQueryExecutionMetricsFactory<TSchema>, DefaultQueryExecutionMetricsFactory<TSchema>>();
 
             // "per request per schema" components

@@ -17,16 +17,16 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
     /// Recorded when an executor attempts, and succeeds, to retrieve a query plan from its local cache.
     /// </summary>
         /// <typeparam name="TSchema">The type of the schema for which the query hash was generated.</typeparam>
-    public class QueryPlanCacheHitLogEntry<TSchema> : GraphLogEntry
+    public class QueryExecutionPlanCacheHitLogEntry<TSchema> : GraphLogEntry
         where TSchema : class, ISchema
     {
         private readonly string _schemaTypeShortName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryPlanCacheHitLogEntry{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="QueryExecutionPlanCacheHitLogEntry{TSchema}" /> class.
         /// </summary>
         /// <param name="queryHash">The query hash.</param>
-        public QueryPlanCacheHitLogEntry(string queryHash)
+        public QueryExecutionPlanCacheHitLogEntry(string queryHash)
             : base(LogEventIds.QueryCacheHit)
         {
             _schemaTypeShortName = typeof(TSchema).FriendlyName();

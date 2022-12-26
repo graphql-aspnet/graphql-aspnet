@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="logger">The logger instance to record events related to this context.</param>
         /// <param name="cancelToken">The cancel token governing this execution context.</param>
         protected MiddlewareExecutionContextBase(
-            IQueryOperationRequest operationRequest,
+            IQueryExecutionRequest operationRequest,
             IServiceProvider serviceProvider,
             IQuerySession querySession,
             IUserSecurityContext securityContext = null,
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         public bool IsValid => !this.Messages.Severity.IsCritical();
 
         /// <inheritdoc />
-        public IQueryOperationRequest OperationRequest { get; }
+        public IQueryExecutionRequest OperationRequest { get; }
 
         /// <inheritdoc />
         public CancellationToken CancellationToken { get; set; }

@@ -311,7 +311,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
         }
 
         /// <inheritdoc />
-        protected override GraphqlWsLegacyMessage CreateDataMessage(string subscriptionId, IQueryOperationResult operationResult)
+        protected override GraphqlWsLegacyMessage CreateDataMessage(string subscriptionId, IQueryExecutionResult operationResult)
         {
             return new GraphqlWsLegacyServerDataMessage(subscriptionId, operationResult);
         }

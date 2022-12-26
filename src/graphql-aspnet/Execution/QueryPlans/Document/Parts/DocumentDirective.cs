@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     /// An instance of a referenced directive in a query document.
     /// </summary>
     [DebuggerDisplay("{Description}")]
-    internal class DocumentDirective : DocumentPartBase, IDirectiveDocumentPart, IDecdendentDocumentPartSubscriber
+    internal class DocumentDirective : DocumentPartBase, IDirectiveDocumentPart, IDescendentDocumentPartSubscriber
     {
         private DocumentInputArgumentCollection _arguments;
 
@@ -53,8 +53,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
             return pathToExtend;
         }
 
-        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
-        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
+        /// <inheritdoc cref="IDescendentDocumentPartSubscriber.OnDescendentPartAdded" />
+        void IDescendentDocumentPartSubscriber.OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
             if (decendentPart is IInputArgumentDocumentPart iiadp)
                 _arguments.AddArgument(iiadp);

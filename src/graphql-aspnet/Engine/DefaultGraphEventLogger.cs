@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Engine
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
 
-            var entry = new QueryPlanCacheHitLogEntry<TSchema>(queryHash);
+            var entry = new QueryExecutionPlanCacheHitLogEntry<TSchema>(queryHash);
             this.LogEvent(LogLevel.Trace, entry);
         }
 
@@ -123,27 +123,27 @@ namespace GraphQL.AspNet.Engine
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
 
-            var entry = new QueryPlanCacheMissLogEntry<TSchema>(queryHash);
+            var entry = new QueryExecutionPlanCacheMissLogEntry<TSchema>(queryHash);
             this.LogEvent(LogLevel.Trace, entry);
         }
 
         /// <inheritdoc />
-        public virtual void QueryPlanCached(string queryHash, IGraphQueryPlan queryPlan)
+        public virtual void QueryPlanCached(string queryHash, IQueryExecutionPlan queryPlan)
         {
             if (!this.IsEnabled(LogLevel.Debug))
                 return;
 
-            var entry = new QueryPlanCacheAddLogEntry(queryHash, queryPlan);
+            var entry = new QueryExecutionPlanCacheAddLogEntry(queryHash, queryPlan);
             this.LogEvent(LogLevel.Debug, entry);
         }
 
         /// <inheritdoc />
-        public virtual void QueryPlanGenerated(IGraphQueryPlan queryPlan)
+        public virtual void QueryPlanGenerated(IQueryExecutionPlan queryPlan)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
 
-            var entry = new QueryPlanGeneratedLogEntry(queryPlan);
+            var entry = new QueryExecutionPlanGeneratedLogEntry(queryPlan);
             this.LogEvent(LogLevel.Trace, entry);
         }
 

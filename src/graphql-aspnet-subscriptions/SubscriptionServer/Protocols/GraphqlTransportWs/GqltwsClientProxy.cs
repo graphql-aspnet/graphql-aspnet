@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
                     }
                     else
                     {
-                        var response = QueryOperationResult.FromErrorMessages(result.Messages, message.Payload);
+                        var response = QueryExecutionResult.FromErrorMessages(result.Messages, message.Payload);
 
                         await this.SendMessageAsync(new GqltwsServerNextDataMessage(message.Id, response))
                             .ConfigureAwait(false);
@@ -324,7 +324,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        protected override GqltwsMessage CreateDataMessage(string subscriptionId, IQueryOperationResult operationResult)
+        protected override GqltwsMessage CreateDataMessage(string subscriptionId, IQueryExecutionResult operationResult)
         {
             return new GqltwsServerNextDataMessage(subscriptionId, operationResult);
         }

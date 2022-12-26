@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Interfaces.Web;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -57,7 +58,7 @@ namespace GraphQL.AspNet.Controllers
 
             _schemaItemContext.Logger?.ActionMethodInvocationRequestStarted(_action, this.Request);
 
-            if (_schemaItemContext.OperationRequest is IQueryOperationWebRequest webRequest)
+            if (_schemaItemContext.OperationRequest is IQueryExecutionWebRequest webRequest)
                 this.HttpContext = webRequest.HttpContext;
 
             if (_action?.Method == null)

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Engine
     /// The default implementation of the cache key manager. This key manager is used unless overriden by
     /// a user's individual configuration.
     /// </summary>
-    public class DefaultQueryPlanCacheKeyManager : IQueryPlanCacheKeyManager
+    public class DefaultQueryExecutionPlanCacheKeyManager : IQueryExecutionPlanCacheKeyManager
     {
         /// <inheritdoc />
         public string CreateKey<TSchema>(string queryText, string operationName)

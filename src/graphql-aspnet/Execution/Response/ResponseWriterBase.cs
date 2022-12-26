@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Execution.Response
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A class containing many shared methods for writing all or part of a <see cref="IQueryOperationResult"/>
+    /// A class containing many shared methods for writing all or part of a <see cref="IQueryExecutionResult"/>
     /// to a <see cref="Utf8JsonWriter"/>.
     /// </summary>
     public abstract class ResponseWriterBase

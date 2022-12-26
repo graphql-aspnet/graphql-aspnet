@@ -15,14 +15,14 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messagi
     /// <summary>
     /// A representation of the 'NEXT' message sent when new data is available for a subscription.
     /// </summary>
-    internal class GqltwsServerNextDataMessage : GqltwsMessage<IQueryOperationResult>
+    internal class GqltwsServerNextDataMessage : GqltwsMessage<IQueryExecutionResult>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsServerNextDataMessage" /> class.
         /// </summary>
         /// <param name="clientProvidedSubscriptionId">The client provided subscription identifier.</param>
         /// <param name="result">The result that needs to be sent to the client.</param>
-        public GqltwsServerNextDataMessage(string clientProvidedSubscriptionId, IQueryOperationResult result)
+        public GqltwsServerNextDataMessage(string clientProvidedSubscriptionId, IQueryExecutionResult result)
             : base(GqltwsMessageType.NEXT)
         {
             this.Id = clientProvidedSubscriptionId;

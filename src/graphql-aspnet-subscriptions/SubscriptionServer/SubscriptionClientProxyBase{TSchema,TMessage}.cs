@@ -145,7 +145,7 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// that identifies what series of operations this result belongs to.</param>
         /// <param name="operationResult">The data result to transmit.</param>
         /// <returns>TMessage.</returns>
-        protected abstract TMessage CreateDataMessage(string subscriptionId, IQueryOperationResult operationResult);
+        protected abstract TMessage CreateDataMessage(string subscriptionId, IQueryExecutionResult operationResult);
 
         /// <summary>
         /// Creates a message consistant with this proxy's underlying protocol
@@ -420,7 +420,7 @@ namespace GraphQL.AspNet.SubscriptionServer
             var metricsPackage = enableMetrics ? runtime.CreateMetricsPackage() : null;
             var session = new QuerySession();
 
-            var context = new SubcriptionGraphQueryExecutionContext(
+            var context = new SubcriptionQueryExecutionContext(
                 request,
                 this,
                 _clientConnection.ServiceProvider,

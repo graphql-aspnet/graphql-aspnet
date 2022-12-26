@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// <summary>
     /// A request to execute a query through the runtime.
     /// </summary>
-    public interface IQueryOperationRequest : IMetaDataContainer
+    public interface IQueryExecutionRequest : IMetaDataContainer
     {
         /// <summary>
         /// Extracts the original raw data package from this request.

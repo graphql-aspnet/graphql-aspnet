@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution
     /// Represents a generated response to a query.
     /// </summary>
     [DebuggerDisplay("Messages = {Messages.Count}, Has Data = {HasData}")]
-    public class QueryOperationResult : IQueryOperationResult
+    public class QueryExecutionResult : IQueryExecutionResult
     {
         /// <summary>
         /// Creates a new operation result from a collection of messages. If no messages are included a
@@ -27,19 +27,19 @@ namespace GraphQL.AspNet.Execution
         /// <param name="errorMessages">The set of messages to create a result from.</param>
         /// <param name="queryData">The original, raw query data.</param>
         /// <returns>GraphOperationResult.</returns>
-        public static QueryOperationResult FromErrorMessages(IGraphMessageCollection errorMessages, GraphQueryData queryData = null)
+        public static QueryExecutionResult FromErrorMessages(IGraphMessageCollection errorMessages, GraphQueryData queryData = null)
         {
             Validation.ThrowIfNull(errorMessages, nameof(errorMessages));
             if (errorMessages.Count < 1)
                 errorMessages.Critical("An unknown error occured.");
 
-            return new QueryOperationResult(
-                new QueryOperationRequest(queryData),
+            return new QueryExecutionResult(
+                new QueryExecutionRequest(queryData),
                 errorMessages);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryOperationResult" /> class.
+        /// Initializes a new instance of the <see cref="QueryExecutionResult" /> class.
         /// </summary>
         /// <param name="originalRequest">The original request.</param>
         /// <param name="messages">The message collection containing any messages that may
@@ -47,8 +47,8 @@ namespace GraphQL.AspNet.Execution
         /// <param name="dataItem">The root resolved data item (The "data" field common to all graphql
         /// query responses).</param>
         /// <param name="metrics">The metrics package that was filled during the operation execution, if any.</param>
-        public QueryOperationResult(
-            IQueryOperationRequest originalRequest,
+        public QueryExecutionResult(
+            IQueryExecutionRequest originalRequest,
             IGraphMessageCollection messages = null,
             IQueryResponseFieldSet dataItem = null,
             IQueryExecutionMetrics metrics = null)
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Execution
         /// Gets the original operation request that was executed to produce this result.
         /// </summary>
         /// <value>The request.</value>
-        public IQueryOperationRequest Request { get; }
+        public IQueryExecutionRequest Request { get; }
 
         /// <summary>
         /// Gets the resultant data item that was generated as a result of completing the operation.

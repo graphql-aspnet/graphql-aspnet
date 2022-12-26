@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
 
-            var operationRequest = new Mock<IQueryOperationRequest>();
+            var operationRequest = new Mock<IQueryExecutionRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();
             var serviceProvider = new Mock<IServiceProvider>();
             var logger = new Mock<IGraphEventLogger>();
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
 
-            var operationRequest = new Mock<IQueryOperationRequest>();
+            var operationRequest = new Mock<IQueryExecutionRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();
             var serviceProvider = new Mock<IServiceProvider>();
             var logger = new Mock<IGraphEventLogger>();
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
 
-            var operationRequest = new Mock<IQueryOperationRequest>();
+            var operationRequest = new Mock<IQueryExecutionRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();
             var serviceProvider = new Mock<IServiceProvider>();
             var logger = new Mock<IGraphEventLogger>();

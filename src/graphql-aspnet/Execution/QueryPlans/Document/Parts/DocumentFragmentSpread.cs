@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     /// field selection set.
     /// </summary>
     [DebuggerDisplay("{Description}")]
-    internal class DocumentFragmentSpread : DocumentPartBase, IFragmentSpreadDocumentPart, IDecdendentDocumentPartSubscriber
+    internal class DocumentFragmentSpread : DocumentPartBase, IFragmentSpreadDocumentPart, IDescendentDocumentPartSubscriber
     {
         private DocumentDirectiveCollection _directives;
 
@@ -43,8 +43,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
             this.IsIncluded = true;
         }
 
-        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
-        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
+        /// <inheritdoc cref="IDescendentDocumentPartSubscriber.OnDescendentPartAdded" />
+        void IDescendentDocumentPartSubscriber.OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
             if (decendentPart.Parent == this && decendentPart is IDirectiveDocumentPart ddp)
                 _directives.AddDirective(ddp);

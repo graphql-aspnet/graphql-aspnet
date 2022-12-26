@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="schema">The singleton instance of <typeparamref name="TSchema" /> representing this processor works against.</param>
         /// <param name="runtime">The primary runtime instance in which GraphQL requests are processed for <typeparamref name="TSchema" />.</param>
-        /// <param name="writer">The result writer capable of converting a <see cref="IQueryOperationResult" /> into a serialized payload
+        /// <param name="writer">The result writer capable of converting a <see cref="IQueryExecutionResult" /> into a serialized payload
         /// for the given <typeparamref name="TSchema" />.</param>
         /// <param name="logger">A logger instance where this object can write and record log entries.</param>
         public DefaultGraphQLHttpProcessor(
@@ -216,19 +216,19 @@ namespace GraphQL.AspNet.Engine
         /// and should NOT contain any errors. If an error does occur, return <c>null</c>,
         /// and an appropriate error response will be written to the response.
         /// </summary>
-        /// <param name="queryData">The query data that needs to be packaged into a <see cref="IQueryOperationRequest" />.</param>
+        /// <param name="queryData">The query data that needs to be packaged into a <see cref="IQueryExecutionRequest" />.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>IGraphOperationRequest.</returns>
-        protected virtual Task<IQueryOperationRequest> CreateOperationRequestAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
+        protected virtual Task<IQueryExecutionRequest> CreateOperationRequestAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
             var request = _runtime.CreateRequest(queryData);
             if (request == null)
-                return Task.FromResult(null as IQueryOperationRequest);
+                return Task.FromResult(null as IQueryExecutionRequest);
 
             // repackage the runtime request to carry the
             // HttpContext along. It's not used or needed by the runtime
             // but its useful within controller action method invocations
-            request = new QueryOperationWebRequest(request, this.HttpContext);
+            request = new QueryExecutionWebRequest(request, this.HttpContext);
             return Task.FromResult(request);
         }
 
@@ -268,7 +268,7 @@ namespace GraphQL.AspNet.Engine
         /// <param name="result">The operation result to write.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WriteResponseAsync(IQueryOperationResult result, CancellationToken cancelToken = default)
+        protected virtual async Task WriteResponseAsync(IQueryExecutionResult result, CancellationToken cancelToken = default)
         {
             this.Response.ContentType = Constants.MediaTypes.JSON;
             if (_schema.Configuration.ResponseOptions.AppendServerHeader)
@@ -287,13 +287,13 @@ namespace GraphQL.AspNet.Engine
 
         /// <summary>
         /// <para>When overridden in a child class, provides the option to intercept an unhandled exception thrown
-        /// by the execution of the query. If an <see cref="IQueryOperationResult"/> is returned from this method the runtime will return
+        /// by the execution of the query. If an <see cref="IQueryExecutionResult"/> is returned from this method the runtime will return
         /// it as the graphql response.  If null is returned, a status 500 result will be generated with a generic error message.
         /// </para>
         /// </summary>
         /// <param name="exception">The exception that was thrown by the runtime.</param>
         /// <returns>The result, if any, of handling the exception. Return null to allow default processing to occur.</returns>
-        protected virtual IQueryOperationResult HandleQueryException(Exception exception)
+        protected virtual IQueryExecutionResult HandleQueryException(Exception exception)
         {
             return null;
         }
@@ -309,19 +309,19 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <summary>
-        /// Generates a qualified <see cref="IQueryOperationResult" /> with the given message
+        /// Generates a qualified <see cref="IQueryExecutionResult" /> with the given message
         /// wrapped as a graphql error allowing it to be processed
         /// by the client as a formatted, albeit errored, query response. When overridden in a child class this method
-        /// allows the child to generate a custom <see cref="IQueryOperationResult" /> in response to the message.
+        /// allows the child to generate a custom <see cref="IQueryExecutionResult" /> in response to the message.
         /// </summary>
         /// <param name="message">The error message to wrap.</param>
         /// <param name="errorCode">The error code to assign to the message.</param>
         /// <returns>IActionResult.</returns>
-        protected virtual IQueryOperationResult ErrorMessageAsGraphQLResponse(
+        protected virtual IQueryExecutionResult ErrorMessageAsGraphQLResponse(
             string message,
             string errorCode = Constants.ErrorCodes.GENERAL_ERROR)
         {
-            var response = new QueryOperationResult(this.GraphQLOperationRequest);
+            var response = new QueryExecutionResult(this.GraphQLOperationRequest);
             response.Messages.Add(GraphMessageSeverity.Critical, message, errorCode);
             return response;
         }
@@ -334,7 +334,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="result">The result generated froma query execution.</param>
         /// <returns>The altered result.</returns>
-        protected virtual IQueryOperationResult FinalizeResult(IQueryOperationResult result)
+        protected virtual IQueryExecutionResult FinalizeResult(IQueryExecutionResult result)
         {
             return result;
         }
@@ -389,6 +389,6 @@ namespace GraphQL.AspNet.Engine
         /// This property may not be populated until after <see cref="CreateOperationRequestAsync"/> is called.
         /// </remarks>
         /// <value>The graphQL request being executed by this processor.</value>
-        protected virtual IQueryOperationRequest GraphQLOperationRequest { get; private set; }
+        protected virtual IQueryExecutionRequest GraphQLOperationRequest { get; private set; }
     }
 }

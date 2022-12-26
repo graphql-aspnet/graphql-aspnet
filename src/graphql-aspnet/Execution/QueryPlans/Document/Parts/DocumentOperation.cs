@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     /// and construction phase.
     /// </summary>
     [DebuggerDisplay("Operation: {Name} (Type = {OperationType})")]
-    internal class DocumentOperation : DocumentPartBase, IOperationDocumentPart, IDecdendentDocumentPartSubscriber
+    internal class DocumentOperation : DocumentPartBase, IOperationDocumentPart, IDescendentDocumentPartSubscriber
     {
         private readonly DocumentVariableCollection _variableCollection = null;
         private readonly DocumentFragmentSpreadCollection _fragmentSpreads = null;
@@ -62,8 +62,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
             _allSecuredDocParts = new List<ISecurableDocumentPart>();
         }
 
-        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
-        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
+        /// <inheritdoc cref="IDescendentDocumentPartSubscriber.OnDescendentPartAdded" />
+        void IDescendentDocumentPartSubscriber.OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
             var isDirectChild = decendentPart.Parent == this;
             if (isDirectChild && decendentPart is IVariableDocumentPart vd)

@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Execution
         /// is being processed through.</param>
         /// <param name="targetData">The real data object that is the target of this request.</param>
         public GraphDirectiveRequest(
-            IQueryOperationRequest operationRequest,
+            IQueryExecutionRequest operationRequest,
             IDirectiveInvocationContext invocationContext,
             DirectiveInvocationPhase invocationPhase,
             object targetData)
@@ -82,6 +82,6 @@ namespace GraphQL.AspNet.Execution
         public IDirective Directive => this.InvocationContext.Directive;
 
         /// <inheritdoc />
-        public IQueryOperationRequest OperationRequest { get; }
+        public IQueryExecutionRequest OperationRequest { get; }
     }
 }

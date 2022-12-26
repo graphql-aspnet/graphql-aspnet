@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
     /// query plan executable by a the query pipeline.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this plan generator is registered for.</typeparam>
-    public interface IQueryPlanGenerator<TSchema>
+    public interface IQueryExecutionPlanGenerator<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -27,6 +27,6 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// </summary>
         /// <param name="operation">The operation to generate a query plan for.</param>
         /// <returns>Task&lt;IGraphQueryPlan&gt;.</returns>
-        Task<IGraphQueryPlan> CreatePlanAsync(IOperationDocumentPart operation);
+        Task<IQueryExecutionPlan> CreatePlanAsync(IOperationDocumentPart operation);
     }
 }

@@ -14,13 +14,13 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// <summary>
     /// Represents a generated response to a query.
     /// </summary>
-    public interface IQueryOperationResult
+    public interface IQueryExecutionResult
     {
         /// <summary>
         /// Gets the original request that was executed to produce this result.
         /// </summary>
         /// <value>The original request.</value>
-        IQueryOperationRequest Request { get; }
+        IQueryExecutionRequest Request { get; }
 
         /// <summary>
         /// Gets the resultant, top-level data item that was generated during the operation. This is the

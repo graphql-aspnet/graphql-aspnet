@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 
     /// <summary>
     /// A context, containing all the requisite information to properly resolve a field
-    /// for single item within an overall <see cref="IQueryOperationRequest"/>.
+    /// for single item within an overall <see cref="IQueryExecutionRequest"/>.
     /// </summary>
     public interface IGraphFieldInvocationContext
     {

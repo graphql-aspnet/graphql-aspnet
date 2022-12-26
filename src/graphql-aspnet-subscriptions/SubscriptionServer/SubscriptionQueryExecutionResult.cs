@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// <param name="subscriptionId">The subscription id that was executed.</param>
         /// <param name="operationResult">The completed query operation result.</param>
         /// <returns>SubscriptionDataExecutionResult&lt;TSchema&gt;.</returns>
-        public static SubscriptionQueryExecutionResult<TSchema> SingleOperationCompleted(string subscriptionId, IQueryOperationResult operationResult)
+        public static SubscriptionQueryExecutionResult<TSchema> SingleOperationCompleted(string subscriptionId, IQueryExecutionResult operationResult)
         {
             var result = new SubscriptionQueryExecutionResult<TSchema>();
             result.SubscriptionId = subscriptionId;
@@ -129,7 +129,7 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// null if the executed operation registered a <see cref="Subscription"/> instead.
         /// </summary>
         /// <value>The operation result.</value>
-        public IQueryOperationResult OperationResult { get; private set; }
+        public IQueryExecutionResult OperationResult { get; private set; }
 
         /// <summary>
         /// Gets the subscription that was created if the executed query was a

@@ -13,8 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
 
     /// <summary>
-    /// An interface representing a query document that can be
-    /// executed by a graphql schema.
+    /// An interface representing a parsed query document generated from a graphql request.
     /// </summary>
     public interface IQueryDocument : IDocumentPart
     {

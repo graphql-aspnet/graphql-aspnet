@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     public class QueryContextBuilder
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly Mock<IQueryOperationRequest> _mockRequest;
+        private readonly Mock<IQueryExecutionRequest> _mockRequest;
         private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
 
         private IUserSecurityContext _userSecurityContext;
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         {
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
             _userSecurityContext = userSecurityContext;
-            _mockRequest = new Mock<IQueryOperationRequest>();
+            _mockRequest = new Mock<IQueryExecutionRequest>();
             _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
         }
 
@@ -145,7 +145,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             var metaData = new MetaDataCollection();
 
             // unchangable items about the request
-            var request = new Mock<IQueryOperationRequest>();
+            var request = new Mock<IQueryExecutionRequest>();
             request.Setup(x => x.Items).Returns(metaData);
 
             // updateable items about the request
@@ -172,6 +172,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// Gets the mocked operation request as its currently defined by this builder.
         /// </summary>
         /// <value>The operation request.</value>
-        public IQueryOperationRequest OperationRequest => _mockRequest.Object;
+        public IQueryExecutionRequest OperationRequest => _mockRequest.Object;
     }
 }
