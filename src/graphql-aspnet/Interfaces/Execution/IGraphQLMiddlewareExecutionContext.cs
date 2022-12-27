@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         bool IsCancelled { get; }
 
         /// <summary>
-        /// Gets the original data parameters that caused the pipeline to be invoked, typically
+        /// Gets the top level request that caused the pipeline to be invoked, typically
         /// generated from an HTTP request.
         /// </summary>
         /// <value>The top level request.</value>

@@ -266,7 +266,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var mockResult = new Mock<IQueryExecutionResult>();
             mockResult.Setup(x => x.Data).Returns(dic);
             mockResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
-            mockResult.Setup(x => x.Request).Returns(queryBuilder.QueryRequest);
+            mockResult.Setup(x => x.QueryRequest).Returns(queryBuilder.QueryRequest);
 
             var writer = new DefaultQueryResponseWriter<GraphSchema>(server.Schema);
             var result = await this.WriteResponse(writer, mockResult.Object);

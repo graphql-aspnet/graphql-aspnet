@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Execution
             IQueryResponseFieldSet dataItem = null,
             IQueryExecutionMetrics metrics = null)
         {
-            this.Request = originalRequest;
+            this.QueryRequest = originalRequest;
             this.Data = dataItem;
             this.Messages = new GraphMessageCollection(messages?.Count ?? 0);
             if (messages != null)
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Execution
         /// Gets the original operation request that was executed to produce this result.
         /// </summary>
         /// <value>The request.</value>
-        public IQueryExecutionRequest Request { get; }
+        public IQueryExecutionRequest QueryRequest { get; }
 
         /// <summary>
         /// Gets the resultant data item that was generated as a result of completing the operation.
