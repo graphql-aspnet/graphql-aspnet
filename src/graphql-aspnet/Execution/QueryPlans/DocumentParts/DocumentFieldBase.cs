@@ -25,6 +25,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     {
         private readonly DocumentInputArgumentCollection _arguments;
         private readonly DocumentDirectiveCollection _directives;
+        private bool _isIncluded;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldBase"/> class.
@@ -111,6 +112,18 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         public ISecurableSchemaItem SecureItem => this.Field;
 
         /// <inheritdoc />
-        public bool IsIncluded { get; set; }
+        public bool IsIncluded
+        {
+            get
+            {
+                return _isIncluded;
+            }
+
+            set
+            {
+                _isIncluded = value;
+                this.RefreshAllAscendantFields();
+            }
+        }
     }
 }

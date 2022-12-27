@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     /// A base class with common functionality of all <see cref="IDocumentPart" />
     /// implementations.
     /// </summary>
-    internal abstract class DocumentPartBase : IDocumentPart
+    internal abstract class DocumentPartBase : IDocumentPart, IRefreshableDocumentPart
     {
         private SourcePath _path = null;
 
@@ -52,6 +52,32 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         public virtual void AssignGraphType(IGraphType graphType)
         {
             this.GraphType = graphType;
+        }
+
+        /// <summary>
+        /// When called, walks the document part chain from this part upwards forcing a refresh
+        /// on all encountered <see cref="IReferenceDocumentPart"/> instances.
+        /// </summary>
+        /// <param name="refreshSelf">if set to <c>true</c> a refresh will be issued against
+        /// this document part first, before the parents of this field.</param>
+        protected void RefreshAllAscendantFields(bool refreshSelf = true)
+        {
+            var docPart = this as IDocumentPart;
+            if (docPart != null && !refreshSelf)
+                docPart = docPart.Parent;
+
+            while (docPart != null)
+            {
+                if (docPart is IRefreshableDocumentPart fsdp)
+                    fsdp.Refresh();
+
+                docPart = docPart.Parent;
+            }
+        }
+
+        /// <inheritdoc />
+        public virtual void Refresh()
+        {
         }
 
         /// <inheritdoc />

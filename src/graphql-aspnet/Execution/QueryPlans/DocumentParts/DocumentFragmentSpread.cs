@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Steps;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
@@ -22,6 +23,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     internal class DocumentFragmentSpread : DocumentPartBase, IFragmentSpreadDocumentPart, IDescendentDocumentPartSubscriber
     {
         private DocumentDirectiveCollection _directives;
+        private bool _isIncluded;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFragmentSpread"/> class.
@@ -82,7 +84,19 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         public IDirectiveCollectionDocumentPart Directives => _directives;
 
         /// <inheritdoc />
-        public bool IsIncluded { get; set; }
+        public bool IsIncluded
+        {
+            get
+            {
+                return _isIncluded;
+            }
+
+            set
+            {
+                _isIncluded = value;
+                this.RefreshAllAscendantFields();
+            }
+        }
 
         /// <inheritdoc />
         public override string Description => $"Spread: {this.FragmentName}";

@@ -18,10 +18,10 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     /// executable field in its scope. This can be a directly attached field,
     /// or one that would be included via an inline fragment or named fragment spread.
     /// </summary>
-    internal class ExecutableFieldSelectionSetEnumerator : IEnumerator<IFieldDocumentPart>
+    internal class ExecutableFieldSelectionSetEnumerator : IEnumerator<(IFieldDocumentPart DocPart, bool IsIncluded)>
     {
-        private readonly bool _includedOnly;
-        private readonly List<IDocumentPart> _partsToIterator;
+        private readonly bool _forceExclude;
+        private readonly List<IDocumentPart> _partsToIterate;
 
         private int _index;
         private HashSet<INamedFragmentDocumentPart> _traversedFragments;
@@ -31,23 +31,33 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutableFieldSelectionSetEnumerator"/> class.
         /// </summary>
+        /// <param name="selectionSet">The selection set to traverse.</param>
+        public ExecutableFieldSelectionSetEnumerator(IFieldSelectionSetDocumentPart selectionSet)
+            : this(selectionSet, false)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExecutableFieldSelectionSetEnumerator" /> class.
+        /// </summary>
         /// <param name="selectionSet">The selection set.</param>
-        /// <param name="includedOnly">if set to <c>true</c> only included parts are iterated on.</param>
+        /// <param name="forceExclusion">If set to true, all fields traversed will be automatically set to
+        /// "not included" regardless of thier own inclusion status.</param>
         /// <param name="traversedFragments">The traversed fragments.</param>
-        public ExecutableFieldSelectionSetEnumerator(
+        private ExecutableFieldSelectionSetEnumerator(
             IFieldSelectionSetDocumentPart selectionSet,
-            bool includedOnly = false,
+            bool forceExclusion = false,
             HashSet<INamedFragmentDocumentPart> traversedFragments = null)
         {
             // make static the children in this enumerator so that it doesnt accidently
             // change if the document is still being built as its being read
             if ((selectionSet?.Children?.Count ?? 0) > 0)
             {
-                _partsToIterator = new List<IDocumentPart>(selectionSet.Children.Count);
-                _partsToIterator.AddRange(selectionSet.Children);
+                _partsToIterate = new List<IDocumentPart>(selectionSet.Children.Count);
+                _partsToIterate.AddRange(selectionSet.Children);
             }
 
-            _includedOnly = includedOnly;
+            _forceExclude = forceExclusion;
             _traversedFragments = traversedFragments ?? new HashSet<INamedFragmentDocumentPart>();
             _index = -1;
             _childEnumerator = null;
@@ -56,46 +66,42 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
 
         private bool MoveIndexToNextField()
         {
-            if (_partsToIterator == null)
+            if (_partsToIterate == null)
                 return false;
 
             // then advance the pointer on this selection set
             _index++;
-            while (_index < _partsToIterator.Count)
+            while (_index < _partsToIterate.Count)
             {
-                if (_partsToIterator[_index] is IFieldDocumentPart fd)
+                if (_partsToIterate[_index] is IFieldDocumentPart fd)
                 {
-                    if (!_includedOnly || fd.IsIncluded)
+                    // field document is valid for next item
+                    return true;
+                }
+                else if (_partsToIterate[_index] is IInlineFragmentDocumentPart iif)
+                {
+                    _childEnumerator = new ExecutableFieldSelectionSetEnumerator(
+                        iif.FieldSelectionSet,
+                        _forceExclude || !iif.IsIncluded,
+                        _traversedFragments);
+
+                    if (_childEnumerator.MoveNext())
                         return true;
-                }
-                else if (_partsToIterator[_index] is IInlineFragmentDocumentPart iif)
-                {
-                    if (!_includedOnly || iif.IsIncluded)
-                    {
-                        _childEnumerator = new ExecutableFieldSelectionSetEnumerator(
-                            iif.FieldSelectionSet,
-                            _includedOnly,
-                            _traversedFragments);
 
-                        if (_childEnumerator.MoveNext())
-                            return true;
-
-                        // no fields to traverse immediately release the child
-                        // enumerator
-                        _childEnumerator = null;
-                    }
+                    // no fields to traverse immediately release the child
+                    // enumerator
+                    _childEnumerator = null;
                 }
-                else if (_partsToIterator[_index] is IFragmentSpreadDocumentPart fs)
+                else if (_partsToIterate[_index] is IFragmentSpreadDocumentPart fs)
                 {
                     if (fs.Fragment != null
-                        && !_traversedFragments.Contains(fs.Fragment)
-                        && (!_includedOnly || fs.IsIncluded))
+                        && !_traversedFragments.Contains(fs.Fragment))
                     {
                         _traversedFragments.Add(fs.Fragment);
                         _activeNamedFragment = fs.Fragment;
                         _childEnumerator = new ExecutableFieldSelectionSetEnumerator(
                             fs.Fragment.FieldSelectionSet,
-                            _includedOnly,
+                            _forceExclude || !fs.IsIncluded,
                             _traversedFragments);
 
                         if (_childEnumerator.MoveNext())
@@ -114,14 +120,15 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         }
 
         /// <inheritdoc />
-        public IFieldDocumentPart Current
+        public (IFieldDocumentPart, bool) Current
         {
             get
             {
                 if (_childEnumerator != null)
                     return _childEnumerator.Current;
 
-                return _partsToIterator[_index] as IFieldDocumentPart;
+                var fieldDocPart = _partsToIterate[_index] as IFieldDocumentPart;
+                return (fieldDocPart, !_forceExclude && fieldDocPart.IsIncluded);
             }
         }
 

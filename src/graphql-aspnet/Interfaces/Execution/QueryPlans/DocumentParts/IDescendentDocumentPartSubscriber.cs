@@ -19,8 +19,8 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
         /// Called when a new document part has been added to this instance
         /// as a decendent.
         /// </summary>
-        /// <param name="decendentPart">The decendent part that was added.</param>
+        /// <param name="descendentPart">The decendent part that was added.</param>
         /// <param name="relativeDepth">The depth of the part relative to this part. (1 == a direct child).</param>
-        void OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth);
+        void OnDescendentPartAdded(IDocumentPart descendentPart, int relativeDepth);
     }
 }

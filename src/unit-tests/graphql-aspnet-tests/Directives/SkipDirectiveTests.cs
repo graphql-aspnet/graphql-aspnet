@@ -29,10 +29,10 @@ namespace GraphQL.AspNet.Tests.Directives
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
-                    @"query {  
-                        simple {  
-                            simpleQueryMethod { 
-                                property1, 
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
                                 property2 @skip(if: false)
                             }
                         }
@@ -66,10 +66,10 @@ namespace GraphQL.AspNet.Tests.Directives
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
-                    @"query {  
-                        simple {  
-                            simpleQueryMethod { 
-                                property1, 
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
                                 property2 @skip(if: true)
                             }
                         }
@@ -169,8 +169,6 @@ namespace GraphQL.AspNet.Tests.Directives
                 result);
         }
 
-
-
         [Test]
         public async Task SkipDirectiveWithFalse_OnFragmentSpread_FieldIsIncluded()
         {
@@ -248,6 +246,91 @@ namespace GraphQL.AspNet.Tests.Directives
             CommonAssertions.AreEqualJsonStrings(
                 expectedResponse,
                 result);
+        }
+
+        [Test]
+        public async Task SkipDirectiveOnInlineFragment_DropsAllFields_YieldsError_5_3_3()
+        {
+            var server = new TestServerBuilder()
+                .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            // result is no leaf fields on simpleQueryMethod
+            // violate rule 5.3.3 (leaf field selections)
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                ... @skip(if: true) {
+                                    property1,
+                                    property2
+                                }
+                            }
+                        }
+                    }");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual("5.3.3", result.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
+        }
+
+        [Test]
+        public async Task SkipDirectiveOnFragmentSpread_DropsAllFields_YieldsError_5_3_3()
+        {
+            var server = new TestServerBuilder()
+                .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            // result is no leaf fields on simpleQueryMethod
+            // violate rule 5.3.3 (leaf field selections)
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                ... frag1 @skip(if: true)
+                            }
+                        }
+                    }
+
+                    fragment frag1 on TwoPropertyObject {
+                        property1
+                        property2
+                    }");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual("5.3.3", result.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
+        }
+
+        [Test]
+        public async Task SkipDirectiveIsNotRepeatable()
+        {
+            var server = new TestServerBuilder()
+                .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1
+                                property2 @skip(if: true) @skip(if: false)
+                            }
+                        }
+                    }");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
         }
     }
 }

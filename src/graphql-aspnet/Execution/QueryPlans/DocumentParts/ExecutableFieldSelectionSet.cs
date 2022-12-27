@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     {
         private int _sequence;
         private int _lastBuiltSequence;
-        private List<IFieldDocumentPart> _cachedExecutableFields;
+        private List<(IFieldDocumentPart DocPart, bool IsIncluded)> _cachedExecutableFields;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutableFieldSelectionSet"/> class.
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         /// Instructs this execution set to update its snapshot, clearing any
         /// cached fields and rebuilding from its owner.
         /// </summary>
-        internal void UpdateSnapshot()
+        internal void ResetFieldSelectionSet()
         {
             _sequence++;
         }
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             if (_lastBuiltSequence == _sequence && _cachedExecutableFields != null)
                 return;
 
-            var newList = new List<IFieldDocumentPart>((_cachedExecutableFields?.Count ?? 8) * 2);
+            var newList = new List<(IFieldDocumentPart, bool)>((_cachedExecutableFields?.Count ?? 8) * 2);
 
             var iterator = new ExecutableFieldSelectionSetEnumerator(this.Owner);
             while (iterator.MoveNext())
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         public IEnumerator<IFieldDocumentPart> GetEnumerator()
         {
             this.EnsureCurrentSnapshot();
-            return _cachedExecutableFields.GetEnumerator();
+            return _cachedExecutableFields.Select(x => x.DocPart).GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             get
             {
                 this.EnsureCurrentSnapshot();
-                return _cachedExecutableFields[index];
+                return _cachedExecutableFields[index].DocPart;
             }
         }
 
@@ -92,7 +92,11 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             get
             {
                 this.EnsureCurrentSnapshot();
-                return _cachedExecutableFields.Where(x => x.IsIncluded);
+                for (var i = 0; i < _cachedExecutableFields.Count; i++)
+                {
+                    if (_cachedExecutableFields[i].IsIncluded)
+                        yield return _cachedExecutableFields[i].DocPart;
+                }
             }
         }
 

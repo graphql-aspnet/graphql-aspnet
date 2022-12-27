@@ -58,12 +58,15 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             List<string> expectedFields,
             int expectedFieldIndex)
         {
-            var enumerator = new ExecutableFieldSelectionSetEnumerator(fieldSelectionSet, iterateIncludedFieldsOnly);
+            var enumerator = new ExecutableFieldSelectionSetEnumerator(fieldSelectionSet);
             while (enumerator.MoveNext())
             {
-                var field = enumerator.Current;
-                Assert.AreEqual(expectedFields[expectedFieldIndex], field.Name);
-                expectedFieldIndex++;
+                var (field, fieldIsIncluded) = enumerator.Current;
+                if (fieldIsIncluded || !iterateIncludedFieldsOnly)
+                {
+                    Assert.AreEqual(expectedFields[expectedFieldIndex], field.Name);
+                    expectedFieldIndex++;
+                }
 
                 if (field is IFieldSelectionSetDocumentPart fieldSet)
                 {
