@@ -4,7 +4,7 @@
     <TargetFrameworks>net7.0;net6.0;</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;RCS1021;IDE0060;IDE0052;IDE0044;IDE0059;IDE0052;IDE0017;IDE0039;TCS1089;RCS1090;RCS1118;SA1601;RCS1163</NoWarn>
-    <RootNamespace>GraphQL.Subscriptions.Tests</RootNamespace>
+    <RootNamespace>GraphQL.AspNet.Tests</RootNamespace>
     <AssemblyName>graphql-aspnet-subscriptions-tests</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsTestProject>true</IsTestProject>
@@ -20,13 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="Moq" Version="4.18.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="nunit" Version="3.13.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.3.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Execution\ClientSubscriptionTestData\" />
+    <Folder Include="SubscriptionServer\ClientSubscriptionTestData\" />
   </ItemGroup>
 
 </Project>

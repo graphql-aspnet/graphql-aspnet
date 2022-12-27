@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         }
 
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphSchemaItemSecurityChallengeContext context, GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityChallengeContext> next, CancellationToken cancelToken = default)
+        public async Task InvokeAsync(SchemaItemSecurityChallengeContext context, GraphMiddlewareInvocationDelegate<SchemaItemSecurityChallengeContext> next, CancellationToken cancelToken = default)
         {
             context.Logger?.SchemaItemAuthenticationChallenge(context);
 
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         }
 
         private async Task<(ClaimsPrincipal, IAuthenticationResult, SchemaItemSecurityChallengeResult)>
-            AuthenticateUser(GraphSchemaItemSecurityChallengeContext context, CancellationToken cancelToken)
+            AuthenticateUser(SchemaItemSecurityChallengeContext context, CancellationToken cancelToken)
         {
             // Step 1: Initial check for null requirements or allowed anonymous access
             if (context.SecurityRequirements == null)
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
 
             var canBeAnonymous = context.SecurityRequirements.AllowAnonymous;
 
-            await this.EnsureDefaults();
+            await this.EnsureDefaultsAsync();
 
             // Step 2: Attempt to authenticate the user against the acceptable schemes
             IAuthenticationResult authTicket = null;
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             // app instance (if one even exists)
             if (context.SecurityRequirements.AllowedAuthenticationSchemes.Count == 0)
             {
-                authTicket = await this.AuthenticateUserToScheme(
+                authTicket = await this.AuthenticateUserToSchemeAsync(
                     context.SecurityContext,
                     _defaultScheme,
                     !canBeAnonymous,
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             {
                 foreach (var scheme in context.SecurityRequirements.AllowedAuthenticationSchemes)
                 {
-                    authTicket = await this.AuthenticateUserToScheme(context.SecurityContext, scheme.AuthScheme, !canBeAnonymous, cancelToken);
+                    authTicket = await this.AuthenticateUserToSchemeAsync(context.SecurityContext, scheme.AuthScheme, !canBeAnonymous, cancelToken);
                     if (authTicket?.Suceeded ?? false)
                         break;
 
@@ -156,7 +156,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         /// <summary>
         /// Extracts the default and all known schemes available to this instance.
         /// </summary>
-        private async Task EnsureDefaults()
+        private async Task EnsureDefaultsAsync()
         {
             if (_defaultsSet)
                 return;
@@ -187,7 +187,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             }
         }
 
-        private async Task<IAuthenticationResult> AuthenticateUserToScheme(
+        private async Task<IAuthenticationResult> AuthenticateUserToSchemeAsync(
             IUserSecurityContext userContext,
             string scheme,
             bool shouldThrowOnFail,
@@ -205,7 +205,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             }
 
             if (userContext != null)
-                return await userContext.Authenticate(scheme, cancelToken);
+                return await userContext.AuthenticateAsync(scheme, cancelToken);
             else
                 return null;
         }

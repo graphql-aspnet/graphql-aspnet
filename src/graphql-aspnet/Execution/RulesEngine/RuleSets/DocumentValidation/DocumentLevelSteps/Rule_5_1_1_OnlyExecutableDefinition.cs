@@ -10,25 +10,24 @@
 namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// <para>(5.1.1) Verify that all top level definitions in the document are either an operation definition
     /// or a fragment definition.</para>
-    /// <para>Reference: https://graphql.github.io/graphql-spec/October2021/#sec-Executable-Definitions .</para>
+    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Executable-Definitions" />.</para>
     /// </summary>
     internal class Rule_5_1_1_OnlyExecutableDefinition
-        : DocumentPartValidationRuleStep<IGraphQueryDocument>
+        : DocumentPartValidationRuleStep<IQueryDocument>
     {
         /// <inheritdoc/>
         public override bool Execute(DocumentValidationContext context)
         {
             // the parser can't fail this rule, but an injected child by a directive
             // could, so it must exist
-            var docPart = context.ActivePart as IGraphQueryDocument;
+            var docPart = context.ActivePart as IQueryDocument;
             var invalidPartFound = false;
             foreach (var part in docPart.Children)
             {

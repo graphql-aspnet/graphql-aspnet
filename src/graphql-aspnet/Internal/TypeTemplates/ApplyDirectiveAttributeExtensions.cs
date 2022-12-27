@@ -12,27 +12,27 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// Helper methods for <see cref="IGraphItemTemplate"/>.
+    /// Extension methods related to gather directives during templating.
     /// </summary>
     internal static class ApplyDirectiveAttributeExtensions
     {
         /// <summary>
-        /// Retrieves the directive types declared on this item template.
+        /// Retrieves the [ApplyDirective] templates declared on this item.
         /// </summary>
         /// <param name="itemTemplate">The item template which may contain applied directives.</param>
         /// <returns>IEnumerable&lt;AppliedDirectiveTemplate&gt;.</returns>
-        public static IEnumerable<IAppliedDirectiveTemplate> ExtractAppliedDirectiveTemplates(this IGraphItemTemplate itemTemplate)
+        public static IEnumerable<IAppliedDirectiveTemplate> ExtractAppliedDirectiveTemplates(this ISchemaItemTemplate itemTemplate)
         {
             return itemTemplate.AttributeProvider.ExtractAppliedDirectiveTemplates(itemTemplate);
         }
 
         /// <summary>
-        /// Retrieves the directive types declared on this item template.
+        /// Retrieves the [ApplyDirective] templates declared on this item.
         /// </summary>
         /// <param name="attributeProvider">The attribute provider.</param>
         /// <param name="owner">The owner of the created templates.</param>

@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// Ensures that where ever a named fragment is spread that it is not, in the current path,

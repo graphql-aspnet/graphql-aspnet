@@ -12,13 +12,13 @@ namespace GraphQL.AspNet.Configuration
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A set of configurations that will be applied when this  <see cref="ISchema" /> generated from a set of objects.
+    /// A set of configuration options that will be applied when this  <see cref="ISchema" />
+    /// generated from a set of objects.
     /// </summary>
     [DebuggerDisplay("Schema Declaration Configuration")]
     public class SchemaDeclarationConfiguration : ISchemaDeclarationConfiguration

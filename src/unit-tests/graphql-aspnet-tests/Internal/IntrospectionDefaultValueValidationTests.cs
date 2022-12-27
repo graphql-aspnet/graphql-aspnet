@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var introspectedType = new IntrospectedType(graphType.Object);
             var inputField = new Mock<IInputGraphField>();
-            inputField.Setup(x => x.Route).Returns(new SchemaItemPath(GraphCollection.Types, "inputobject", "field1"));
+            inputField.Setup(x => x.Route).Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
             inputField.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration(typeExpression));
 
             var introspectedField = new IntrospectedInputValueType(inputField.Object, introspectedType, defaultValue);
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var introspectedType = new IntrospectedType(graphType.Object);
             var argument = new Mock<IGraphArgument>();
-            argument.Setup(x => x.Route).Returns(new SchemaItemPath(GraphCollection.Types, "inputobject", "field1"));
+            argument.Setup(x => x.Route).Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
             argument.Setup(x => x.DefaultValue).Returns(defaultValue);
             argument.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration(typeExpression));
             argument.Setup(x => x.HasDefaultValue).Returns(hasDefaultValue);
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var introspectedType = new IntrospectedType(graphType.Object);
             var inputField = new Mock<IInputGraphField>();
-            inputField.Setup(x => x.Route).Returns(new SchemaItemPath(GraphCollection.Types, "inputobject", "field1"));
+            inputField.Setup(x => x.Route).Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
             inputField.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration(typeExpression));
 
             var introspectedField = new IntrospectedInputValueType(inputField.Object, introspectedType);

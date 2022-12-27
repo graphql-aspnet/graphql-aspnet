@@ -20,9 +20,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     {
         /// <summary>
         /// Wraps the base type with any necessary modifier types to generate the full type declaration.
+        /// This method creates the necessary nesting of "ofType" references for a given type.
         /// </summary>
         /// <param name="baseType">The base type to wrap.</param>
-        /// <param name="wrappers">The wrappers.</param>
+        /// <param name="wrappers">The wrappers to apply.</param>
         /// <returns>IIntrospectedType.</returns>
         public static IntrospectedType WrapBaseTypeWithModifiers(IntrospectedType baseType, params MetaGraphTypes[] wrappers)
         {
@@ -31,9 +32,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
 
         /// <summary>
         /// Wraps the base type with any necessary modifier types to generate the full type declaration.
+        /// This method creates the necessary nesting of "ofType" references for a given type.
         /// </summary>
         /// <param name="baseType">The base type to wrap.</param>
-        /// <param name="wrappers">The wrappers.</param>
+        /// <param name="wrappers">The wrappers to apply.</param>
         /// <returns>IIntrospectedType.</returns>
         public static IntrospectedType WrapBaseTypeWithModifiers(IntrospectedType baseType, IReadOnlyList<MetaGraphTypes> wrappers)
         {
@@ -56,6 +58,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
 
         /// <summary>
         /// Wraps the base type with any necessary modifier types to generate the full type declaration.
+        /// This method creates the necessary nesting of "ofType" references for a given type.
         /// </summary>
         /// <param name="baseType">The base type to wrap.</param>
         /// <param name="typeExpression">The type expression.</param>

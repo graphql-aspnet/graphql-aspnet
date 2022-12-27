@@ -10,15 +10,18 @@
 namespace GraphQL.AspNet.Engine
 {
     using System.Collections.Concurrent;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// The default implementation of the collection of all known, active clients
     /// available to this server instance.
     /// </summary>
-    public class DefaultGlobalSubscriptionClientProxyCollection : IGlobalSubscriptionClientProxyCollection
+    [DebuggerDisplay("Count = {Count}")]
+    internal class DefaultGlobalSubscriptionClientProxyCollection : IGlobalSubscriptionClientProxyCollection
     {
         private readonly ConcurrentDictionary<SubscriptionClientId, ISubscriptionClientProxy> _allClients;
 
@@ -47,9 +50,13 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public void RemoveClient(ISubscriptionClientProxy clientProxy)
+        public bool TryRemoveClient(SubscriptionClientId clientId, out ISubscriptionClientProxy clientProxy)
         {
-            Validation.ThrowIfNull(clientProxy, nameof(clientProxy));
+            clientProxy = null;
+            if (clientId == null)
+                return false;
+
+            return _allClients.TryRemove(clientId, out clientProxy);
         }
 
         /// <inheritdoc />

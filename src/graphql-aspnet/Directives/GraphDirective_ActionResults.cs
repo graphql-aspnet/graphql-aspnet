@@ -13,13 +13,11 @@ namespace GraphQL.AspNet.Directives
     using GraphQL.AspNet.Directives.ActionResults;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A base class defining common requirements for any class wishing to be a directive
-    /// that can be assigned at one of the <see cref="DirectiveLocation"/> at runtime.
+    /// A base class from which all Execution and Type System directives must inherit.
     /// </summary>
-    public partial class GraphDirective : GraphControllerBase<IGraphDirectiveRequest>
+    public abstract partial class GraphDirective : GraphControllerBase<IGraphDirectiveRequest>
     {
         /// <summary>
         /// Returns an action result indicating the directive completed its intended operation correctly.

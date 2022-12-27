@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using CHARS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Characters;
@@ -18,9 +18,9 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
     /// <summary>
     /// A validator that will inspect a span to ensure its characters
     /// are valid for a string in graphql
-    /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-String-Value .
+    /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-String-Value" /> .
     /// </summary>
-    public class StringValidator
+    internal class StringValidator
     {
         private const string UNINTIALIZED_STRING = "Uninitialized string. Expected '{0}' received '{1}'";
         private const string UNTERMINATED_STRING = "Unterminated string. Expected '{0}' received '{1}'";

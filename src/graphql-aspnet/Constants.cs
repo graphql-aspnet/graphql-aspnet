@@ -73,7 +73,7 @@ namespace GraphQL.AspNet
         {
             typeof(GraphController),
             typeof(GraphDirective),
-            typeof(BaseGraphAttribute),
+            typeof(GraphAttributeBase),
         };
 
         /// <summary>
@@ -404,12 +404,12 @@ namespace GraphQL.AspNet
             public const string DEFAULT_HTTP_ROUTE = "/graphql";
 
             /// <summary>
-            /// A phrase that will be subsituted to the actual class name of the controller at run time.
+            /// A phrase that will be subsituted with the actual class name of the controller at run time.
             /// </summary>
             public const string CONTOLLER_META_NAME = "[controller]";
 
             /// <summary>
-            /// A phrase that will be subsituted to the actual class name of the object at run time.
+            /// A phrase that will be subsituted with the actual class name of the object at run time.
             /// </summary>
             public const string CLASS_META_NAME = "[class]";
 
@@ -524,7 +524,7 @@ namespace GraphQL.AspNet
         {
             /// <summary>
             /// A regex containing the rules for parsing a graphql name.
-            /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Appendix-Grammar-Summary.Lexical-Tokens .
+            /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Appendix-Grammar-Summary.Lexical-Tokens" />.
             /// </summary>
             public static readonly Regex NameRegex = new Regex(@"^([_A-Za-z][0-9A-Za-z]|[0-9A-Za-z]+)[_0-9A-Za-z]*$");
         }

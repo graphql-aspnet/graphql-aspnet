@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         public async Task InvokeAsync(GraphFieldExecutionContext context, GraphMiddlewareInvocationDelegate<GraphFieldExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.IsValid && context.Result != null && !context.IsCancelled)
-                await this.ProcessDownStreamFieldContexts(context, cancelToken).ConfigureAwait(false);
+                await this.ProcessDownStreamFieldContextsAsync(context, cancelToken).ConfigureAwait(false);
 
             await next(context, cancelToken).ConfigureAwait(false);
         }
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// <param name="context">The "parent" context supplying data for downstream reslts.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task.</returns>
-        private async Task ProcessDownStreamFieldContexts(GraphFieldExecutionContext context, CancellationToken cancelToken)
+        private async Task ProcessDownStreamFieldContextsAsync(GraphFieldExecutionContext context, CancellationToken cancelToken)
         {
             if (context.InvocationContext.ChildContexts.Count == 0)
                 return;
@@ -80,10 +80,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             //  ---
             // can never extract child fields from a null value (even if its valid for the item)
             // or one that isnt read for it
-            List<GraphDataItem> allSourceItems = context
+            List<FieldDataItem> allSourceItems = context
                 .ResolvedSourceItems
                 .SelectMany(x => x.FlattenListItemTree())
-                .Where(x => x.ResultData != null && x.Status == FieldItemResolutionStatus.NeedsChildResolution)
+                .Where(x => x.ResultData != null && x.Status == FieldDataItemResolutionStatus.NeedsChildResolution)
                 .ToList();
 
             if (allSourceItems.Count == 0)
@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 // Step 1A
                 // ----------------------------
                 // figure out which child items need to be processed through it
-                IReadOnlyList<GraphDataItem> sourceItemsToInclude;
+                IReadOnlyList<FieldDataItem> sourceItemsToInclude;
                 if (childInvocationContext.ExpectedSourceType == null)
                 {
                     sourceItemsToInclude = allSourceItems;
@@ -184,7 +184,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // and executing them first through to completion
             foreach (var isolatedChildContext in executableChildContexts.IsolatedContexts)
             {
-                var task = this.ExecuteChildContext(context, isolatedChildContext, cancelToken);
+                var task = this.ExecuteChildContextAsync(context, isolatedChildContext, cancelToken);
                 allChildPipelines.Add(task);
 
                 if (_debugMode)
@@ -203,7 +203,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
             foreach (var paralellChildContext in executableChildContexts.ParalellContexts)
             {
-                var task = this.ExecuteChildContext(context, paralellChildContext, cancelToken);
+                var task = this.ExecuteChildContextAsync(context, paralellChildContext, cancelToken);
                 allChildPipelines.Add(task);
 
                 if (_debugMode)
@@ -213,7 +213,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             await Task.WhenAll(allChildPipelines).ConfigureAwait(false);
         }
 
-        private Task ExecuteChildContext(
+        private Task ExecuteChildContextAsync(
             GraphFieldExecutionContext parentContext,
             GraphFieldExecutionContext childContext,
             CancellationToken cancelToken = default)
@@ -259,11 +259,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             }
         }
 
-        private IDictionary<Type, List<GraphDataItem>> MapExpectedConcreteTypeFromSourceItem(
-                List<GraphDataItem> allSourceItems,
+        private IDictionary<Type, List<FieldDataItem>> MapExpectedConcreteTypeFromSourceItem(
+                List<FieldDataItem> allSourceItems,
                 IGraphType expectedGraphType)
         {
-            var dic = new Dictionary<Type, List<GraphDataItem>>();
+            var dic = new Dictionary<Type, List<FieldDataItem>>();
 
             // when the target graph type is not "mapable", generate a dictionary by exact type matching
             switch (expectedGraphType.Kind)
@@ -275,7 +275,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     foreach (var item in allSourceItems)
                     {
                         if (!dic.ContainsKey(item.GetType()))
-                            dic.Add(item.GetType(), new List<GraphDataItem>(1));
+                            dic.Add(item.GetType(), new List<FieldDataItem>(1));
 
                         dic[item.GetType()].Add(item);
                     }
@@ -297,7 +297,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 if (result.ExactMatchFound)
                 {
                     if (!dic.ContainsKey(result.FoundTypes[0]))
-                        dic.Add(result.FoundTypes[0], new List<GraphDataItem>(1));
+                        dic.Add(result.FoundTypes[0], new List<FieldDataItem>(1));
 
                     dic[result.FoundTypes[0]].Add(dataItem);
                 }
@@ -321,7 +321,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         private IEnumerable<GraphFieldExecutionContext> CreateChildExecutionContexts(
             GraphFieldExecutionContext parentContext,
             IGraphFieldInvocationContext childInvocationContext,
-            IReadOnlyList<GraphDataItem> sourceItemsToInclude)
+            IReadOnlyList<FieldDataItem> sourceItemsToInclude)
         {
             if (childInvocationContext.Field.Mode == FieldResolutionMode.PerSourceItem)
             {
@@ -329,7 +329,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 {
                     var child = sourceItem.AddChildField(childInvocationContext);
 
-                    var dataSource = new GraphDataContainer(sourceItem.ResultData, child.Origin.Path, child);
+                    var dataSource = new FieldDataItemContainer(
+                        sourceItem.ResultData,
+                        child.Origin.Path,
+                        child);
+
                     var request = new GraphFieldRequest(
                         parentContext.Request.OperationRequest,
                         childInvocationContext,
@@ -367,7 +371,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
                 // create a list of all the GraphDataItems representing the field
                 // being resolved per input item
-                var sourceItemList = new List<GraphDataItem>(sourceItemsToInclude.Count);
+                var sourceItemList = new List<FieldDataItem>(sourceItemsToInclude.Count);
 
                 foreach (var item in sourceItemsToInclude)
                 {
@@ -376,7 +380,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     sourceItemList.Add(childField);
                 }
 
-                var dataSource = new GraphDataContainer(
+                var dataSource = new FieldDataItemContainer(
                     sourceDataList,
                     fieldPath,
                     sourceItemList);

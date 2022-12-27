@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using System;
     using System.Collections;
     using System.Linq;
-    using GraphQL.AspNet.Logging.Common;
+    using GraphQL.AspNet.Logging;
     using NUnit.Framework;
 
     [TestFixture]
@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void AddNewProperty_AddedToEnumerableCollection()
         {
-            var props = new GraphLogPropertyCollection();
+            var props = new GraphLogEntryPropertyCollection();
             var beforeNewProp = props.Count();
 
             props.AddProperty("key1", "value1");
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void AddNewProperty_WhenKeyExists_KeysDoNotClash()
         {
-            var props = new GraphLogPropertyCollection();
+            var props = new GraphLogEntryPropertyCollection();
             var beforeNewProp = props.Count();
 
             props.AddProperty("key1", "value1");
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void ContainsKey()
         {
-            var props = new GraphLogPropertyCollection();
+            var props = new GraphLogEntryPropertyCollection();
 
             props.AddProperty("key1", "value1");
             Assert.IsTrue(props.ContainsKey("key1"));
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void RetrieveByKey_ReturnsValue()
         {
-            var props = new GraphLogPropertyCollection();
+            var props = new GraphLogEntryPropertyCollection();
 
             props.AddProperty("key1", "value1");
             Assert.AreEqual("value1", props["key1"]);
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void RetrieveProperty_ReturnsValueWhenCastable()
         {
-            var props = new GraphLogPropertyCollection();
+            var props = new GraphLogEntryPropertyCollection();
 
             props.AddProperty("key1", "value1");
             Assert.AreEqual("value1", props.RetrieveProperty("key1"));
@@ -74,14 +74,14 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void RetrieveProperty_ReturnsDefaultWhenNull()
         {
-            var props = new GraphLogPropertyCollection();
+            var props = new GraphLogEntryPropertyCollection();
             Assert.AreEqual(default(int), props.RetrieveProperty<int>("key1"));
         }
 
         [Test]
         public void RetrieveProperty_ExceptionWhenNotCastable()
         {
-            var props = new GraphLogPropertyCollection();
+            var props = new GraphLogEntryPropertyCollection();
             Assert.Throws<InvalidCastException>(() =>
             {
                 props.AddProperty("key1", "string value");
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void IEnumerable_IteratesAllProps()
         {
-            var props = new GraphLogPropertyCollection();
+            var props = new GraphLogEntryPropertyCollection();
             props.AddProperty("key1", "string value");
             var count = props.Count();
 
@@ -108,8 +108,8 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void FlattenKeyList_YieldsCorrectKeyNames()
         {
-            var entry = new GraphLogPropertyCollection();
-            var subKeySet = new GraphLogPropertyCollection();
+            var entry = new GraphLogEntryPropertyCollection();
+            var subKeySet = new GraphLogEntryPropertyCollection();
             subKeySet.AddProperty("key1", "value1");
 
             entry.AddProperty("subKeys", subKeySet);

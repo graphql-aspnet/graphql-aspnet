@@ -13,18 +13,19 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Internal.Resolvers;
 
     /// <summary>
     /// An object capable of taking a <see cref="DocumentSuppliedValue"/> from a document and converting it into a
     /// core .NET type that represents the value within the target schema.
     /// </summary>
-    public class ArgumentGenerator
+    internal class ArgumentGenerator
     {
         private readonly IInputArgumentCollectionDocumentPart _suppliedArguments;
-        private readonly InputResolverMethodGenerator _inputResolverGenerator;
+        private readonly InputValueResolverMethodGenerator _inputResolverGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ArgumentGenerator" /> class.
@@ -36,7 +37,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         {
             _suppliedArguments = Validation.ThrowIfNullOrReturn(suppliedArguments, nameof(suppliedArguments));
             Validation.ThrowIfNull(schema, nameof(schema));
-            _inputResolverGenerator = new InputResolverMethodGenerator(schema);
+            _inputResolverGenerator = new InputValueResolverMethodGenerator(schema);
         }
 
         /// <summary>

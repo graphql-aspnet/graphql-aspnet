@@ -11,19 +11,19 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
     /// A representing of a syntax node within a larger AST
     /// representing the query document.
     /// </summary>
     [DebuggerDisplay("{NodeType} ({Coordinates})")]
-    public readonly struct SyntaxNode : IEquatable<SyntaxNode>
+    internal readonly struct SyntaxNode : IEquatable<SyntaxNode>
     {
         /// <summary>
         /// Gets a syntax node that represents nothing.
         /// </summary>
-        /// <value>The none.</value>
+        /// <value>A syntax node representing nothing.</value>
         public static SyntaxNode None { get; } = new SyntaxNode(SyntaxNodeType.Empty, SourceLocation.None);
 
         /// <summary>

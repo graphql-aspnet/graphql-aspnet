@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
 
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <summary>
         /// Generates a controller template.
         /// </summary>
-        /// <typeparam name="TController">The type of the t controller.</typeparam>
+        /// <typeparam name="TController">The type of the controller to include.</typeparam>
         /// <returns>IGraphControllerTemplate.</returns>
         public static IGraphControllerTemplate CreateControllerTemplate<TController>()
              where TController : GraphController
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <typeparam name="TType">The graph type to template.</typeparam>
         /// <param name="kind">The kind.</param>
         /// <returns>IGraphItemTemplate.</returns>
-        public static IGraphItemTemplate CreateGraphTypeTemplate<TType>(TypeKind? kind = null)
+        public static ISchemaItemTemplate CreateGraphTypeTemplate<TType>(TypeKind? kind = null)
         {
             GraphQLProviders.TemplateProvider.CacheTemplates = false;
             return GraphQLProviders.TemplateProvider.ParseType<TType>(kind);

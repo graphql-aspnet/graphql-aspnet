@@ -11,15 +11,15 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     using System.Collections.Generic;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// A maker capable of turning a <see cref="IGraphFieldBaseTemplate"/> into a usable field in an object graph
+    /// A maker capable of turning a <see cref="IGraphFieldTemplateBase"/> into a usable field in an object graph
     /// with additional routines for supporting subscription fields.
     /// </summary>
     public class SubscriptionEnabledGraphFieldMaker : GraphFieldMaker
@@ -39,10 +39,10 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             IGraphFieldTemplate template,
             List<AppliedSecurityPolicyGroup> securityGroups)
         {
-            var subTemplate = template as ControllerSubscriptionActionGraphFieldTemplate;
+            var subTemplate = template as SubscriptionControllerActionGraphFieldTemplate;
             if (subTemplate != null
                 && subTemplate.FieldSource == GraphFieldSource.Action
-                && subTemplate.Route.RootCollection == GraphCollection.Subscription)
+                && subTemplate.Route.RootCollection == SchemaItemCollections.Subscription)
             {
                 var directives = template.CreateAppliedDirectives();
 

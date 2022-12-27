@@ -32,12 +32,8 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var server = new TestServerBuilder().AddType<InputController>().Build();
             var text = "query TestQuery{  input {  fetchString(arg1: 5, arg2: 10) } }";
 
-            var parser = new GraphQLParser();
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = parser.ParseQueryDocument(ref source);
-
-            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(source, syntaxTree);
+            var docGenerator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var document = docGenerator.CreateDocument(text.AsSpan());
 
             var queryInputCollection = document.Operations["TestQuery"]
                 .FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
@@ -68,12 +64,8 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
                 .Build();
             var text = "query TestQuery{  input {  fetchString(arg1: 5) } }";
 
-            var parser = new GraphQLParser();
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = parser.ParseQueryDocument(ref source);
-
-            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(source, syntaxTree);
+            var docGenerator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var document = docGenerator.CreateDocument(text.AsSpan());
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
@@ -105,12 +97,8 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             // set arg1 to int.max + 1; the int graph type will fail to resolve it
             var text = "query TestQuery{  input {  fetchString(arg1: 2147483648 ) } }";
 
-            var parser = new GraphQLParser();
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = parser.ParseQueryDocument(ref source);
-
-            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(source, syntaxTree);
+            var docGenerator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var document = docGenerator.CreateDocument(text.AsSpan());
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
@@ -140,12 +128,8 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             // set arg1 to int.max + 1; the int graph type will fail to resolve it
             var text = "query TestQuery{  input {  fetchArrayTotal(arg3: [1, 2, 3]) } }";
 
-            var parser = new GraphQLParser();
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = parser.ParseQueryDocument(ref source);
-
-            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(source, syntaxTree);
+            var docGenerator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var document = docGenerator.CreateDocument(text.AsSpan());
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
@@ -179,12 +163,8 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             // set arg1 to int.max + 1; the int graph type will fail to resolve it
             var text = "query TestQuery($var1: Int!){  input {  fetchArrayTotal(arg3: [1, $var1, 3]) } }";
 
-            var parser = new GraphQLParser();
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = parser.ParseQueryDocument(ref source);
-
-            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(source, syntaxTree);
+            var docGenerator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var document = docGenerator.CreateDocument(text.AsSpan());
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
@@ -221,12 +201,8 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
                     }
                 }";
 
-            var parser = new GraphQLParser();
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = parser.ParseQueryDocument(ref source);
-
-            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(source, syntaxTree);
+            var docGenerator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var document = docGenerator.CreateDocument(text.AsSpan());
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
@@ -268,12 +244,8 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
                     }
                 }";
 
-            var parser = new GraphQLParser();
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = parser.ParseQueryDocument(ref source);
-
-            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(source, syntaxTree);
+            var docGenerator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var document = docGenerator.CreateDocument(text.AsSpan());
 
             var queryInputCollection = document.Operations["TestQuery"]
                 .FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;

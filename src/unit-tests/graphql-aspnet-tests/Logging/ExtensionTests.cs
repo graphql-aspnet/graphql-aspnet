@@ -11,12 +11,12 @@ namespace GraphQL.AspNet.Tests.Logging
 {
     using System;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Logging.ExecutionEvents;
     using Microsoft.Extensions.Logging;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Logging.Extensions;
+    using GraphQL.AspNet.Logging;
     using NUnit.Framework;
     using Moq;
+    using GraphQL.AspNet.Logging.GeneralEvents;
 
     [TestFixture]
     public class ExtensionTests

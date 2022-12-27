@@ -11,13 +11,13 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
 {
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
     /// A syntax node builder that builds a complex input argument from a token stream.
     /// </summary>
-    public class ComplexValueNodeBuilder : ISyntaxNodeBuilder
+    internal class ComplexValueNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
         /// Gets the singleton instance of this maker.

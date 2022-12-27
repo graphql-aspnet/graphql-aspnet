@@ -23,12 +23,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
     /// <para>A meta field automatically added to all OBJECT graph types to return the type name of the object in question.
     /// Exposed as '__typeName' on any object. This field will not be published
     /// on any introspection queries.</para>
-    /// <para>spec: https://graphql.github.io/graphql-spec/October2021/#sec-Type-Name-Introspection .</para>
+    /// <para>spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Type-Name-Introspection" /> .</para>
     /// </summary>
     [DebuggerDisplay("Meta Field: " + Constants.ReservedNames.TYPENAME_FIELD)]
     public class Introspection_TypeNameMetaField : MethodGraphField
     {
-        private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(GraphCollection.Query, Constants.ReservedNames.TYPENAME_FIELD);
+        private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(SchemaItemCollections.Query, Constants.ReservedNames.TYPENAME_FIELD);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_TypeNameMetaField"/> class.
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
                 FIELD_PATH)
         {
             Validation.ThrowIfNull(graphTypeName, nameof(graphTypeName));
-            this.UpdateResolver(new GraphDataValueResolver<object, string>((obj) => graphTypeName.AsCompletedTask()), FieldResolutionMode.PerSourceItem);
+            this.UpdateResolver(new FunctionGraphFieldResolver<object, string>((obj) => graphTypeName.AsCompletedTask()), FieldResolutionMode.PerSourceItem);
         }
 
         /// <inheritdoc />

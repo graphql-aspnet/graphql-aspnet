@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
@@ -20,12 +20,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Security;
     using Moq;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// A subclassed <see cref="GraphFieldExecutionContext"/> allowing for inline mocked replacements
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             IUserSecurityContext userSecurityContext,
             IGraphField graphField,
             ISchema schema,
-            IGraphMethod graphMethod)
+            IGraphFieldResolverMethod graphMethod)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _graphField = Validation.ThrowIfNullOrReturn(graphField, nameof(graphField));
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockInvocationContext.Setup(x => x.Schema).Returns(_schema);
             _mockInvocationContext.Setup(x => x.FieldDocumentPart).Returns(_mockFieldDocumentPart.Object);
 
-            this.GraphMethod = new Mock<IGraphMethod>();
+            this.GraphMethod = new Mock<IGraphFieldResolverMethod>();
             this.GraphMethod.Setup(x => x.Parent).Returns(graphMethod.Parent);
             this.GraphMethod.Setup(x => x.ObjectType).Returns(graphMethod.ObjectType);
             this.GraphMethod.Setup(x => x.ExpectedReturnType).Returns(graphMethod.ExpectedReturnType);
@@ -120,8 +120,8 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         public FieldContextBuilder AddSourceData(object sourceData, SourcePath path = null)
         {
             path = path ?? SourcePath.None;
-            var item = new GraphDataItem(_mockInvocationContext.Object, sourceData, path);
-            var dataSource = new GraphDataContainer(sourceData, path, item);
+            var item = new FieldDataItem(_mockInvocationContext.Object, sourceData, path);
+            var dataSource = new FieldDataItemContainer(sourceData, path, item);
             _mockRequest.Setup(x => x.Data).Returns(dataSource);
             return this;
         }
@@ -164,15 +164,15 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             return this;
         }
 
-        private IGraphExecutionContext CreateFakeParentMiddlewareContext()
+        private IGraphQLMiddlewareExecutionContext CreateFakeParentMiddlewareContext()
         {
-            var operationRequest = new Mock<IGraphOperationRequest>();
-            var parentContext = new Mock<IGraphExecutionContext>();
+            var operationRequest = new Mock<IQueryExecutionRequest>();
+            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
 
             parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
             parentContext.Setup(x => x.SecurityContext).Returns(_securityContext);
-            parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);
+            parentContext.Setup(x => x.Metrics).Returns(null as IQueryExecutionMetrics);
             parentContext.Setup(x => x.Logger).Returns(null as IGraphEventLogger);
             parentContext.Setup(x => x.Messages).Returns(_messageCollection);
             parentContext.Setup(x => x.IsValid).Returns(_messageCollection.IsSucessful);
@@ -184,12 +184,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// Creates an authorization context to validate the field request this builder is creating.
         /// </summary>
         /// <returns>GraphFieldAuthorizationContext.</returns>
-        public GraphSchemaItemSecurityChallengeContext CreateSecurityContext()
+        public SchemaItemSecurityChallengeContext CreateSecurityContext()
         {
             var parent = this.CreateFakeParentMiddlewareContext();
 
-            var request = new GraphSchemaItemSecurityRequest(this.FieldRequest);
-            return new GraphSchemaItemSecurityChallengeContext(
+            var request = new SchemaItemSecurityRequest(this.FieldRequest);
+            return new SchemaItemSecurityChallengeContext(
                 parent,
                 request);
         }
@@ -245,6 +245,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// against the testserver.
         /// </summary>
         /// <value>The graph method.</value>
-        public Mock<IGraphMethod> GraphMethod { get; }
+        public Mock<IGraphFieldResolverMethod> GraphMethod { get; }
     }
 }

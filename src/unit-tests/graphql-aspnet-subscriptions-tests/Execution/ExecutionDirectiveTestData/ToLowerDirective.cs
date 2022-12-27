@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData
+namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     public class ToLowerDirective : GraphDirective

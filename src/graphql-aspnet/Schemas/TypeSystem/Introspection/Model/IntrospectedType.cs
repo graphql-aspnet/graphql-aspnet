@@ -20,9 +20,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A representation of data about an object graph type that can be returned from a field.
+    /// A model object representing the introspected data of a graph type declared on a schema.
     /// </summary>
-    [DebuggerDisplay("OBJECT: {Name}")]
+    [DebuggerDisplay("Target Type: {Name}")]
     public sealed class IntrospectedType
     {
         /// <summary>
@@ -98,11 +98,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             this.LoadUrl(schema);
         }
 
-        /// <summary>
-        /// Loads the specifiedByUrl into this instance for any <see cref="IGraphType"/>
-        /// that supports it.
-        /// </summary>
-        /// <param name="schema">The schema.</param>
         private void LoadUrl(IntrospectedSchema schema)
         {
             if (this.GraphType is IScalarGraphType scalar)
@@ -111,10 +106,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
                 this.SpecifiedByUrl = null;
         }
 
-        /// <summary>
-        /// Loads the fields into this instance for any <see cref="IGraphType"/> that supports them.
-        /// </summary>
-        /// <param name="schema">The schema.</param>
         private void LoadFields(IntrospectedSchema schema)
         {
             if (!(this.GraphType is IGraphFieldContainer fieldContainer))
@@ -133,10 +124,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             this.Fields = fields;
         }
 
-        /// <summary>
-        /// Loads the possible types field for for unions or interfaces.
-        /// </summary>
-        /// <param name="schema">The schema.</param>
         private void LoadPossibleTypes(IntrospectedSchema schema)
         {
             var possibleTypes = new List<IntrospectedType>();
@@ -164,10 +151,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             }
         }
 
-        /// <summary>
-        /// Loads the interfaces for any graph type that supports them.
-        /// </summary>
-        /// <param name="schema">The schema.</param>
         private void LoadInterfaces(IntrospectedSchema schema)
         {
             if (this.GraphType is IInterfaceContainer interfaceContainer)
@@ -242,9 +225,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         }
 
         /// <summary>
-        /// Gets the type of the graph.
+        /// Gets the actual graph type this instance returns metadata for.
         /// </summary>
-        /// <value>The type of the graph.</value>
+        /// <value>The type being introspected by this instance.</value>
         private IGraphType GraphType { get; }
 
         /// <summary>
@@ -264,38 +247,38 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         /// <summary>
         /// Gets the kind of graph type this instance represents (enum, scalar, object etc.).
         /// </summary>
-        /// <value>The kind.</value>
+        /// <value>The kind of type this instance represents.</value>
         public TypeKind Kind { get; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="IntrospectedType"/> is published
         /// on client requests or if it should be withheld.
         /// </summary>
-        /// <value><c>true</c> if published; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if this instance published; otherwise, <c>false</c>.</value>
         public bool Publish { get; }
 
         /// <summary>
         /// Gets the fields this type exposes if this type is an object type; otherwise null.
         /// </summary>
-        /// <value>The fields.</value>
+        /// <value>The fields this object or interface exposes, otherwise null.</value>
         public IReadOnlyList<IntrospectedField> Fields { get; private set; }
 
         /// <summary>
         /// Gets the interfaces this type exposes if this type is an object type; otherwise null.
         /// </summary>
-        /// <value>The interfaces.</value>
+        /// <value>The interfaces this object or interface declares, otherwise null.</value>
         public IReadOnlyList<IntrospectedType> Interfaces { get; private set; }
 
         /// <summary>
         /// Gets the possible types this type could represent. Only applys to interfaces and unions; otherwise null.
         /// </summary>
-        /// <value>The possible types.</value>
+        /// <value>The possible types this interface or union can be, otherwise null.</value>
         public IReadOnlyList<IntrospectedType> PossibleTypes { get; private set; }
 
         /// <summary>
         /// Gets oall the possible enumeration valuess of this type if this is an enum type; otherwise null.
         /// </summary>
-        /// <value>The enum values.</value>
+        /// <value>The enum values this enum type declares, otherwise null.</value>
         public IReadOnlyList<IntrospectedEnumValue> EnumValues { get; private set; }
 
         /// <summary>
@@ -314,7 +297,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         /// Gets a url pointing to a specification that provides details about a
         /// custom scalar otherwise null.
         /// </summary>
-        /// <value>The specified by URL.</value>
+        /// <value>The specified by URL for a scalar, otherwise null.</value>
         public string SpecifiedByUrl { get; private set; }
     }
 }

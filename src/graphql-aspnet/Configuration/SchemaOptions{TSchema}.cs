@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Configuration
 
     /// <summary>
     /// A collection of <see cref="SchemaOptions"/> with additiona, schema specific
-    /// setting used during setup.
+    /// settings used during setup.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema these options are for.</typeparam>
     public class SchemaOptions<TSchema> : SchemaOptions

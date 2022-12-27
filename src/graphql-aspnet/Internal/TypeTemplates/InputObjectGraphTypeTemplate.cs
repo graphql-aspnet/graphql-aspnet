@@ -21,18 +21,17 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
-    using InputGraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Internal.Interfaces.IInputGraphFieldTemplate>;
+    using InputGraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Interfaces.Internal.IInputGraphFieldTemplate>;
 
     /// <summary>
-    /// A representation of the meta data of any given class that could be represented
-    /// as an input object graph type in an <see cref="ISchema"/>.
+    /// An graph type template describing an INPUT_OBJECT graph type.
     /// </summary>
-    public class InputObjectGraphTypeTemplate : BaseGraphTypeTemplate, IInputObjectGraphTypeTemplate
+    public class InputObjectGraphTypeTemplate : GraphTypeTemplateBase, IInputObjectGraphTypeTemplate
     {
         private IEnumerable<string> _duplicateNames;
         private List<IInputGraphFieldTemplate> _invalidFields;
@@ -109,7 +108,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // Common Metadata
             // ------------------------------------
             this.Route = new SchemaItemPath(SchemaItemPath.Join(
-                GraphCollection.Types,
+                SchemaItemCollections.Types,
                 GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT)));
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
@@ -129,7 +128,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
                 var parsedTemplate = new InputGraphFieldTemplate(this, propInfo);
                 parsedTemplate?.Parse();
-                if (parsedTemplate?.Route == null || parsedTemplate.Route.RootCollection != GraphCollection.Types)
+                if (parsedTemplate?.Route == null || parsedTemplate.Route.RootCollection != SchemaItemCollections.Types)
                 {
                     _invalidFields = _invalidFields ?? new List<IInputGraphFieldTemplate>();
                     _invalidFields.Add(parsedTemplate);
@@ -218,6 +217,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public override string InternalName => this.ObjectType?.FriendlyName();
 
-        private IEnumerable<GraphCollection> AllowedGraphCollectionTypes => GraphCollection.Types.AsEnumerable();
+        private IEnumerable<SchemaItemCollections> AllowedGraphCollectionTypes => SchemaItemCollections.Types.AsEnumerable();
     }
 }

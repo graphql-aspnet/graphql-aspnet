@@ -11,11 +11,11 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using Moq;
 
     public abstract class ScalarTestBase : IScalarGraphType
@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
             this.IsVirtual = false;
             this.ObjectType = typeof(ScalarDataType);
             this.InternalName = "myInternalName";
-            this.Route = new SchemaItemPath(AspNet.Execution.GraphCollection.Types, "myScalar");
+            this.Route = new SchemaItemPath(AspNet.Execution.SchemaItemCollections.Types, "myScalar");
             this.Name = "MyScalar";
             this.Description = "my description";
             this.AppliedDirectives = new AppliedDirectiveCollection(this);

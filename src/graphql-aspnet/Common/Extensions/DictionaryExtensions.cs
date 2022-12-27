@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Common.Extensions
     /// <summary>
     /// Helper methods for working with Extensions.
     /// </summary>
-    public static class DictionaryExtensions
+    internal static class DictionaryExtensions
     {
         /// <summary>
         /// Invokes the supplied <paramref name="action"/> against each key/value pair in the dictionary

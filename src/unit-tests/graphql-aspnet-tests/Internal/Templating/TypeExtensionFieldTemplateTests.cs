@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
@@ -48,13 +48,13 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.ClassTypeExtension));
 
             Assert.AreEqual("ClassTypeExtensionDescription", template.Description);
-            Assert.AreEqual(GraphCollection.Types, template.Route.RootCollection);
+            Assert.AreEqual(SchemaItemCollections.Types, template.Route.RootCollection);
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyObject), template.SourceObjectType);
             Assert.AreEqual($"[type]/{nameof(TwoPropertyObject)}/Property3", template.Route.Path);
             Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.ClassTypeExtension)}", template.InternalFullName);
-            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphMethod)template).Parent.ObjectType);
-            Assert.AreEqual("path0", ((IGraphMethod)template).Parent.Name);
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
+            Assert.AreEqual("path0", ((IGraphFieldResolverMethod)template).Parent.Name);
             Assert.AreEqual(methodInfo, template.Method);
             Assert.AreEqual(typeof(TwoPropertyObjectV2), template.ObjectType);
             Assert.AreEqual(2, template.Arguments.Count);
@@ -75,9 +75,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.ClassBatchExtension));
 
             Assert.AreEqual("ClassBatchExtensionDescription", template.Description);
-            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphMethod)template).Parent.ObjectType);
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyObject), template.SourceObjectType);
-            Assert.AreEqual("path0", ((IGraphMethod)template).Parent.Name);
+            Assert.AreEqual("path0", ((IGraphFieldResolverMethod)template).Parent.Name);
             Assert.AreEqual(methodInfo, template.Method);
             Assert.AreEqual(typeof(int), template.ObjectType);
             CollectionAssert.AreEqual(new[] { MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull }, template.TypeExpression.Wrappers);
@@ -96,13 +96,13 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.StructTypeExtension));
 
             Assert.AreEqual("StructTypeExtensionDescription", template.Description);
-            Assert.AreEqual(GraphCollection.Types, template.Route.RootCollection);
+            Assert.AreEqual(SchemaItemCollections.Types, template.Route.RootCollection);
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyStruct), template.SourceObjectType);
             Assert.AreEqual($"[type]/{nameof(TwoPropertyStruct)}/Property3", template.Route.Path);
             Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.StructTypeExtension)}", template.InternalFullName);
-            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphMethod)template).Parent.ObjectType);
-            Assert.AreEqual("path0", ((IGraphMethod)template).Parent.Name);
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
+            Assert.AreEqual("path0", ((IGraphFieldResolverMethod)template).Parent.Name);
             Assert.AreEqual(methodInfo, template.Method);
             Assert.AreEqual(typeof(TwoPropertyObjectV2), template.ObjectType);
             Assert.AreEqual(2, template.Arguments.Count);
@@ -123,9 +123,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.StructBatchTestExtension));
 
             Assert.AreEqual("StructBatchExtensionDescription", template.Description);
-            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphMethod)template).Parent.ObjectType);
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyStruct), template.SourceObjectType);
-            Assert.AreEqual("path0", ((IGraphMethod)template).Parent.Name);
+            Assert.AreEqual("path0", ((IGraphFieldResolverMethod)template).Parent.Name);
             Assert.AreEqual(methodInfo, template.Method);
             Assert.AreEqual(typeof(int), template.ObjectType);
             CollectionAssert.AreEqual(new[] { MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull }, template.TypeExpression.Wrappers);
@@ -144,13 +144,13 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.InterfaceTypeExtension));
 
             Assert.AreEqual("InterfaceTypeExtensionDescription", template.Description);
-            Assert.AreEqual(GraphCollection.Types, template.Route.RootCollection);
+            Assert.AreEqual(SchemaItemCollections.Types, template.Route.RootCollection);
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(ITwoPropertyObject), template.SourceObjectType);
             Assert.AreEqual($"[type]/TwoPropertyInterface/Property3", template.Route.Path);
             Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.InterfaceTypeExtension)}", template.InternalFullName);
-            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphMethod)template).Parent.ObjectType);
-            Assert.AreEqual("path0", ((IGraphMethod)template).Parent.Name);
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
+            Assert.AreEqual("path0", ((IGraphFieldResolverMethod)template).Parent.Name);
             Assert.AreEqual(methodInfo, template.Method);
             Assert.AreEqual(typeof(TwoPropertyObjectV2), template.ObjectType);
             Assert.AreEqual(2, template.Arguments.Count);
@@ -171,9 +171,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.InterfaceBatchTestExtension));
 
             Assert.AreEqual("InterfaceBatchExtensionDescription", template.Description);
-            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphMethod)template).Parent.ObjectType);
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
             Assert.AreEqual(typeof(ITwoPropertyObject), template.SourceObjectType);
-            Assert.AreEqual("path0", ((IGraphMethod)template).Parent.Name);
+            Assert.AreEqual("path0", ((IGraphFieldResolverMethod)template).Parent.Name);
             Assert.AreEqual(methodInfo, template.Method);
             Assert.AreEqual(typeof(int), template.ObjectType);
             CollectionAssert.AreEqual(new[] { MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull }, template.TypeExpression.Wrappers);
@@ -191,7 +191,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var methodInfo = typeof(ExtensionMethodController).GetMethod(nameof(ExtensionMethodController.CustomValidReturnType));
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.CustomValidReturnType));
 
-            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphMethod)template).Parent.ObjectType);
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyObject), template.SourceObjectType);
             Assert.AreEqual(methodInfo, template.Method);
             CollectionAssert.AreEqual(new[] { MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull }, template.TypeExpression.Wrappers);

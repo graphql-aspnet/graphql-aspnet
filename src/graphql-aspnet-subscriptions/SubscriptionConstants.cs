@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -88,7 +88,7 @@ namespace GraphQL.AspNet
         public static class ContextDataKeys
         {
             /// <summary>
-            /// A key pointing to the collection within <see cref="GraphQueryExecutionContext"/> that contains
+            /// A key pointing to the collection within <see cref="QueryExecutionContext"/> that contains
             /// any events that were raised during the query execution.
             /// </summary>
             public const string RAISED_EVENTS_COLLECTION = "GraphqlAspNet:Subscriptions:RaisedSubscriptionEvents";

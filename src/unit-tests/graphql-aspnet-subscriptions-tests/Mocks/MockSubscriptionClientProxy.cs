@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Mock
+namespace GraphQL.AspNet.Tests.Mocks
 {
     using System;
     using System.Collections.Generic;
@@ -15,11 +15,11 @@ namespace GraphQL.Subscriptions.Tests.Mock
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
+    using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.Web;
     using Moq;
 
@@ -55,20 +55,20 @@ namespace GraphQL.Subscriptions.Tests.Mock
         }
 
         /// <inheritdoc />
-        public Task CloseConnection(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default)
+        public Task CloseConnectionAsync(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default)
         {
             return Task.CompletedTask;
         }
 
         /// <inheritdoc />
-        public ValueTask ReceiveEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default)
+        public ValueTask ReceiveEventAsync(SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             this.ReceivedEvents.Add(eventData);
             return default;
         }
 
         /// <inheritdoc />
-        public Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)
+        public Task StartConnectionAsync(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)
         {
             return Task.CompletedTask;
         }

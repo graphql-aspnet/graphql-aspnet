@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution.RulesEngine
 {
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Schema;

@@ -31,10 +31,10 @@ namespace GraphQL.AspNet.Tests.Internal
                 nameof(ResolverObject.MethodRetrieveData),
                 null);
 
-            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.GraphMethod.Object);
 
             var context = builder.CreateResolutionContext();
-            await resolver.Resolve(context);
+            await resolver.ResolveAsync(context);
 
             Assert.AreEqual(null, context.Result);
             Assert.IsFalse(context.Messages.IsSucessful);
@@ -54,10 +54,10 @@ namespace GraphQL.AspNet.Tests.Internal
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new TwoPropertyObject());
-            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.GraphMethod.Object);
 
             var context = builder.CreateResolutionContext();
-            await resolver.Resolve(context);
+            await resolver.ResolveAsync(context);
             Assert.AreEqual(null, context.Result);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_OBJECT, context.Messages[0].Code);
@@ -76,10 +76,10 @@ namespace GraphQL.AspNet.Tests.Internal
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
-            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.GraphMethod.Object);
 
             var context = builder.CreateResolutionContext();
-            await resolver.Resolve(context);
+            await resolver.ResolveAsync(context);
             Assert.AreEqual(null, context.Result);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.IsTrue(context.Messages[0].Exception is InvalidOperationException);
@@ -104,10 +104,10 @@ namespace GraphQL.AspNet.Tests.Internal
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
-            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.GraphMethod.Object);
 
             var context = builder.CreateResolutionContext();
-            await resolver.Resolve(context);
+            await resolver.ResolveAsync(context);
             Assert.AreEqual(null, context.Result);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(null, context.Messages[0].Exception);
@@ -125,10 +125,10 @@ namespace GraphQL.AspNet.Tests.Internal
                 nameof(ResolverObject.MethodRetrieveDataAsync),
                 null);
 
-            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.GraphMethod.Object);
 
             var context = builder.CreateResolutionContext();
-            await resolver.Resolve(context);
+            await resolver.ResolveAsync(context);
 
             Assert.AreEqual(null, context.Result);
             Assert.IsFalse(context.Messages.IsSucessful);
@@ -148,10 +148,10 @@ namespace GraphQL.AspNet.Tests.Internal
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new TwoPropertyObject());
-            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.GraphMethod.Object);
 
             var context = builder.CreateResolutionContext();
-            await resolver.Resolve(context);
+            await resolver.ResolveAsync(context);
             Assert.AreEqual(null, context.Result);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_OBJECT, context.Messages[0].Code);
@@ -170,10 +170,10 @@ namespace GraphQL.AspNet.Tests.Internal
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
-            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.GraphMethod.Object);
 
             var context = builder.CreateResolutionContext();
-            await resolver.Resolve(context);
+            await resolver.ResolveAsync(context);
             Assert.AreEqual(null, context.Result);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.IsTrue(context.Messages[0].Exception is InvalidOperationException);
@@ -198,10 +198,10 @@ namespace GraphQL.AspNet.Tests.Internal
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
-            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.GraphMethod.Object);
 
             var context = builder.CreateResolutionContext();
-            await resolver.Resolve(context);
+            await resolver.ResolveAsync(context);
             Assert.AreEqual(null, context.Result);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(null, context.Messages[0].Exception);

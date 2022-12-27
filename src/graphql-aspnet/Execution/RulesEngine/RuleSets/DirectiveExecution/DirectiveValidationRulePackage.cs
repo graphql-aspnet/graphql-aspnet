@@ -10,7 +10,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation;
 
     /// <summary>

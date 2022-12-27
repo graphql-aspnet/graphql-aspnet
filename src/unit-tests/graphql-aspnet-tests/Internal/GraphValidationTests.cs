@@ -15,13 +15,9 @@ namespace GraphQL.AspNet.Tests.Internal
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.GraphValidationTestData;
-    using Moq;
     using NUnit.Framework;
-    using GTW = GraphQL.AspNet.Schemas.TypeSystem.MetaGraphTypes;
 
     [TestFixture]
     public class GraphValidationTests

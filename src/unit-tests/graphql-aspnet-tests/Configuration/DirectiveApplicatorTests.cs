@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                  .Build()
                  .Schema;
 
-            var applicator = new DirectiveApplicator("testDirective");
+            var applicator = new DirectiveBindingConfiguration("testDirective");
             applicator
                 .WithArguments(CreateArgs)
                 .ToItems(x => x is IGraphField);
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .Build()
                 .Schema;
 
-            var applicator = new DirectiveApplicator("testDirective");
+            var applicator = new DirectiveBindingConfiguration("testDirective");
             applicator
                 .WithArguments(CreateArgs)
                 .WithArguments(new object[0])
@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .Build()
                 .Schema;
 
-            var applicator = new DirectiveApplicator("testDirective");
+            var applicator = new DirectiveBindingConfiguration("testDirective");
             applicator
                 .WithArguments(argSet)
                 .ToItems(x => x is IGraphField);

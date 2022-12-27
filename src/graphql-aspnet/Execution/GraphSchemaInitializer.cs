@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema that the initializer
     /// can work with.</typeparam>
-    public class GraphSchemaInitializer<TSchema>
+    internal sealed class GraphSchemaInitializer<TSchema>
         where TSchema : class, ISchema
     {
         private readonly SchemaOptions _options;
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Execution
         /// <para>* Register introspection meta-fields.</para>
         /// </summary>
         /// <param name="schema">The schema to initialize.</param>
-        public virtual void Initialize(TSchema schema)
+        public void Initialize(TSchema schema)
         {
             Validation.ThrowIfNull(schema, nameof(schema));
             if (schema.IsInitialized)

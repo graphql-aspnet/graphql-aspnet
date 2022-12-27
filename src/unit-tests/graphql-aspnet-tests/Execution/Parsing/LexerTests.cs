@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution.Parsing
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
     /// Tests to validate the tokenization of a string.
     /// </summary>
     [TestFixture]
-    public class LexerTests
+    internal class LexerTests
     {
         [Test]
         public void Lexer_Tokenize_SimpleQuery_ReturnsExpectedTokens()

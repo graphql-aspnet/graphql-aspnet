@@ -25,6 +25,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="directiveRequest">The request context to be processed.</param>
         /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
         /// <returns>Task.</returns>
-        Task Resolve(DirectiveResolutionContext directiveRequest, CancellationToken cancelToken = default);
+        Task ResolveAsync(DirectiveResolutionContext directiveRequest, CancellationToken cancelToken = default);
     }
 }

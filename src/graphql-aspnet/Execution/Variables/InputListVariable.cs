@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.Variables
     /// A variable that represents a set/list of items supplied as a collection or an array by the user.
     /// </summary>
     [DebuggerDisplay("InputList: {Name}, Count = {Items.Count}")]
-    public class InputListVariable : InputVariable, IInputListVariable, IResolvableList
+    internal class InputListVariable : InputVariable, IInputListVariable, IResolvableList
     {
         private readonly List<IInputVariable> _items;
 

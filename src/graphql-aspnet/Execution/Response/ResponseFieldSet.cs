@@ -18,16 +18,16 @@ namespace GraphQL.AspNet.Execution.Response
     /// A collection of keyed items included as a result to a graphql query.
     /// </summary>
     [DebuggerDisplay("Count = {Fields.Count}")]
-    public class ResponseFieldSet : IResponseFieldSet
+    internal class ResponseFieldSet : IQueryResponseFieldSet
     {
-        private readonly OrderedDictionary<string, IResponseItem> _dictionary;
+        private readonly OrderedDictionary<string, IQueryResponseItem> _dictionary;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponseFieldSet"/> class.
         /// </summary>
         public ResponseFieldSet()
         {
-            _dictionary = new OrderedDictionary<string, IResponseItem>();
+            _dictionary = new OrderedDictionary<string, IQueryResponseItem>();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Execution.Response
         /// </summary>
         /// <param name="name">The name of the item.</param>
         /// <param name="item">The item.</param>
-        public void Add(string name, IResponseItem item)
+        public void Add(string name, IQueryResponseItem item)
         {
             _dictionary.Add(name, item);
         }
@@ -54,6 +54,6 @@ namespace GraphQL.AspNet.Execution.Response
         /// Gets the dictionary of fields defined for this response item.
         /// </summary>
         /// <value>The fields.</value>
-        public IReadOnlyDictionary<string, IResponseItem> Fields => _dictionary;
+        public IReadOnlyDictionary<string, IQueryResponseItem> Fields => _dictionary;
     }
 }

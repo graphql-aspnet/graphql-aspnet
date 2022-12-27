@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// Validates that the document part representing a field selection contains valid references

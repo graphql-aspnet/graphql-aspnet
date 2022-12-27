@@ -11,8 +11,8 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
 {
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
     /// A syntax node builder that builds enum leaf value nodes from a token stream.

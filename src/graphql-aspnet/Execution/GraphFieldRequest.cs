@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution
     /// </summary>
     [DebuggerDisplay("{InvocationContext.Field.Name}, (Leaf = {InvocationContext.Field.IsLeaf})")]
     [DebuggerStepThrough]
-    public class GraphFieldRequest : IGraphFieldRequest
+    internal class GraphFieldRequest : IGraphFieldRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldRequest" /> class.
@@ -36,9 +36,9 @@ namespace GraphQL.AspNet.Execution
         /// the graph items referenced by said input data.</param>
         /// <param name="origin">The place in a source document where this request appeared.</param>
         public GraphFieldRequest(
-            IGraphOperationRequest parentOperationRequest,
+            IQueryExecutionRequest parentOperationRequest,
             IGraphFieldInvocationContext invocationContext,
-            GraphDataContainer dataSource,
+            FieldDataItemContainer dataSource,
             SourceOrigin origin = default)
         {
             this.OperationRequest = Validation.ThrowIfNullOrReturn(parentOperationRequest, nameof(parentOperationRequest));
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <inheritdoc />
-        public IGraphOperationRequest OperationRequest { get; }
+        public IQueryExecutionRequest OperationRequest { get; }
 
         /// <inheritdoc />
         public Guid Id { get; }
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Execution
         public SourceOrigin Origin { get; }
 
         /// <inheritdoc />
-        public GraphDataContainer Data { get; private set; }
+        public FieldDataItemContainer Data { get; private set; }
 
         /// <inheritdoc />
         public IGraphField Field => this.InvocationContext.Field;

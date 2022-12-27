@@ -18,23 +18,23 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Controllers.ActionResults;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.InputModel;
-    using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Interfaces.Web;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// A base object providing common method used by invocable method containers authored by developers.
+    /// A common object providing methods used by both directives and controllers.
     /// </summary>
-    /// <typeparam name="TRequest">The type of the request this controller item is expected to process.</typeparam>
+    /// <typeparam name="TRequest">The type of the request this instance is
+    /// expected to process.</typeparam>
     public abstract class GraphControllerBase<TRequest>
         where TRequest : class, IDataRequest
     {
         private SchemaItemResolutionContext<TRequest> _schemaItemContext;
-        private IGraphMethod _action;
+        private IGraphFieldResolverMethod _action;
 
         /// <summary>
         /// Invoke the specified action method as an asynchronous operation.
@@ -43,8 +43,8 @@ namespace GraphQL.AspNet.Controllers
         /// <param name="schemaItemContext">The invocation context to process.</param>
         /// <returns>Task&lt;System.Object&gt;.</returns>
         [GraphSkip]
-        internal async virtual Task<object> InvokeActionAsync(
-            IGraphMethod actionToInvoke,
+        internal virtual async Task<object> InvokeActionAsync(
+            IGraphFieldResolverMethod actionToInvoke,
             SchemaItemResolutionContext<TRequest> schemaItemContext)
         {
             // deconstruct the context for processing
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Controllers
 
             _schemaItemContext.Logger?.ActionMethodInvocationRequestStarted(_action, this.Request);
 
-            if (_schemaItemContext.OperationRequest is IGraphOperationWebRequest webRequest)
+            if (_schemaItemContext.OperationRequest is IQueryExecutionWebRequest webRequest)
                 this.HttpContext = webRequest.HttpContext;
 
             if (_action?.Method == null)
@@ -126,56 +126,13 @@ namespace GraphQL.AspNet.Controllers
                         return new RouteNotFoundGraphActionResult(_action, ex);
 
                     default:
+
                         // total failure by the user's action code.
                         // record and bubble
                         _schemaItemContext.Logger?.ActionMethodUnhandledException(_action, this.Request, ex);
                         throw;
                 }
             }
-        }
-
-        /// <summary>
-        /// Returns an error result indicating that processing failed due to some internal process. An exception
-        /// will be injected into the graph result and processing will be terminated.
-        /// </summary>
-        /// <param name="errorMessage">The error message.</param>
-        /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult InternalServerError(string errorMessage)
-        {
-            return new InternalServerErrorGraphActionResult(errorMessage);
-        }
-
-        /// <summary>
-        /// Returns an negative result, indicating the data supplied on the request was bad or
-        /// otherwise not usable by the controller method.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult BadRequest(string message)
-        {
-            return new BadRequestGraphActionResult(message);
-        }
-
-        /// <summary>
-        /// Returns an negative result, indicating the data supplied on the request was bad or
-        /// otherwise not usable by the controller method.
-        /// </summary>
-        /// <param name="modelState">The model state with its contained validation failures.</param>
-        /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult BadRequest(InputModelStateDictionary modelState)
-        {
-            return new BadRequestGraphActionResult(modelState);
-        }
-
-        /// <summary>
-        /// Returns a negative result, indicating that the action requested was unauthorized for the current context.
-        /// </summary>
-        /// <param name="message">The message to return to the client.</param>
-        /// <param name="errorCode">The error code to apply to the error returned to the client.</param>
-        /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult Unauthorized(string message = null, string errorCode = null)
-        {
-            return new UnauthorizedGraphActionResult(errorCode ?? "Unauthorized", message ?? string.Empty);
         }
 
         /// <summary>

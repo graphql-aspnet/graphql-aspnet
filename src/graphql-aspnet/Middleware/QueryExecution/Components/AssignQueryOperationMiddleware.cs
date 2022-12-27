@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     internal class AssignQueryOperationMiddleware : IQueryExecutionMiddleware
     {
         /// <inheritdoc />
-        public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.IsValid && context.QueryPlan == null && context.QueryDocument != null)
             {

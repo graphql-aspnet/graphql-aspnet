@@ -12,10 +12,10 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A validation context used to perform final validation of this context and all its children.
     /// </summary>
     [DebuggerDisplay("{DataItem}")]
-    internal class FieldValidationContext : IContextGenerator<FieldValidationContext>
+    public class FieldValidationContext : IRuleProcessorChildContextGenerator<FieldValidationContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldValidationContext" /> class.
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="dataItem">The data item to process.</param>
         /// <param name="messageCollection">An optional message collection to use for this context, if not supplied
         /// a new one will be generated.</param>
-        public FieldValidationContext(ISchema schema, GraphDataItem dataItem, IGraphMessageCollection messageCollection = null)
+        public FieldValidationContext(ISchema schema, FieldDataItem dataItem, IGraphMessageCollection messageCollection = null)
         {
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             this.DataItem = dataItem;
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets the data item in scope for this context.
         /// </summary>
         /// <value>The data item.</value>
-        public GraphDataItem DataItem { get; }
+        public FieldDataItem DataItem { get; }
 
         /// <summary>
         /// Gets the result data (received from a resolver) being evaluated by this context.

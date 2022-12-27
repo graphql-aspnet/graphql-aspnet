@@ -1,0 +1,105 @@
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.AspNet.Execution.Source
+{
+    using System;
+    using System.Diagnostics;
+
+    /// <summary>
+    /// A pointer to a location with a query's text.
+    /// </summary>
+    [Serializable]
+    [DebuggerDisplay("Index: {AbsoluteIndex}, Line: ({LineNumber}:{LineIndex})")]
+    public readonly struct SourceLocation : IEquatable<SourceLocation>
+    {
+        /// <summary>
+        /// Gets a single source location pointing to no location in the source file.
+        /// </summary>
+        /// <value>The none.</value>
+        public static SourceLocation None { get; } = new SourceLocation(-1, -1, -1);
+
+        /// <summary>
+        /// Initializes static members of the <see cref="SourceLocation"/> struct.
+        /// </summary>
+        static SourceLocation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SourceLocation"/> struct.
+        /// </summary>
+        public SourceLocation()
+        {
+            this.AbsoluteIndex = -1;
+            this.LineNumber = -1;
+            this.LineIndex = -1;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SourceLocation" /> struct.
+        /// </summary>
+        /// <param name="absoluteIndex">The absolute overall position pointed at by this location in the source material.</param>
+        /// <param name="lineNumber">The line number pointed at by this position.</param>
+        /// <param name="lineIndex">The relative index into the line of the location.</param>
+        public SourceLocation(int absoluteIndex, int lineNumber, int lineIndex)
+        {
+            this.AbsoluteIndex = absoluteIndex;
+            this.LineNumber = lineNumber;
+            this.LineIndex = lineIndex;
+        }
+
+        /// <summary>
+        /// Creates an equvilant <see cref="SourceOrigin"/> out of this <see cref="SourceLocation"/>.
+        /// </summary>
+        /// <returns>SourceOrigin.</returns>
+        public SourceOrigin AsOrigin()
+        {
+            return new SourceOrigin(this);
+        }
+
+        /// <summary>
+        /// Gets the absolute position pointed at in the source text by this location.
+        /// </summary>
+        /// <value>The position.</value>
+        public int AbsoluteIndex { get; }
+
+        /// <summary>
+        /// Gets the Offset in scope of the line by this location.
+        /// </summary>
+        /// <value>The position in line.</value>
+        public int LineIndex { get;  }
+
+        /// <summary>
+        /// Gets the character position of the location in the line (i.e. LineIndex + 1).
+        /// </summary>
+        /// <value>The line position.</value>
+        public int LinePosition => this.LineIndex + 1;
+
+        /// <summary>
+        /// Gets the line number the source is currently pointed at (this number is '1-based').
+        /// </summary>
+        /// <value>The line number.</value>
+        public int LineNumber { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"Line: {this.LineNumber}, Column: {this.LinePosition}";
+        }
+
+        /// <inheritdoc />
+        public bool Equals(SourceLocation other)
+        {
+            return this.LineIndex == other.LineIndex
+                && this.AbsoluteIndex == other.AbsoluteIndex
+                && this.LineNumber == other.LineNumber;
+        }
+    }
+}

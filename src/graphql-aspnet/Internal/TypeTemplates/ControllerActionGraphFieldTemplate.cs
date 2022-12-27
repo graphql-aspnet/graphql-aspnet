@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // Various meta data fields about the method
             // -------------------------------------------
             var graphMethodAttrib = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
-            var fieldType = graphMethodAttrib?.FieldType ?? GraphCollection.Unknown;
+            var fieldType = graphMethodAttrib?.FieldType ?? SchemaItemCollections.Unknown;
 
             var routeFragment = graphMethodAttrib?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             routeFragment = routeFragment.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();

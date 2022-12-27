@@ -16,17 +16,17 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Execution;
 
     /// <summary>
-    /// An attribute used to mark a property as being a graph field that should appear in the object graph.
+    /// Explicitly marks a property or method of a class as being a field on a graph.
     /// </summary>
     [DebuggerDisplay("{Template}")]
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class GraphFieldAttribute : BaseGraphAttribute
+    public class GraphFieldAttribute : GraphAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldAttribute"/> class.
         /// </summary>
         public GraphFieldAttribute()
-            : this(false, GraphCollection.Types, Constants.Routing.ACTION_METHOD_META_NAME)
+            : this(false, SchemaItemCollections.Types, Constants.Routing.ACTION_METHOD_META_NAME)
         {
         }
 
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Attributes
         /// </summary>
         /// <param name="name">Name of the field.</param>
         public GraphFieldAttribute(string name)
-         : this(false, GraphCollection.Types, name)
+         : this(false, SchemaItemCollections.Types, name)
         {
         }
 
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Attributes
         /// or just setup the field.</param>
         protected GraphFieldAttribute(
             bool isRootFragment,
-            GraphCollection fieldType,
+            SchemaItemCollections fieldType,
             string template,
             string unionTypeName,
             params Type[] typeSet)
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Attributes
         /// or just setup the field.</param>
         protected GraphFieldAttribute(
             bool isRootFragment,
-            GraphCollection fieldType,
+            SchemaItemCollections fieldType,
             string template,
             params Type[] typeSet)
         {
@@ -82,13 +82,14 @@ namespace GraphQL.AspNet.Attributes
         }
 
         /// <summary>
-        /// Gets the type of the field being defined.
+        /// Gets a value indicating which internal subsystem of schema items this
+        /// field is a part of.
         /// </summary>
         /// <value>The type of the field.</value>
-        public GraphCollection FieldType { get; }
+        public SchemaItemCollections FieldType { get; }
 
         /// <summary>
-        /// Gets the template for the route path for the graph method, if provided.
+        /// Gets the template for the route fragment for the field, if provided.
         /// </summary>
         /// <value>The name.</value>
         public string Template { get; }
@@ -101,13 +102,15 @@ namespace GraphQL.AspNet.Attributes
 
         /// <summary>
         /// Gets a value indicating whether this instance represents a template
-        /// pathed from its graph root or if it is intended to be nested with another fragment.
+        /// pathed from its root operation or if it is intended to be nested with another fragment.
         /// </summary>
         /// <value><c>true</c> if this instance is root fragment; otherwise, <c>false</c>.</value>
         public bool IsRootFragment { get; }
 
         /// <summary>
-        /// Gets the types that were defined by the engineer for this instance.
+        /// Gets the possible return types that were defined for this field. Useful
+        /// when declaring a field that returns an INTERFACE type that may be implemented by
+        /// multiple OBJECT types.
         /// </summary>
         /// <value>The type of the declared data.</value>
         public IReadOnlyList<Type> Types { get; }
@@ -129,7 +132,7 @@ namespace GraphQL.AspNet.Attributes
         /// actual type name of this field as its declared in the target schema.
         /// <br />
         /// For Example, <c>"[Type!]"</c>, <c>"[Song!]"</c> and
-        /// <c>"[Donut!]"</c> are all equivilant values for this property. (Default: <c>null</c>).
+        /// <c>"[Donut!]"</c> are all equivilant values for this property.
         /// </para>
         /// <para>
         /// When <c>null</c>, the type expression extracted from source code is used.
@@ -139,7 +142,8 @@ namespace GraphQL.AspNet.Attributes
         public string TypeExpression { get; set; }
 
         /// <summary>
-        /// Gets the mode indicating how the type system should interprete and process the results of this method.
+        /// Gets the mode indicating how the runtime should process
+        /// the objects resolving this field.
         /// </summary>
         /// <value>The mode.</value>
         public virtual FieldResolutionMode ExecutionMode => FieldResolutionMode.PerSourceItem;

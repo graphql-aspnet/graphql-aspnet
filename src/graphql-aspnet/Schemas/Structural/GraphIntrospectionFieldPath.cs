@@ -14,14 +14,14 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// A field path that identifies an introspection item
     /// in the schema.
     /// </summary>
-    public class GraphIntrospectionFieldPath : SchemaItemPath
+    internal class GraphIntrospectionFieldPath : SchemaItemPath
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphIntrospectionFieldPath" /> class.
         /// </summary>
         /// <param name="itemName">Name of the item.</param>
         public GraphIntrospectionFieldPath(string itemName)
-            : base(GraphCollection.Introspection, itemName)
+            : base(SchemaItemCollections.Introspection, itemName)
         {
         }
     }

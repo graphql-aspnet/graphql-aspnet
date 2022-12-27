@@ -23,21 +23,22 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A middleware context targeting the field execution pipeline.
     /// </summary>
     [DebuggerDisplay("Field: {Field.Route.Path} (Mode = {Field.Mode})")]
-    public class GraphFieldExecutionContext : BaseGraphExecutionContext
+    public class GraphFieldExecutionContext : MiddlewareExecutionContextBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldExecutionContext" /> class.
         /// </summary>
-        /// <param name="parentContext">The parent context.</param>
+        /// <param name="parentContext">The parent context on which this field context is based.</param>
         /// <param name="fieldRequest">The field request being executed against on this pipeline context.</param>
-        /// <param name="variableData">The variable data.</param>
+        /// <param name="variableData">The set of resolved variables for the querry to use during
+        /// field resolution.</param>
         /// <param name="defaultFieldSources">A collection of objects to use
         /// when attempting to resolve source objects for any down stream fields.</param>
         /// <param name="user">The user data used to process the execution request, if any.</param>
         /// <param name="resultCapacity">The initial capacity
         /// of the list that will contain the results from executing this context.</param>
         public GraphFieldExecutionContext(
-            IGraphExecutionContext parentContext,
+            IGraphQLMiddlewareExecutionContext parentContext,
             IGraphFieldRequest fieldRequest,
             IResolvedVariableCollection variableData,
             FieldSourceCollection defaultFieldSources = null,
@@ -51,9 +52,9 @@ namespace GraphQL.AspNet.Execution.Contexts
             this.User = user;
 
             if (resultCapacity.HasValue)
-                this.ResolvedSourceItems = new List<GraphDataItem>(resultCapacity.Value);
+                this.ResolvedSourceItems = new List<FieldDataItem>(resultCapacity.Value);
             else
-                this.ResolvedSourceItems = new List<GraphDataItem>();
+                this.ResolvedSourceItems = new List<FieldDataItem>();
         }
 
         /// <summary>
@@ -73,7 +74,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets the collection of source items that were successfully resolved from the generated <see cref="Result"/>.
         /// </summary>
         /// <value>The resolved source items.</value>
-        public List<GraphDataItem> ResolvedSourceItems { get; }
+        public List<FieldDataItem> ResolvedSourceItems { get; }
 
         /// <summary>
         /// Gets the request that is being passed through this pipeline.

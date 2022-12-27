@@ -10,6 +10,8 @@
 namespace GraphQL.AspNet.Execution.Variables
 {
     using System.Text.Json;
+    using GraphQL.AspNet.Execution.Variables.Json;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
     /// A collection of variables supplied by user to be used when resolving
@@ -37,6 +39,8 @@ namespace GraphQL.AspNet.Execution.Variables
                 AllowTrailingCommas = true,
                 ReadCommentHandling = JsonCommentHandling.Skip,
             };
+
+            _serializationOptions.Converters.Add(new IInputVariableCollectionConverter());
         }
 
         /// <summary>

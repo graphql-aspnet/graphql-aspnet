@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
             {
                 // any status other ResultAssigned or NotStarted indicates a non-processing such as complete or failed etc.
                 // and should be left in tact and unedited.
-                if (context.DataItem.Status == FieldItemResolutionStatus.ResultAssigned)
+                if (context.DataItem.Status == FieldDataItemResolutionStatus.ResultAssigned)
                 {
                     // if a data value was set ensure any potnetial children are processed
                     if (context.DataItem.ResultData == null || context.DataItem.FieldContext.Field.IsLeaf)

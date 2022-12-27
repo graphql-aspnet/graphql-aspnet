@@ -17,8 +17,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.AssociatedGraphType = new VirtualObjectGraphType(parentTypeName);
             this.TypeExpression = new GraphTypeExpression(parentTypeName);
             this.Arguments = new GraphFieldArgumentCollection(this);
-            this.Resolver = new GraphRouteFieldResolver(new VirtualResolvedObject(this.TypeExpression.TypeName));
+            this.Resolver = new GraphControllerRouteFieldResolver(new VirtualResolvedObject(this.TypeExpression.TypeName));
 
             // fields made from controller route parameters have no policies directly unto themselves
             // any controller class level policies are individually added to fields they declare

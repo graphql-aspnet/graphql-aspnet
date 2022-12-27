@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Middleware
+namespace GraphQL.AspNet.Tests.Middleware
 {
     using System.Collections.Generic;
     using System.Threading;
@@ -15,10 +15,10 @@ namespace GraphQL.Subscriptions.Tests.Middleware
     using GraphQL.AspNet;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Middleware;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
+    using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
@@ -30,13 +30,13 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         public async Task NoItemsOnContext_YieldsNothingPublished()
         {
             var nextCalled = false;
-            Task CallNext(GraphQueryExecutionContext context, CancellationToken token)
+            Task CallNext(QueryExecutionContext context, CancellationToken token)
             {
                 nextCalled = true;
                 return Task.CompletedTask;
             }
 
-            var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
+            var next = new GraphMiddlewareInvocationDelegate<QueryExecutionContext>(CallNext);
             var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
@@ -54,13 +54,13 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         public async Task EmptyCollectionOnContext_YieldsNothingPublished()
         {
             var nextCalled = false;
-            Task CallNext(GraphQueryExecutionContext context, CancellationToken token)
+            Task CallNext(QueryExecutionContext context, CancellationToken token)
             {
                 nextCalled = true;
                 return Task.CompletedTask;
             }
 
-            var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
+            var next = new GraphMiddlewareInvocationDelegate<QueryExecutionContext>(CallNext);
             var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
@@ -80,12 +80,12 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         [Test]
         public void CollectionKeyIsNotACollection_ThrowsException()
         {
-            Task CallNext(GraphQueryExecutionContext context, CancellationToken token)
+            Task CallNext(QueryExecutionContext context, CancellationToken token)
             {
                 return Task.CompletedTask;
             }
 
-            var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
+            var next = new GraphMiddlewareInvocationDelegate<QueryExecutionContext>(CallNext);
             var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
@@ -108,13 +108,13 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         public async Task QueuedEventProxy_IsPublishedToEventQueue()
         {
             var nextCalled = false;
-            Task CallNext(GraphQueryExecutionContext context, CancellationToken token)
+            Task CallNext(QueryExecutionContext context, CancellationToken token)
             {
                 nextCalled = true;
                 return Task.CompletedTask;
             }
 
-            var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
+            var next = new GraphMiddlewareInvocationDelegate<QueryExecutionContext>(CallNext);
             var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 

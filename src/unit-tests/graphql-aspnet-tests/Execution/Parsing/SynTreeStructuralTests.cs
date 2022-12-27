@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
     using NUnit.Framework;
 
     [TestFixture]
-    public class SynTreeStructuralTests
+    internal class SynTreeStructuralTests
     {
         [Test]
         public void AddSingleChild_ToTreeRoot_TreeIsExtended_RootIsUpdated()

@@ -22,8 +22,8 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Replace the first instance one service registration with a new implementation and/or lifetime scope.
         /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
-        /// <param name="serviceDescriptor">The service descriptor.</param>
+        /// <param name="serviceCollection">The service collection to modify.</param>
+        /// <param name="serviceDescriptor">The service descriptor to update.</param>
         /// <returns>IServiceCollection.</returns>
         public static IServiceCollection AddOrUpdate(this IServiceCollection serviceCollection, ServiceDescriptor serviceDescriptor)
         {
@@ -40,32 +40,32 @@ namespace GraphQL.AspNet.Common.Extensions
         /// </summary>
         /// <typeparam name="TService">The type of the service to register for.</typeparam>
         /// <typeparam name="TImplementation">The type of the implementation to provide.</typeparam>
-        /// <param name="services">The services.</param>
-        /// <param name="lifetime">The lifetime.</param>
+        /// <param name="serviceCollection">The services.</param>
+        /// <param name="lifetime">The lifetime scope to register as.</param>
         /// <returns>IServiceCollection.</returns>
         public static IServiceCollection Replace<TService, TImplementation>(
-            this IServiceCollection services,
+            this IServiceCollection serviceCollection,
             ServiceLifetime lifetime)
             where TService : class
             where TImplementation : class, TService
         {
-            var descriptorToRemove = services.FirstOrDefault(d => d.ServiceType == typeof(TService));
+            var descriptorToRemove = serviceCollection.FirstOrDefault(d => d.ServiceType == typeof(TService));
             if (descriptorToRemove == null)
                 throw new ArgumentOutOfRangeException($"The service type {typeof(TService).FriendlyName()} does not exist in the service collection, replace fails.");
 
-            services.Remove(descriptorToRemove);
+            serviceCollection.Remove(descriptorToRemove);
             var descriptorToAdd = new ServiceDescriptor(typeof(TService), typeof(TImplementation), lifetime);
-            services.Add(descriptorToAdd);
-            return services;
+            serviceCollection.Add(descriptorToAdd);
+            return serviceCollection;
         }
 
         /// <summary>
         /// Replace one service registration with a new implementation and/or lifetime scope.
         /// </summary>
-        /// <typeparam name="TService">The type of the t service.</typeparam>
-        /// <param name="services">The services.</param>
-        /// <param name="implementationFactory">The implementation factory.</param>
-        /// <param name="lifetime">The lifetime.</param>
+        /// <typeparam name="TService">The service type of the instance to update.</typeparam>
+        /// <param name="services">A services collection instance.</param>
+        /// <param name="implementationFactory">The replacement implementation factory.</param>
+        /// <param name="lifetime">The lifetime scope to register as.</param>
         /// <returns>IServiceCollection.</returns>
         public static IServiceCollection Replace<TService>(
             this IServiceCollection services,

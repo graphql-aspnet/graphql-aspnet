@@ -7,21 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Mock
+namespace GraphQL.AspNet.Tests.Mocks
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Web;
-    using Microsoft.AspNetCore.Http.Extensions;
     using Moq;
 
     /// <summary>
@@ -163,7 +159,7 @@ namespace GraphQL.Subscriptions.Tests.Mock
         }
 
         /// <inheritdoc />
-        public async Task<IClientConnectionReceiveResult> ReceiveFullMessage(Stream stream, CancellationToken cancelToken = default)
+        public async Task<IClientConnectionReceiveResult> ReceiveFullMessageAsync(Stream stream, CancellationToken cancelToken = default)
         {
             IClientConnectionReceiveResult response;
             object currentMessage = null;

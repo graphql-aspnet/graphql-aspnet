@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var mock = new Mock<IGraphTypeTemplate>();
             mock.Setup(x => x.InternalFullName).Returns("Simple");
-            var route = new SchemaItemPath(GraphCollection.Directives, "Simple");
+            var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
             mock.Setup(x => x.Route).Returns(route);
             var template = new GraphDirectiveMethodTemplate(mock.Object, method);
             template.Parse();
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var mock = new Mock<IGraphTypeTemplate>();
             mock.Setup(x => x.InternalFullName).Returns("Simple");
-            var route = new SchemaItemPath(GraphCollection.Directives, "Simple");
+            var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
             mock.Setup(x => x.Route).Returns(route);
             var template = new GraphDirectiveMethodTemplate(mock.Object, method);
 
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var mock = new Mock<IGraphTypeTemplate>();
             mock.Setup(x => x.InternalFullName).Returns("Simple");
-            var route = new SchemaItemPath(GraphCollection.Directives, "Simple");
+            var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
             mock.Setup(x => x.Route).Returns(route);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var mock = new Mock<IGraphTypeTemplate>();
             mock.Setup(x => x.InternalFullName).Returns("Simple");
-            var route = new SchemaItemPath(GraphCollection.Directives, "Simple");
+            var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
             mock.Setup(x => x.Route).Returns(route);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var mock = new Mock<IGraphTypeTemplate>();
             mock.Setup(x => x.InternalFullName).Returns("Simple");
-            var route = new SchemaItemPath(GraphCollection.Directives, "Simple");
+            var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
             mock.Setup(x => x.Route).Returns(route);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>

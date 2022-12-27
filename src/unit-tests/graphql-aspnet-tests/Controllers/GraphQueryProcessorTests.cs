@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var httpContext = context;
             var response = httpContext.Response;
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             var result = new GraphQLHttpResponseWriter(operationResult.Object, null, false, exposeExceptions);
 
             await result.WriteResultAsync(httpContext);
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var httpContext = context;
             var response = httpContext.Response;
 
-            var writer = new Mock<IGraphQueryResponseWriter>();
+            var writer = new Mock<IQueryResponseWriter>();
             var result = new GraphQLHttpResponseWriter(null, writer.Object, false, exposeExceptions);
 
             await result.WriteResultAsync(httpContext);
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             });
 
             var response = httpContext.Response;
-            await processor.Invoke(httpContext);
+            await processor.InvokeAsync(httpContext);
 
             // headers that should be set
             Assert.IsTrue(response.Headers.ContainsKey(HeaderNames.ContentType), "No content type header");

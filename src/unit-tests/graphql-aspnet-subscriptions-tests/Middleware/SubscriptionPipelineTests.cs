@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Middleware
+namespace GraphQL.AspNet.Tests.Middleware
 {
     using System;
     using System.Collections.Generic;
@@ -18,14 +18,13 @@ namespace GraphQL.Subscriptions.Tests.Middleware
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
     using GraphQL.AspNet.Middleware.QueryExecution;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
+    using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Security;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
-    using ExecutionPipelineBuilder = GraphQL.AspNet.Interfaces.Configuration.ISchemaPipelineBuilder<GraphQL.AspNet.Schemas.GraphSchema, GraphQL.AspNet.Interfaces.Middleware.IQueryExecutionMiddleware, GraphQL.AspNet.Execution.Contexts.GraphQueryExecutionContext>;
+    using ExecutionPipelineBuilder = GraphQL.AspNet.Interfaces.Configuration.ISchemaPipelineBuilder<GraphQL.AspNet.Schemas.GraphSchema, GraphQL.AspNet.Interfaces.Middleware.IQueryExecutionMiddleware, GraphQL.AspNet.Execution.Contexts.QueryExecutionContext>;
 
     [TestFixture]
     public class SubscriptionPipelineTests
@@ -43,10 +42,10 @@ namespace GraphQL.Subscriptions.Tests.Middleware
                 return this;
             }
 
-            public ExecutionPipelineBuilder AddMiddleware(Func<GraphQueryExecutionContext, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>, CancellationToken, Task> operation, string name = null)
+            public ExecutionPipelineBuilder AddMiddleware(Func<QueryExecutionContext, GraphMiddlewareInvocationDelegate<QueryExecutionContext>, CancellationToken, Task> operation, string name = null)
                 => throw new NotImplementedException();
 
-            public ISchemaPipeline<GraphSchema, GraphQueryExecutionContext> Build() => throw new NotImplementedException();
+            public ISchemaPipeline<GraphSchema, QueryExecutionContext> Build() => throw new NotImplementedException();
 
             public ExecutionPipelineBuilder Clear()
                 => throw new NotImplementedException();
@@ -72,7 +71,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         [Test]
         public void BasePipelineAndSubscriptionPipeline_DifferByOnlySubscriptionComponent()
         {
-            var options = new SchemaOptions(typeof(GraphSchema), new ServiceCollection());
+            var options = new SchemaOptions<GraphSchema>(new ServiceCollection());
             options.AuthorizationOptions.Method = AuthorizationMethod.PerRequest;
 
             var basePipeline = new FakePipelineBuilder();

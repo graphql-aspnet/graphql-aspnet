@@ -18,24 +18,24 @@ namespace GraphQL.AspNet.Execution.Response
     /// query.
     /// </summary>
     [DebuggerDisplay("Count = {_list.Count}")]
-    public class ResponseList : IResponseList
+    internal class ResponseList : IQueryResponseItemList
     {
-        private List<IResponseItem> _list;
+        private List<IQueryResponseItem> _list;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponseList"/> class.
         /// </summary>
         /// <param name="items">The items to include in this collection.</param>
-        public ResponseList(IEnumerable<IResponseItem> items = null)
+        public ResponseList(IEnumerable<IQueryResponseItem> items = null)
         {
-            _list = items != null ? new List<IResponseItem>(items) : new List<IResponseItem>();
+            _list = items != null ? new List<IQueryResponseItem>(items) : new List<IQueryResponseItem>();
         }
 
         /// <summary>
         /// Adds the specified item to the growing list.
         /// </summary>
         /// <param name="item">The item.</param>
-        public void Add(IResponseItem item)
+        public void Add(IQueryResponseItem item)
         {
             _list.Add(item);
         }
@@ -44,6 +44,6 @@ namespace GraphQL.AspNet.Execution.Response
         /// Gets the list items.
         /// </summary>
         /// <value>The list items.</value>
-        public IReadOnlyList<IResponseItem> Items => _list;
+        public IReadOnlyList<IQueryResponseItem> Items => _list;
     }
 }

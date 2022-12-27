@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet.Engine
 {
     using GraphQL.AspNet.Engine.TypeMakers;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// An upgraded "type maker" factory that adds low level subscription field support

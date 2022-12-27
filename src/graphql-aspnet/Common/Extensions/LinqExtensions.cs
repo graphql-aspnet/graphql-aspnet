@@ -21,22 +21,6 @@ namespace GraphQL.AspNet.Common.Extensions
     public static class LinqExtensions
     {
         /// <summary>
-        /// Appends a where clause to the source query if the condition is true and returns a new query, otherwise no change is made and
-        /// the original query is returned.
-        /// </summary>
-        /// <typeparam name="TSource">The type of the source object being inspected.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="condition">if set to <c>true</c> the predicate will be evaluated and included
-        /// in the expression tree.</param>
-        /// <param name="predicate">The predicate to evaluate.</param>
-        /// <returns>IQueryable&lt;TSource&gt;.</returns>
-        [DebuggerStepThrough]
-        public static IQueryable<TSource> WhereIf<TSource>(this IQueryable<TSource> source, bool condition, Expression<Func<TSource, bool>> predicate)
-        {
-            return condition ? source.Where(predicate) : source;
-        }
-
-        /// <summary>
         /// Returns the single source object as a single item enumerable collection.
         /// </summary>
         /// <typeparam name="TSource">The type of the source item.</typeparam>
@@ -45,27 +29,7 @@ namespace GraphQL.AspNet.Common.Extensions
         [DebuggerStepThrough]
         public static IEnumerable<TSource> AsEnumerable<TSource>(this TSource source)
         {
-            return new[] { source };
-        }
-
-        /// <summary>
-        /// Pages a LINQ query to return just the subset of rows from <see cref="IQueryable" />.
-        /// Page numbers are expected to be supplied as "1-based".
-        /// </summary>
-        /// <typeparam name="TSource">Entity.</typeparam>
-        /// <param name="source">LINQ query.</param>
-        /// <param name="pageNumber">Page Index.</param>
-        /// <param name="pageSize">Number of Rows.</param>
-        /// <returns>IQueryable.</returns>
-        [DebuggerStepThrough]
-        public static IQueryable<TSource> Page<TSource>(this IQueryable<TSource> source, int pageNumber, int pageSize)
-        {
-            if (pageNumber < 1)
-                throw new ArgumentException("Page Number must be greater than or equal to 1", nameof(pageNumber));
-            if (pageSize < 0)
-                throw new ArgumentException("Page Size must be greater than or equal to 0", nameof(pageSize));
-
-            return source.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            yield return source;
         }
 
         /// <summary>

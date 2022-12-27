@@ -50,12 +50,12 @@ namespace GraphQL.AspNet.Tests.Middleware
                 .ReturnsAsync(AuthorizationResult.Failed());
         }
 
-        public Task EmptyNextDelegate(GraphSchemaItemSecurityChallengeContext context, CancellationToken token)
+        public Task EmptyNextDelegate(SchemaItemSecurityChallengeContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
 
-        private async Task<GraphSchemaItemSecurityChallengeContext> ExecuteTest(
+        private async Task<SchemaItemSecurityChallengeContext> ExecuteTest(
             SchemaItemSecurityRequirements secRequirements,
             string userRoles = null)
         {
@@ -81,17 +81,17 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             var server = builder.Build();
             if (buildUser)
-                _user = (await server.SecurityContext.Authenticate())?.User;
+                _user = (await server.SecurityContext.AuthenticateAsync())?.User;
 
             var contextBuilder = server.CreateQueryContextBuilder();
             var queryContext = contextBuilder.Build();
 
             var field = new Mock<IGraphField>();
-            var securityRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var securityRequest = new Mock<ISchemaItemSecurityRequest>();
             securityRequest.Setup(x => x.SecureSchemaItem)
                 .Returns(field.Object);
 
-            var fieldSecurityContext = new GraphSchemaItemSecurityChallengeContext(queryContext, securityRequest.Object);
+            var fieldSecurityContext = new SchemaItemSecurityChallengeContext(queryContext, securityRequest.Object);
             fieldSecurityContext.AuthenticatedUser = _user;
             fieldSecurityContext.SecurityRequirements = secRequirements;
 

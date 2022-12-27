@@ -31,8 +31,8 @@ namespace GraphQL.AspNet.Configuration
     /// <typeparam name="TContext">The type of the context the middleware components can handle.</typeparam>
     public class SchemaPipelineBuilder<TSchema, TMiddleware, TContext> : ISchemaPipelineBuilder<TSchema, TMiddleware, TContext>
         where TSchema : class, ISchema
-        where TMiddleware : class, IGraphMiddlewareComponent<TContext>
-        where TContext : class, IGraphExecutionContext
+        where TMiddleware : class, IGraphQLMiddlewareComponent<TContext>
+        where TContext : class, IGraphQLMiddlewareExecutionContext
     {
         private readonly SchemaOptions _options;
         private readonly LinkedList<GraphMiddlewareDefinition<TContext>> _middleware;
@@ -62,6 +62,8 @@ namespace GraphQL.AspNet.Configuration
             Func<TContext, GraphMiddlewareInvocationDelegate<TContext>, CancellationToken, Task> operation,
             string name = null)
         {
+            Validation.ThrowIfNull(operation, nameof(operation));
+
             var middleware = new SingleFunctionMiddleware<TContext>(operation);
             var definition = new GraphMiddlewareDefinition<TContext>(middleware, name);
             _middleware.AddLast(definition);
@@ -107,8 +109,10 @@ namespace GraphQL.AspNet.Configuration
         {
             GraphMiddlewareInvocationDelegate<TContext> leadInvoker = null;
 
-            // walk backwards up the chained middleware, setting up the component creators and their call chain
-            // maintain a list of component names for logging
+            // Walk backwards from the last middleware component to the first,
+            // setting up the pipeline.
+            //
+            // Also maintain a list of component names for logging.
             var node = _middleware.Last;
             var middlewareNameList = new List<string>();
             while (node != null)
@@ -135,7 +139,8 @@ namespace GraphQL.AspNet.Configuration
         public int Count => _middleware.Count;
 
         /// <summary>
-        /// Gets or sets the name to be assigned to the pipeline when its generated.
+        /// Gets or sets the name to be assigned to the pipeline when its generated. This name
+        /// may appear in log messages or during debugging.
         /// </summary>
         /// <value>The name of the pipeline.</value>
         public string PipelineName { get; set; }

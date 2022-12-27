@@ -7,19 +7,19 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Internal.Templating
+namespace GraphQL.AspNet.Tests.Internal.Templating
 {
     using System.Linq;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Internal.TypeTemplates;
-    using GraphQL.Subscriptions.Tests.Internal.Templating.ControllerTestData;
+    using GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData;
     using NUnit.Framework;
 
     [TestFixture]
     public class GraphControllerTemplateTests
     {
-        public IGraphTypeTemplateProvider SubscriptionTemplateProvider => new SubscriptionEnabledTemplateProvider();
+        public IGraphTypeTemplateProvider SubscriptionTemplateProvider => new SubscriptionEnabledTypeTemplateProvider();
 
         [Test]
         public void Parse_SingleSubscriptionRoute_CreatesCorrectActionTemplate()

@@ -34,29 +34,29 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="schema">The singleton instance of <typeparamref name="TSchema"/> representing this processor works against.</param>
         /// <param name="runtime">The primary runtime instance in which GraphQL requests are processed for <typeparamref name="TSchema"/>.</param>
-        /// <param name="writer">The result writer capable of converting a <see cref="IGraphOperationResult"/> into a serialized payload
+        /// <param name="writer">The result writer capable of converting a <see cref="IQueryExecutionResult"/> into a serialized payload
         /// for the given <typeparamref name="TSchema"/>.</param>
         /// <param name="logger">A logger instance where this object can write and record log entries.</param>
         public SecureGraphQLHttpProcessor(
             TSchema schema,
             IGraphQLRuntime<TSchema> runtime,
-            IGraphQueryResponseWriter<TSchema> writer,
+            IQueryResponseWriter<TSchema> writer,
             IGraphEventLogger logger = null)
             : base(schema, runtime, writer, logger)
         {
         }
 
         /// <inheritdoc />
-        public override async Task SubmitGraphQLQuery(GraphQueryData queryData, CancellationToken cancelToken = default)
+        protected override async Task SubmitQueryAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
             if (this.User?.Identity == null || !this.User.Identity.IsAuthenticated)
             {
-                await this.WriteStatusCodeResponse(HttpStatusCode.Unauthorized, ERROR_UNAUTHORIZED, cancelToken).ConfigureAwait(false);
+                await this.WriteStatusCodeResponseAsync(HttpStatusCode.Unauthorized, ERROR_UNAUTHORIZED, cancelToken).ConfigureAwait(false);
                 return;
             }
 
             await base
-                .SubmitGraphQLQuery(queryData, cancelToken)
+                .SubmitQueryAsync(queryData, cancelToken)
                 .ConfigureAwait(false);
         }
     }

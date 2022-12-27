@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
     using NUnit.Framework;
 
     [TestFixture]
-    public class SourceTextTests
+    internal class SourceTextTests
     {
         [TestCase("123456", 2, 5, SourceTextPosition.FromCurrentCursor, false, 2)]
         [TestCase("123456", 2, 7, SourceTextPosition.FromStart, false, 2)]

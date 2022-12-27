@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
-    /// An action result indicating that the <see cref="IGraphMethod"/> errored or in some way did
+    /// An action result indicating that the <see cref="IGraphFieldResolverMethod"/> errored or in some way did
     /// not fulfill its request for data in an acceptable manner. This result is always interpreted as a
     /// critical error and stops execution of the current query.
     /// </summary>
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public Task Complete(SchemaItemResolutionContext context)
+        public Task CompleteAsync(SchemaItemResolutionContext context)
         {
             if (_customMessage != null)
             {

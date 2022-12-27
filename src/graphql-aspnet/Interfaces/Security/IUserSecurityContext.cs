@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Interfaces.Security
         /// <param name="scheme">The id/key value of the scheme to authenticate with.</param>
         /// <param name="token">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IAuthenticationResult&gt;.</returns>
-        Task<IAuthenticationResult> Authenticate(string scheme, CancellationToken token = default);
+        Task<IAuthenticationResult> AuthenticateAsync(string scheme, CancellationToken token = default);
 
         /// <summary>
         /// Authenticates the user credentials contained within this security context using
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Interfaces.Security
         /// </summary>
         /// <param name="token">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IAuthenticationResult&gt;.</returns>
-        Task<IAuthenticationResult> Authenticate(CancellationToken token = default);
+        Task<IAuthenticationResult> AuthenticateAsync(CancellationToken token = default);
 
         /// <summary>
         /// <para>

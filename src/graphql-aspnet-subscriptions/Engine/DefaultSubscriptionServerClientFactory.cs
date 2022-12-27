@@ -15,18 +15,18 @@ namespace GraphQL.AspNet.Engine
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
+    using GraphQL.AspNet.SubscriptionServer.Exceptions;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// The default implementation of the "server owned" factory which uses all registered
+    /// The default implementation of the "server owned" abstract factory which uses all registered
     /// client factories to create an appropriate proxy through which the server can speak with
     /// a connected client.
     /// </summary>
-    public sealed class DefaultSubscriptionServerClientFactory : ISubscriptionServerClientFactory
+    internal sealed class DefaultSubscriptionServerClientFactory : ISubscriptionServerClientFactory
     {
         private readonly Dictionary<string, ISubscriptionClientProxyFactory> _clientFactories;
 
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public async Task<ISubscriptionClientProxy<TSchema>> CreateSubscriptionClient<TSchema>(IClientConnection connection)
+        public async Task<ISubscriptionClientProxy<TSchema>> CreateSubscriptionClientAsync<TSchema>(IClientConnection connection)
         where TSchema : class, ISchema
         {
             Validation.ThrowIfNull(connection, nameof(connection));
@@ -102,10 +102,10 @@ namespace GraphQL.AspNet.Engine
             }
 
             // generate the appropriate client
-            if (!string.IsNullOrWhiteSpace(protocolToUse))
-                return await _clientFactories[protocolToUse].CreateClient<TSchema>(connection);
+            if (string.IsNullOrWhiteSpace(protocolToUse))
+                throw new UnsupportedClientProtocolException(string.Join(", ", unsupportedProtocols));
 
-            throw new UnsupportedClientProtocolException(string.Join(", ", unsupportedProtocols));
+            return await _clientFactories[protocolToUse].CreateClient<TSchema>(connection);
         }
     }
 }

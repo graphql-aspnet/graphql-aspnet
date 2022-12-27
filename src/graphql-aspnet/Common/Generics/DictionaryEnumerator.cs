@@ -14,18 +14,19 @@ namespace GraphQL.AspNet.Common.Generics
     using System.Collections.Generic;
 
     /// <summary>
-    /// An enumerator capable of iterating over a generic dictionary.
+    /// An enumerator capable of iterating over a generic dictionary in a predictable
+    /// manner. Used by the <see cref="OrderedDictionary{TKey, TValue}"/>.
     /// </summary>
-    /// <typeparam name="TKey">The type of the t key.</typeparam>
-    /// <typeparam name="TValue">The type of the t value.</typeparam>
-    public sealed class DictionaryEnumerator<TKey, TValue> : IDictionaryEnumerator, IDisposable
+    /// <typeparam name="TKey">The type of the key of the dictionary.</typeparam>
+    /// <typeparam name="TValue">The type of the value of the dictionary.</typeparam>
+    internal sealed class DictionaryEnumerator<TKey, TValue> : IDictionaryEnumerator, IDisposable
     {
         private readonly IEnumerator<KeyValuePair<TKey, TValue>> _impl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DictionaryEnumerator{TKey, TValue}" /> class.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The dictionary to iterate over.</param>
         public DictionaryEnumerator(IDictionary<TKey, TValue> value)
         {
             _impl = value.GetEnumerator();

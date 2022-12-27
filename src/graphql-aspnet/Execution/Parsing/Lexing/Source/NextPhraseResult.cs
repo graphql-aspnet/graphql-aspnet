@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
     /// <summary>
     /// A result used in processing a batch of characters from a source text file.
     /// </summary>
-    public enum NextPhraseResult
+    internal enum NextPhraseResult
     {
         /// <summary>
         /// Instructs the source text to continue extracting characters

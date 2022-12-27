@@ -21,7 +21,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQLSyntaxException2 = GraphQL.AspNet.Execution.Parsing.Exceptions.GraphQLSyntaxException;
 
     /// <summary>
@@ -33,25 +32,21 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class ParseQueryDocumentMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly IGraphQLDocumentParser _parser;
-        private readonly IGraphQueryDocumentGenerator<TSchema> _documentGenerator;
+        private readonly IQueryDocumentGenerator<TSchema> _documentGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParseQueryDocumentMiddleware{TSchema}" /> class.
         /// </summary>
-        /// <param name="parser">The parser.</param>
         /// <param name="documentGenerator">The document generator used to convert syntax
         /// trees into functional documents.</param>
         public ParseQueryDocumentMiddleware(
-            IGraphQLDocumentParser parser,
-            IGraphQueryDocumentGenerator<TSchema> documentGenerator)
+            IQueryDocumentGenerator<TSchema> documentGenerator)
         {
-            _parser = Validation.ThrowIfNullOrReturn(parser, nameof(parser));
             _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));
         }
 
         /// <inheritdoc />
-        public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.QueryPlan == null)
             {
@@ -59,26 +54,15 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
                 try
                 {
-                    // parse the text into an AST
                     var text = ReadOnlySpan<char>.Empty;
                     if (context.OperationRequest.QueryText != null)
                         text = context.OperationRequest.QueryText.AsSpan();
 
-                    var sourceText = new SourceText(text);
-                    var syntaxTree = _parser.ParseQueryDocument(ref sourceText);
-
-                    try
-                    {
-                        // convert the AST into a functional document
-                        // matched against the target schema
-                        var document = _documentGenerator.CreateDocument(sourceText, syntaxTree);
-                        context.QueryDocument = document;
-                        context.Messages.AddRange(document.Messages);
-                    }
-                    finally
-                    {
-                        SyntaxTreeOperations.Release(ref syntaxTree);
-                    }
+                    // convert the AST into a functional document
+                    // matched against the target schema
+                    var document = _documentGenerator.CreateDocument(text);
+                    context.QueryDocument = document;
+                    context.Messages.AddRange(document.Messages);
                 }
                 catch (GraphQLSyntaxException2 syntaxException)
                 {

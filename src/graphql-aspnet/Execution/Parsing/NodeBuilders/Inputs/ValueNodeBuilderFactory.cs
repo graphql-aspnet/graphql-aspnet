@@ -12,13 +12,13 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     using System;
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
-    using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
 
     /// <summary>
     /// A factory that will choose the correct builder to build the proper value
     /// node from hte token stream.
     /// </summary>
-    public class ValueNodeBuilderFactory
+    internal class ValueNodeBuilderFactory
     {
         /// <summary>
         /// Inspects the token stream and generates the appropriate builder to

@@ -7,11 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution
+namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
     using Moq;
     using NUnit.Framework;
 
@@ -27,7 +28,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var publisher = new InProcessSubscriptionPublisher(router.Object);
 
             var eventData = new SubscriptionEvent();
-            await publisher.PublishEvent(eventData);
+            await publisher.PublishEventAsync(eventData);
 
             router.Verify(x => x.RaisePublishedEvent(It.IsAny<SubscriptionEvent>()), Times.Once(), "failed to raise the event");
         }

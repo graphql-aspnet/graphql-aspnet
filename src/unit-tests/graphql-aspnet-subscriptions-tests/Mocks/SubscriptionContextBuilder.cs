@@ -7,12 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Mock
+namespace GraphQL.AspNet.Tests.Mocks
 {
     using System;
     using System.Collections.Generic;
     using System.Text.Json;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -20,7 +21,6 @@ namespace GraphQL.Subscriptions.Tests.Mock
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Internal.TypeTemplates;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
     using Moq;
 
@@ -31,12 +31,12 @@ namespace GraphQL.Subscriptions.Tests.Mock
     public class SubscriptionContextBuilder
     {
         private readonly IUserSecurityContext _seceurityContext;
-        private readonly Mock<IGraphOperationRequest> _mockRequest;
+        private readonly Mock<IQueryExecutionRequest> _mockRequest;
 
         private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
 
         private IServiceProvider _serviceProvider;
-        private IGraphQueryExecutionMetrics _metrics;
+        private IQueryExecutionMetrics _metrics;
         private IGraphEventLogger _eventLogger;
         private ISubscriptionClientProxy _client;
 
@@ -54,7 +54,7 @@ namespace GraphQL.Subscriptions.Tests.Mock
             _client = client;
             _serviceProvider = serviceProvider;
             _seceurityContext = securityContext;
-            _mockRequest = new Mock<IGraphOperationRequest>();
+            _mockRequest = new Mock<IQueryExecutionRequest>();
             _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
 
             _mockRequest.Setup(x => x.ToDataPackage()).Returns(
@@ -94,7 +94,7 @@ namespace GraphQL.Subscriptions.Tests.Mock
         /// </summary>
         /// <param name="metricsPackage">The metrics package.</param>
         /// <returns>SubscriptionContextBuilder.</returns>
-        public SubscriptionContextBuilder AddMetrics(IGraphQueryExecutionMetrics metricsPackage)
+        public SubscriptionContextBuilder AddMetrics(IQueryExecutionMetrics metricsPackage)
         {
             _metrics = metricsPackage;
             return this;
@@ -139,16 +139,16 @@ namespace GraphQL.Subscriptions.Tests.Mock
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier to assign to the created sub.</param>
         /// <returns>GraphQueryContext.</returns>
-        public virtual SubcriptionExecutionContext Build(string subscriptionId = null)
+        public virtual SubcriptionQueryExecutionContext Build(string subscriptionId = null)
         {
             subscriptionId = subscriptionId ?? Guid.NewGuid().ToString();
             var metaData = new MetaDataCollection();
 
             // unchangable items about the request
-            var request = new Mock<IGraphOperationRequest>();
+            var request = new Mock<IQueryExecutionRequest>();
 
             // updateable items about the request
-            var context = new SubcriptionExecutionContext(
+            var context = new SubcriptionQueryExecutionContext(
                 this.OperationRequest,
                 _client,
                 _serviceProvider,
@@ -173,6 +173,6 @@ namespace GraphQL.Subscriptions.Tests.Mock
         /// Gets the mocked operation request as its currently defined by this builder.
         /// </summary>
         /// <value>The operation request.</value>
-        public IGraphOperationRequest OperationRequest => _mockRequest.Object;
+        public IQueryExecutionRequest OperationRequest => _mockRequest.Object;
     }
 }

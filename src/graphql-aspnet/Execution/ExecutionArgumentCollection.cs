@@ -16,15 +16,15 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A collection of actionable arguments (.NET types) that can be directly used to invoke
+    /// A collection of actionable arguments (.NET objects) that can be directly used to invoke
     /// a method on a resolver.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    public class ExecutionArgumentCollection : IExecutionArgumentCollection
+    internal class ExecutionArgumentCollection : IExecutionArgumentCollection
     {
         private readonly Dictionary<string, ExecutionArgument> _arguments;
         private readonly GraphFieldExecutionContext _fieldContext;
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <inheritdoc />
-        public object[] PrepareArguments(IGraphMethod graphMethod)
+        public object[] PrepareArguments(IGraphFieldResolverMethod graphMethod)
         {
             var preparedParams = new List<object>();
             var paramInfos = graphMethod.Parameters;

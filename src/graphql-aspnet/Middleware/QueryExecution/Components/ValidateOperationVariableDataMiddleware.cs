@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Variables;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         /// <inheritdoc />
-        public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.IsValid)
             {
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         private void ResolveVariables(
-            GraphQueryExecutionContext context,
+            QueryExecutionContext context,
             IVariableCollectionDocumentPart declaredVariables,
             IInputVariableCollection suppliedVariableData)
         {

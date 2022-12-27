@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.StarWarsAPI6X
 {
     using System;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Configuration.Mvc;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
     using Microsoft.AspNetCore.Builder;
@@ -77,8 +77,8 @@ namespace GraphQL.AspNet.StarWarsAPI6X
                 options.ResponseOptions.ExposeExceptions = true;
                 options.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Information;
 
-                options.ExecutionOptions.EnableMetrics = true;
-                options.ResponseOptions.ExposeMetrics = true;
+                // options.ExecutionOptions.EnableMetrics = true;
+                // options.ResponseOptions.ExposeMetrics = true;
 
                 var assembly = typeof(StarWarsDataRepository).Assembly;
                 options.AddAssembly(assembly);

@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// Initializes a new instance of the <see cref="QueryExecutionPipelineHelper{TSchema}" /> class.
         /// </summary>
         /// <param name="pipelineBuilder">The pipeline builder.</param>
-        public QueryExecutionPipelineHelper(ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> pipelineBuilder)
+        public QueryExecutionPipelineHelper(ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, QueryExecutionContext> pipelineBuilder)
         {
             this.PipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
         }
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryPlanCacheMiddleware()
         {
-            this.PipelineBuilder.AddMiddleware<CacheQueryPlanMiddleware<TSchema>>();
+            this.PipelineBuilder.AddMiddleware<CacheQueryExecutionPlanMiddleware<TSchema>>();
             return this;
         }
 
@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryPlanCreationMiddleware()
         {
-            this.PipelineBuilder.AddMiddleware<GenerateQueryPlanMiddleware<TSchema>>();
+            this.PipelineBuilder.AddMiddleware<GenerateQueryExecutionPlanMiddleware<TSchema>>();
             return this;
         }
 
@@ -199,6 +199,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// Gets the pipeline builder being worked on in this helper.
         /// </summary>
         /// <value>The pipeline builder.</value>
-        protected ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> PipelineBuilder { get; }
+        protected ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, QueryExecutionContext> PipelineBuilder { get; }
     }
 }

@@ -19,16 +19,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A set of parsed metadata, read from a declared <see cref="GraphController"/>, to properly
-    /// populate graphQL fields from action methods.
+    /// A template describing a controller that will be used to resolve top level fields
+    /// on the root operation types.
     /// </summary>
     [DebuggerDisplay("Controller: '{ObjectType.Name}', Route: '{Route.Path}'")]
-    public class GraphControllerTemplate : BaseObjectGraphTypeTemplate, IGraphControllerTemplate
+    public class GraphControllerTemplate : NonLeafGraphTypeTemplateBase, IGraphControllerTemplate
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphControllerTemplate"/> class.
@@ -37,13 +37,20 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public GraphControllerTemplate(Type controllerType)
             : base(controllerType)
         {
+            this.AllowedSchemaItemCollections = new HashSet<SchemaItemCollections>
+            {
+                SchemaItemCollections.Query,
+                SchemaItemCollections.Mutation,
+                SchemaItemCollections.Subscription,
+                SchemaItemCollections.Types,
+            };
         }
 
         /// <summary>
         /// When overridden in a child class, this metyhod builds the route that will be assigned to this method
         /// using the implementation rules of the concrete type.
         /// </summary>
-        /// <returns>GraphRoutePath.</returns>
+        /// <returns>SchemaItemPath.</returns>
         protected override SchemaItemPath GenerateFieldPath()
         {
             var skipControllerLevelField = this.ObjectType.SingleAttributeOrDefault<GraphRootAttribute>();
@@ -158,13 +165,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets operation types to which this object can declare a field.
         /// </summary>
         /// <value>The allowed operation types.</value>
-        protected override HashSet<GraphCollection> AllowedGraphCollectionTypes { get; } = new HashSet<GraphCollection>
-        {
-            GraphCollection.Query,
-            GraphCollection.Mutation,
-            GraphCollection.Subscription,
-            GraphCollection.Types,
-        };
+        protected override HashSet<SchemaItemCollections> AllowedSchemaItemCollections { get; }
 
         /// <summary>
         /// Gets an enumeration of the extension methods this controller defines.

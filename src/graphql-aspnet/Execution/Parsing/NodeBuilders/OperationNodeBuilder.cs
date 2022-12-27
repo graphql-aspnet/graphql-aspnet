@@ -13,13 +13,12 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
     /// A node builder that will build out a top level operation
     /// from the token stream.
     /// </summary>
-    public class OperationNodeBuilder : ISyntaxNodeBuilder
+    internal class OperationNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
         /// Gets the singleton instance of this node builder.

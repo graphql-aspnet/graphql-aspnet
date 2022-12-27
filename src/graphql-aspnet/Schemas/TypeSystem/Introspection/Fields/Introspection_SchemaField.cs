@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
     [DebuggerDisplay("Field: {Name}")]
     internal class Introspection_SchemaField : MethodGraphField
     {
-        private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(GraphCollection.Query, Constants.ReservedNames.SCHEMA_FIELD);
+        private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(SchemaItemCollections.Query, Constants.ReservedNames.SCHEMA_FIELD);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_SchemaField"/> class.
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
                 Constants.ReservedNames.SCHEMA_FIELD,
                 new GraphTypeExpression(Constants.ReservedNames.SCHEMA_TYPE),
                 FIELD_PATH,
-                resolver: new GraphDataValueResolver<object, IntrospectedSchema>((x) => schema.AsCompletedTask()))
+                resolver: new FunctionGraphFieldResolver<object, IntrospectedSchema>((x) => schema.AsCompletedTask()))
         {
             this.IntrospectedSchema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }

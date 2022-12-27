@@ -40,5 +40,85 @@ namespace GraphQL.AspNet.Tests.Directives
                 expectedJson,
                 result);
         }
+
+        [TestCase(true, false, true)]
+        [TestCase(false, false, false)]
+        [TestCase(false, true, false)]
+        [TestCase(true, true, false)]
+        public async Task IncludeDirective_ThenSkipDirective_OrderTest(bool includeIf, bool skipIf, bool fieldShouldBeIncluded)
+        {
+            var server = new TestServerBuilder()
+         .AddType<SimpleExecutionController>()
+             .AddType<IncludeDirective>()
+             .AddType<SkipDirective>()
+             .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    "query Operation1{  simple {  simpleQueryMethod { property1, property2 " +
+                    "@include(if: " + includeIf.ToString().ToLower() + ") " +
+                    "@skip(if: " + skipIf.ToString().ToLower() + ")" +
+                    "} } }")
+                .AddOperationName("Operation1");
+
+            var expectedJson = @"
+            {
+            ""data"" : {
+                ""simple"": {
+                  ""simpleQueryMethod"": {
+                    ""property1"": ""default string""" +
+                    (fieldShouldBeIncluded ? ",\"property2\" : 5" : string.Empty) +
+            @"
+                  }
+                }
+              }
+            }
+            ";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedJson,
+                result);
+        }
+
+        [TestCase(true, false, true)]
+        [TestCase(false, true, false)]
+        [TestCase(false, false, false)]
+        [TestCase(true, true, false)]
+        public async Task SkipDirective_ThenIncludeDirective_OrderTest(bool includeIf, bool skipIf, bool fieldShouldBeIncluded)
+        {
+            var server = new TestServerBuilder()
+         .AddType<SimpleExecutionController>()
+             .AddType<IncludeDirective>()
+             .AddType<SkipDirective>()
+             .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    "query Operation1{  simple {  simpleQueryMethod { property1, property2 " +
+                    "@skip(if: " + skipIf.ToString().ToLower() + ")" +
+                    "@include(if: " + includeIf.ToString().ToLower() + ") " +
+                    "} } }")
+                .AddOperationName("Operation1");
+
+            var expectedJson = @"
+            {
+            ""data"" : {
+                ""simple"": {
+                  ""simpleQueryMethod"": {
+                    ""property1"": ""default string""" +
+                    (fieldShouldBeIncluded ? ",\"property2\" : 5" : string.Empty) +
+            @"
+                  }
+                }
+              }
+            }
+            ";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedJson,
+                result);
+        }
     }
 }

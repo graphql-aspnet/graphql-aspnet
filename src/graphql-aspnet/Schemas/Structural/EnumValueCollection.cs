@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// <summary>
     /// A collection of enum values on a single enum graph type.
     /// </summary>
-    public class EnumValueCollection : IEnumValueCollection
+    internal class EnumValueCollection : IEnumValueCollection
     {
         private Dictionary<string, IEnumValue> _enumValuesByName;
         private Dictionary<string, IEnumValue> _enumValuesByInternalLabel;

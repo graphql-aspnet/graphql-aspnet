@@ -15,10 +15,12 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>
-    /// When an graph field (method or property) returns an interface, use this attribute
-    /// to inform graphql of all the possible types that may be returned under that interface to ensure
-    /// the object schema can correctly resolve all the items returned. This attribute is optional, if your application
-    /// is configured to auto-register your graph types or you register them via the schema builder then this is not necessary.
+    /// When an graph field returns an interface, use this attribute
+    /// to inform GraphQL of all the possible types that implement the interface and
+    /// are returned by this method. This ensures that the schema can correctly resolve
+    /// all the items returned. This attribute is optional, if your application
+    /// is configured to auto-register your graph types or you register them via the schema builder then using
+    /// this attribute is not necessary.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
     public class PossibleTypesAttribute : Attribute

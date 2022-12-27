@@ -7,26 +7,26 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Internal.Templating
+namespace GraphQL.AspNet.Tests.Internal.Templating
 {
     using System.Linq;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.Internal.Templating.ActionTestData;
+    using GraphQL.AspNet.Tests.Internal.Templating.ActionTestData;
     using Moq;
     using NUnit.Framework;
 
     [TestFixture]
     public class GraphActionTemplateTests
     {
-        private ControllerSubscriptionActionGraphFieldTemplate CreateActionTemplate<TControllerType>(string actionName)
+        private SubscriptionControllerActionGraphFieldTemplate CreateActionTemplate<TControllerType>(string actionName)
             where TControllerType : GraphController
         {
             var mockController = new Mock<IGraphControllerTemplate>();
@@ -36,7 +36,7 @@ namespace GraphQL.Subscriptions.Tests.Internal.Templating
             mockController.Setup(x => x.ObjectType).Returns(typeof(TControllerType));
 
             var methodInfo = typeof(TControllerType).GetMethod(actionName);
-            var action = new ControllerSubscriptionActionGraphFieldTemplate(mockController.Object, methodInfo);
+            var action = new SubscriptionControllerActionGraphFieldTemplate(mockController.Object, methodInfo);
             action.Parse();
             action.ValidateOrThrow();
 
@@ -52,10 +52,10 @@ namespace GraphQL.Subscriptions.Tests.Internal.Templating
             Assert.AreEqual("SubDescription", action.Description);
             Assert.AreEqual(typeof(TwoPropertyObject), action.SourceObjectType);
             Assert.AreEqual(typeof(OneMethodSubscriptionController), action.Parent.ObjectType);
-            Assert.AreEqual(GraphCollection.Subscription, action.Route.RootCollection);
+            Assert.AreEqual(SchemaItemCollections.Subscription, action.Route.RootCollection);
             Assert.AreEqual("[subscription]/path0/path1", action.Route.Path);
             Assert.AreEqual($"{nameof(OneMethodSubscriptionController)}.{nameof(OneMethodSubscriptionController.SingleMethod)}", action.InternalFullName);
-            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphMethod)action).Parent.ObjectType);
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)action).Parent.ObjectType);
             Assert.AreEqual("path0", action.Parent.Name);
             Assert.AreEqual(methodInfo, action.Method);
             Assert.AreEqual(1, action.Arguments.Count);

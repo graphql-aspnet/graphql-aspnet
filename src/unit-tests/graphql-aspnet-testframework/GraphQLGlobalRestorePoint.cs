@@ -14,18 +14,24 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.SubscriptionServer;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A marker to a point in time that, when disposed, will reset the the global settings to the values
     /// that were present just before this object was created. Used in conjunction with NUnit to undo any changes to
     /// the global static providers in between tests.
     /// </summary>
+    /// <remarks>
+    /// If your test suite is configured to execute more than 1 test concurrently within the
+    /// same app space this could cause unexpected results.
+    /// </remarks>
     public class GraphQLGlobalRestorePoint : IDisposable
     {
         private readonly IGraphTypeTemplateProvider _templateProvider;
-        private readonly IScalarTypeProvider _scalarTypeProvider;
+        private readonly IScalarGraphTypeProvider _scalarTypeProvider;
         private readonly IGraphTypeMakerProvider _makerProvider;
-        private readonly IGraphQLGlobalConfiguration _globalConfig;
+        private readonly ServiceLifetime _controllerServiceLifetime;
         private readonly int? _maxSubConnectedClient;
         private readonly int _maxSubConcurrentReceiver;
 
@@ -37,12 +43,13 @@ namespace GraphQL.AspNet.Tests.Framework
             _templateProvider = GraphQLProviders.TemplateProvider;
             _scalarTypeProvider = GraphQLProviders.ScalarProvider;
             _makerProvider = GraphQLProviders.GraphTypeMakerProvider;
-            _globalConfig = GraphQLProviders.GlobalConfiguration;
 
-            _maxSubConnectedClient = SubscriptionServerSettings.MaxConnectedClientCount;
-            _maxSubConcurrentReceiver = SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
+            _controllerServiceLifetime = GraphQLServerSettings.ControllerServiceLifeTime;
 
-            SchemaSubscriptionEventMap.ClearCache();
+            _maxSubConnectedClient = GraphQLSubscriptionServerSettings.MaxConnectedClientCount;
+            _maxSubConcurrentReceiver = GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
+
+            SubscriptionEventSchemaMap.ClearCache();
         }
 
         /// <summary>
@@ -64,10 +71,11 @@ namespace GraphQL.AspNet.Tests.Framework
                 GraphQLProviders.TemplateProvider = _templateProvider;
                 GraphQLProviders.ScalarProvider = _scalarTypeProvider;
                 GraphQLProviders.GraphTypeMakerProvider = _makerProvider;
-                GraphQLProviders.GlobalConfiguration = _globalConfig;
 
-                SubscriptionServerSettings.MaxConnectedClientCount = _maxSubConnectedClient;
-                SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = _maxSubConcurrentReceiver;
+                GraphQLServerSettings.ControllerServiceLifeTime = _controllerServiceLifetime;
+
+                GraphQLSubscriptionServerSettings.MaxConnectedClientCount = _maxSubConnectedClient;
+                GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = _maxSubConcurrentReceiver;
             }
         }
     }

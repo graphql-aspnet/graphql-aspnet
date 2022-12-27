@@ -20,11 +20,12 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A collection of arguments to be passed to a field to assist in resolving it and generating a response.
+    /// A collection of arguments to be passed to a field or directive to assist in resolving it
+    /// and generating a response.
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Count = {Count}")]
-    public class InputArgumentCollection : IInputArgumentCollection
+    internal class InputArgumentCollection : IInputArgumentCollection
     {
         private readonly Dictionary<string, InputArgument> _arguments;
 

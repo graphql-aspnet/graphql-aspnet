@@ -14,24 +14,23 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A context used to validate all the created parts of a document generated during construction.
     /// </summary>
     [DebuggerDisplay("Part: {ActivePart.PartType}")]
-    internal class DocumentValidationContext : IContextGenerator<DocumentValidationContext>
+    public class DocumentValidationContext : IRuleProcessorChildContextGenerator<DocumentValidationContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentValidationContext" /> class.
         /// </summary>
         /// <param name="targetSchema">The target schema the query document is validated against.</param>
         /// <param name="queryDocument">The query document to validate.</param>
-        public DocumentValidationContext(ISchema targetSchema, IGraphQueryDocument queryDocument)
+        public DocumentValidationContext(ISchema targetSchema, IQueryDocument queryDocument)
         {
             this.Schema = Validation.ThrowIfNullOrReturn(targetSchema, nameof(targetSchema));
             this.ActivePart = Validation.ThrowIfNullOrReturn(queryDocument, nameof(queryDocument));
@@ -109,7 +108,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets a reference to the document being validated.
         /// </summary>
         /// <value>The document.</value>
-        public IGraphQueryDocument Document { get; }
+        public IQueryDocument Document { get; }
 
         /// <summary>
         /// Gets a metadata object (by rule id) to carry information

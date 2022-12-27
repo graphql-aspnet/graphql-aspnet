@@ -18,10 +18,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
 
     /// <summary>
     /// Performs an analysis of a runtime type to determine known and allowed concrete types for a
-    /// <see cref="ISchemaTypeCollection"/>. Typically invoked when a developer attempts to return an object of a <see cref="Type"/>
-    /// extended from the <see cref="Type"/> they declared on a controller or field.
+    /// schema.
     /// </summary>
-    internal class SchemaRuntimeTypeAnalyzer
+    /// <remarks>
+    /// Typically invoked when resolving an interface or union when the developer returns an
+    /// object that is not declared in the schema but which inherits from a type
+    /// that is declared on the schema.
+    /// </remarks>
+    public class SchemaRuntimeTypeAnalyzer
     {
         private readonly ISchemaTypeCollection _schema;
         private readonly ConcurrentDictionary<(IGraphType, Type), Type[]> _foundTypeCache;
@@ -29,7 +33,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaRuntimeTypeAnalyzer"/> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <param name="schema">The types declared on a given schema.</param>
         public SchemaRuntimeTypeAnalyzer(ISchemaTypeCollection schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));

@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// An object capable of publishing <see cref="SubscriptionEvent"/> objects such that they can be delivered
@@ -27,6 +27,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="eventData">The event to publish.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>ValueTask.</returns>
-        ValueTask PublishEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default);
+        ValueTask PublishEventAsync(SubscriptionEvent eventData, CancellationToken cancelToken = default);
     }
 }

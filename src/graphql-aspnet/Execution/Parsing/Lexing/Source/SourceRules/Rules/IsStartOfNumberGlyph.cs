@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
     /// A rule that determines if the character pointed to by the source can be the start of a number.
     /// </summary>
     /// <seealso cref="ISourceRule" />
-    public class IsStartOfNumberGlyph : ISourceRule
+    internal class IsStartOfNumberGlyph : ISourceRule
     {
         /// <summary>
         /// Gets the instance.

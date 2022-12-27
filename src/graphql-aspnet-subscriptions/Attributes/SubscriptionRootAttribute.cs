@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Attributes
         /// <param name="returnType">The type of the object returned from this method. If this type implements
         /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type.</param>
         public SubscriptionRootAttribute(string template, Type returnType)
-            : base(true, GraphCollection.Subscription, template, returnType)
+            : base(true, SchemaItemCollections.Subscription, template, returnType)
         {
             this.EventName = null;
         }
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Attributes
         /// be sure to supply any additional concrete types so that they may be included in the object graph.</param>
         /// <param name="additionalTypes">Any additional types to include in the object graph on behalf of this method.</param>
         public SubscriptionRootAttribute(string template, Type returnType, params Type[] additionalTypes)
-            : base(true, GraphCollection.Subscription, template, returnType.AsEnumerable().Concat(additionalTypes).ToArray())
+            : base(true, SchemaItemCollections.Subscription, template, returnType.AsEnumerable().Concat(additionalTypes).ToArray())
         {
             this.EventName = null;
         }
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Attributes
         public SubscriptionRootAttribute(string template, string unionTypeName, Type unionTypeA, Type unionTypeB, params Type[] additionalUnionTypes)
             : base(
                 true,
-                GraphCollection.Subscription,
+                SchemaItemCollections.Subscription,
                 template,
                 unionTypeName,
                 unionTypeA.AsEnumerable().Concat(unionTypeB.AsEnumerable()).Concat(additionalUnionTypes).ToArray())

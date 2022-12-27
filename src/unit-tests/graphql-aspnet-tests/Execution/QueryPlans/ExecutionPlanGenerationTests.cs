@@ -13,11 +13,9 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Execution.Parsing;
-    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData;
@@ -28,29 +26,24 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     [TestFixture]
     public class ExecutionPlanGenerationTests
     {
-        private IGraphQueryDocument CreateDocument(GraphSchema schema, string text)
+        private IQueryDocument CreateDocument(GraphSchema schema, string text)
         {
-            var parser = new GraphQLParser();
-
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = parser.ParseQueryDocument(ref source);
-
-            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(schema);
-            var doc = docGenerator.CreateDocument(source, syntaxTree);
+            var docGenerator = new DefaultQueryDocumentGenerator<GraphSchema>(schema);
+            var doc = docGenerator.CreateDocument(text.AsSpan());
             docGenerator.ValidateDocument(doc);
             return doc;
         }
 
-        private async Task<IGraphQueryPlan> CreatePlan(GraphSchema schema, string text)
+        private async Task<IQueryExecutionPlan> CreatePlan(GraphSchema schema, string text)
         {
             var doc = this.CreateDocument(schema, text);
 
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
+            var planGenerator = new DefaultQueryExecutionPlanGenerator<GraphSchema>(
                 schema,
-                new DefaultOperationDepthCalculator<GraphSchema>(),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
+                new DefaultQueryOperationDepthCalculator<GraphSchema>(),
+                new DefaultQueryOperationComplexityCalculator<GraphSchema>());
 
-            return await planGenerator.CreatePlan(doc.Operations[0]);
+            return await planGenerator.CreatePlanAsync(doc.Operations[0]);
         }
 
         [Test]
@@ -70,18 +63,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var queuedContext = plan.Operation.FieldContexts[0];
             Assert.IsNotNull(queuedContext);
             Assert.AreEqual("simple", queuedContext.Name);
-            Assert.AreEqual("simple", queuedContext.Origin.Path.DotString());
+            Assert.AreEqual("simple", queuedContext.Origin.Path.ToDotString());
 
             // "simple" should contain 1 child field called "simpleQueryMethod"
             Assert.AreEqual(0, queuedContext.Arguments.Count);
             Assert.AreEqual(1, queuedContext.ChildContexts.Count);
-            Assert.IsTrue(queuedContext.Field?.Resolver is GraphRouteFieldResolver);
+            Assert.IsTrue(queuedContext.Field?.Resolver is GraphControllerRouteFieldResolver);
 
             // simpleQueryMethod should contain 1 property to be resolved
             var child = queuedContext.ChildContexts[0];
             Assert.IsNotNull(child);
             Assert.AreEqual("simpleQueryMethod", child.Name);
-            Assert.AreEqual("simple.simpleQueryMethod", child.Origin.Path.DotString());
+            Assert.AreEqual("simple.simpleQueryMethod", child.Origin.Path.ToDotString());
             Assert.AreEqual(1, child.ChildContexts.Count);
 
             // the defaults defined on the method should have been assigned when none were supplied
@@ -98,10 +91,10 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var prop1 = child.ChildContexts[0];
             Assert.IsNotNull(prop1);
             Assert.AreEqual("property1", prop1.Name);
-            Assert.AreEqual("simple.simpleQueryMethod.property1", prop1.Origin.Path.DotString());
+            Assert.AreEqual("simple.simpleQueryMethod.property1", prop1.Origin.Path.ToDotString());
             Assert.AreEqual(0, prop1.ChildContexts.Count);
             Assert.AreEqual(0, prop1.Arguments.Count);
-            Assert.IsTrue(prop1.Field?.Resolver is GraphObjectPropertyResolver);
+            Assert.IsTrue(prop1.Field?.Resolver is ObjectPropertyGraphFieldResolver);
         }
 
         [Test]
@@ -249,7 +242,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             // "simple" should contain 1 child field called "simpleQueryMethod"
             Assert.AreEqual(0, queuedContext.Arguments.Count);
             Assert.AreEqual(1, queuedContext.ChildContexts.Count);
-            Assert.IsTrue(queuedContext.Field?.Resolver is GraphRouteFieldResolver);
+            Assert.IsTrue(queuedContext.Field?.Resolver is GraphControllerRouteFieldResolver);
 
             // simpleQueryMethod should contain 2 properties to be resolved (the two props on the fragment)
             var child = queuedContext.ChildContexts[0];
@@ -268,7 +261,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             Assert.AreEqual("property1", prop1.Name);
             Assert.AreEqual(0, prop1.ChildContexts.Count);
             Assert.AreEqual(0, prop1.Arguments.Count);
-            Assert.IsTrue(prop1.Field?.Resolver is GraphObjectPropertyResolver);
+            Assert.IsTrue(prop1.Field?.Resolver is ObjectPropertyGraphFieldResolver);
 
             // "property2"
             var prop2 = child.ChildContexts[1];
@@ -276,7 +269,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             Assert.AreEqual("property2", prop2.Name);
             Assert.AreEqual(0, prop2.ChildContexts.Count);
             Assert.AreEqual(0, prop2.Arguments.Count);
-            Assert.IsTrue(prop2.Field?.Resolver is GraphObjectPropertyResolver);
+            Assert.IsTrue(prop2.Field?.Resolver is ObjectPropertyGraphFieldResolver);
         }
 
         [Test]

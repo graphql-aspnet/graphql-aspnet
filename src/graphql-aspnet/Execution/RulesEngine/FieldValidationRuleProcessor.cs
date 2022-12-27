@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine
     /// requirements for their target fields in the schema and as necessary rule in eliminating field values
     /// or invalidating hte the whole stack as necessary.
     /// </summary>
-    internal sealed class FieldValidationRuleProcessor : RuleProcessor<FieldValidationContext>
+    public sealed class FieldValidationRuleProcessor : RuleProcessor<FieldValidationContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldValidationRuleProcessor"/> class.

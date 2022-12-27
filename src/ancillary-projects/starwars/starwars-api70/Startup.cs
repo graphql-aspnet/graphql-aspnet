@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.StarWarsAPI7X
 {
     using System;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Configuration.Mvc;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
     using Microsoft.AspNetCore.Builder;
@@ -29,7 +29,8 @@ namespace GraphQL.AspNet.StarWarsAPI7X
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration.</param>
+        /// <param name="configuration">The configuration created to govern the
+        /// application environment.</param>
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
@@ -64,15 +65,12 @@ namespace GraphQL.AspNet.StarWarsAPI7X
             {
                 // here add some common origins of various tools that may be
                 // used for running this demo
-                // do not add these in a production app
+                // do not add these in a production app unless you need
+                // to
                 options.AllowedOrigins.Add("http://localhost:5000");
                 options.AllowedOrigins.Add("http://localhost:4000");
                 options.AllowedOrigins.Add("http://localhost:3000");
                 options.AllowedOrigins.Add("null");
-
-                // some electron-based graphql tools send a file reference
-                // as their origin
-                // do not add these in a production app
                 options.AllowedOrigins.Add("file://");
                 options.AllowedOrigins.Add("ws://");
 
@@ -96,8 +94,8 @@ namespace GraphQL.AspNet.StarWarsAPI7X
                 options.ResponseOptions.ExposeExceptions = true;
                 options.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Information;
 
-                options.ExecutionOptions.EnableMetrics = true;
-                options.ResponseOptions.ExposeMetrics = true;
+                // options.ExecutionOptions.EnableMetrics = true;
+                // options.ResponseOptions.ExposeMetrics = true;
 
                 var assembly = typeof(StarWarsDataRepository).Assembly;
                 options.AddAssembly(assembly);
@@ -152,9 +150,11 @@ namespace GraphQL.AspNet.StarWarsAPI7X
             });
 
             // ************************************************************
-            // Finalize the graphql setup by loading the schema, build out the templates for all found graph types
-            // and publish the route to hook the graphql runtime to the web.
-            // be sure to register it after "UseAuthorization" if you require access to this.User
+            // Finalize the graphql setup:
+            // 1) Loading the schema
+            // 2) Publish the route to hook the graphql runtime to ASP.NET.
+            //
+            // Be sure to register it after "UseAuthorization" if you need it.
             //
             // If the construction of your runtime schema has any errors they will be thrown here
             // before your application starts listening for requests.
@@ -163,9 +163,9 @@ namespace GraphQL.AspNet.StarWarsAPI7X
         }
 
         /// <summary>
-        /// Gets the configuration.
+        /// Gets the environment configuration for this instance.
         /// </summary>
-        /// <value>The configuration.</value>
+        /// <value>The configuration item.</value>
         public IConfiguration Configuration { get; }
     }
 }

@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Engine
 {
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Execution.QueryPlans.ComplexityTestData;
     using GraphQL.AspNet.Tests.Framework;
@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Engine
     [TestFixture]
     public class DefaultOperationDepthCalculatorTests
     {
-        private IGraphQueryDocument CreateDocument(string text)
+        private IQueryDocument CreateDocument(string text)
         {
             var builder = new TestServerBuilder()
                 .AddType<ComplexityTestObject>()
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Engine
                                         }
                                     }");
 
-            var calculator = new DefaultOperationDepthCalculator<GraphSchema>();
+            var calculator = new DefaultQueryOperationDepthCalculator<GraphSchema>();
 
             var result = calculator.Calculate(doc.Operations[0]);
             Assert.AreEqual(5, result);
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Engine
                                         }
                                     }");
 
-            var calculator = new DefaultOperationDepthCalculator<GraphSchema>();
+            var calculator = new DefaultQueryOperationDepthCalculator<GraphSchema>();
             var result = calculator.Calculate(doc.Operations[0]);
             Assert.AreEqual(4, result);
         }
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Tests.Engine
                                         property5  # Not a level
                                     }");
 
-            var calculator = new DefaultOperationDepthCalculator<GraphSchema>();
+            var calculator = new DefaultQueryOperationDepthCalculator<GraphSchema>();
             var result = calculator.Calculate(doc.Operations[0]);
             Assert.AreEqual(3, result);
         }

@@ -13,11 +13,13 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// An attribute that applies the @specifiedBy directive to the target scalar.
+    /// A specialized attribute that applies the built in @specifiedBy directive to
+    /// the target scalar.
     /// </summary>
     /// <remarks>
     /// This attribute must be applied to a class that implements <see cref="IScalarGraphType"/>
-    /// or a runtime exception will occur when the schema is built.</remarks>
+    /// or an exception will be thrown when the schema is built.
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Class)]
     public class SpecifiedByAttribute : ApplyDirectiveAttribute
     {

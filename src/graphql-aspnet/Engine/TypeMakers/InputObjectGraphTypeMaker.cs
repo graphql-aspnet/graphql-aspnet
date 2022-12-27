@@ -13,8 +13,9 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Engine;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -33,12 +34,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        /// <summary>
-        /// Inspects the given type and, in accordance with the rules of this maker, will
-        /// generate a complete set of necessary graph types required to support it.
-        /// </summary>
-        /// <param name="concreteType">The concrete type to incorporate into the schema.</param>
-        /// <returns>GraphTypeCreationResult.</returns>
+        /// <inheritdoc />
         public virtual GraphTypeCreationResult CreateGraphType(Type concreteType)
         {
             var template = GraphQLProviders.TemplateProvider.ParseType(concreteType, TypeKind.INPUT_OBJECT) as IInputObjectGraphTypeTemplate;

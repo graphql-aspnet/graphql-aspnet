@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     /// <seealso cref="IGraphActionResult" />
     public class RouteNotFoundGraphActionResult : IGraphActionResult
     {
-        private readonly IGraphMethod _invokeDef;
+        private readonly IGraphFieldResolverMethod _invokeDef;
         private readonly Exception _thrownException;
         private readonly string _message;
 
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         /// </summary>
         /// <param name="invokedAction">The invoked action at the route location.</param>
         /// <param name="thrownException">The thrown exception that occured when invoking the action, if any.</param>
-        public RouteNotFoundGraphActionResult(IGraphMethod invokedAction, Exception thrownException = null)
+        public RouteNotFoundGraphActionResult(IGraphFieldResolverMethod invokedAction, Exception thrownException = null)
         {
             _invokeDef = invokedAction;
             _thrownException = thrownException;
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public Task Complete(SchemaItemResolutionContext context)
+        public Task CompleteAsync(SchemaItemResolutionContext context)
         {
             if (_invokeDef != null)
             {

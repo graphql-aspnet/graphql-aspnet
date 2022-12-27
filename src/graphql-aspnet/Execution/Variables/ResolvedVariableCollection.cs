@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.Variables
     /// of a specific query operation they are targeting.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    public class ResolvedVariableCollection : IResolvedVariableCollection
+    internal class ResolvedVariableCollection : IResolvedVariableCollection
     {
         /// <summary>
         /// Gets a <see cref="IResolvedVariableCollection"/> containing no resolved items.

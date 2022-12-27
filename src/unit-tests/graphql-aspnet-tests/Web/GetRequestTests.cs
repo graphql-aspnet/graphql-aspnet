@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Tests.Web
             request.Method = "GET";
             request.QueryString = new QueryString(queryText);
 
-            await processor.Invoke(httpContext);
+            await processor.InvokeAsync(httpContext);
             await httpContext.Response.Body.FlushAsync();
 
             httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -166,7 +166,7 @@ namespace GraphQL.AspNet.Tests.Web
             var queryText = $"?{Constants.Web.QUERYSTRING_QUERY_KEY}={queryStringQuery}";
             request.QueryString = new QueryString(queryText);
 
-            await processor.Invoke(httpContext);
+            await processor.InvokeAsync(httpContext);
             await httpContext.Response.Body.FlushAsync();
 
             httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -217,7 +217,7 @@ namespace GraphQL.AspNet.Tests.Web
             request.ContentType = Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER_VALUE;
             httpContext.RequestServices = scope.ServiceProvider;
 
-            await processor.Invoke(httpContext);
+            await processor.InvokeAsync(httpContext);
             await httpContext.Response.Body.FlushAsync();
 
             httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -263,7 +263,7 @@ namespace GraphQL.AspNet.Tests.Web
 
             // context will attempt to be deserialized as json and fail
             // should return status 400
-            await processor.Invoke(httpContext);
+            await processor.InvokeAsync(httpContext);
             await httpContext.Response.Body.FlushAsync();
 
             httpContext.Response.Body.Seek(0, SeekOrigin.Begin);

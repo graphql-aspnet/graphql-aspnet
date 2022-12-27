@@ -15,12 +15,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A collection of known methods that can be invoked by the run time
-    /// in response to the directive being included in a query document at various locations.
+    /// A collection of method templates declared on a directive template.
     /// </summary>
     public class GraphDirectiveMethodTemplateContainer
     {
@@ -39,7 +38,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             _templateMap = new Dictionary<DirectiveLocation, GraphDirectiveMethodTemplate>();
         }
 
-        /// <inheritdoc cref="IGraphItemTemplate.RetrieveRequiredTypes" />
+        /// <inheritdoc cref="ISchemaItemTemplate.RetrieveRequiredTypes" />
         public IEnumerable<DependentType> RetrieveRequiredTypes()
         {
             // all methods are required to be the same signatured
@@ -82,7 +81,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="location">A valid graphql directive location.</param>
         /// <returns>IGraphMethod.</returns>
-        public IGraphMethod FindMethod(DirectiveLocation location)
+        public IGraphFieldResolverMethod FindMethod(DirectiveLocation location)
         {
             if (_templateMap.ContainsKey(location))
                 return _templateMap[location];

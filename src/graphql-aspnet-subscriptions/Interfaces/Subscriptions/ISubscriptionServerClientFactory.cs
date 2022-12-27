@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <typeparam name="TSchema">The type of the schema this factory creates clients for.</typeparam>
         /// <param name="connection">The instance represented the connected client.</param>
         /// <returns>Task&lt;ISubscriptionClientProxy&gt;.</returns>
-        Task<ISubscriptionClientProxy<TSchema>> CreateSubscriptionClient<TSchema>(IClientConnection connection)
+        Task<ISubscriptionClientProxy<TSchema>> CreateSubscriptionClientAsync<TSchema>(IClientConnection connection)
         where TSchema : class, ISchema;
     }
 }

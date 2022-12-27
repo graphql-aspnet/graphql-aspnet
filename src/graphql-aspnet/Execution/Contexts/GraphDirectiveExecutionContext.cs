@@ -10,12 +10,9 @@
 namespace GraphQL.AspNet.Execution.Contexts
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using System.Security.Claims;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
@@ -27,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A set of information needed to successiful execute a directive as part of a field resolution.
     /// </summary>
     [DebuggerDisplay("Directive Context: {Directive.Name}")]
-    public class GraphDirectiveExecutionContext : BaseGraphExecutionContext, IContextGenerator<GraphDirectiveExecutionContext>
+    public class GraphDirectiveExecutionContext : MiddlewareExecutionContextBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveExecutionContext" /> class.
@@ -40,7 +37,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="user">The user that has been preauthorized for this execution.</param>
         public GraphDirectiveExecutionContext(
             ISchema schema,
-            IGraphExecutionContext parentContext,
+            IGraphQLMiddlewareExecutionContext parentContext,
             IGraphDirectiveRequest request,
             IResolvedVariableCollection variableData = null,
             ClaimsPrincipal user = null)
@@ -72,12 +69,12 @@ namespace GraphQL.AspNet.Execution.Contexts
         public GraphDirectiveExecutionContext(
             ISchema schema,
             IGraphDirectiveRequest directiveRequest,
-            IGraphOperationRequest operationRequest,
+            IQueryExecutionRequest operationRequest,
             IServiceProvider serviceProvider,
             IQuerySession querySession,
             IUserSecurityContext userSecurityContext = null,
             MetaDataCollection items = null,
-            IGraphQueryExecutionMetrics metrics = null,
+            IQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             IResolvedVariableCollection variableData = null,
             ClaimsPrincipal user = null)
@@ -94,12 +91,6 @@ namespace GraphQL.AspNet.Execution.Contexts
             this.Request = Validation.ThrowIfNullOrReturn(directiveRequest, nameof(directiveRequest));
             this.VariableData = variableData ?? ResolvedVariableCollection.Empty;
             this.User = user;
-        }
-
-        /// <inheritdoc />
-        IEnumerable<GraphDirectiveExecutionContext> IContextGenerator<GraphDirectiveExecutionContext>.CreateChildContexts()
-        {
-            return Enumerable.Empty<GraphDirectiveExecutionContext>();
         }
 
         /// <summary>

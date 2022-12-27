@@ -196,7 +196,7 @@ namespace GraphQL.AspNet.Configuration
         /// Determines whether the given <paramref name="schemaItem" /> is
         /// the schema item representing the supplied <paramref name="enumValue" />.
         /// </summary>
-        /// <typeparam name="TEnum">The type of the t enum.</typeparam>
+        /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="schemaItem">The schema item.</param>
         /// <param name="enumValue">The enum value.</param>
         /// <returns><c>true</c> if the schema item represents the enum value; otherwise, <c>false</c>.</returns>

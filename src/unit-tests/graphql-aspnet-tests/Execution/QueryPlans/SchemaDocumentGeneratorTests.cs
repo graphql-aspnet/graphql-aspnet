@@ -10,11 +10,10 @@
 namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System.Linq;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
@@ -22,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     [TestFixture]
     public class SchemaDocumentGeneratorTests
     {
-        private IGraphQueryDocument CreateDocument(string text, out ISchema schema)
+        private IQueryDocument CreateDocument(string text, out ISchema schema)
         {
             var server = new TestServerBuilder()
                 .AddType<TestUserController>()
@@ -33,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             return server.CreateDocument(text);
         }
 
-        private IGraphQueryDocument CreateDocument(string text)
+        private IQueryDocument CreateDocument(string text)
         {
             return this.CreateDocument(text, out var _);
         }

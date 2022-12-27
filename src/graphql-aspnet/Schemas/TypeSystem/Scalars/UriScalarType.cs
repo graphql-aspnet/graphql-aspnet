@@ -14,13 +14,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A graph type representing a <see cref="Uri"/>.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class UriScalarType : BaseScalarType
+    public sealed class UriScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UriScalarType"/> class.

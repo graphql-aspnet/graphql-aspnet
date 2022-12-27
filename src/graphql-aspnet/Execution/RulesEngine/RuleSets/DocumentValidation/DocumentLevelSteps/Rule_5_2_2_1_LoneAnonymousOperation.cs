@@ -11,23 +11,22 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Docum
 {
     using System.Linq;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// <para>(5.2.2.1) Validate that when an anon operation is included it exists by itself.</para>
-    /// <para>Reference: https://graphql.github.io/graphql-spec/October2021/#sec-Operation-Name-Uniqueness" .</para>
+    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Operation-Name-Uniqueness" /> .</para>
     /// </summary>
     internal class Rule_5_2_2_1_LoneAnonymousOperation
-        : DocumentPartValidationRuleStep<IGraphQueryDocument>
+        : DocumentPartValidationRuleStep<IQueryDocument>
     {
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
             // anonymous operations will all present as ReadOnlyMemory<char>.Empty
-            var document = (IGraphQueryDocument)context.ActivePart;
+            var document = (IQueryDocument)context.ActivePart;
 
             var allFoundOperations = document.Children[DocumentPartType.Operation]
                 .OfType<IOperationDocumentPart>()

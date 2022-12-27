@@ -10,17 +10,17 @@
 namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
 
     /// <summary>
     /// A validator that will inspect a span to ensure its characters
-    /// are valid for a number in graphql
-    /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Int-Value
-    /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Float-Value .
+    /// are valid for a number in graphql <br/>
+    /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Int-Value" /><br/>
+    /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Float-Value" /> .
     /// </summary>
-    public class NumberValidator
+    internal class NumberValidator
     {
         private const string INVALID_NUMBER_EMPTY = "Invalid number. No phrase provided.";
         private const string INVALID_NUMBER = "Invalid Number. Expected '{0}', received '{1}'.";

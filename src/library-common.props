@@ -1,0 +1,58 @@
+<!-- Common property settings for production libraries -->
+<Project>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net6.0;net7.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;IDE0019;IDE0017;RCS1146;RCS1194;</NoWarn>
+
+    <RootNamespace>GraphQL.AspNet</RootNamespace>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+
+    <Company>GraphQL ASP.NET</Company>
+    <Product>GraphQL ASP.NET</Product>
+    <Authors>Kevin Carroll</Authors>
+
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Deterministic>true</Deterministic>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://graphql-aspnet.github.io/</PackageProjectUrl>
+    <PackageTags>GraphQL Asp.Net</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/graphql-aspnet/graphql-aspnet</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\styles.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\build\graphql-aspnet-key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' AND '$(Configuration)' == 'Release'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\build\icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+  </ItemGroup>
+</Project>

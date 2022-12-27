@@ -14,12 +14,12 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// A configuration implementation containing all the applicable runtime options for any given schema.
     /// </summary>
-    public class SchemaConfiguration : ISchemaConfiguration
+    internal class SchemaConfiguration : ISchemaConfiguration
     {
         private readonly SchemaDeclarationConfiguration _declarationOptions;
         private readonly SchemaExecutionConfiguration _executionOptions;
         private readonly SchemaResponseConfiguration _responseOptions;
-        private readonly SchemaQueryPlanCacheConfiguration _cacheOptions;
+        private readonly SchemaQueryExecutionPlanCacheConfiguration _cacheOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaConfiguration" /> class.
@@ -32,12 +32,12 @@ namespace GraphQL.AspNet.Configuration
             ISchemaDeclarationConfiguration declarationOptions = null,
             ISchemaExecutionConfiguration executionOptions = null,
             ISchemaResponseConfiguration responseOptions = null,
-            ISchemaQueryPlanCacheConfiguration cacheOptions = null)
+            ISchemaQueryExecutionPlanCacheConfiguration cacheOptions = null)
         {
             _declarationOptions = new SchemaDeclarationConfiguration();
             _executionOptions = new SchemaExecutionConfiguration();
             _responseOptions = new SchemaResponseConfiguration();
-            _cacheOptions = new SchemaQueryPlanCacheConfiguration();
+            _cacheOptions = new SchemaQueryExecutionPlanCacheConfiguration();
 
             _declarationOptions.Merge(declarationOptions);
             _executionOptions.Merge(executionOptions);
@@ -79,6 +79,6 @@ namespace GraphQL.AspNet.Configuration
         /// Gets the options related to how this schema caches and evicts query plans at runtime.
         /// </summary>
         /// <value>The query cache options.</value>
-        public ISchemaQueryPlanCacheConfiguration QueryCacheOptions => _cacheOptions;
+        public ISchemaQueryExecutionPlanCacheConfiguration QueryCacheOptions => _cacheOptions;
     }
 }

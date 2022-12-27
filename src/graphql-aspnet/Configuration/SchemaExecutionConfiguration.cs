@@ -14,10 +14,8 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema;
 
-#pragma warning disable CS0618 // Type or member is obsolete
-
     /// <summary>
-    /// A set of configurations that will be applied to the execution of a graphql query through
+    /// A set of configuration options that will be applied to the execution of a graphql query through
     /// this <see cref="ISchema" />.
     /// </summary>
     [DebuggerDisplay("Schema Execution Configuration")]

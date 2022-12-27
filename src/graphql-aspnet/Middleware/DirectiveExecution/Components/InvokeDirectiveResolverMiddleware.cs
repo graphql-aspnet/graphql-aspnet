@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
                 await context
                     .Directive
                     .Resolver
-                    .Resolve(resolutionContext, cancelToken)
+                    .ResolveAsync(resolutionContext, cancelToken)
                     .ConfigureAwait(false);
 
                 context.Messages.AddRange(resolutionContext.Messages);

@@ -10,7 +10,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Middleware.DirectiveExecution.Components;

@@ -13,10 +13,10 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Controllers.ActionResults;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Tests.Controllers.ActionResults.ActuionResultTestData;
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var actionResult = new BadRequestGraphActionResult(modelDictionary);
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.IsNull(context.Result);
             Assert.IsTrue(context.Messages.Any(x => x.Code == Constants.ErrorCodes.BAD_REQUEST));
@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var actionResult = new BadRequestGraphActionResult("Test message");
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.IsNull(context.Result);
             Assert.AreEqual(1, context.Messages.Count);
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var actionResult = new GraphFieldErrorActionResult("Test Message", "Test Code", exception);
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var actionResult = new GraphFieldErrorActionResult("Test Message", "Test Code");
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
@@ -119,13 +119,13 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         [Test]
         public async Task InternalServerError_WithAction_AndException_FriendlyErrorMessage()
         {
-            var action = TemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)) as IGraphMethod;
+            var action = TemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)) as IGraphFieldResolverMethod;
 
             var exception = new Exception("Fail");
             var actionResult = new InternalServerErrorGraphActionResult(action, exception);
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var actionResult = new InternalServerErrorGraphActionResult("big fail", exception);
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
@@ -158,7 +158,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var actionResult = new ObjectReturnedGraphActionResult(testObject);
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.AreEqual(testObject, context.Result);
             Assert.AreEqual(0, context.Messages.Count);
@@ -167,13 +167,13 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         [Test]
         public async Task RouteNotFound_ViaGraphAction_YieldsNegativeResult()
         {
-            var action = TemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)) as IGraphMethod;
+            var action = TemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)) as IGraphFieldResolverMethod;
 
             var exception = new Exception("fail");
             var actionResult = new RouteNotFoundGraphActionResult(action, exception);
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
@@ -187,7 +187,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var actionResult = new RouteNotFoundGraphActionResult("The route was not found");
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
@@ -201,7 +201,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var actionResult = new RouteNotFoundGraphActionResult();
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
@@ -214,7 +214,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var actionResult = new UnauthorizedGraphActionResult("Error message for access");
 
             var context = this.CreateResolutionContext();
-            await actionResult.Complete(context);
+            await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);

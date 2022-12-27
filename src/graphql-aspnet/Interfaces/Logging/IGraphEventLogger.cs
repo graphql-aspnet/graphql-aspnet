@@ -11,14 +11,13 @@ namespace GraphQL.AspNet.Interfaces.Logging
 {
     using System;
     using System.Security.Claims;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
     /// A logging interface describing specific logged events in the completion of a graphql request.
@@ -42,7 +41,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
             where TSchema : class, ISchema;
 
         /// <summary>
-        /// Recorded when the startup services registers a publically available ASP.NET MVC route to which
+        /// Recorded when the startup services registers a publically available ASP.NET route to which
         /// end users can submit graphql queries.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema the route was registered for.</typeparam>
@@ -55,7 +54,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// executor for processing. This event is recorded before any action is taken.
         /// </summary>
         /// <param name="queryContext">The query context.</param>
-        void RequestReceived(GraphQueryExecutionContext queryContext);
+        void RequestReceived(QueryExecutionContext queryContext);
 
         /// <summary>
         /// Recorded when an executor attempts to fetch a query plan from its local cache but failed
@@ -71,7 +70,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// against an <see cref="IUserSecurityContext"/> to produce a <see cref="ClaimsPrincipal"/>.
         /// </summary>
         /// <param name="context">The field security context that contains the request to be authenticated.</param>
-        void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityChallengeContext context);
+        void SchemaItemAuthenticationChallenge(SchemaItemSecurityChallengeContext context);
 
         /// <summary>
         /// Recorded when the security middleware completes an authentication challenge
@@ -79,21 +78,21 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// </summary>
         /// <param name="context">The field security context that contains the request to be authenticated.</param>
         /// <param name="authResult">The authentication result that was created.</param>
-        void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityChallengeContext context, IAuthenticationResult authResult);
+        void SchemaItemAuthenticationChallengeResult(SchemaItemSecurityChallengeContext context, IAuthenticationResult authResult);
 
         /// <summary>
         /// Recorded when the security middleware invokes an authorization challenge
         /// against a <see cref="ClaimsPrincipal"/> to determine access to a field of data.
         /// </summary>
         /// <param name="context">The field security context that contains the <see cref="ClaimsPrincipal"/> to be authorized.</param>
-        void SchemaItemAuthorizationChallenge(GraphSchemaItemSecurityChallengeContext context);
+        void SchemaItemAuthorizationChallenge(SchemaItemSecurityChallengeContext context);
 
         /// <summary>
         /// Recorded when the security middleware completes an authorization challenge
         /// against a <see cref="ClaimsPrincipal"/> to determine access to a field of data.
         /// </summary>
         /// <param name="context">The field security context that contains the <see cref="ClaimsPrincipal"/> to be authorized.</param>
-        void SchemaItemAuthorizationChallengeResult(GraphSchemaItemSecurityChallengeContext context);
+        void SchemaItemAuthorizationChallengeResult(SchemaItemSecurityChallengeContext context);
 
         /// <summary>
         /// Recorded when an executor attempts, and succeeds, to retrieve a query plan from its local cache.
@@ -109,14 +108,14 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// </summary>
         /// <param name="key">The key the plan is to be cached under.</param>
         /// <param name="queryPlan">The completed plan that was cached.</param>
-        void QueryPlanCached(string key, IGraphQueryPlan queryPlan);
+        void QueryPlanCached(string key, IQueryExecutionPlan queryPlan);
 
         /// <summary>
         /// Recorded when an executor finishes creating a query plan and is ready to
         /// cache and execute against it.
         /// </summary>
         /// <param name="queryPlan">The generated query plan.</param>
-        void QueryPlanGenerated(IGraphQueryPlan queryPlan);
+        void QueryPlanGenerated(IQueryExecutionPlan queryPlan);
 
         /// <summary>
         /// Recorded by a field resolver when it starts resolving a field context and
@@ -138,7 +137,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// </summary>
         /// <param name="action">The action method on the controller being invoked.</param>
         /// <param name="request">The request being completed by the action method.</param>
-        void ActionMethodInvocationRequestStarted(IGraphMethod action, IDataRequest request);
+        void ActionMethodInvocationRequestStarted(IGraphFieldResolverMethod action, IDataRequest request);
 
         /// <summary>
         /// Recorded when a controller completes validation of the model data that will be passed
@@ -147,7 +146,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// <param name="action">The action method on the controller being invoked.</param>
         /// <param name="request">The request being completed by the action method.</param>
         /// <param name="modelState">The model data that was validated.</param>
-        void ActionMethodModelStateValidated(IGraphMethod action, IDataRequest request, InputModelStateDictionary modelState);
+        void ActionMethodModelStateValidated(IGraphFieldResolverMethod action, IDataRequest request, InputModelStateDictionary modelState);
 
         /// <summary>
         /// Recorded after a controller invokes and receives a result from an action method.
@@ -155,7 +154,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// <param name="action">The action method on the controller being invoked.</param>
         /// <param name="request">The request being completed by the action method.</param>
         /// <param name="result">The result object that was returned from the action method.</param>
-        void ActionMethodInvocationCompleted(IGraphMethod action, IDataRequest request, object result);
+        void ActionMethodInvocationCompleted(IGraphFieldResolverMethod action, IDataRequest request, object result);
 
         /// <summary>
         /// Recorded when the invocation of action method generated a known exception; generally
@@ -164,7 +163,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// <param name="action">The action method on the controller being invoked.</param>
         /// <param name="request">The request being completed by the action method.</param>
         /// <param name="exception">The exception that was generated.</param>
-        void ActionMethodInvocationException(IGraphMethod action, IDataRequest request, Exception exception);
+        void ActionMethodInvocationException(IGraphFieldResolverMethod action, IDataRequest request, Exception exception);
 
         /// <summary>
         /// Recorded when the invocation of action method generated an unknown exception. This
@@ -173,27 +172,27 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// <param name="action">The action method on the controller being invoked.</param>
         /// <param name="request">The request being completed by the action method.</param>
         /// <param name="exception">The exception that was generated.</param>
-        void ActionMethodUnhandledException(IGraphMethod action, IDataRequest request, Exception exception);
+        void ActionMethodUnhandledException(IGraphFieldResolverMethod action, IDataRequest request, Exception exception);
 
         /// <summary>
         /// Recorded by an executor after the entire graphql operation has been completed
         /// and final results have been generated.
         /// </summary>
         /// <param name="queryContext">The query context.</param>
-        void RequestCompleted(GraphQueryExecutionContext queryContext);
+        void RequestCompleted(QueryExecutionContext queryContext);
 
         /// <summary>
         /// Recorded by an executor after the query failed to complete within the expected
         /// amount of time.
         /// </summary>
         /// <param name="queryContext">The query context.</param>
-        void RequestTimedOut(GraphQueryExecutionContext queryContext);
+        void RequestTimedOut(QueryExecutionContext queryContext);
 
         /// <summary>
         /// Recorded by an executor after the request was cancelled by an external actor.
         /// </summary>
         /// <param name="queryContext">The query context.</param>
-        void RequestCancelled(GraphQueryExecutionContext queryContext);
+        void RequestCancelled(QueryExecutionContext queryContext);
 
         /// <summary>
         /// Recorded when, during schema generation, a type system directive is successfully applied

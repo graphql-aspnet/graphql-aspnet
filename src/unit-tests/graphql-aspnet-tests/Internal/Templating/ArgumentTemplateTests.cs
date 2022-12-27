@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using System.Reflection;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Tests.CommonHelpers;
@@ -33,13 +33,13 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 .GetParameters()
                 .FirstOrDefault(x => x.Name == paramName);
 
-            var mockMethod = new Mock<IGraphFieldBaseTemplate>();
+            var mockMethod = new Mock<IGraphFieldTemplateBase>();
             mockMethod.Setup(x => x.InternalFullName)
                 .Returns($"{nameof(ParameterTestClass)}.{nameof(ParameterTestClass.TestMethod)}");
             mockMethod.Setup(x => x.ObjectType).Returns(typeof(ParameterTestClass));
 
             var route = new SchemaItemPath(SchemaItemPath.Join(
-                GraphCollection.Query,
+                SchemaItemCollections.Query,
                 nameof(ParameterTestClass),
                 nameof(ParameterTestClass.TestMethod)));
             mockMethod.Setup(x => x.Route).Returns(route);

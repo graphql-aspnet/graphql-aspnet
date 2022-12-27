@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Execution
     [TestFixture]
     public class MemoryBasedQueryCacheTests
     {
-        private IGraphQueryPlan CreatePlan(string queryText)
+        private IQueryExecutionPlan CreatePlan(string queryText)
         {
             var server = new TestServerBuilder()
                 .AddType<SimpleExecutionController>()
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task NotInCache_ReturnsFalse()
         {
-            using var cache = new DefaultQueryPlanCacheProvider();
+            using var cache = new DefaultQueryExecutionPlanCacheProvider();
             var hash = Guid.NewGuid().ToString("N");
             var found = await cache.TryGetPlanAsync(hash, out var plan);
             Assert.IsNull(plan);
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task AddPlanToCache_BecomesInCache()
         {
-            var cache = new DefaultQueryPlanCacheProvider();
+            var cache = new DefaultQueryExecutionPlanCacheProvider();
             var text = "query Operation1{  simple {  simpleQueryMethod { property1 __typename} } }";
 
             var plan = this.CreatePlan(text);
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task ForceEvict_RemovesFromCache()
         {
-            var cache = new DefaultQueryPlanCacheProvider();
+            var cache = new DefaultQueryExecutionPlanCacheProvider();
             var text = "query Operation1{  simple {  simpleQueryMethod { property1 __typename} } }";
 
             var plan = this.CreatePlan(text);

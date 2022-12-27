@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.Interfaces.Web
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
 
-        /// <summary>
-    /// A processor that is created from a DI container by a runtime handler to handle the individual
-    /// request.
+    /// <summary>
+    /// An object that is created from a DI container by a runtime handler to handle the graphql
+    /// individual received via an API end point.
     /// </summary>
     public interface IGraphQLHttpProcessor
     {
@@ -24,6 +24,6 @@ namespace GraphQL.AspNet.Interfaces.Web
         /// </summary>
         /// <param name="context">The context to process.</param>
         /// <returns>Task.</returns>
-        Task Invoke(HttpContext context);
+        Task InvokeAsync(HttpContext context);
     }
 }

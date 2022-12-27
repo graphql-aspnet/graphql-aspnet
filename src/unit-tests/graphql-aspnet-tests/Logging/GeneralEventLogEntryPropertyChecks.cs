@@ -16,19 +16,19 @@ namespace GraphQL.AspNet.Tests.Logging
     using System.Security.Principal;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.Response;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.ExecutionEvents;
-    using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
+    using GraphQL.AspNet.Logging.GeneralEvents;
+    using GraphQL.AspNet.Logging.GeneralEvents.PropertyItems;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -156,7 +156,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var request = builder.OperationRequest;
             var context = builder.Build();
 
-            var mock = new Mock<IGraphOperationResult>();
+            var mock = new Mock<IQueryExecutionResult>();
             mock.Setup(x => x.Request).Returns(request);
             mock.Setup(x => x.Data).Returns(new ResponseFieldSet());
             mock.Setup(x => x.Messages).Returns(new GraphMessageCollection());
@@ -175,7 +175,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void QueryPlanCacheHitLogEntry()
         {
-            var entry = new QueryPlanCacheHitLogEntry<GraphSchema>("abc123");
+            var entry = new QueryExecutionPlanCacheHitLogEntry<GraphSchema>("abc123");
 
             Assert.AreEqual(LogEventIds.QueryCacheHit.Id, entry.EventId);
             Assert.AreEqual("abc123", entry.QueryPlanHashCode);
@@ -186,7 +186,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void QueryPlanCacheMissLogEntry()
         {
-            var entry = new QueryPlanCacheMissLogEntry<GraphSchema>("abc123");
+            var entry = new QueryExecutionPlanCacheMissLogEntry<GraphSchema>("abc123");
 
             Assert.AreEqual(LogEventIds.QueryCacheMiss.Id, entry.EventId);
             Assert.AreEqual("abc123", entry.QueryPlanHashCode);
@@ -204,7 +204,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 "query Operation1{ field1 } query Operation2 { fieldException }",
                 "Operation1");
 
-            var entry = new QueryPlanCacheAddLogEntry("abc123", queryPlan);
+            var entry = new QueryExecutionPlanCacheAddLogEntry("abc123", queryPlan);
 
             Assert.AreEqual(LogEventIds.QueryCacheAdd.Id, entry.EventId);
             Assert.AreEqual("abc123", entry.QueryPlanHashCode);
@@ -223,7 +223,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 "query Operation1{ field1 } query Operation2 { fieldException }",
                 "Operation1");
 
-            var entry = new QueryPlanGeneratedLogEntry(queryPlan);
+            var entry = new QueryExecutionPlanGeneratedLogEntry(queryPlan);
 
             Assert.AreEqual(LogEventIds.QueryPlanGenerationCompleted.Id, entry.EventId);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
@@ -399,7 +399,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddType<LogTestController>()
                                          .Build();
-            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
+            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
@@ -423,7 +423,7 @@ namespace GraphQL.AspNet.Tests.Logging
                                          .AddType<LogTestController>()
                                          .Build();
 
-            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
+            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
@@ -449,7 +449,7 @@ namespace GraphQL.AspNet.Tests.Logging
                                          .AddType<LogTestController>()
                                          .Build();
 
-            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
+            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
@@ -482,7 +482,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
+            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
             var fieldRequest = package.FieldRequest;
 
             var result = new object();
@@ -511,7 +511,7 @@ namespace GraphQL.AspNet.Tests.Logging
             directive.Setup(x => x.InternalName).Returns("The Directive Internal");
 
             var item = new Mock<ISchemaItem>();
-            item.Setup(x => x.Route).Returns(new AspNet.Schemas.Structural.SchemaItemPath(GraphCollection.Types, "path1"));
+            item.Setup(x => x.Route).Returns(new AspNet.Schemas.Structural.SchemaItemPath(SchemaItemCollections.Types, "path1"));
 
             var entry = new TypeSystemDirectiveAppliedLogEntry<GraphSchema>(directive.Object, item.Object);
 
@@ -535,7 +535,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 GraphOperationType.Query,
                 new SourceLocation(999, 33, 5));
 
-            var path = new SchemaItemPath(GraphCollection.Types, "type1");
+            var path = new SchemaItemPath(SchemaItemCollections.Types, "type1");
 
             var entry = new ExecutionDirectiveAppliedLogEntry<GraphSchema>(directive.Object, docPart);
 

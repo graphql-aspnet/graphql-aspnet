@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
     using System.Text;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using NUnit.Framework;
 
     [TestFixture]

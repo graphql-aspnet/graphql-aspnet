@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
 
     /// <summary>
@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     public interface IGraphMessage
     {
         /// <summary>
-        /// Gets the time stamp when this message was created.
+        /// Gets the time stamp (in UTC-0) when this message was created.
         /// </summary>
         /// <value>The time stamp.</value>
         DateTimeOffset TimeStamp { get; }

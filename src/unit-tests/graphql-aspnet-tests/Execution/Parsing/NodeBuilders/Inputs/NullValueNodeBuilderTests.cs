@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
-            var tree = SyntaxTree.FromDocumentRoot();
+            var tree = SyntaxTree.WithDocumentRoot();
             var docNode = tree.RootNode;
 
             stream.Prime();
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
-            var tree = SyntaxTree.FromDocumentRoot();
+            var tree = SyntaxTree.WithDocumentRoot();
             var docNode = tree.RootNode;
 
             stream.Prime();

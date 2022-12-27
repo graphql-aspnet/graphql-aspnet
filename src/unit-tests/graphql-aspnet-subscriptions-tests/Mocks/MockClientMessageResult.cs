@@ -7,9 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Mock
+namespace GraphQL.AspNet.Tests.Mocks
 {
-    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Web;
 

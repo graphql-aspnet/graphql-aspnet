@@ -10,16 +10,16 @@
 namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
 
     /// <summary>
     /// A validator that will inspect a span to ensure its characters
     /// are valid for a name in graphql
-    /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Names .
+    /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Names" /> .
     /// </summary>
-    public class NameValidator
+    internal class NameValidator
     {
         private const string ERROR_EMPTY = "Unexpected string, expected a name, received nothing.";
         private const string INVALID_NAME = "Invalid Name. Expected '{0}', received '{1}'.";

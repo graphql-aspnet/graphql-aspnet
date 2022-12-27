@@ -7,29 +7,27 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests
+namespace GraphQL.AspNet.Tests
 {
     using System;
     using System.Linq;
-    using Castle.Core;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Logging.SubscriptionEventLogEntries;
     using GraphQL.AspNet.Middleware.FieldExecution.Components;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
+    using GraphQL.AspNet.SubscriptionServer;
+    using GraphQL.AspNet.SubscriptionServer.BackgroundServices;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs;
+    using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
@@ -43,12 +41,12 @@ namespace GraphQL.Subscriptions.Tests
     {
         private (
             Mock<ISchemaBuilder<GraphSchema>>,
-            Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<GraphQueryExecutionContext>, GraphQueryExecutionContext>>,
-            Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>)
+            Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>>,
+            Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>)
             CreateSchemaBuilderMock(SchemaOptions<GraphSchema> options)
         {
-            var queryPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<GraphQueryExecutionContext>, GraphQueryExecutionContext>>();
-            var fieldPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>();
+            var queryPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>>();
+            var fieldPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>();
 
             var builder = new Mock<ISchemaBuilder<GraphSchema>>();
             builder.Setup(x => x.QueryExecutionPipeline).Returns(queryPipeline.Object);
@@ -56,13 +54,13 @@ namespace GraphQL.Subscriptions.Tests
             builder.Setup(x => x.Options).Returns(options);
 
             queryPipeline.Setup(x => x.Clear());
-            queryPipeline.Setup(x => x.AddMiddleware<IGraphMiddlewareComponent<GraphQueryExecutionContext>>(
+            queryPipeline.Setup(x => x.AddMiddleware<IGraphQLMiddlewareComponent<QueryExecutionContext>>(
                 It.IsAny<ServiceLifetime>(),
                 It.IsAny<string>())).Returns(queryPipeline.Object);
 
             queryPipeline.Setup(x => x.Clear());
             queryPipeline.Setup(x => x.AddMiddleware(
-                It.IsAny<IGraphMiddlewareComponent<GraphQueryExecutionContext>>(),
+                It.IsAny<IGraphQLMiddlewareComponent<QueryExecutionContext>>(),
                 It.IsAny<string>())).Returns(queryPipeline.Object);
 
             return (builder, queryPipeline, fieldPipeline);
@@ -102,7 +100,7 @@ namespace GraphQL.Subscriptions.Tests
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GraphqlWsLegacySubscriptionClientProxyFactory)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GraphqlWsLegacySubscriptionClientProxyFactoryAlternate)));
 
-            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
+            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTypeTemplateProvider);
         }
 
         [Test]
@@ -153,7 +151,7 @@ namespace GraphQL.Subscriptions.Tests
             queryPipeline.Verify(x => x.Clear());
             queryPipeline.Verify(
                 x =>
-                    x.AddMiddleware<IGraphMiddlewareComponent<GraphQueryExecutionContext>>(
+                    x.AddMiddleware<IGraphQLMiddlewareComponent<QueryExecutionContext>>(
                             It.IsAny<ServiceLifetime>(),
                             It.IsAny<string>()),
                 Times.Exactly(12));
@@ -161,7 +159,7 @@ namespace GraphQL.Subscriptions.Tests
             queryPipeline.Verify(
                 x =>
                     x.AddMiddleware(
-                        It.IsAny<IGraphMiddlewareComponent<GraphQueryExecutionContext>>(),
+                        It.IsAny<IGraphQLMiddlewareComponent<QueryExecutionContext>>(),
                         It.IsAny<string>()),
                 Times.Exactly(1));
 
@@ -177,7 +175,7 @@ namespace GraphQL.Subscriptions.Tests
             fieldPipeline.Verify(x => x.Clear());
             fieldPipeline.Verify(
                 x =>
-                    x.AddMiddleware<IGraphMiddlewareComponent<GraphFieldExecutionContext>>(It.IsAny<ServiceLifetime>(), It.IsAny<string>()),
+                    x.AddMiddleware<IGraphQLMiddlewareComponent<GraphFieldExecutionContext>>(It.IsAny<ServiceLifetime>(), It.IsAny<string>()),
                 Times.Exactly(3));
 
             // ensure field authroization component was NOT added

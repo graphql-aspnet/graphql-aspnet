@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="kind">The kind to check.</param>
         /// <param name="kindToBecome">The kind to become.</param>
         /// <returns><c>true</c> if this instance can become the specified kind to become; otherwise, <c>false</c>.</returns>
-        public static bool CanBecome(this TypeKind kind, TypeKind kindToBecome)
+        internal static bool CanBecome(this TypeKind kind, TypeKind kindToBecome)
         {
             switch (kind)
             {

@@ -14,19 +14,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// A class used to templatize a single option (a label) within an
-    /// <see cref="EnumGraphTypeTemplate"/>.
+    /// A template describing a single value within an ENUM graph type.
     /// </summary>
-    public class EnumValueTemplate : BaseItemTemplate, IEnumValueTemplate
+    public class EnumValueTemplate : SchemaItemTemplateBase, IEnumValueTemplate
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumValueTemplate" /> class.
         /// </summary>
-        /// <param name="parentTemplate">The parent template.</param>
+        /// <param name="parentTemplate">The parent enum type template.</param>
         /// <param name="enumFieldInfo">The enum field information.</param>
         public EnumValueTemplate(IEnumGraphTypeTemplate parentTemplate, FieldInfo enumFieldInfo)
             : base(enumFieldInfo)

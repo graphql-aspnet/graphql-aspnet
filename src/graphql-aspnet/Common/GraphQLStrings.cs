@@ -26,10 +26,10 @@ namespace GraphQL.AspNet.Common
         /// returned as null.
         /// </summary>
         /// <param name="text">The text to manipulate.</param>
-        /// <param name="nullOnFailure">if set to <c>true</c> should the string not be correctly delimited null is returned. When
-        /// false and the stirng is not correclty delimited, the original string is returned unaltered.</param>        ///
+        /// <param name="nullOnFailure">if set to <c>true</c> should the string not be correctly delimited, null is returned. When
+        /// false and the string is not correctly delimited, the original string is returned unaltered.</param>
         /// <remarks>
-        /// e.g.  Converts  { "Hell\u019f" }  to HellƟ.
+        /// e.g.  Converts  "Hell\u019f" => HellƟ.
         /// </remarks>
         /// <returns>The unescaped string or <c>null</c>.</returns>
         public static string UnescapeAndTrimDelimiters(ReadOnlySpan<char> text, bool nullOnFailure = true)
@@ -61,11 +61,11 @@ namespace GraphQL.AspNet.Common
         }
 
         /// <summary>
-        /// Escapes the specified text turing necessary characters into escaped unicode
+        /// Escapes the specified text turning necessary characters into escaped unicode
         /// representations of themselves.
         /// </summary>
         /// <param name="text">The text to escape.</param>
-        /// <remarks>Example:  "endingQuote\""  =>   "endingQuote\\u0022".</remarks>
+        /// <remarks>Example:  "endingQuote\""  =>   "endingQuote\u0022".</remarks>
         /// <returns>The escaped text.</returns>
         public static string Escape(string text)
         {

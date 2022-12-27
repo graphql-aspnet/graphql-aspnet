@@ -10,9 +10,9 @@
 namespace GraphQL.AspNet.Execution.Metrics
 {
     /// <summary>
-    /// A formalized phase of processing a query.
+    /// A set of constants defining the phases of execution for apollo generated metrics.
     /// </summary>
-    public static class ApolloExecutionPhase
+    internal static class ApolloExecutionPhase
     {
         /// <summary>
         /// The parsing phase includes reading and tokenizing the user's submitted query string.

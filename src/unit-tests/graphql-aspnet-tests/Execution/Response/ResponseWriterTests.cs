@@ -34,13 +34,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(5.01D));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -65,13 +65,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(3.01f));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -96,13 +96,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(6.021m));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -127,13 +127,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(15L));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -158,13 +158,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(40UL));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -189,13 +189,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(1000));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -220,13 +220,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(50000000U));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -251,13 +251,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue((byte)5));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -282,13 +282,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue((sbyte)-33));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -313,13 +313,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(true));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -344,13 +344,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(new DateTime(2021, 10, 31, 5, 3, 1, DateTimeKind.Utc)));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 
@@ -375,13 +375,13 @@ namespace GraphQL.AspNet.Tests.Execution.Response
 
             var stream = new MemoryStream();
 
-            var data = new Dictionary<string, IResponseItem>();
+            var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(new DateTimeOffset(2021, 10, 31, 5, 3, 1, 0, TimeSpan.Zero)));
 
-            var fieldSet = new Mock<IResponseFieldSet>();
+            var fieldSet = new Mock<IQueryResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
 
-            var operationResult = new Mock<IGraphOperationResult>();
+            var operationResult = new Mock<IQueryExecutionResult>();
             operationResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             operationResult.Setup(x => x.Data).Returns(fieldSet.Object);
 

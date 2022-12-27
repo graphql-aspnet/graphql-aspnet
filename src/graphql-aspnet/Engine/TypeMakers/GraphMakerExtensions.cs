@@ -10,8 +10,8 @@ namespace GraphQL.AspNet.Engine.TypeMakers
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
         /// </summary>
         /// <param name="template">The template to extract directives from.</param>
         /// <returns>IAppliedDirectiveCollection.</returns>
-        public static IAppliedDirectiveCollection CreateAppliedDirectives(this IGraphItemTemplate template)
+        public static IAppliedDirectiveCollection CreateAppliedDirectives(this ISchemaItemTemplate template)
         {
             Validation.ThrowIfNull(template, nameof(template));
             return template.AppliedDirectives.CreateAppliedDirectives();

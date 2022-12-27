@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using CHARS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Characters;
@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
     /// <summary>
     /// Extension methods for custom business logic related phrase token parsing.
     /// </summary>
-    public ref partial struct SourceText
+    internal ref partial struct SourceText
     {
         /// <summary>
         /// Retrieves the physical text pointed to by a source block definition.

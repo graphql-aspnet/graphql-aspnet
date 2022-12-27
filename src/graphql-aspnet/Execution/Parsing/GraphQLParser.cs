@@ -16,14 +16,13 @@ namespace GraphQL.AspNet.Execution.Parsing
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Interfaces.Execution;
     using KEYWORDS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Keywords;
 
     /// <summary>
     /// A parse that will convert a graphql query into valid
     /// syntax tree to be used by the a formal schema for fulfilling the request.
     /// </summary>
-    public class GraphQLParser : IGraphQLDocumentParser
+    internal sealed class GraphQLParser
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLParser"/> class.
@@ -33,13 +32,13 @@ namespace GraphQL.AspNet.Execution.Parsing
         }
 
         /// <summary>
-        /// Takes in a raw query and converts into an executable document according to
+        /// Takes in a raw query text and converts into a syntax tree according to
         /// its internal rule set.  If, during parsing, an error occurs or something about
         /// the supplied query text is incorrect or unexpected a <see cref="GraphQLSyntaxException" />.
         /// </summary>
-        /// <param name="sourceText">The raw query text to be parsed.</param>
-        /// <returns>The completed document.</returns>
-        public SyntaxTree ParseQueryDocument(ref SourceText sourceText)
+        /// <param name="syntaxTree">The syntax tree to fill.</param>
+        /// <param name="sourceText">The source text to parse and query a tree from.</param>
+        public void FillSyntaxTree(ref SyntaxTree syntaxTree, ref SourceText sourceText)
         {
             // if an exception occurs during parsing just let it bubble up
             // the owner of the parse request will handle it accordingly
@@ -81,8 +80,7 @@ namespace GraphQL.AspNet.Execution.Parsing
             // * variables are identified and proper reference is ensured
             // * ..and on and on
             // ----------------------------------
-            var synTree = SyntaxTree.FromDocumentRoot();
-            var docRoot = synTree.RootNode;
+            var docRoot = syntaxTree.RootNode;
 
             do
             {
@@ -115,11 +113,9 @@ namespace GraphQL.AspNet.Execution.Parsing
                     builder = NodeBuilderFactory.CreateBuilder(SyntaxNodeType.Operation);
                 }
 
-                builder.BuildNode(ref synTree, ref docRoot, ref tokenStream);
+                builder.BuildNode(ref syntaxTree, ref docRoot, ref tokenStream);
             }
             while (!tokenStream.EndOfStream);
-
-            return synTree;
         }
 
         /// <summary>
@@ -128,7 +124,7 @@ namespace GraphQL.AspNet.Execution.Parsing
         /// </summary>
         /// <param name="queryText">The query text.</param>
         /// <returns>System.String.</returns>
-        public string StripInsignificantWhiteSpace(string queryText)
+        public static string StripInsignificantWhiteSpace(string queryText)
         {
             var whiteSpaceSpan = ParserConstants.Characters.WhiteSpace.Span;
 

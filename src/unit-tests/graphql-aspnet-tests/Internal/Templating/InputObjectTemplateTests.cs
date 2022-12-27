@@ -174,7 +174,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new InputObjectGraphTypeTemplate(typeof(GraphCollection));
+                var template = new InputObjectGraphTypeTemplate(typeof(SchemaItemCollections));
             });
         }
 
@@ -201,7 +201,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new InputObjectGraphTypeTemplate(typeof(BaseItemTemplate));
+                var template = new InputObjectGraphTypeTemplate(typeof(SchemaItemTemplateBase));
                 template.Parse();
                 template.ValidateOrThrow();
             });

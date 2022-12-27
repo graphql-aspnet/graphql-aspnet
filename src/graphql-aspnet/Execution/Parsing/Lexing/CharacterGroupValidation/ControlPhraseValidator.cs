@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
     /// <summary>
     /// Validation logic for validating a set of characters as a control group or not.
     /// </summary>
-    public class ControlPhraseValidator
+    internal class ControlPhraseValidator
     {
         private const string INVALID_LENGTH = "Unexpected Token. Expected {0} character(s), received {1}";
         private const string INVALID_CHARACTER = "Invalid character, '{0}' is not a valid token.";

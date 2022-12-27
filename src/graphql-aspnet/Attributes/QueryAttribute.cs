@@ -16,8 +16,8 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A decorator attribute to identify a method as a field on the query graph root. The
-    /// field will be nested inside a field or set of fields field(s) representing the controller that
+    /// A decorator attribute to identify a controller action method as a field on the graph.
+    /// The field will be nested inside a field or set of fields representing the controller that
     /// defines the method.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Attributes
         /// <param name="returnType">The type of the data object returned from this method. If this type implements
         /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type.</param>
         public QueryAttribute(string template, Type returnType)
-            : base(false, GraphCollection.Query, template, returnType)
+            : base(false, SchemaItemCollections.Query, template, returnType)
         {
         }
 
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Attributes
         /// be sure to supply any additional concrete types so that they may be included in the object graph.</param>
         /// <param name="additionalTypes">Any additional types to include in the object graph on behalf of this method.</param>
         public QueryAttribute(string template, Type returnType, params Type[] additionalTypes)
-            : base(false, GraphCollection.Query, template, returnType.AsEnumerable().Concat(additionalTypes).ToArray())
+            : base(false, SchemaItemCollections.Query, template, returnType.AsEnumerable().Concat(additionalTypes).ToArray())
         {
         }
 
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Attributes
         public QueryAttribute(string template, string unionTypeName, Type unionTypeA, Type unionTypeB, params Type[] additionalUnionTypes)
          : base(
                false,
-               GraphCollection.Query,
+               SchemaItemCollections.Query,
                template,
                unionTypeName,
                unionTypeA.AsEnumerable().Concat(unionTypeB.AsEnumerable()).Concat(additionalUnionTypes).ToArray())

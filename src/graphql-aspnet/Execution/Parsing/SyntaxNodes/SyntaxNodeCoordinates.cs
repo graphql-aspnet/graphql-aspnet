@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
     /// where this node is located.
     /// </summary>
     [DebuggerDisplay("{BlockIndex}, {BlockPosition}, {ChildBlockIndex}, {ChildBlockLength}")]
-    public readonly struct SyntaxNodeCoordinates : IEquatable<SyntaxNodeCoordinates>
+    internal readonly struct SyntaxNodeCoordinates : IEquatable<SyntaxNodeCoordinates>
     {
         /// <summary>
         /// Gets a set of coordinates indicating no position.

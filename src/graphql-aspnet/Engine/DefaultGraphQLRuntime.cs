@@ -23,7 +23,8 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
-    /// The default implementation of the core runtime.
+    /// The default implementation of the core graphql runtime responsible for generating
+    /// <see cref="IQueryExecutionResult"/> from <see cref="IQueryExecutionRequest"/>.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this runtime operates with.</typeparam>
     public class DefaultGraphQLRuntime<TSchema> : IGraphQLRuntime<TSchema>
@@ -31,9 +32,9 @@ namespace GraphQL.AspNet.Engine
     {
         private const string ERROR_NO_RESPONSE = "GraphQL runtime returned no response.";
 
-        private readonly ISchemaPipeline<TSchema, GraphQueryExecutionContext> _pipeline;
+        private readonly ISchemaPipeline<TSchema, QueryExecutionContext> _pipeline;
         private readonly IGraphEventLogger _logger;
-        private readonly IGraphQueryExecutionMetricsFactory<TSchema> _metricsFactory;
+        private readonly IQueryExecutionMetricsFactory<TSchema> _metricsFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLRuntime{TSchema}" /> class.
@@ -42,8 +43,8 @@ namespace GraphQL.AspNet.Engine
         /// <param name="metricsFactory">The factory to produce metrics packages if and when needed.</param>
         /// <param name="logger">The logger used to record events during an execution.</param>
         public DefaultGraphQLRuntime(
-            ISchemaPipeline<TSchema, GraphQueryExecutionContext> pipeline,
-            IGraphQueryExecutionMetricsFactory<TSchema> metricsFactory = null,
+            ISchemaPipeline<TSchema, QueryExecutionContext> pipeline,
+            IQueryExecutionMetricsFactory<TSchema> metricsFactory = null,
             IGraphEventLogger logger = null)
         {
             _pipeline = Validation.ThrowIfNullOrReturn(pipeline, nameof(pipeline));
@@ -52,21 +53,39 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public IGraphQueryExecutionMetrics CreateMetricsPackage()
+        public IQueryExecutionMetrics CreateMetricsPackage()
         {
             return _metricsFactory?.CreateMetricsPackage();
         }
 
         /// <inheritdoc />
-        public IGraphOperationRequest CreateRequest(GraphQueryData queryData = null)
+        public IQueryExecutionRequest CreateRequest(GraphQueryData queryData = null)
         {
-            return new GraphOperationRequest(queryData ?? GraphQueryData.Empty);
+            return new QueryExecutionRequest(queryData ?? GraphQueryData.Empty);
         }
 
         /// <inheritdoc />
-        public Task<IGraphOperationResult> ExecuteRequest(
+        public Task<IQueryExecutionResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
-            IGraphOperationRequest request,
+            IQueryExecutionRequest request,
+            CancellationToken cancelToken = default)
+        {
+            Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
+            Validation.ThrowIfNull(request, nameof(request));
+
+            return this.ExecuteRequestAsync(
+                serviceProvider,
+                request,
+                securityContext: null,
+                metricsPackage: null,
+                session: null,
+                cancelToken: cancelToken);
+        }
+
+        /// <inheritdoc />
+        public Task<IQueryExecutionResult> ExecuteRequestAsync(
+            IServiceProvider serviceProvider,
+            IQueryExecutionRequest request,
             IUserSecurityContext securityContext = null,
             bool enableMetrics = false,
             CancellationToken cancelToken = default)
@@ -74,21 +93,22 @@ namespace GraphQL.AspNet.Engine
             Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
             Validation.ThrowIfNull(request, nameof(request));
 
-            return this.ExecuteRequest(
+            return this.ExecuteRequestAsync(
                 serviceProvider,
                 request,
                 securityContext: securityContext,
                 metricsPackage: enableMetrics ? this.CreateMetricsPackage() : null,
+                session: null,
                 cancelToken: cancelToken);
         }
 
         /// <inheritdoc />
-        public Task<IGraphOperationResult> ExecuteRequest(
+        public Task<IQueryExecutionResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
-            IGraphOperationRequest request,
-            IQuerySession session = null,
+            IQueryExecutionRequest request,
             IUserSecurityContext securityContext = null,
-            IGraphQueryExecutionMetrics metricsPackage = null,
+            IQueryExecutionMetrics metricsPackage = null,
+            IQuerySession session = null,
             CancellationToken cancelToken = default)
         {
             Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
@@ -96,7 +116,7 @@ namespace GraphQL.AspNet.Engine
 
             session = session ?? new QuerySession();
 
-            var context = new GraphQueryExecutionContext(
+            var context = new QueryExecutionContext(
                 request,
                 serviceProvider,
                 session,
@@ -105,12 +125,12 @@ namespace GraphQL.AspNet.Engine
                 metrics: metricsPackage,
                 logger: _logger);
 
-            return this.ExecuteRequest(context, cancelToken);
+            return this.ExecuteRequestAsync(context, cancelToken);
         }
 
         /// <inheritdoc />
-        public async Task<IGraphOperationResult> ExecuteRequest(
-            GraphQueryExecutionContext context,
+        public async Task<IQueryExecutionResult> ExecuteRequestAsync(
+            QueryExecutionContext context,
             CancellationToken cancelToken = default)
         {
             Validation.ThrowIfNull(context, nameof(context));
@@ -128,7 +148,7 @@ namespace GraphQL.AspNet.Engine
             var queryResponse = context.Result;
             if (queryResponse == null)
             {
-                queryResponse = new GraphOperationResult(context.OperationRequest);
+                queryResponse = new QueryExecutionResult(context.OperationRequest);
                 queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
                 context.Result = queryResponse;
             }

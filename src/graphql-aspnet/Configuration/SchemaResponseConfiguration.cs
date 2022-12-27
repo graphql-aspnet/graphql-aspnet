@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// Merges the specified configuration setttings into this instance.
         /// </summary>
-        /// <param name="config">The configuration.</param>
+        /// <param name="config">The configuration settings to merge into this instance.</param>
         public void Merge(ISchemaResponseConfiguration config)
         {
             if (config == null)

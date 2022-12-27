@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
 {
     using System;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
@@ -18,9 +18,9 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
 
     /// <summary>
     /// Validates that a group of characters conforms the specification for a comment
-    /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Comments.
+    /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Comments" />.
     /// </summary>
-    public class CommentPhraseValidator
+    internal class CommentPhraseValidator
     {
         private const string INVALID_COMMENT = "Invalid Comment. Expected '{0}', recieved '{1}'";
         private const string INVALID_COMMENT_NEWLINE = "Invalid Comment. New lines '\\n' is not allowed.";

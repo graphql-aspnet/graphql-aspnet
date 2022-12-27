@@ -17,14 +17,14 @@ namespace GraphQL.AspNet.Execution.QueryPlans
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A generator capable of converting a single <see cref="IOperationDocumentPart"/> from a query document into an actionable
-    /// execution context containing the necessary data, steps, resolvers, analyzers etc.  to fulfill a
-    /// request made from it.
+    /// A generator capable of converting a single <see cref="IOperationDocumentPart"/> into
+    /// an actionable execution context containing the necessary data, steps,
+    /// resolvers, analyzers etc. to fulfill a request made from it.
     /// </summary>
     internal class ExecutableOperationGenerator
     {
@@ -34,7 +34,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutableOperationGenerator" /> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <param name="schema">The schema used by this generator to find resolvers
+        /// and look up various data items.</param>
         public ExecutableOperationGenerator(ISchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
@@ -48,17 +49,17 @@ namespace GraphQL.AspNet.Execution.QueryPlans
         /// </summary>
         /// <param name="operation">The query operation to generate an execution context for.</param>
         /// <returns>Task&lt;IGraphFieldExecutableOperation&gt;.</returns>
-        public async Task<IGraphFieldExecutableOperation> Create(IOperationDocumentPart operation)
+        public async Task<IExecutableOperation> CreateAsync(IOperationDocumentPart operation)
         {
             Validation.ThrowIfNull(operation, nameof(operation));
             _messages = new GraphMessageCollection();
 
-            var topLevelFields = await this.CreateContextsForFieldSelectionSet(
+            var topLevelFields = await this.CreateContextsForFieldSelectionSetAsync(
                 operation.GraphType as IObjectGraphType,
                 operation.FieldSelectionSet)
                 .ConfigureAwait(false);
 
-            var result = new GraphFieldExecutableOperation(operation);
+            var result = new ExecutableOperation(operation);
             foreach (var field in topLevelFields)
                 result.FieldContexts.Add(field);
 
@@ -73,7 +74,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
         /// <param name="sourceGraphType">The source type for which fields requests should be generated.</param>
         /// <param name="fieldsToReturn">The set of fields to return from the source type.</param>
         /// <returns>Task.</returns>
-        private async Task<List<IGraphFieldInvocationContext>> CreateContextsForFieldSelectionSet(
+        private async Task<List<IGraphFieldInvocationContext>> CreateContextsForFieldSelectionSetAsync(
             IObjectGraphType sourceGraphType,
             IFieldSelectionSetDocumentPart fieldsToReturn)
         {
@@ -87,7 +88,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
                     // restrict those fields to a given graph type (or types in the case of a union or interface)
                     if (fieldPart.Field.CanResolveForGraphType(sourceGraphType))
                     {
-                        var task = this.CreateFieldContext(sourceGraphType, fieldPart);
+                        var task = this.CreateFieldContextAsync(sourceGraphType, fieldPart);
                         tasks.Add(task);
                     }
                 }
@@ -115,7 +116,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
         /// <param name="sourceGraphType">The graph type from which to extract the data.</param>
         /// <param name="fieldPart">The part of the query document.</param>
         /// <returns>IGraphFieldExecutionContext.</returns>
-        private async Task<IGraphFieldInvocationContext> CreateFieldContext(
+        private async Task<IGraphFieldInvocationContext> CreateFieldContextAsync(
             IObjectGraphType sourceGraphType,
             IFieldDocumentPart fieldPart)
         {
@@ -156,7 +157,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
                 var orderedFieldTasks = new List<Task<List<IGraphFieldInvocationContext>>>();
                 foreach (var childGraphType in allKnownTypes)
                 {
-                    var childrenTask = this.CreateContextsForFieldSelectionSet(childGraphType, fieldPart.FieldSelectionSet);
+                    var childrenTask = this.CreateContextsForFieldSelectionSetAsync(childGraphType, fieldPart.FieldSelectionSet);
                     orderedFieldTasks.Add(childrenTask);
                 }
 

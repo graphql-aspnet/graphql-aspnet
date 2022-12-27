@@ -11,10 +11,9 @@ namespace GraphQL.AspNet.SubscriberLoadTest.Server
 {
     using System;
     using System.Threading.Tasks;
-    using GraphQL.AspNet;
-    using GraphQL.AspNet.Configuration.Mvc;
-    using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.WebSockets;
     using Microsoft.Extensions.DependencyInjection;
@@ -61,7 +60,7 @@ namespace GraphQL.AspNet.SubscriberLoadTest.Server
 
             builder.Services.AddSingleton<ISubscriptionClientDispatchQueueAlertSettings>(alerts);
 
-            SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = 5000;
+            GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = 5000;
 
             // Add services to the container.
             builder.Services

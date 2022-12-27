@@ -14,15 +14,14 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
     using GraphQL.AspNet.Execution.RulesEngine;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Execution.Parsing.DocumentConstructionTestData;
     using NUnit.Framework;
 
@@ -141,10 +140,12 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
         private SyntaxTree CreateSyntaxTree(ref SourceText sourceText)
         {
             var parser = new GraphQLParser();
-            return parser.ParseQueryDocument(ref sourceText);
+            var syntaxTree = SyntaxTree.WithDocumentRoot();
+            parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
+            return syntaxTree;
         }
 
-        private IGraphQueryDocument CreateDocument(SyntaxTree syntaxTree, SourceText sourceText)
+        private IQueryDocument CreateDocument(SyntaxTree syntaxTree, SourceText sourceText)
         {
             var doc = new QueryDocument();
             var context = new DocumentConstructionContext(

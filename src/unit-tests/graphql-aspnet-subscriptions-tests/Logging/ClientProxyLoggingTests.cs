@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Logging
+namespace GraphQL.AspNet.Tests.Logging
 {
     using System;
     using System.Collections.Generic;
@@ -16,9 +16,10 @@ namespace GraphQL.Subscriptions.Tests.Logging
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
-    using GraphQL.AspNet.Logging.ClientProxyLogEntries;
+    using GraphQL.AspNet.Logging.SubscriptionEvents;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.SubscriptionServer;
     using Moq;
     using NUnit.Framework;
 
@@ -49,7 +50,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
         public void ClientMessageSent_PropertyCheck()
         {
             var client = new Mock<ISubscriptionClientProxy>();
-            var result = new Mock<IGraphOperationResult>();
+            var result = new Mock<IQueryExecutionResult>();
 
             var id = SubscriptionClientId.NewClientId();
             client.Setup(x => x.Id).Returns(id);

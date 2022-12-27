@@ -12,11 +12,11 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
     using System;
     using System.IO;
     using System.Reflection;
+    using System.Threading;
     using System.Threading.Tasks;
     using BenchmarkDotNet.Attributes;
     using GraphQL.AspNet.Benchmarks.Model;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Variables;
@@ -24,6 +24,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Schemas;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Primitives;
 
     /// <summary>
     /// A collection of query execution tests to run to profile the speed of
@@ -58,12 +59,10 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                 options.AddType<RecordCompany>();
             };
 
-            var schemaOptions = new SchemaOptions<GraphSchema>(serviceCollection);
-            var injector = new GraphQLSchemaInjector<GraphSchema>(schemaOptions, configureOptions);
-            injector.ConfigureServices();
+            serviceCollection.AddGraphQL(configureOptions);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
-            injector.UseSchema(_serviceProvider);
+            _serviceProvider.UseGraphQL();
 
             _introspectionQuery = this.LoadResourceTexts("GraphQL.AspNet.Benchmarks.QueryText.introspectionQuery.graphql");
         }
@@ -91,8 +90,10 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
         private async Task ExecuteQueryOrFail(string queryText, string jsonText = "{}")
         {
             // top level services to execute the query
-            var queryPipeline = _serviceProvider.GetService<ISchemaPipeline<GraphSchema, GraphQueryExecutionContext>>();
-            var writer = _serviceProvider.GetService<IGraphQueryResponseWriter<GraphSchema>>();
+            using var serviceScope = _serviceProvider.CreateScope();
+
+            var runtime = serviceScope.ServiceProvider.GetService<IGraphQLRuntime<GraphSchema>>();
+            var writer = serviceScope.ServiceProvider.GetService<IGraphQueryResponseWriter<GraphSchema>>();
 
             // parse the json doc, simulating a request recieved to the QueryController
             var inputVars = InputVariableCollection.FromJsonDocument(jsonText);
@@ -103,16 +104,13 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                 Variables = inputVars ?? InputVariableCollection.Empty,
             };
 
-            // execute the request
-            var request = new GraphOperationRequest(query);
-            var context = new GraphQueryExecutionContext(
+            var request = runtime.CreateRequest(query);
+
+            var response = await runtime.ExecuteRequestAsync(
+                serviceScope.ServiceProvider,
                 request,
-                _serviceProvider,
-                new QuerySession());
+                CancellationToken.None);
 
-            await queryPipeline.InvokeAsync(context, default);
-
-            var response = context.Result;
             if (response.Messages.Count > 0)
                 throw new InvalidOperationException("Query failed: " + response.Messages[0].Message);
 

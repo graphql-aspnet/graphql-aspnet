@@ -40,10 +40,7 @@ namespace GraphQL.AspNet.Execution
             _acceptableTypes = new HashSet<Type>();
         }
 
-        /// <summary>
-        /// Adds the specified context to the collection.
-        /// </summary>
-        /// <param name="context">The context.</param>
+        /// <inheritdoc />
         public void Add(IGraphFieldInvocationContext context)
         {
             if (context == null)
@@ -73,43 +70,25 @@ namespace GraphQL.AspNet.Execution
                 _secureContexts.Add(context);
         }
 
-        /// <summary>
-        /// Determines whether this any context in this collection could accept a source item
-        /// of the given type as its source data value.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns><c>true</c> if an item in this instance can accept the specified type; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public bool CanAcceptSourceType(Type type)
         {
             return type != null && _acceptableTypes.Contains(type);
         }
 
-        /// <summary>
-        /// Gets the number of contexts in this collection.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc />
         public int Count => _contexts.Count;
 
-        /// <summary>
-        /// Gets the <see cref="IGraphFieldInvocationContext"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <returns>IGraphFieldExecutionContext.</returns>
+        /// <inheritdoc />
         public IGraphFieldInvocationContext this[int index] => _contexts[index];
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         public IEnumerator<IGraphFieldInvocationContext> GetEnumerator()
         {
             return _contexts.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();

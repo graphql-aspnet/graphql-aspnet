@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet.Interfaces.Schema
 {
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
     /// Represents a scalar supported by a schema.

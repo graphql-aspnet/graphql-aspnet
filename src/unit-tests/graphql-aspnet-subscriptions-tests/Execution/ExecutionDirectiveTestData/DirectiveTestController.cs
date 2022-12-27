@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData
+namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

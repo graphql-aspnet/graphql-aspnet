@@ -15,12 +15,12 @@ namespace GraphQL.AspNet.Directives
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A base class from which all directives mush inherit.
+    /// A base class from which all Execution and Type System directives must inherit.
     /// </summary>
     public abstract partial class GraphDirective : GraphControllerBase<IGraphDirectiveRequest>
     {
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Directives
 
         /// <inheritdoc />
         internal override Task<object> InvokeActionAsync(
-            IGraphMethod actionToInvoke,
+            IGraphFieldResolverMethod actionToInvoke,
             SchemaItemResolutionContext<IGraphDirectiveRequest> context)
         {
             Validation.ThrowIfNull(context, nameof(context));

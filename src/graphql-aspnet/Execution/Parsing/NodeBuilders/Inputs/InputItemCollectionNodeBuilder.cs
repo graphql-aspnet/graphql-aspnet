@@ -11,17 +11,17 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
 {
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
     /// A syntax node builder that creates an input item collection (for a field or directive)
     /// from a token stream.
     /// </summary>
-    public class InputItemCollectionNodeBuilder : ISyntaxNodeBuilder
+    internal class InputItemCollectionNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
-        /// Gets the instance.
+        /// Gets the instance of this builder.
         /// </summary>
         /// <value>The instance.</value>
         public static ISyntaxNodeBuilder Instance { get; } = new InputItemCollectionNodeBuilder();

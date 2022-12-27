@@ -7,23 +7,22 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Mock
+namespace GraphQL.AspNet.Tests.Mocks
 {
     using System;
-    using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Configuration.Mvc;
-    using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
+    using GraphQL.AspNet.Middleware.QueryExecution.Components;
+    using GraphQL.AspNet.SubscriptionServer;
+    using GraphQL.AspNet.SubscriptionServer.BackgroundServices;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Web;
-    using GraphQL.Subscriptions.Tests.Mock;
+    using GraphQL.AspNet.Tests.Mocks;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 

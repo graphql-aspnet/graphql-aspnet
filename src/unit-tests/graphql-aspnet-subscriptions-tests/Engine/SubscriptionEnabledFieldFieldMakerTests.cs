@@ -6,15 +6,16 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.Subscriptions.Tests.Engine
+
+namespace GraphQL.AspNet.Tests.Engine
 {
     using System.Linq;
     using GraphQL.AspNet.Engine.TypeMakers;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.Engine.TestData;
+    using GraphQL.AspNet.Tests.Engine.TestData;
     using Moq;
     using NUnit.Framework;
 
@@ -31,7 +32,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
             mockController.Setup(x => x.ObjectType).Returns(typeof(SubscriptionTestController));
 
             var methodInfo = typeof(SubscriptionTestController).GetMethod(nameof(SubscriptionTestController.DoSub));
-            var actionTemplate = new ControllerSubscriptionActionGraphFieldTemplate(mockController.Object, methodInfo);
+            var actionTemplate = new SubscriptionControllerActionGraphFieldTemplate(mockController.Object, methodInfo);
             actionTemplate.Parse();
             actionTemplate.ValidateOrThrow();
 

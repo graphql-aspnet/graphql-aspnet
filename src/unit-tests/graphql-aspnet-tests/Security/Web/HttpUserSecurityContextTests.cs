@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Security.Web
             httpContext.RequestServices = serviceProvider.Object;
 
             using var userContext = new HttpUserSecurityContext(httpContext);
-            var result = await userContext.Authenticate(schemeToTest);
+            var result = await userContext.AuthenticateAsync(schemeToTest);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(schemeToTest, result.AuthenticationScheme);
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Security.Web
             httpContext.RequestServices = serviceProvider.Object;
 
             using var userContext = new HttpUserSecurityContext(httpContext);
-            var result = await userContext.Authenticate();
+            var result = await userContext.AuthenticateAsync();
 
             Assert.IsNotNull(result);
             Assert.IsNull(result.AuthenticationScheme);
@@ -105,8 +105,8 @@ namespace GraphQL.AspNet.Tests.Security.Web
             httpContext.RequestServices = serviceProvider.Object;
 
             using var userContext = new HttpUserSecurityContext(httpContext);
-            var result = await userContext.Authenticate();
-            var result1 = await userContext.Authenticate();
+            var result = await userContext.AuthenticateAsync();
+            var result1 = await userContext.AuthenticateAsync();
 
             Assert.IsNotNull(result);
             Assert.IsNull(result.AuthenticationScheme);

@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution.Parsing
     using System.Buffers;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
@@ -21,15 +21,15 @@ namespace GraphQL.AspNet.Execution.Parsing
     /// that represent the parsed query document.
     /// </summary>
     [DebuggerDisplay("{RootNode}")]
-    public readonly ref struct SyntaxTree
+    internal readonly ref struct SyntaxTree
     {
         /// <summary>
         /// Creates a new tree with a new root node declares as a document type.
         /// </summary>
-        /// <param name="minBlockCapacity">The minmum number of node blocks
+        /// <param name="minBlockCapacity">The minmum allocated number node blocks
         /// that can be contained within this tree.</param>
         /// <returns>The newly created syntax tree.</returns>
-        public static SyntaxTree FromDocumentRoot(int minBlockCapacity = 4)
+        public static SyntaxTree WithDocumentRoot(int minBlockCapacity = 4)
         {
             var rootNode = new SyntaxNode(SyntaxNodeType.Document, SourceLocation.None);
             return FromNode(rootNode, minBlockCapacity);

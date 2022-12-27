@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Converts the datetime into its equivilant set of milliseconds from the epoch.
         /// </summary>
-        /// <param name="dateTime">The datetime to convert.</param>
+        /// <param name="dateTime">The date to convert.</param>
         /// <returns>System.Nullable&lt;System.Int64&gt;.</returns>
         public static long? ToEpochTimeMilliseconds(this DateTime? dateTime)
         {
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Converts the datetime into its equivilant set of milliseconds from the epoch.
         /// </summary>
-        /// <param name="dateTime">The datetime to convert.</param>
+        /// <param name="dateTime">The date to convert.</param>
         /// <returns>System.Int64.</returns>
         public static long ToEpochTimeMilliseconds(this DateTime dateTime)
         {
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Converts the datetime into its equivilant set of milliseconds from the epoch.
         /// </summary>
-        /// <param name="dateTime">The date time.</param>
+        /// <param name="dateTime">The date to convert.</param>
         /// <returns>System.Int64.</returns>
         public static long? ToUnixTimeMilliseconds(this DateTime? dateTime)
         {
@@ -150,9 +150,9 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Converts the datetime to a RFC3339 formatted string (yyyy-MM-dd'T'HH:mm:ss.fffzzz).
-        /// spec: https://www.ietf.org/rfc/rfc3339.txt .
+        /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt"/> .
         /// </summary>
-        /// <param name="dateTime">The date time.</param>
+        /// <param name="dateTime">The date to convert.</param>
         /// <returns>System.String.</returns>
         public static string ToRfc3339String(this DateTime dateTime)
         {
@@ -161,9 +161,9 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Converts the datetime to a RFC3339 formatted string (yyyy-MM-dd'T'HH:mm:ss.fffzzz).
-        /// spec: https://www.ietf.org/rfc/rfc3339.txt .
+        /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt"/> .
         /// </summary>
-        /// <param name="dateTime">The date time.</param>
+        /// <param name="dateTime">The date to convert.</param>
         /// <returns>System.String.</returns>
         public static string ToRfc3339String(this DateTimeOffset dateTime)
         {
@@ -172,9 +172,9 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Converts the datetime to a RFC3339 formatted string (yyyy-MM-dd'T'HH:mm:ss.fffzzz).
-        /// spec: https://www.ietf.org/rfc/rfc3339.txt .
+        /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt"/> .
         /// </summary>
-        /// <param name="dateTime">The date time.</param>
+        /// <param name="dateTime">The date to convert.</param>
         /// <returns>System.String.</returns>
         public static string ToRfc3339String(this DateTime? dateTime)
         {
@@ -186,9 +186,9 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Converts the datetime to a RFC3339 formatted string (yyyy-MM-dd'T'HH:mm:ss.fffzzz).
-        /// spec: https://www.ietf.org/rfc/rfc3339.txt .
+        /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt" />.
         /// </summary>
-        /// <param name="dateTime">The date time.</param>
+        /// <param name="dateTime">The date to convert.</param>
         /// <returns>System.String.</returns>
         public static string ToRfc3339String(this DateTimeOffset? dateTime)
         {

@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
@@ -36,6 +36,15 @@ namespace GraphQL.AspNet.Execution
             _messages = new List<IGraphMessage>();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphMessageCollection" /> class.
+        /// </summary>
+        /// <param name="capacity">The initial capacity of the collection.</param>
+        public GraphMessageCollection(int capacity)
+        {
+            _messages = new List<IGraphMessage>(capacity);
+        }
+
         /// <inheritdoc />
         public void AddRange(IGraphMessageCollection messagesToAdd)
         {
@@ -45,17 +54,23 @@ namespace GraphQL.AspNet.Execution
             lock (_messages)
             {
                 // since we have to iterate all incoming messags
-                // in this method to do do a severity check anyways...
+                // in this method to do a severity check...
                 //
                 // instead of letting the list dynamicly size itself
                 // as messages are added in 1 by 1, ensure its only ever resized
                 // once for the whole iterated operation.
                 var newCount = messagesToAdd.Count + _messages.Count;
-                if (newCount < _messages.Capacity)
+                if (newCount > _messages.Capacity)
                 {
-                    var newCapacity = _messages.Capacity * 2;
-                    while (newCount < newCapacity)
+                    var newCapacity = _messages.Capacity;
+                    if (newCapacity == 0)
+                        newCapacity += 1;
+
+                    do
+                    {
                         newCapacity = newCapacity * 2;
+                    }
+                    while (newCount > newCapacity);
 
                     _messages.Capacity = newCapacity;
                 }
@@ -109,7 +124,12 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
-            return this.Add(GraphMessageSeverity.Critical, message, errorCode, origin, exceptionThrown);
+            return this.Add(
+                GraphMessageSeverity.Critical,
+                message,
+                errorCode,
+                origin,
+                exceptionThrown);
         }
 
         /// <inheritdoc />
@@ -119,7 +139,12 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
-            return this.Add(GraphMessageSeverity.Warning, message, errorCode, origin, exceptionThrown);
+            return this.Add(
+                GraphMessageSeverity.Warning,
+                message,
+                errorCode,
+                origin,
+                exceptionThrown);
         }
 
         /// <inheritdoc />
@@ -129,7 +154,12 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
-            return this.Add(GraphMessageSeverity.Information, message, errorCode, origin, exceptionThrown);
+            return this.Add(
+                GraphMessageSeverity.Information,
+                message,
+                errorCode,
+                origin,
+                exceptionThrown);
         }
 
         /// <inheritdoc />
@@ -139,7 +169,12 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
-            return this.Add(GraphMessageSeverity.Debug, message, errorCode, origin, exceptionThrown);
+            return this.Add(
+                GraphMessageSeverity.Debug,
+                message,
+                errorCode,
+                origin,
+                exceptionThrown);
         }
 
         /// <inheritdoc />
@@ -149,7 +184,12 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
-            return this.Add(GraphMessageSeverity.Trace, message, errorCode, origin, exceptionThrown);
+            return this.Add(
+                GraphMessageSeverity.Trace,
+                message,
+                errorCode,
+                origin,
+                exceptionThrown);
         }
 
         /// <inheritdoc />
@@ -160,6 +200,9 @@ namespace GraphQL.AspNet.Execution
 
         /// <inheritdoc />
         public bool IsSucessful => !this.Severity.IsCritical();
+
+        /// <inheritdoc />
+        public int Capacity => _messages.Capacity;
 
         /// <inheritdoc />
         public IGraphMessage this[int index]

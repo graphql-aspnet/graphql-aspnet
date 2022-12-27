@@ -10,10 +10,10 @@
 namespace GraphQL.AspNet.Tests.Execution.Parsing.Helpers
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
 
-    public class LexicalTokenTestCase
+    internal class LexicalTokenTestCase
     {
         [DebuggerStepperBoundary]
         public LexicalTokenTestCase(TokenType tokenType, string text = null, SourceLocation? location = null, bool isIgnored = false)

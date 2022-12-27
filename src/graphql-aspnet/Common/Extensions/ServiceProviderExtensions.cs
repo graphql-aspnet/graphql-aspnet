@@ -19,10 +19,10 @@ namespace GraphQL.AspNet.Common.Extensions
     public static class ServiceProviderExtensions
     {
         /// <summary>
-        /// Writes the startup log entry to the event logger if it can be generated from the service provider.
+        /// Writes the log entry to an event logger if it can be generated from the service provider.
         /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="writeFunction">The write function.</param>
+        /// <param name="serviceProvider">The service provider to extract a logger from.</param>
+        /// <param name="writeFunction">A function that would create and write a log entry.</param>
         public static void WriteLogEntry(this IServiceProvider serviceProvider, Action<IGraphEventLogger> writeFunction)
         {
             if (serviceProvider != null)

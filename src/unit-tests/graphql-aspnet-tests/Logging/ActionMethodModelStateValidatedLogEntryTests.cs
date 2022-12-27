@@ -12,9 +12,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using System;
     using System.Linq;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Logging.ExecutionEvents;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Logging.LoggerTestData;
@@ -22,8 +20,10 @@ namespace GraphQL.AspNet.Tests.Logging
     using Moq;
     using NUnit.Framework;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Controllers.InputModel;
+    using GraphQL.AspNet.Logging.GeneralEvents;
+    using GraphQL.AspNet.Logging.GeneralEvents.PropertyItems;
 
     [TestFixture]
     public class ActionMethodModelStateValidatedLogEntryTests
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Logging
         }
 
         private void ValidateModelDictionaryToLogEntry(
-            IGraphMethod graphMethod,
+            IGraphFieldResolverMethod graphMethod,
             IGraphFieldRequest fieldRequest,
             InputModelStateDictionary dictionary,
             ActionMethodModelStateValidatedLogEntry logEntry)

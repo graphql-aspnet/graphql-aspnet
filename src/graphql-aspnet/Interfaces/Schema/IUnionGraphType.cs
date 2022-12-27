@@ -35,6 +35,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// should be interpreted as.
         /// </summary>
         /// <value>The type mapper.</value>
-        IUnionTypeMapper TypeMapper { get; set; }
+        IUnionGraphTypeMapper TypeMapper { get; set; }
     }
 }

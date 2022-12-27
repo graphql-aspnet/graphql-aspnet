@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// fields that can be acted on to fulfill a requested operation.
     /// </summary>
     [DebuggerDisplay("{Name}, Fields = {Fields.Count}")]
-    public sealed class GraphOperation : BaseObjectGraphType, IGraphOperation, IInternalSchemaItem
+    public sealed class GraphOperation : ObjectGraphTypeBase, IGraphOperation, IInternalSchemaItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphOperation" /> class.
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             IAppliedDirectiveCollection directives = null)
             : base(
                   Constants.ReservedNames.FindOperationTypeNameByType(operationType),
-                  new SchemaItemPath(GraphCollection.Types, Constants.ReservedNames.FindOperationTypeNameByType(operationType)),
+                  new SchemaItemPath(SchemaItemCollections.Types, Constants.ReservedNames.FindOperationTypeNameByType(operationType)),
                   directives)
         {
             this.OperationType = operationType;

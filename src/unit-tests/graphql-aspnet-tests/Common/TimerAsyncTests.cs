@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Common
             timer.Start();
             await Task.Yield();
             await Task.Delay(15);
-            await timer.Stop();
+            await timer.StopAsync();
             if (!errorThrown)
                 Assert.Fail("Error was expected, but did not occur");
         }

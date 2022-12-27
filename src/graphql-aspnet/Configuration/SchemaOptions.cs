@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// A complete set of configuration options to setup a schema.
     /// </summary>
-    public partial class SchemaOptions
+    public abstract class SchemaOptions
     {
         private readonly Dictionary<Type, IGraphQLServerExtension> _serverExtensions;
         private readonly HashSet<SchemaTypeToRegister> _possibleTypes;
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Configuration
             _configExtensions = new List<ISchemaConfigurationExtension>();
 
             this.DeclarationOptions = new SchemaDeclarationConfiguration();
-            this.CacheOptions = new SchemaQueryPlanCacheConfiguration();
+            this.CacheOptions = new SchemaQueryExecutionPlanCacheConfiguration();
             this.AuthorizationOptions = new SchemaAuthorizationConfiguration();
             this.ExecutionOptions = new SchemaExecutionConfiguration();
             this.ResponseOptions = new SchemaResponseConfiguration();
@@ -233,7 +233,7 @@ namespace GraphQL.AspNet.Configuration
 
         private void RegisterTypeAsDependentService(Type type, ServiceLifetime? lifeTimeScope = null)
         {
-            lifeTimeScope = lifeTimeScope ?? GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime;
+            lifeTimeScope = lifeTimeScope ?? GraphQLServerSettings.ControllerServiceLifeTime;
             var serviceToRegister = new ServiceToRegister(
                 type,
                 type,
@@ -244,10 +244,10 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Registers a extension for this schema option.
+        /// Registers a server extension for this schema.
         /// </summary>
-        /// <typeparam name="TExtensionType">The type of the t extension type.</typeparam>
-        /// <param name="extension">The extension.</param>
+        /// <typeparam name="TExtensionType">The type of the extension to register.</typeparam>
+        /// <param name="extension">The extension instance.</param>
         public void RegisterExtension<TExtensionType>(TExtensionType extension)
             where TExtensionType : class, IGraphQLServerExtension
         {
@@ -276,7 +276,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <typeparam name="TDirectiveType">The type of the directive to apply.</typeparam>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveApplicator ApplyDirective<TDirectiveType>()
+        public DirectiveBindingConfiguration ApplyDirective<TDirectiveType>()
             where TDirectiveType : GraphDirective
         {
             return this.ApplyDirective(typeof(TDirectiveType));
@@ -288,13 +288,13 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="directiveType">The type of the directive to apply to schema items.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveApplicator ApplyDirective(Type directiveType)
+        public DirectiveBindingConfiguration ApplyDirective(Type directiveType)
         {
             Validation.ThrowIfNull(directiveType, nameof(directiveType));
             Validation.ThrowIfNotCastable<GraphDirective>(directiveType, nameof(directiveType));
 
             this.AddType(directiveType, null, null);
-            var applicator = new DirectiveApplicator(directiveType);
+            var applicator = new DirectiveBindingConfiguration(directiveType);
             this.AddConfigurationExtension(applicator);
 
             return applicator;
@@ -307,10 +307,10 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="directiveName">Name of the directive.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveApplicator ApplyDirective(string directiveName)
+        public DirectiveBindingConfiguration ApplyDirective(string directiveName)
         {
             directiveName = Validation.ThrowIfNullWhiteSpaceOrReturn(directiveName, nameof(directiveName));
-            var applicator = new DirectiveApplicator(directiveName);
+            var applicator = new DirectiveBindingConfiguration(directiveName);
             this.AddConfigurationExtension(applicator);
 
             return applicator;
@@ -365,7 +365,7 @@ namespace GraphQL.AspNet.Configuration
         /// Gets options related to how this schema utilizes the query cache.
         /// </summary>
         /// <value>The cache options.</value>
-        public SchemaQueryPlanCacheConfiguration CacheOptions { get; }
+        public SchemaQueryExecutionPlanCacheConfiguration CacheOptions { get; }
 
         /// <summary>
         /// Gets the options related to how the runtime will process field authorizations for this schema.

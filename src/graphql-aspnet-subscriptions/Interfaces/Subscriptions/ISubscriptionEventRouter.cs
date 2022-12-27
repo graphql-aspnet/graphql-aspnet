@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// An interface describing an object used for routing published subscription events to

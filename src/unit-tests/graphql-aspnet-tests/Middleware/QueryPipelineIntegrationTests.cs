@@ -37,21 +37,21 @@ namespace GraphQL.AspNet.Tests.Middleware
             // the first component in the series
             Assert.ThrowsAsync<GraphExecutionException>(async () =>
             {
-                await server.ExecuteQuery(null as GraphQueryExecutionContext);
+                await server.ExecuteQuery(null as QueryExecutionContext);
             });
         }
 
         [Test]
         public async Task WithAttachedQueryCache_RendersPlanToCache()
         {
-            var keyManager = new DefaultQueryPlanCacheKeyManager(new GraphQLParser());
+            var keyManager = new DefaultQueryExecutionPlanCacheKeyManager();
 
             var cacheInstance = new MemoryCache(nameof(WithAttachedQueryCache_RendersPlanToCache));
-            var cache = new DefaultQueryPlanCacheProvider(cacheInstance);
+            var cache = new DefaultQueryExecutionPlanCacheProvider(cacheInstance);
             var builder = new TestServerBuilder()
               .AddType<SimpleExecutionController>();
-            builder.AddSingleton<IGraphQueryPlanCacheProvider>(cache);
-            builder.AddSingleton<IGraphQueryPlanCacheKeyManager>(keyManager);
+            builder.AddSingleton<IQueryExecutionPlanCacheProvider>(cache);
+            builder.AddSingleton<IQueryExecutionPlanCacheKeyManager>(keyManager);
 
             // configure an absolute expriation of a few seconds to ensure the plan remains in cache
             // long enough to be fetched by tis expected key

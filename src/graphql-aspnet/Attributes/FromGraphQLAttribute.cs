@@ -10,14 +10,13 @@
 namespace GraphQL.AspNet.Attributes
 {
     using System;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A marker class for parameters of a method to configure them to respond to
-    /// different parameters on a query.
+    /// Allows for customization of method parameters as arguments on the graph. Use
+    /// of this attribute is optional.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
-    public class FromGraphQLAttribute : BaseGraphAttribute
+    public class FromGraphQLAttribute : GraphAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FromGraphQLAttribute"/> class.

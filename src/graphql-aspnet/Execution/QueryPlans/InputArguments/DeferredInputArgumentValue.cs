@@ -12,17 +12,17 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A represenetation of an argument to an execution context that has yet to be fully realized
-    /// and will need to make use of runtime data (variables provided by a user request) to finalize its
-    /// value so that it can provide it to the context.
+    /// A represenetation of a value to an input argument that has yet to be fully realized
+    /// and will need to make use of runtime data (variables provided by on user request) to finalize its
+    /// value so that it can provide data to a resolution context.
     /// </summary>
     [DebuggerDisplay("{_coreValue.OwnerArgument.Name}")]
-    public class DeferredInputArgumentValue : IInputValue
+    internal class DeferredInputArgumentValue : IInputValue
     {
         private readonly ISuppliedValueDocumentPart _coreValue;
         private readonly IInputValueResolver _resolver;

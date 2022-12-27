@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
 {
     using System.Linq;
     using System.Text.Json;
-    using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Execution.Variables.Json;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using NUnit.Framework;
 
@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
     {
         public class ObjectToTestInputCollectionDeserialization
         {
-            public InputVariableCollection Variables { get; set; }
+            public IInputVariableCollection Variables { get; set; }
         }
 
         private ObjectToTestInputCollectionDeserialization DeserializeJson(string jsonText)
@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
             options.PropertyNameCaseInsensitive = true;
             options.AllowTrailingCommas = true;
             options.ReadCommentHandling = JsonCommentHandling.Skip;
+            options.Converters.Add(new IInputVariableCollectionConverter());
 
             jsonText = "{ \"variables\": " + jsonText + "}";
             return JsonSerializer.Deserialize<ObjectToTestInputCollectionDeserialization>(jsonText, options);

@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.Variables
     /// (such as those destined to populate an INPUT_OBJECT).
     /// </summary>
     [DebuggerDisplay("InputFieldSet: {Name} (Count = {Fields.Count})")]
-    public class InputFieldSetVariable : InputVariable, IInputFieldSetVariable, IResolvableFieldSet
+    internal class InputFieldSetVariable : InputVariable, IInputFieldSetVariable, IResolvableFieldSet
     {
         private readonly Dictionary<string, IInputVariable> _fields;
 

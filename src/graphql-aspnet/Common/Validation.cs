@@ -219,8 +219,8 @@ namespace GraphQL.AspNet.Common
         /// <summary>
         /// Throws an <see cref="ArgumentException" /> if the provided type is not an enumeration.
         /// </summary>
-        /// <param name="enumType">Type of the enum.</param>
-        /// <param name="parameterName">Name of the parameter.</param>
+        /// <param name="enumType">Type to inspect.</param>
+        /// <param name="parameterName">Name of the parameter to include in an exception message.</param>
         /// <returns>Type.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type ThrowIfNullOrNotEnumOrReturn(Type enumType, string parameterName)

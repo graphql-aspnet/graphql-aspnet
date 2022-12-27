@@ -16,12 +16,12 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
     /// <summary>
     /// A middleware component for tracking execution time and other Apollo tracing
-    /// compatiable metrics: https://github.com/apollographql/apollo-tracing .
+    /// compatiable metrics: <see href="https://github.com/apollographql/apollo-tracing" /> .
     /// </summary>
     public class RecordQueryMetricsMiddleware : IQueryExecutionMiddleware
     {
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             context?.Metrics?.Start();
             await next(context, cancelToken).ConfigureAwait(false);

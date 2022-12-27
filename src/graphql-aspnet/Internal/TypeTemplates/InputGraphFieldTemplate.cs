@@ -21,17 +21,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A field template describing a field on an INPUT_OBJECT.
+    /// An template describing a field on an INPUT_OBJECT graph type that
+    /// is created from a C# object property.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public class InputGraphFieldTemplate : BaseItemTemplate, IInputGraphFieldTemplate
+    public class InputGraphFieldTemplate : SchemaItemTemplateBase, IInputGraphFieldTemplate
     {
         private GraphFieldAttribute _fieldDeclaration;
 
@@ -39,7 +40,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Initializes a new instance of the <see cref="InputGraphFieldTemplate" /> class.
         /// </summary>
         /// <param name="parent">The graph type templaate that owns this field.</param>
-        /// <param name="propInfo">The property information.</param>
+        /// <param name="propInfo">The property information describing the field.</param>
         public InputGraphFieldTemplate(IInputObjectGraphTypeTemplate parent, PropertyInfo propInfo)
             : base(propInfo)
         {

@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
 
     /// <summary>
@@ -106,5 +106,11 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value><c>true</c> if this instance is success; otherwise, <c>false</c>.</value>
         bool IsSucessful { get; }
+
+        /// <summary>
+        /// Gets the current maximum capacity of this collection.
+        /// </summary>
+        /// <value>The current maximum capacity.</value>
+        int Capacity { get; }
     }
 }

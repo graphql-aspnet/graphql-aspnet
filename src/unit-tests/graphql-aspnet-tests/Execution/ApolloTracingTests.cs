@@ -185,7 +185,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void DefaultMetricsFactory_Create()
         {
             var schema = new GraphSchema();
-            var factory = new DefaultGraphQueryExecutionMetricsFactory<GraphSchema>(schema);
+            var factory = new DefaultQueryExecutionMetricsFactory<GraphSchema>(schema);
 
             var instance = factory.CreateMetricsPackage();
             Assert.IsNotNull(instance);

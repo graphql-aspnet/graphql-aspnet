@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         /// <summary>
         /// Adds the graph controller to the server and renders it and its dependents into the target schema.
         /// </summary>
-        /// <typeparam name="TController">The type of the t controller.</typeparam>
+        /// <typeparam name="TController">The type of the controller to include.</typeparam>
         /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
         ITestServerBuilder<TSchema> AddGraphController<TController>()
             where TController : GraphController;

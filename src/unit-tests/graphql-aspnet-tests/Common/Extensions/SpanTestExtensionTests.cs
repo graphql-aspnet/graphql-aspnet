@@ -16,29 +16,6 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
     [TestFixture]
     public class SpanTestExtensionTests
     {
-        [TestCase("ABC_123", "_", '|', "ABC|123")]
-        [TestCase("ABC\n123", "\n", '_', "ABC_123")]
-        [TestCase("ABC_123", "_182", '|', "ABC|||3")]
-        public void Replace_ReadOnlySpan_ReturnNewSpanReplaced(string text, string valuesToReplace, char newValue, string expectedText)
-        {
-            var spanStart = text.AsSpan();
-            var spanNew = spanStart.Replace(valuesToReplace, newValue);
-            Assert.AreEqual(expectedText, spanNew.ToString());
-            Assert.AreEqual(text, spanStart.ToString());
-        }
-
-        [TestCase("ABC_123", "_", '|', "ABC|123")]
-        [TestCase("ABC\n123", "\n", '_', "ABC_123")]
-        [TestCase("ABC_123", "_182", '|', "ABC|||3")]
-        public void Replace_Span_SpanIsUpdatedInPlace(string text, string valuesToReplace, char newValue, string expectedText)
-        {
-            var span = new Span<char>(text.ToCharArray());
-
-            span.Replace(valuesToReplace, newValue);
-            Assert.AreNotEqual(text, span.ToString());
-            Assert.AreEqual(expectedText, span.ToString());
-        }
-
         [TestCase("", "", true)]
         [TestCase("ABC", "abc", true)]
         [TestCase("ABC", "aBc", true)]

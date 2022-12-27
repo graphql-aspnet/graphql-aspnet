@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
     /// Checks to see if the source text is currently pointed at the start of a comment or not.
     /// </summary>
     /// <seealso cref="ISourceRule" />
-    public class IsCommentGlyph : ISourceRule
+    internal class IsCommentGlyph : ISourceRule
     {
         /// <summary>
         /// Gets the instance.

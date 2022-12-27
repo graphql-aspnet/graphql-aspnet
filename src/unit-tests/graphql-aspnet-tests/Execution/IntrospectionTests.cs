@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
+    using GraphQL.AspNet.Tests.Execution.TestData;
     using GraphQL.AspNet.Tests.Execution.TestData.IntrospectionTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
@@ -46,6 +47,7 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNull(schema.MutationType);
             Assert.IsNull(schema.SubscriptionType);
             Assert.IsNotNull(schema.DeclaredDirectives);
+            Assert.AreEqual(server.Schema.Description, schema.Description);
 
             // skip , include, deprecated, specifiedBy
             Assert.AreEqual(4, schema.DeclaredDirectives.Count());
@@ -433,6 +435,36 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var typeNameField = graphType.Fields.FirstOrDefault(x => x.Name == Constants.ReservedNames.TYPENAME_FIELD);
             Assert.IsNotNull(typeNameField);
+        }
+
+        [Test]
+        public async Task Schema_Description_ReturnsValidData()
+        {
+            var serverBuilder = new TestServerBuilder<TestSchemaWithDescription>();
+            var server = serverBuilder.AddType<SodaCanController>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"{
+                               __schema
+                              {
+                                 description
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+
+            var output =
+                @"{
+                    ""data"": {
+                        ""__schema"" : {
+                            ""description"" : ""My Test Description""
+                        }
+                    }
+                }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
         }
 
         [Test]
@@ -1315,7 +1347,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
-            GraphQLProviders.ScalarProvider = new DefaultScalarTypeProvider();
+            GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
             GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(CustomSpecifiedScalar));
             var serverBuilder = new TestServerBuilder();
             var server = serverBuilder.AddGraphQL(o =>

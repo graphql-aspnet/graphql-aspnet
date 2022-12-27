@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task.</returns>
-        public async Task InvokeAsync(GraphSchemaItemSecurityChallengeContext context, GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityChallengeContext> next, CancellationToken cancelToken = default)
+        public async Task InvokeAsync(SchemaItemSecurityChallengeContext context, GraphMiddlewareInvocationDelegate<SchemaItemSecurityChallengeContext> next, CancellationToken cancelToken = default)
         {
             context.Logger?.SchemaItemAuthorizationChallenge(context);
 
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             // in this auth pipeline, if a result is already determined just skip this step
             if (context.Result == null)
             {
-                var result = await this.AuthorizeRequest(context).ConfigureAwait(false);
+                var result = await this.AuthorizeRequestAsync(context).ConfigureAwait(false);
                 context.Result = result ?? SchemaItemSecurityChallengeResult.Default();
             }
 
@@ -65,9 +65,9 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         /// </summary>
         /// <param name="context">The context to process.</param>
         /// <returns>FieldSecurityChallengeResult.</returns>
-        private async Task<SchemaItemSecurityChallengeResult> AuthorizeRequest(GraphSchemaItemSecurityChallengeContext context)
+        private async Task<SchemaItemSecurityChallengeResult> AuthorizeRequestAsync(SchemaItemSecurityChallengeContext context)
         {
-            Validation.ThrowIfNull(context?.SecurityRequirements, nameof(GraphSchemaItemSecurityChallengeContext.SecurityRequirements));
+            Validation.ThrowIfNull(context?.SecurityRequirements, nameof(SchemaItemSecurityChallengeContext.SecurityRequirements));
 
             var claimsUser = context.AuthenticatedUser;
 

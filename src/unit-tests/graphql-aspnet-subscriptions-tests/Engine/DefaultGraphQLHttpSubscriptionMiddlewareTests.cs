@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Engine
+namespace GraphQL.AspNet.Tests.Engine
 {
     using System;
     using System.Collections.Generic;
@@ -18,11 +18,12 @@ namespace GraphQL.Subscriptions.Tests.Engine
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.Subscriptions.Tests.Mock;
+    using GraphQL.AspNet.SubscriptionServer;
+    using GraphQL.AspNet.SubscriptionServer.Exceptions;
+    using GraphQL.AspNet.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
     using Moq;
     using NUnit.Framework;
@@ -120,12 +121,13 @@ namespace GraphQL.Subscriptions.Tests.Engine
             var next = new RequestDelegate(CallNext);
 
             var connection = new Mock<ISubscriptionClientProxy>();
-            connection.Setup(x => x.StartConnection(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            connection.Setup(x => x.StartConnectionAsync(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             var factory = new Mock<ISubscriptionServerClientFactory>();
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
+            client.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
 
-            factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
+            factory.Setup(x => x.CreateSubscriptionClientAsync<GraphSchema>(It.IsAny<IClientConnection>()))
                 .ReturnsAsync(client.Object);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
@@ -156,7 +158,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             var next = new RequestDelegate(CallNext);
             var factory = new Mock<ISubscriptionServerClientFactory>();
-            factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
+            factory.Setup(x => x.CreateSubscriptionClientAsync<GraphSchema>(It.IsAny<IClientConnection>()))
                 .Throws(new InvalidOperationException("failed"));
 
             var options = new SubscriptionServerOptions<GraphSchema>();
@@ -190,7 +192,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
             var options = new SubscriptionServerOptions<GraphSchema>();
             var factory = new Mock<ISubscriptionServerClientFactory>();
 
-            factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
+            factory.Setup(x => x.CreateSubscriptionClientAsync<GraphSchema>(It.IsAny<IClientConnection>()))
                 .Throws(new UnsupportedClientProtocolException("failed protocol"));
 
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
@@ -228,7 +230,7 @@ namespace GraphQL.Subscriptions.Tests.Engine
 
             var factory = new Mock<ISubscriptionServerClientFactory>();
 
-            factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
+            factory.Setup(x => x.CreateSubscriptionClientAsync<GraphSchema>(It.IsAny<IClientConnection>()))
                 .Throws(new Exception("this should not be invoked"));
 
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
@@ -262,12 +264,12 @@ namespace GraphQL.Subscriptions.Tests.Engine
             var next = new RequestDelegate(CallNext);
 
             var connection = new Mock<ISubscriptionClientProxy>();
-            connection.Setup(x => x.StartConnection(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            connection.Setup(x => x.StartConnectionAsync(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             var factory = new Mock<ISubscriptionServerClientFactory>();
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
 
-            factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
+            factory.Setup(x => x.CreateSubscriptionClientAsync<GraphSchema>(It.IsAny<IClientConnection>()))
                 .ReturnsAsync(client.Object);
 
             var options = new SubscriptionServerOptions<GraphSchema>();

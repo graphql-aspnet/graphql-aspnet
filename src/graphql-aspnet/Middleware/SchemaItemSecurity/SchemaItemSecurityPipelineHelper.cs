@@ -28,13 +28,13 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity
     public class SchemaItemSecurityPipelineHelper<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> _pipelineBuilder;
+        private readonly ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, SchemaItemSecurityChallengeContext> _pipelineBuilder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaItemSecurityPipelineHelper{TSchema}"/> class.
         /// </summary>
         /// <param name="pipelineBuilder">The pipeline builder.</param>
-        public SchemaItemSecurityPipelineHelper(ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> pipelineBuilder)
+        public SchemaItemSecurityPipelineHelper(ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, SchemaItemSecurityChallengeContext> pipelineBuilder)
         {
             _pipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
         }
@@ -61,6 +61,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity
             SchemItemSecurityRequirementsMiddleware MiddlewareFactory(IServiceProvider sp)
             {
                 // policy provider may not be registered and is optional
+                // since not all apps will have security
                 var policyProvider = sp.GetService<IAuthorizationPolicyProvider>();
                 return new SchemItemSecurityRequirementsMiddleware(policyProvider);
             }

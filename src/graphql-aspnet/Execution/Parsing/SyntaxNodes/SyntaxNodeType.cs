@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
     /// An enumeration of all the types of nodes that can exist within
     /// an abstract syntax tree representing a query.
     /// </summary>
-    public enum SyntaxNodeType : byte
+    internal enum SyntaxNodeType : byte
     {
         Empty = 0,
 

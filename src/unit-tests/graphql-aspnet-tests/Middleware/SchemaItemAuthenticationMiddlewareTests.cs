@@ -64,12 +64,12 @@ namespace GraphQL.AspNet.Tests.Middleware
             _usersByScheme.Add(DEFAULT_SCHEME, new ClaimsPrincipal());
         }
 
-        public Task EmptyNextDelegate(GraphSchemaItemSecurityChallengeContext context, CancellationToken token)
+        public Task EmptyNextDelegate(SchemaItemSecurityChallengeContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
 
-        private async Task<GraphSchemaItemSecurityChallengeContext> ExecuteTest(SchemaItemSecurityRequirements secRequirements)
+        private async Task<SchemaItemSecurityChallengeContext> ExecuteTest(SchemaItemSecurityRequirements secRequirements)
         {
             var defaultSet = false;
             foreach (var kvp in _usersByScheme)
@@ -78,12 +78,12 @@ namespace GraphQL.AspNet.Tests.Middleware
                 authResult.Setup(x => x.Suceeded).Returns(kvp.Value != null);
                 authResult.Setup(x => x.User).Returns(kvp.Value);
                 authResult.Setup(x => x.AuthenticationScheme).Returns(kvp.Key);
-                _userSecurityContext?.Setup(x => x.Authenticate(kvp.Key, It.IsAny<CancellationToken>()))
+                _userSecurityContext?.Setup(x => x.AuthenticateAsync(kvp.Key, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(authResult.Object);
 
                 if (kvp.Key == DEFAULT_SCHEME)
                 {
-                    _userSecurityContext?.Setup(x => x.Authenticate(It.IsAny<CancellationToken>()))
+                    _userSecurityContext?.Setup(x => x.AuthenticateAsync(It.IsAny<CancellationToken>()))
                         .ReturnsAsync(authResult.Object);
                     defaultSet = true;
                 }
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             if (!defaultSet)
             {
-                _userSecurityContext?.Setup(x => x.Authenticate(It.IsAny<CancellationToken>()))
+                _userSecurityContext?.Setup(x => x.AuthenticateAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new InvalidOperationException("No Default Scheme Defined"));
             }
 
@@ -103,11 +103,11 @@ namespace GraphQL.AspNet.Tests.Middleware
             var queryContext = contextBuilder.Build();
 
             var field = new Mock<IGraphField>();
-            var fieldSecurityRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var fieldSecurityRequest = new Mock<ISchemaItemSecurityRequest>();
             fieldSecurityRequest.Setup(x => x.SecureSchemaItem)
                 .Returns(field.Object);
 
-            var fieldSecurityContext = new GraphSchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest.Object);
+            var fieldSecurityContext = new SchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest.Object);
             fieldSecurityContext.SecurityRequirements = secRequirements;
 
             var middleware = new SchemaItemAuthenticationMiddleware(_provider?.Object);

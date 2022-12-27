@@ -18,11 +18,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     public static class SchemaExtensions
     {
         /// <summary>
-        /// An enumeration containing all <see cref="ISchemaItem" /> instances known to this schema.
+        /// Generates an enumerable that containing all <see cref="ISchemaItem" /> instances known to this schema.
         /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <param name="schema">The schema to inspecet.</param>
         /// <param name="includeDirectives">if set to <c>true</c> <see cref="IDirective"/> schema items
-        /// will be included in the set.</param>
+        /// will be included in the enumeration.</param>
         /// <returns>IEnumerable&lt;ISchemaItem&gt;.</returns>
         public static IEnumerable<ISchemaItem> AllSchemaItems(this ISchema schema, bool includeDirectives = false)
         {

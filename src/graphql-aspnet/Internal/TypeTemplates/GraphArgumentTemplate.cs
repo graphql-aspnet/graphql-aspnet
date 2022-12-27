@@ -20,14 +20,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A fully qualified description of a single argument of a method.
-    /// This template can be added as an input argument to a field or directive.
+    /// A template describing an argument declared a field.
     /// </summary>
     [DebuggerDisplay("{Name} (Type: {FriendlyObjectTypeName})")]
     public class GraphArgumentTemplate : IGraphArgumentTemplate
@@ -41,7 +40,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <param name="parent">The owner of this argument.</param>
         /// <param name="parameter">The parameter on which this
         /// argument template is made.</param>
-        public GraphArgumentTemplate(IGraphFieldBaseTemplate parent, ParameterInfo parameter)
+        public GraphArgumentTemplate(IGraphFieldTemplateBase parent, ParameterInfo parameter)
         {
             Validation.ThrowIfNull(parent, nameof(parent));
             Validation.ThrowIfNull(parameter, nameof(parameter));
@@ -259,7 +258,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public bool IsExplicitDeclaration => true;
 
         /// <inheritdoc />
-        public IGraphFieldBaseTemplate Parent { get; }
+        public IGraphFieldTemplateBase Parent { get; }
 
         /// <inheritdoc />
         public string Description { get; private set; }

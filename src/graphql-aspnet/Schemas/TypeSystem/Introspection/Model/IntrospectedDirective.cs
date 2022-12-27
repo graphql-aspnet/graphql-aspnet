@@ -17,7 +17,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A model object containing data for the __Directive type.
+    /// A model object containing data for a '__Directive' type created from a single
+    /// <see cref="IDirective"/>.
     /// </summary>
     [DebuggerDisplay("DIRECTIVE: {Name}")]
     public sealed class IntrospectedDirective : IntrospectedItem
@@ -25,18 +26,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedDirective" /> class.
         /// </summary>
-        /// <param name="directiveType">Type of the directive.</param>
+        /// <param name="directiveType">The directive to inspect and build a data set for.</param>
         public IntrospectedDirective(IDirective directiveType)
             : base(directiveType)
         {
             this.Directive = directiveType;
         }
 
-        /// <summary>
-        /// When overridden in a child class,populates this introspected type using its parent schema to fill in any details about
-        /// other references in this instance.
-        /// </summary>
-        /// <param name="introspectedSchema">The schema.</param>
+        /// <inheritdoc />
         public override void Initialize(IntrospectedSchema introspectedSchema)
         {
             var list = new List<IntrospectedInputValueType>();

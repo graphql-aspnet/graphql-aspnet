@@ -23,16 +23,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A base template for all directive methods that can be declared.
+    /// A template describing an action method declared on a directive.
     /// </summary>
     [DebuggerDisplay("{InternalName} (Type: {Parent.InternalName})")]
-    public class GraphDirectiveMethodTemplate : IGraphFieldBaseTemplate, IGraphMethod
+    public class GraphDirectiveMethodTemplate : IGraphFieldTemplateBase, IGraphFieldResolverMethod
     {
         private readonly List<GraphArgumentTemplate> _arguments;
 

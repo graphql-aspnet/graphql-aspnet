@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         private object _lock = new object();
         private bool _pathInitialized;
-        private GraphCollection _rootCollection;
+        private SchemaItemCollections _rootCollection;
         private string _path;
         private SchemaItemPath _parentField;
         private string _name;
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="collection">The collection the route belongs to.</param>
         /// <param name="pathSegments">The individual path segments of the route.</param>
-        public SchemaItemPath(GraphCollection collection, params string[] pathSegments)
+        public SchemaItemPath(SchemaItemCollections collection, params string[] pathSegments)
             : this(SchemaItemPath.Join(collection, pathSegments))
         {
         }
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             _path = string.Empty;
             _name = string.Empty;
             _isValid = false;
-            _rootCollection = GraphCollection.Unknown;
+            _rootCollection = SchemaItemCollections.Unknown;
         }
 
         private void EnsurePathInitialized()
@@ -96,48 +96,48 @@ namespace GraphQL.AspNet.Schemas.Structural
                 switch (pathFragments[0])
                 {
                     case RouteConstants.QUERY_ROOT:
-                        _rootCollection = GraphCollection.Query;
+                        _rootCollection = SchemaItemCollections.Query;
                         break;
 
                     case RouteConstants.MUTATION_ROOT:
-                        _rootCollection = GraphCollection.Mutation;
+                        _rootCollection = SchemaItemCollections.Mutation;
                         break;
 
                     case RouteConstants.SCALAR_ROOT:
-                        _rootCollection = GraphCollection.Scalars;
+                        _rootCollection = SchemaItemCollections.Scalars;
                         break;
 
                     case RouteConstants.TYPE_ROOT:
-                        _rootCollection = GraphCollection.Types;
+                        _rootCollection = SchemaItemCollections.Types;
                         break;
 
                     case RouteConstants.ENUM_ROOT:
-                        _rootCollection = GraphCollection.Enums;
+                        _rootCollection = SchemaItemCollections.Enums;
                         break;
 
                     case RouteConstants.DIRECTIVE_ROOT:
-                        _rootCollection = GraphCollection.Directives;
+                        _rootCollection = SchemaItemCollections.Directives;
                         break;
 
                     case RouteConstants.SUBSCRIPTION_ROOT:
-                        _rootCollection = GraphCollection.Subscription;
+                        _rootCollection = SchemaItemCollections.Subscription;
                         break;
 
                     case RouteConstants.INTROSPECTION_ROOT:
-                        _rootCollection = GraphCollection.Introspection;
+                        _rootCollection = SchemaItemCollections.Introspection;
                         break;
 
                     case RouteConstants.SCHEMA_ROOT:
-                        _rootCollection = GraphCollection.Schemas;
+                        _rootCollection = SchemaItemCollections.Schemas;
                         break;
 
                     case RouteConstants.DOCUMENT_ROOT:
-                        _rootCollection = GraphCollection.Document;
+                        _rootCollection = SchemaItemCollections.Document;
                         break;
                 }
 
                 // ensure each fragment matches the naming specification
-                foreach (var fragment in pathFragments.Skip(this.RootCollection == GraphCollection.Unknown ? 0 : 1))
+                foreach (var fragment in pathFragments.Skip(this.RootCollection == SchemaItemCollections.Unknown ? 0 : 1))
                 {
                     if (!this.ValidateFragment(fragment))
                         return;
@@ -147,7 +147,7 @@ namespace GraphQL.AspNet.Schemas.Structural
                 if (pathFragments.Count > 1)
                     _parentField = new SchemaItemPath(string.Join(RouteConstants.PATH_SEPERATOR, pathFragments.Take(pathFragments.Count - 1)));
 
-                _isTopLevelField = pathFragments.Count == 1 || (pathFragments.Count == 2 && this.RootCollection > GraphCollection.Unknown); // e.g. "[query]/name"
+                _isTopLevelField = pathFragments.Count == 1 || (pathFragments.Count == 2 && this.RootCollection > SchemaItemCollections.Unknown); // e.g. "[query]/name"
                 _isValid = this.Name.Length > 0;
                 _path = this.GeneratePathString(pathFragments);
             }
@@ -229,7 +229,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Gets the root collection represented by this route represents (e.g. query, mutation, type system etc.).
         /// </summary>
         /// <value>The type of the field.</value>
-        public GraphCollection RootCollection
+        public SchemaItemCollections RootCollection
         {
             get
             {

@@ -11,8 +11,8 @@ namespace GraphQL.AspNet.Tests.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Schemas
+namespace GraphQL.AspNet.Tests.Schemas
 {
     using System;
     using GraphQL.AspNet;
@@ -16,7 +16,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.Schemas.SchemaTestData;
+    using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
     using NUnit.Framework;
 
     [TestFixture]
@@ -27,7 +27,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
-            GraphQLProviders.TemplateProvider = new SubscriptionEnabledTemplateProvider();
+            GraphQLProviders.TemplateProvider = new SubscriptionEnabledTypeTemplateProvider();
             var schema = new GraphSchema() as ISchema;
             schema.SetNoAlterationConfiguration();
             schema.SetSubscriptionAllowances();
@@ -63,7 +63,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
 
-            GraphQLProviders.TemplateProvider = new SubscriptionEnabledTemplateProvider();
+            GraphQLProviders.TemplateProvider = new SubscriptionEnabledTypeTemplateProvider();
             var schema = new GraphSchema() as ISchema;
             schema.SetNoAlterationConfiguration();
 

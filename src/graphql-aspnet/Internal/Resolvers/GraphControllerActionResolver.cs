@@ -21,32 +21,25 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
-    /// A special resolver specifically for actions on <see cref="GraphController"/>s. Provides extra
-    /// fields, options and meta-data used by controllers to field a request through user code.
+    /// A special resolver specifically for actions on a <see cref="GraphController"/>. Provides extra
+    /// properties, options and meta-data used by controllers to resolve a field through user code.
     /// </summary>
-    public class GraphControllerActionResolver : BaseInvocableActionResolver, IGraphFieldResolver
+    internal class GraphControllerActionResolver : GraphControllerActionResolverBase, IGraphFieldResolver
     {
-        private readonly IGraphMethod _actionMethod;
+        private readonly IGraphFieldResolverMethod _actionMethod;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphControllerActionResolver"/> class.
         /// </summary>
         /// <param name="actionMethod">The action method that this resolver will invoke.</param>
-        public GraphControllerActionResolver(IGraphMethod actionMethod)
+        public GraphControllerActionResolver(IGraphFieldResolverMethod actionMethod)
         {
             _actionMethod = Validation.ThrowIfNullOrReturn(actionMethod, nameof(actionMethod));
         }
 
-        /// <summary>
-        /// Processes the given <see cref="IGraphFieldRequest" /> against this instance
-        /// performing the operation as defined by this entity and generating a response.
-        /// </summary>
-        /// <param name="context">The field context containing the necessary data to resolve
-        /// the field and produce a reslt.</param>
-        /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
-        /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
+        /// <inheritdoc />
         [DebuggerStepThrough]
-        public async Task Resolve(FieldResolutionContext context, CancellationToken cancelToken = default)
+        public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             IGraphActionResult result;
             try
@@ -78,13 +71,10 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
             // resolve the final graph action output using the provided field context
             // in what ever manner is appropriate for the result itself
-            await result.Complete(context).ConfigureAwait(false);
+            await result.CompleteAsync(context).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Gets the concrete type this resolver attempts to create as a during its invocation.
-        /// </summary>
-        /// <value>The type of the return.</value>
+        /// <inheritdoc />
         public Type ObjectType => _actionMethod.ObjectType;
     }
 }

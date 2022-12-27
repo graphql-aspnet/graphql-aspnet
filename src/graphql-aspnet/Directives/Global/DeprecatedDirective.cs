@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Directives.Global
 {
+    using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -19,18 +20,22 @@ namespace GraphQL.AspNet.Directives.Global
     /// <summary>
     /// <para>A directive, applicable to a field definition or enum value, that
     /// indicates its usage has been deprecated and will be removed in the future.</para>
-    /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec--deprecated .</para>
+    /// <para>Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec--deprecated"/>  .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.DEPRECATED_DIRECTIVE)]
+    [Description("A directive that indicates the schema item should not be used and may be removed in the future.")]
     public sealed class DeprecatedDirective : GraphDirective
     {
         /// <summary>
-        /// Executes the directive and marking the target as being deprecated with the given reason.
+        /// Executes the directive on the target document part.
         /// </summary>
-        /// <param name="reason">the reason for the deprecation, if any.</param>
+        /// <param name="reason">An optional reason for the deprecation.</param>
         /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.FIELD_DEFINITION | DirectiveLocation.ENUM_VALUE)]
-        public IGraphActionResult Execute([FromGraphQL("reason")] string reason = "No longer supported")
+        public IGraphActionResult Execute(
+            [FromGraphQL("reason")]
+            [Description("An optional human-friendly reason explaining why the schema item is being deprecated.")]
+            string reason = "No longer supported")
         {
             reason = reason?.Trim();
             var item = this.DirectiveTarget as ISchemaItem;
@@ -39,12 +44,6 @@ namespace GraphQL.AspNet.Directives.Global
                 throw new GraphTypeDeclarationException(
                     $"Invalid schema item. The directive @{Constants.ReservedNames.DEPRECATED_DIRECTIVE} must target " +
                     $"an object that implements {typeof(IGraphField).FriendlyName()} or {typeof(IEnumValue).FriendlyName()}. (Current Target: {this.DirectiveTarget?.GetType().FriendlyName()})");
-            }
-
-            if (reason == null)
-            {
-                throw new GraphTypeDeclarationException(
-                    $"A non-null reason must be provided with @{Constants.ReservedNames.DEPRECATED_DIRECTIVE}. (Target: {item.Route.Path})");
             }
 
             if (this.DirectiveTarget is IDeprecatable deprecatable)

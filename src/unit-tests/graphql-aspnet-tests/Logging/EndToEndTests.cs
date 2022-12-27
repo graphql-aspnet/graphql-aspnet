@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Tests.Logging.LoggerTestData;
     using Microsoft.Extensions.Logging;
     using NUnit.Framework;
-    using GraphQL.AspNet.Configuration.Mvc;
+    using GraphQL.AspNet.Configuration;
 
     [TestFixture]
     public class EndToEndTests
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Logging
                     OperationName = null,
                 });
 
-            await processor.Invoke(context);
+            await processor.InvokeAsync(context);
 
             var startupEvents = new Dictionary<EventId, int>();
             startupEvents.Add(LogEventIds.SchemaInstanceCreated, 1);
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Logging
                     OperationName = null,
                 });
 
-            await processor.Invoke(context);
+            await processor.InvokeAsync(context);
 
             Assert.IsTrue(logInstance.LogEntries.Count > 0);
 
@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Tests.Logging
                     OperationName = null,
                 });
 
-            await processor.Invoke(context);
+            await processor.InvokeAsync(context);
             Assert.IsTrue(logInstance.LogEntries.Count > 0);
 
             var logEntry = logInstance
@@ -183,7 +183,7 @@ namespace GraphQL.AspNet.Tests.Logging
                     OperationName = null,
                 });
 
-            await processor.Invoke(context);
+            await processor.InvokeAsync(context);
             logInstance.LogEntries.Clear();
 
             processor = server.CreateHttpQueryProcessor();
@@ -195,7 +195,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 });
 
             // should fetch from cache
-            await processor.Invoke(context);
+            await processor.InvokeAsync(context);
 
             var logEntry = logInstance
                 .LogEntries

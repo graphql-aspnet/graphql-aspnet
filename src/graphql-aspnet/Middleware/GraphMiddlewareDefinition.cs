@@ -22,15 +22,15 @@ namespace GraphQL.AspNet.Middleware
     /// </summary>
     /// <typeparam name="TContext">The type of the context.</typeparam>
     [DebuggerDisplay("Middleware '{Name}'")]
-    public class GraphMiddlewareDefinition<TContext>
-        where TContext : class, IGraphExecutionContext
+    internal class GraphMiddlewareDefinition<TContext>
+        where TContext : class, IGraphQLMiddlewareExecutionContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphMiddlewareDefinition{TMiddlewareComponent}" /> class.
         /// </summary>
         /// <param name="component">The component.</param>
         /// <param name="name">A friendly name to assign to this middleware component for easy reference.</param>
-        public GraphMiddlewareDefinition(IGraphMiddlewareComponent<TContext> component, string name = null)
+        public GraphMiddlewareDefinition(IGraphQLMiddlewareComponent<TContext> component, string name = null)
         {
             this.Component = Validation.ThrowIfNullOrReturn(component, nameof(component));
             this.Name = name?.Trim() ?? component.GetType().FriendlyName();
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Middleware
         public GraphMiddlewareDefinition(Type middlewareType, ServiceLifetime lifetime, string name = null)
         {
             Validation.ThrowIfNull(middlewareType, nameof(middlewareType));
-            Validation.ThrowIfNotCastable<IGraphMiddlewareComponent<TContext>>(middlewareType, nameof(middlewareType));
+            Validation.ThrowIfNotCastable<IGraphQLMiddlewareComponent<TContext>>(middlewareType, nameof(middlewareType));
 
             this.MiddlewareType = middlewareType;
             this.Lifetime = lifetime;
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Middleware
         /// make use of this.
         /// </summary>
         /// <value>The component.</value>
-        public IGraphMiddlewareComponent<TContext> Component { get; }
+        public IGraphQLMiddlewareComponent<TContext> Component { get; }
 
         /// <summary>
         /// Gets the type of the middleware to be created.

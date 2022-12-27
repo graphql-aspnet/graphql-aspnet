@@ -9,7 +9,10 @@
 
 namespace GraphQL.AspNet
 {
+    using System.Text.Json.Serialization;
+    using GraphQL.AspNet.Execution.Variables.Json;
     using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
     /// A raw data package representing the various inputs to the graphql runtime.
@@ -59,6 +62,7 @@ namespace GraphQL.AspNet
         /// Gets or sets the variables being supplied on the request, if any.
         /// </summary>
         /// <value>The variables provided on the request.</value>
-        public InputVariableCollection Variables { get; set; }
+        [JsonConverter(typeof(IInputVariableCollectionConverter))]
+        public IInputVariableCollection Variables { get; set; }
     }
 }

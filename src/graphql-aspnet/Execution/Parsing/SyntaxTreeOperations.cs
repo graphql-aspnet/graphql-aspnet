@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution.Parsing
     /// <summary>
     /// Extension methods for <see cref="SyntaxTree"/>.
     /// </summary>
-    public static class SyntaxTreeOperations
+    internal static class SyntaxTreeOperations
     {
         /// <summary>
         /// Releases the pool of nodes within the syntax tree. Once released,

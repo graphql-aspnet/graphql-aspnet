@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution
     /// or conditional processing on a segment of a query document.
     /// </summary>
     [DebuggerDisplay("@{InvocationContext.Directive.Name}  (Phase = {DirectivePhase})")]
-    public class GraphDirectiveRequest : IGraphDirectiveRequest
+    internal class GraphDirectiveRequest : IGraphDirectiveRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveRequest" /> class.
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Execution
         /// is being processed through.</param>
         /// <param name="targetData">The real data object that is the target of this request.</param>
         public GraphDirectiveRequest(
-            IGraphOperationRequest operationRequest,
+            IQueryExecutionRequest operationRequest,
             IDirectiveInvocationContext invocationContext,
             DirectiveInvocationPhase invocationPhase,
             object targetData)
@@ -82,6 +82,6 @@ namespace GraphQL.AspNet.Execution
         public IDirective Directive => this.InvocationContext.Directive;
 
         /// <inheritdoc />
-        public IGraphOperationRequest OperationRequest { get; }
+        public IQueryExecutionRequest OperationRequest { get; }
     }
 }

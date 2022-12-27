@@ -12,11 +12,11 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
     /// <para>(5.5.1.1) Validate that each named fragment has a unique name within the document scope.</para>
-    /// <para>Reference: https://graphql.github.io/graphql-spec/October2021/#sec-Fragment-Name-Uniqueness .</para>
+    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Fragment-Name-Uniqueness" /> .</para>
     /// </summary>
     internal class Rule_5_5_1_1_FragmentNamesMustBeUnique
         : DocumentPartValidationRuleStep<INamedFragmentDocumentPart>

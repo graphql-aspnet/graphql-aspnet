@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     public class InternalServerErrorGraphActionResult : IGraphActionResult
     {
         private readonly string _errorMessage;
-        private readonly IGraphMethod _action;
+        private readonly IGraphFieldResolverMethod _action;
         private readonly Exception _exception;
 
         /// <summary>
@@ -51,14 +51,14 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         /// </summary>
         /// <param name="action">The action that was invoked to cause this internal error, if any.</param>
         /// <param name="exception">The exception, if any, that was thrown. Useful for logging or other intermediate actions.</param>
-        public InternalServerErrorGraphActionResult(IGraphMethod action, Exception exception)
+        public InternalServerErrorGraphActionResult(IGraphFieldResolverMethod action, Exception exception)
         {
             _action = action;
             _exception = exception;
         }
 
         /// <inheritdoc />
-        public Task Complete(SchemaItemResolutionContext context)
+        public Task CompleteAsync(SchemaItemResolutionContext context)
         {
             var message = _errorMessage ?? $"An unhandled exception was thrown during the execution of field '{_action?.Name ?? "-unknown-"}'.";
             context.Messages.Critical(

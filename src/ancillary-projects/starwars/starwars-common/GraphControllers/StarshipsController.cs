@@ -9,8 +9,10 @@
 
 namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
@@ -107,6 +109,40 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
                 return this.Ok(eventData).AsCompletedTask();
 
             return this.SkipSubscriptionEvent().AsCompletedTask();
+        }
+
+        /// <summary>
+        /// An example type extension adding the custom field of
+        /// "distanceTraveled" to the starship type.
+        /// </summary>
+        /// <param name="starship">The starship to calcualte distance for.</param>
+        /// <returns>The total distance traveled, if calculable.</returns>
+        [TypeExtension(typeof(Starship), "distanceTraveled")]
+        [Description("The total distance traveled by this ship, according to its known coordinate positions.")]
+        public double CalculateDistanceTraveled(Starship starship)
+        {
+            // assume the cooridnates can be used as a distance
+            double distance = 0;
+            var coords = starship.Coordinates?.ToList() ?? new List<IEnumerable<float>>();
+            for (var i = 0; i < coords.Count - 1; i++)
+            {
+                var first = coords[i]?.ToList() ?? new List<float>();
+                var second = coords[i + 1]?.ToList() ?? new List<float>();
+
+                // Distance in space
+                // sqrt( (x2 - x1)^2  +  (y2 - y1)^2  + (z2 - z1)^2 )
+
+                if (first.Count != 3 ||
+                    second.Count != 3)
+                    continue;
+
+                distance += Math.Sqrt(
+                    Math.Pow(second[0] - first[0], 2) +
+                    Math.Pow(second[1] - first[1], 2) +
+                    Math.Pow(second[2] - first[2], 2));
+            }
+
+            return distance;
         }
     }
 }

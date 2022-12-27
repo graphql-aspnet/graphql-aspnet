@@ -13,16 +13,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A representation of a parsed description of the meta data of any given interface that could be represented
-    /// as a type in an <see cref="ISchema"/>.
+    /// An graph type template describing an INTERFACE graph type.
     /// </summary>
     [DebuggerDisplay("Object: {InternalName}")]
-    public class InterfaceGraphTypeTemplate : BaseObjectGraphTypeTemplate, IInterfaceGraphTypeTemplate
+    public class InterfaceGraphTypeTemplate : NonLeafGraphTypeTemplateBase, IInterfaceGraphTypeTemplate
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InterfaceGraphTypeTemplate " /> class.
@@ -39,10 +37,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
         }
 
-        /// <summary>
-        /// Gets the kind of graph type that can be made from this template.
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public override TypeKind Kind => TypeKind.INTERFACE;
     }
 }

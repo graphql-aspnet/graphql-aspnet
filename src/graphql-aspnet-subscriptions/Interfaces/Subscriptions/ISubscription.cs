@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -47,14 +47,14 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// Gets the generated query plan that was preparsed and represents the original subscription request.
         /// </summary>
         /// <value>The query plan.</value>
-        IGraphQueryPlan QueryPlan { get; }
+        IQueryExecutionPlan QueryPlan { get; }
 
         /// <summary>
         /// Gets the selected query operation that will be executed when new data is recieved for
         /// this subscription.
         /// </summary>
         /// <value>The query operation.</value>
-        IGraphFieldExecutableOperation QueryOperation { get; }
+        IExecutableOperation QueryOperation { get; }
 
         /// <summary>
         /// Gets a value indicating whether this subscription has been properly configured.

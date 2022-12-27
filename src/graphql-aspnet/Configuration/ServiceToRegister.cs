@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Configuration
     /// A service implementation gathered by a <see cref="SchemaOptions"/> setup that needs to be registered
     /// to the global DI container.
     /// </summary>
-    public class ServiceToRegister
+    internal class ServiceToRegister
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceToRegister" /> class.

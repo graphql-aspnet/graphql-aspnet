@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Controllers
     using System.Reflection;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Controllers.ActionResults;
-    using GraphQL.AspNet.Execution.InputModel;
+    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Tests.Controllers.ControllerTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
@@ -123,25 +123,6 @@ namespace GraphQL.AspNet.Tests.Controllers
             var controller = new InvokableController();
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             Assert.ThrowsAsync<UserThrownException>(async () => await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod.Object, resolutionContext));
-        }
-
-        [Test]
-        public async Task NotFoundResult_ViaCustomErrorMessage()
-        {
-            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphController<InvokableController>()
-                .Build();
-            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.CreateNotFoundResult));
-
-            var controller = new InvokableController();
-            var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            var result = await controller.InvokeActionAsync(
-                fieldContextBuilder.GraphMethod.Object,
-                resolutionContext) as RouteNotFoundGraphActionResult;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual("it was not found", result.Message);
         }
 
         [Test]

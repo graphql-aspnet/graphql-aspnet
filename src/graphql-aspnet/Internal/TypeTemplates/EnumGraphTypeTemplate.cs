@@ -20,16 +20,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// A template for harsing a C# enumeration to be used in the object graph.
+    /// An graph type template describing an ENUM graph type.
     /// </summary>
     [DebuggerDisplay("Enum Template: {InternalName}")]
-    public class EnumGraphTypeTemplate : BaseGraphTypeTemplate, IEnumGraphTypeTemplate
+    public class EnumGraphTypeTemplate : GraphTypeTemplateBase, IEnumGraphTypeTemplate
     {
         private readonly List<EnumValueTemplate> _values;
         private Dictionary<string, IList<string>> _valuesTolabels;
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumGraphTypeTemplate"/> class.
         /// </summary>
-        /// <param name="enumType">Type of the enum.</param>
+        /// <param name="enumType">The enum being templated.</param>
         public EnumGraphTypeTemplate(Type enumType)
             : base(enumType)
         {
@@ -49,9 +49,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             _valuesTolabels = new Dictionary<string, IList<string>>();
         }
 
-        /// <summary>
-        /// Parses the item definition.
-        /// </summary>
+        /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
             if (!this.ObjectType.IsEnum)
@@ -61,7 +59,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             _name = GraphTypeNames.ParseName(this.ObjectType, TypeKind.ENUM);
             this.Description = this.ObjectType.SingleAttributeOrDefault<DescriptionAttribute>()?.Description?.Trim();
-            this.Route = new SchemaItemPath(SchemaItemPath.Join(GraphCollection.Enums, _name));
+            this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Enums, _name));
 
             // parse the enum values for later injection
             var labels = Enum.GetNames(this.ObjectType);
@@ -151,35 +149,19 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             _valuesTolabels = null;
         }
 
-        /// <summary>
-        /// Gets the collected set of enumeration values that this template parsed.
-        /// </summary>
-        /// <value>The values.</value>
+        /// <inheritdoc />
         public IReadOnlyList<IEnumValueTemplate> Values => _values;
 
-        /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public override string InternalFullName => this.ObjectType?.FriendlyName(true);
 
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public override string InternalName => this.ObjectType?.FriendlyName();
 
-        /// <summary>
-        /// Gets the security policies found via defined attributes on the item that need to be enforced.
-        /// Enumerations do no enforce security policies.
-        /// </summary>
-        /// <value>The security policies.</value>
+        /// <inheritdoc />
         public override AppliedSecurityPolicyGroup SecurityPolicies => AppliedSecurityPolicyGroup.Empty;
 
-        /// <summary>
-        /// Gets the kind of graph type that can be made from this template.
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public override TypeKind Kind => TypeKind.ENUM;
     }
 }

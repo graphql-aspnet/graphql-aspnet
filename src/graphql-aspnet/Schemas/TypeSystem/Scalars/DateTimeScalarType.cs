@@ -14,13 +14,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A graph type reprsenting a calendar date that does include a time component.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
-    public sealed class DateTimeScalarType : BaseScalarType
+    public sealed class DateTimeScalarType : ScalarGraphTypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DateTimeScalarType"/> class.

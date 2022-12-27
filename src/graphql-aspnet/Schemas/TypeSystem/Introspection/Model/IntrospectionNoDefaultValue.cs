@@ -10,10 +10,10 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
 {
     /// <summary>
-    /// A marker object used to represent "no default value" on an <see cref="IntrospectedInputValueType"/> type.
+    /// A marker object used to represent no default value on an <see cref="IntrospectedInputValueType"/> type.
     /// This is used to differentiate "no default value" from a <c>~null~</c> default value.
     /// </summary>
-    public struct IntrospectionNoDefaultValue
+    internal struct IntrospectionNoDefaultValue
     {
         /// <summary>
         /// Gets the singleton instance of this marker object.

@@ -24,13 +24,13 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// will be different depending on the invocation context.
         /// </summary>
         /// <value>The data item that is the target of this invocation request.</value>
-        GraphDataContainer Data { get; }
+        FieldDataItemContainer Data { get; }
 
         /// <summary>
         /// Gets the original operation request governing this field request.
         /// </summary>
         /// <value>The operation request.</value>
-        public IGraphOperationRequest OperationRequest { get; }
+        public IQueryExecutionRequest OperationRequest { get; }
 
         /// <summary>
         /// Gets the invocation context, an object containing details about

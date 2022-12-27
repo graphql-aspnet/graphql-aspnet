@@ -17,7 +17,8 @@ namespace GraphQL.AspNet.Middleware
     /// </summary>
     /// <typeparam name="TContext">The type of the context the processed by the pipeline.</typeparam>
     /// <param name="context">The execution context containing the request being processed.</param>
-    /// <param name="cancelToken">The cancel token.</param>
+    /// <param name="cancelToken">The cancel token governing the pipeline execution. If the token has
+    /// signaled a cancellation the middleware component will NOT be invoked.</param>
     /// <returns>Task.</returns>
     public delegate Task GraphMiddlewareInvocationDelegate<TContext>(TContext context, CancellationToken cancelToken);
 }

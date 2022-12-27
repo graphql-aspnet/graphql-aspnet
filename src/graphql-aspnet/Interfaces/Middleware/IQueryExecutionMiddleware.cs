@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Middleware
     /// <summary>
     /// A middleware component in the primary query processing pipeline.
     /// </summary>
-    public interface IQueryExecutionMiddleware : IGraphMiddlewareComponent<GraphQueryExecutionContext>
+    public interface IQueryExecutionMiddleware : IGraphQLMiddlewareComponent<QueryExecutionContext>
     {
     }
 }

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests
+namespace GraphQL.AspNet.Tests
 {
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
@@ -15,6 +15,7 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
@@ -37,7 +38,7 @@ namespace GraphQL.Subscriptions.Tests
             extension.Configure(primaryOptions);
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphOperationType.Subscription));
-            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
+            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTypeTemplateProvider);
         }
     }
 }

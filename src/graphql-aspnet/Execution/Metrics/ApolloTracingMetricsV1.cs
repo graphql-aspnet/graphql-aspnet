@@ -23,10 +23,10 @@ namespace GraphQL.AspNet.Execution.Metrics
 
     /// <summary>
     /// A metrics package that tracks according to the apollo tracing standard.
-    /// spec: https://github.com/apollographql/apollo-tracing/ .
+    /// spec: <see href="https://github.com/apollographql/apollo-tracing/" /> .
     /// </summary>
     [DebuggerDisplay("Phases = {PhaseEntries.Count}, Resolvers = {ResolverEntries.Count}")]
-    public class ApolloTracingMetricsV1 : IGraphQueryExecutionMetrics, IDisposable
+    internal class ApolloTracingMetricsV1 : IQueryExecutionMetrics, IDisposable
     {
         private const int VERSION = 1;
 
@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Execution.Metrics
         }
 
         /// <inheritdoc />
-        public virtual IResponseFieldSet GenerateResult()
+        public virtual IQueryResponseFieldSet GenerateResult()
         {
             var results = new ResponseFieldSet();
             results.AddSingleValue("version", VERSION);
@@ -151,7 +151,7 @@ namespace GraphQL.AspNet.Execution.Metrics
         /// </summary>
         /// <param name="entry">The entry.</param>
         /// <returns>System.Object.</returns>
-        private IResponseItem GeneratePhaseResult(ApolloMetricsEntry entry)
+        private IQueryResponseItem GeneratePhaseResult(ApolloMetricsEntry entry)
         {
             var dictionary = new ResponseFieldSet();
             dictionary.AddSingleValue("startOffset", entry.StartOffsetNanoseconds);
@@ -163,7 +163,7 @@ namespace GraphQL.AspNet.Execution.Metrics
         /// Generates the execution result, a list of individual results for each resolver tracked.
         /// </summary>
         /// <returns>IDictionary&lt;System.String, System.Object&gt;.</returns>
-        private IResponseFieldSet GenerateExecutionResult()
+        private IQueryResponseFieldSet GenerateExecutionResult()
         {
             // apollo tracing does not specifiy providing startOffset and duration keys for the execution
             // phase, just output the resolvers array

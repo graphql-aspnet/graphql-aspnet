@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Middleware
                 .Build();
         }
 
-        public Task EmptyNextDelegate(GraphSchemaItemSecurityChallengeContext context, CancellationToken token)
+        public Task EmptyNextDelegate(SchemaItemSecurityChallengeContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
@@ -79,11 +79,11 @@ namespace GraphQL.AspNet.Tests.Middleware
                 policyGroups = new AppliedSecurityPolicyGroups(securityGroups);
 
             field.Setup(x => x.SecurityGroups).Returns(policyGroups);
-            field.Setup(x => x.Route).Returns(new SchemaItemPath(AspNet.Execution.GraphCollection.Query, "some", "path"));
+            field.Setup(x => x.Route).Returns(new SchemaItemPath(AspNet.Execution.SchemaItemCollections.Query, "some", "path"));
             _field = field.Object;
         }
 
-        private async Task<GraphSchemaItemSecurityChallengeContext> ExecuteTest()
+        private async Task<SchemaItemSecurityChallengeContext> ExecuteTest()
         {
             var builder = new TestServerBuilder();
             var server = builder.Build();
@@ -94,11 +94,11 @@ namespace GraphQL.AspNet.Tests.Middleware
             var contextBuilder = server.CreateQueryContextBuilder();
             var queryContext = contextBuilder.Build();
 
-            var fieldSecurityRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            var fieldSecurityRequest = new Mock<ISchemaItemSecurityRequest>();
             fieldSecurityRequest.Setup(x => x.SecureSchemaItem)
                 .Returns(_field);
 
-            var securityContext = new GraphSchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest.Object);
+            var securityContext = new SchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest.Object);
 
             var component = new SchemItemSecurityRequirementsMiddleware(_policyProvider?.Object);
             await component.InvokeAsync(securityContext, this.EmptyNextDelegate);

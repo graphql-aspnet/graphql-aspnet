@@ -21,7 +21,6 @@ namespace GraphQL.AspNet.Internal
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.AspNetCore.Authorization;
@@ -208,7 +207,7 @@ namespace GraphQL.AspNet.Internal
         /// <summary>
         /// Helper method to ensure that parsing of name segment, within a template, is handled
         /// appropriately.
-        /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Names .
+        /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Names" /> .
         /// </summary>
         /// <param name="nameToTest">The potential graph name to test.</param>
         /// <returns><c>true</c> if the supplied name represents a valid graph name; otherwise, <c>false</c>.</returns>

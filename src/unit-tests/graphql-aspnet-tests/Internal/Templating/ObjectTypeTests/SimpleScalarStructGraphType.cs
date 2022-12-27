@@ -11,10 +11,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
-    public class SimpleScalarStructGraphType : BaseScalarType
+    public class SimpleScalarStructGraphType : ScalarGraphTypeBase
     {
         public SimpleScalarStructGraphType()
             : base(nameof(SimpleScalarStruct), typeof(SimpleScalarStruct))

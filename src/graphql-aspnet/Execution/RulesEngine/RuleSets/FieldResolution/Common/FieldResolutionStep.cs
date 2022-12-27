@@ -12,10 +12,10 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.Common
     using System;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
-    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
-    /// A general rule step for resolving a field <see cref="GraphDataItem"/> through a runner.
+    /// A general rule step for resolving a field <see cref="FieldDataItem"/> through a runner.
     /// </summary>
     internal abstract class FieldResolutionStep : IRuleStep<FieldValidationContext>
     {

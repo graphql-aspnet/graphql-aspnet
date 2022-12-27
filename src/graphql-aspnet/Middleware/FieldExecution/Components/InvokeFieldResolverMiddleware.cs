@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             context.Metrics?.BeginFieldResolution(context);
             var continueExecution = true;
             if (context.IsValid)
-                continueExecution = await this.ExecuteContext(context, cancelToken).ConfigureAwait(false);
+                continueExecution = await this.ExecuteContextAsync(context, cancelToken).ConfigureAwait(false);
 
             if (!continueExecution)
             {
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             validationProcessor.Execute(validationContexts);
         }
 
-        private async Task<bool> ExecuteContext(GraphFieldExecutionContext context, CancellationToken cancelToken = default)
+        private async Task<bool> ExecuteContextAsync(GraphFieldExecutionContext context, CancellationToken cancelToken = default)
         {
             // Step 1: Build a collection of arguments from the supplied context that will
             //         be supplied to teh resolver
@@ -111,11 +111,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // Step 2: Resolve the field
             context.Logger?.FieldResolutionStarted(resolutionContext);
 
-            var task = context.Field?.Resolver?.Resolve(resolutionContext, cancelToken);
+            var task = context.Field?.Resolver?.ResolveAsync(resolutionContext, cancelToken);
             await task.ConfigureAwait(false);
             context.Messages.AddRange(resolutionContext.Messages);
 
-            await this.CompletePostFieldResolutionWork(context, resolutionContext, cancelToken);
+            await this.CompletePostFieldResolutionWorkAsync(context, resolutionContext, cancelToken);
 
             context.Logger?.FieldResolutionCompleted(resolutionContext);
 
@@ -135,7 +135,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// that was just resolved.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task CompletePostFieldResolutionWork(
+        protected virtual async Task CompletePostFieldResolutionWorkAsync(
             GraphFieldExecutionContext fieldExecutionContext,
             FieldResolutionContext fieldResolutionContext,
             CancellationToken cancelToken)

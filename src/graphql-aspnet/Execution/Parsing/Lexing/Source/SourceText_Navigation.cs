@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
     /// A wrapper for a block of characters to provide some context sensitive inspection and navigation support
     /// for parsing through it.
     /// </summary>
-    public ref partial struct SourceText
+    internal ref partial struct SourceText
     {
         private const string AT_LEAST_ZERO_CHARACTERS = "The requested length of characters cannot be less than 0";
         private readonly ReadOnlySpan<char> _sourceText;

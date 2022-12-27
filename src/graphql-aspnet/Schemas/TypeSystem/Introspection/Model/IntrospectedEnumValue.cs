@@ -15,7 +15,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A model object containing data for the __EnumValue type of one enum value in an <see cref="IEnumGraphType"/>.
+    /// A model object containing data for the '__EnumValue' type of one enum value
+    /// in an <see cref="IEnumGraphType"/>.
     /// </summary>
     [GraphType(Constants.ReservedNames.ENUM_VALUE_TYPE)]
     [DebuggerDisplay("Introspected Enum Value: {Name}")]

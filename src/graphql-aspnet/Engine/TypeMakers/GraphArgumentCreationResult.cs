@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     /// <summary>
     /// A pairing of a generated graph type with the concrete type its associcated with.
     /// </summary>
-    public class GraphArgumentCreationResult : BaseItemDependencyCollection
+    public class GraphArgumentCreationResult : DependentTypeCollection
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphArgumentCreationResult" /> class.

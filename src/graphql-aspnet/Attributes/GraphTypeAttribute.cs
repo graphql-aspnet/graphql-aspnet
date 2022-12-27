@@ -11,14 +11,16 @@ namespace GraphQL.AspNet.Attributes
 {
     using System;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Directives;
 
     /// <summary>
-    /// A marker interface that can be applied to any class to indicate that the class is a graphql object
-    /// and should be included in a schema. This attribute is optional depending on your schema configuration and
-    /// naming preferences.
+    /// This attribute can be applied to any class, interface or enum to indicate that the
+    /// item should be treated as a graph type and included in a schema. This attribute is
+    /// optional depending on your schema configuration and naming preferences.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Enum)]
-    public class GraphTypeAttribute : BaseGraphAttribute
+    public class GraphTypeAttribute : GraphAttributeBase
     {
         private TemplateDeclarationRequirements _templateDeclarationRequirements = TemplateDeclarationRequirements.None;
 
@@ -26,26 +28,23 @@ namespace GraphQL.AspNet.Attributes
         /// Initializes a new instance of the <see cref="GraphTypeAttribute"/> class.
         /// </summary>
         public GraphTypeAttribute()
+            : this(null, null)
         {
-            this.Name = null;
-            this.InputName = null;
-            this.Publish = true;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphTypeAttribute"/> class.
         /// </summary>
-        /// <param name="name">The name to apply to the primary graph type created from this class.</param>
+        /// <param name="name">The name to apply to any OBJECT graph types created from this class.</param>
         public GraphTypeAttribute(string name)
+            : this(name, null)
         {
-            this.Name = name?.Trim();
-            this.Publish = true;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphTypeAttribute" /> class.
         /// </summary>
-        /// <param name="name">The name to apply to the primary graph type created from this class.</param>
+        /// <param name="name">The name to apply to any OBJECT graph types created from this class.</param>
         /// <param name="inputName">The name of the apply to the INPUT_OBJECT graph type created from this class.</param>
         public GraphTypeAttribute(string name, string inputName)
         {
@@ -55,13 +54,13 @@ namespace GraphQL.AspNet.Attributes
         }
 
         /// <summary>
-        /// Gets or sets the name to apply to the primary graph type created from this class.
+        /// Gets or sets the name to apply any OBJECT graph types created from this class.
         /// </summary>
         /// <value>The name to use for the OBJECT graph type.</value>
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the apply to the INPUT_OBJECT graph type created from this class.
+        /// Gets or sets the name of the apply to any INPUT_OBJECT graph types created from this class.
         /// </summary>
         /// <value>The name to use for the INPUT_OBJECT graph type.</value>
         public string InputName { get; set; }
@@ -71,15 +70,19 @@ namespace GraphQL.AspNet.Attributes
         /// updated at some point in this attributes creation.
         /// </summary>
         /// <value><c>true</c> if the requirements were altered; otherwise, <c>false</c>.</value>
-        public bool RequirementsWereDeclared { get; private set; }
+        internal bool RequirementsWereDeclared { get; private set; }
 
         /// <summary>
-        /// <para>Gets or sets a value indicating which fields in this template the templating engine will attempt
+        /// <para>Gets or sets a value indicating which fields in this type the templating engine will attempt
         /// to include in graph types created from your source code. Setting this value will override any schema
         /// configuration settings for this type.
         /// </para>
         /// </summary>
-        /// <value>The declaration requirements for this Type.</value>
+        /// <remarks>
+        /// This setting has no effect on classes that inherit from <see cref="GraphController"/>
+        /// or <see cref="GraphDirective"/>.
+        /// </remarks>
+        /// <value>The field declaration requirements for this Type.</value>
         public TemplateDeclarationRequirements FieldDeclarationRequirements
         {
             get => _templateDeclarationRequirements;

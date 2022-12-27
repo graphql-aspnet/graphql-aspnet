@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Converts the date into its equivilant set of milliseconds from the epoch.
         /// </summary>
-        /// <param name="date">The date.</param>
+        /// <param name="date">The date to convert.</param>
         /// <returns>System.Int64.</returns>
         public static long? ToUnixTimeMilliseconds(this DateOnly? date)
         {
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Converts the datetime into its equivilant set of milliseconds from the epoch.
         /// </summary>
-        /// <param name="date">The date time.</param>
+        /// <param name="date">The date to convert.</param>
         /// <returns>System.Int64.</returns>
         public static long ToUnixTimeMilliseconds(this DateOnly date)
         {
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <summary>
         /// Converts a numeric value (in number of milliseconds from the epoch) to a date. Any time component is dropped.
         /// </summary>
-        /// <param name="ticks">The ticks.</param>
+        /// <param name="ticks">The number of ticks to convert.</param>
         /// <returns>System.Nullable&lt;DateTime&gt;.</returns>
         public static DateOnly? MillisecondsFromEpochToDateOnly(long? ticks)
         {
@@ -133,7 +133,7 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Converts the date to a RFC3339 formatted date string  (e.g. yyyy-MM-dd).
-        /// spec: https://www.ietf.org/rfc/rfc3339.txt .
+        /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt" /> .
         /// </summary>
         /// <param name="date">The date.</param>
         /// <returns>System.String.</returns>
@@ -144,9 +144,9 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Converts the date to a RFC3339 formatted date string (e.g. yyyy-MM-dd).
-        /// spec: https://www.ietf.org/rfc/rfc3339.txt .
+        /// spec: <see href="https://www.ietf.org/rfc/rfc3339.txt" /> .
         /// </summary>
-        /// <param name="date">The date.</param>
+        /// <param name="date">The date to convert.</param>
         /// <returns>System.String.</returns>
         public static string ToRfc3339String(this DateOnly? date)
         {

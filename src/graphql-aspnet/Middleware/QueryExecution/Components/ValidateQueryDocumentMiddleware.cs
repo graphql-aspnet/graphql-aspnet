@@ -26,20 +26,20 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     internal class ValidateQueryDocumentMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly IGraphQueryDocumentGenerator<TSchema> _documentGenerator;
+        private readonly IQueryDocumentGenerator<TSchema> _documentGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidateQueryDocumentMiddleware{TSchema}"/> class.
         /// </summary>
         /// <param name="documentGenerator">The document generator for the schema
         /// that can validate a document.</param>
-        public ValidateQueryDocumentMiddleware(IGraphQueryDocumentGenerator<TSchema> documentGenerator)
+        public ValidateQueryDocumentMiddleware(IQueryDocumentGenerator<TSchema> documentGenerator)
         {
             _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));
         }
 
         /// <inheritdoc />
-        public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             context.Metrics?.StartPhase(ApolloExecutionPhase.VALIDATION);
 

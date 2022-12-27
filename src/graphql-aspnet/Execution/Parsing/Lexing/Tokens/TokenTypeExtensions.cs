@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Tokens
     /// <summary>
     /// A set of extensions containing logic pertaining to the <see cref="TokenType"/> used by the lexer.
     /// </summary>
-    public static class TokenTypeExtensions
+    internal static class TokenTypeExtensions
     {
         private static readonly Dictionary<TokenType, ReadOnlyMemory<char>> _descriptions = new Dictionary<TokenType, ReadOnlyMemory<char>>();
 

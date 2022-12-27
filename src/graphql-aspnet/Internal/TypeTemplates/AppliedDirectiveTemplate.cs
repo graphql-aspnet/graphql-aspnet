@@ -10,17 +10,17 @@
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A template outlining a directive to be invoked against a schema
-    /// item.
+    /// A template describing a directive being applied to a schema item.
     /// </summary>
     public class AppliedDirectiveTemplate : IAppliedDirectiveTemplate
     {
@@ -29,9 +29,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// Initializes a new instance of the <see cref="AppliedDirectiveTemplate" /> class.
         /// </summary>
-        /// <param name="owner">The item to which the directive would be applied.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="arguments">The arguments.</param>
+        /// <param name="owner">The owner to which the directive would be applied.</param>
+        /// <param name="type">The class reference supplied to the <see cref="ApplyDirectiveAttribute"/>.</param>
+        /// <param name="arguments">The arguments supplied along with the declaration.</param>
         public AppliedDirectiveTemplate(object owner, Type type, params object[] arguments)
         {
             _owner = owner;
@@ -42,9 +42,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// Initializes a new instance of the <see cref="AppliedDirectiveTemplate" /> class.
         /// </summary>
-        /// <param name="owner">The item to which the directive would be applied.</param>
-        /// <param name="directiveName">Name of the directive as it will appear in the target schema.</param>
-        /// <param name="arguments">The arguments.</param>
+        /// <param name="owner">The owner to which the directive would be applied.</param>
+        /// <param name="directiveName">Name of the directive as it will appear in the target schema, as
+        /// declared on the <see cref="ApplyDirectiveAttribute"/>.</param>
+        /// <param name="arguments">The arguments supplied along with the declaration.</param>
         public AppliedDirectiveTemplate(object owner, string directiveName, params object[] arguments)
         {
             _owner = owner;
@@ -85,7 +86,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         private string RetrieveOwnerName()
         {
-            if (_owner is INamedTemplateItem nti)
+            if (_owner is INamedItemTemplate nti)
                 return nti.Name;
             if (_owner is INamedItem ni)
                 return ni.Name;

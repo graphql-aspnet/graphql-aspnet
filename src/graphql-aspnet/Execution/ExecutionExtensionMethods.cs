@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Execution
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.ValueResolvers;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Internal.Resolvers;
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 
     /// <summary>
@@ -23,30 +23,30 @@ namespace GraphQL.AspNet.Execution
     public static class ExecutionExtensionMethods
     {
         /// <summary>
-        /// Converts the value into its equivilant routing constant.
+        /// Converts the supplied collection value into its equivilant routing constant.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The value to convert.</param>
         /// <returns>System.String.</returns>
-        public static string ToRouteRoot(this GraphCollection value)
+        internal static string ToRouteRoot(this SchemaItemCollections value)
         {
             switch (value)
             {
-                case GraphCollection.Query:
+                case SchemaItemCollections.Query:
                     return RouteConstants.QUERY_ROOT;
 
-                case GraphCollection.Mutation:
+                case SchemaItemCollections.Mutation:
                     return RouteConstants.MUTATION_ROOT;
 
-                case GraphCollection.Subscription:
+                case SchemaItemCollections.Subscription:
                     return RouteConstants.SUBSCRIPTION_ROOT;
 
-                case GraphCollection.Types:
+                case SchemaItemCollections.Types:
                     return RouteConstants.TYPE_ROOT;
 
-                case GraphCollection.Enums:
+                case SchemaItemCollections.Enums:
                     return RouteConstants.ENUM_ROOT;
 
-                case GraphCollection.Directives:
+                case SchemaItemCollections.Directives:
                     return RouteConstants.DIRECTIVE_ROOT;
 
                 default:
@@ -55,18 +55,18 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <summary>
-        /// Extends the resolver, executing the supplied function
-        /// after the resolver completes. This method is executed regardless
-        /// of the state of the context (successfully completed or failed).
+        /// Extends the provided resolver by executing the supplied function
+        /// after the initial resolver completes. This functon is executed regardless
+        /// of the state of the context; successfully completed or failed.
         /// </summary>
-        /// <param name="resolver">The resolver.</param>
-        /// <param name="extension">The extension.</param>
-        /// <returns>IGraphFieldResolver.</returns>
+        /// <param name="resolver">The base resolver to extend.</param>
+        /// <param name="extensionFunction">A function to extend the resolver with.</param>
+        /// <returns>The extended resolver.</returns>
         public static IGraphFieldResolver Extend(
             this IGraphFieldResolver resolver,
-            Func<FieldResolutionContext, CancellationToken, Task> extension)
+            Func<FieldResolutionContext, CancellationToken, Task> extensionFunction)
         {
-            return new ExtendedResolver(resolver, extension);
+            return new ExtendedGraphFieldResolver(resolver, extensionFunction);
         }
     }
 }

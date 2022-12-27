@@ -14,7 +14,8 @@ namespace GraphQL.AspNet.Security
     using GraphQL.AspNet.Common;
 
     /// <summary>
-    /// An instance of an allowed authentication scheme.
+    /// A representation of an authentication scheme that is approved or allowed to access
+    /// a schema item.
     /// </summary>
     [DebuggerDisplay("{AuthScheme}")]
     public sealed class AllowedAuthenticationScheme

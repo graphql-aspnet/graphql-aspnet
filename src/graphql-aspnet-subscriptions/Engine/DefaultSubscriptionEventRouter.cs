@@ -12,12 +12,11 @@ namespace GraphQL.AspNet.Engine
     using System;
     using System.Collections.Generic;
     using System.Threading;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Logging;
+    using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -25,7 +24,7 @@ namespace GraphQL.AspNet.Engine
     /// events to the various schema instances  within this application domain. This component IS NOT
     /// responsible for publishing new events, only receieving existing ones.
     /// </summary>
-    public sealed class DefaultSubscriptionEventRouter : ISubscriptionEventRouter, IDisposable
+    internal sealed class DefaultSubscriptionEventRouter : ISubscriptionEventRouter, IDisposable
     {
         private readonly ILogger _logger;
         private readonly SubscribedEventRecievers _allclients;

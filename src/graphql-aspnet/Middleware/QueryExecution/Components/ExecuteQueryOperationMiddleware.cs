@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             public Task Task { get; set; }
 
-            public GraphDataItem DataItem { get; set; }
+            public FieldDataItem DataItem { get; set; }
 
             public GraphFieldExecutionContext FieldContext { get; set; }
         }
@@ -64,19 +64,19 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             context.Metrics?.StartPhase(ApolloExecutionPhase.EXECUTION);
             if (context.IsValid && !context.IsCancelled && context.QueryPlan != null)
             {
-                await this.ExecuteOperation(context).ConfigureAwait(false);
+                await this.ExecuteOperationAsync(context).ConfigureAwait(false);
             }
 
             await next(context, cancelToken).ConfigureAwait(false);
             context.Metrics?.EndPhase(ApolloExecutionPhase.EXECUTION);
         }
 
-        private async Task ExecuteOperation(GraphQueryExecutionContext context)
+        private async Task ExecuteOperationAsync(QueryExecutionContext context)
         {
             // create a manager that will monitor both the governing token passed
             // on the context as well as the configured timeout for the schema
@@ -143,9 +143,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 if (!context.DefaultFieldSources.TryRetrieveSource(item.Context.Field, out dataSourceValue))
                     dataSourceValue = this.GenerateRootSourceData(operation.OperationType);
 
-                var topLevelDataItem = new GraphDataItem(item.Context, dataSourceValue, path);
+                var topLevelDataItem = new FieldDataItem(item.Context, dataSourceValue, path);
 
-                var sourceData = new GraphDataContainer(dataSourceValue, path, topLevelDataItem);
+                var sourceData = new FieldDataItemContainer(dataSourceValue, path, topLevelDataItem);
 
                 var fieldRequest = new GraphFieldRequest(
                     context.OperationRequest,

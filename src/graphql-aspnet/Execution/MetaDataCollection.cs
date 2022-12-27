@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Execution
         // however, after a performance analysis, the speed at which this
         // object is created (at least 1 per request) performs 2 orders of magnitude
         // more allocations than any other object while mostly containing 0 objects
-        // this was causing an enormous amount of GC pressure(at 5k requests/sec).
+        // this was causing an enormous amount of GC pressure under load.
         //
         // It was decided to push this object back to a standard
         // dictionary with a locking mechanism.

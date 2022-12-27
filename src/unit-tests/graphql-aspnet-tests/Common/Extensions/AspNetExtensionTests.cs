@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
                 .Authenticate("bobSmith")
                 .CreateSecurityContext();
 
-            var result = await context.Authenticate();
+            var result = await context.AuthenticateAsync();
             var createdUsername = result.User.RetrieveUsername();
             Assert.AreEqual("bobSmith", createdUsername);
         }
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
                 .AddUserClaim("fakeClaim2", "janeDoe")
                 .CreateSecurityContext();
 
-            var result = await context.Authenticate();
+            var result = await context.AuthenticateAsync();
             var createdUsername = result.User.RetrieveUsername("fakeClaim2");
             Assert.AreEqual("janeDoe", createdUsername);
         }

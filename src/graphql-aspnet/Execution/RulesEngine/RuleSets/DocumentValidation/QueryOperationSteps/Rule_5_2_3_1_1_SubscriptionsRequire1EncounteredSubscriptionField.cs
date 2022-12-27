@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     using System.Linq;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
                 context,
                 operation.SourceLocation,
                 "Invalid Subscription. Expected exactly 1 root, non-virtual " +
-                $"child field at {fieldCollection?.Path.DotString() ?? "-null-"}.");
+                $"child field at {fieldCollection?.Path.ToDotString() ?? "-null-"}.");
             return false;
         }
 

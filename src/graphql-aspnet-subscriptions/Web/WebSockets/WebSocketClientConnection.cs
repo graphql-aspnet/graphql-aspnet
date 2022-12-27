@@ -126,7 +126,7 @@ namespace GraphQL.AspNet.Web.WebSockets
         }
 
         /// <inheritdoc />
-        public async Task<IClientConnectionReceiveResult> ReceiveFullMessage(Stream stream, CancellationToken cancelToken = default)
+        public async Task<IClientConnectionReceiveResult> ReceiveFullMessageAsync(Stream stream, CancellationToken cancelToken = default)
         {
             IClientConnectionReceiveResult response;
 

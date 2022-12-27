@@ -10,7 +10,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 {
     using System;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using Moq;
@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void PropertyCheck()
         {
-            var owner = new Mock<IGraphItemTemplate>();
+            var owner = new Mock<ISchemaItemTemplate>();
             owner.Setup(x => x.InternalFullName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void NulLTemplateType_ThrowsException()
         {
-            var owner = new Mock<IGraphItemTemplate>();
+            var owner = new Mock<ISchemaItemTemplate>();
             owner.Setup(x => x.InternalFullName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void NullName_ThrowsException()
         {
-            var owner = new Mock<IGraphItemTemplate>();
+            var owner = new Mock<ISchemaItemTemplate>();
             owner.Setup(x => x.InternalFullName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void EmptyName_ThrowsException()
         {
-            var owner = new Mock<IGraphItemTemplate>();
+            var owner = new Mock<ISchemaItemTemplate>();
             owner.Setup(x => x.InternalFullName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void NonDirectiveType_ThrowsException()
         {
-            var owner = new Mock<IGraphItemTemplate>();
+            var owner = new Mock<ISchemaItemTemplate>();
             owner.Setup(x => x.InternalFullName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,

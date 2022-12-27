@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.Web;
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// event.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        ValueTask ReceiveEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default);
+        ValueTask ReceiveEventAsync(SubscriptionEvent eventData, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Instructs the proxy to perform the initial setup of the client proxy and
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// all proxy types.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default);
+        Task StartConnectionAsync(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Instructs the client proxy to immediately close its connection as a "server initiated" close.
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// the server. This message is passed directly to the underlying connection.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        Task CloseConnection(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default);
+        Task CloseConnectionAsync(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Gets the messaging protocol supported by this client. This value is

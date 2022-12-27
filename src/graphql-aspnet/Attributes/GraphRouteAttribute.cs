@@ -12,13 +12,13 @@ namespace GraphQL.AspNet.Attributes
     using System;
 
     /// <summary>
-    /// <para>An attribute applied to controllers to denote the route path to the instance within the resultant object graph.</para>
-    ///
-    /// <para>Note: Variable parameter specifications using curly braces (e.g. 'path/{variable}') are not permitted on graph routes. The entire graph structure
-    /// must be known and evaluated to properly validate a query aimed at a target schema.</para>
+    /// An attribute applied to controllers to denote the route path to the instance within the resultant object graph.
     /// </summary>
+    /// <remarks>
+    /// Note: Conditional specifications using curly braces (e.g. 'path/{variable}') are not permitted on graph routes.
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Class)]
-    public class GraphRouteAttribute : BaseGraphAttribute
+    public class GraphRouteAttribute : GraphAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphRouteAttribute"/> class.

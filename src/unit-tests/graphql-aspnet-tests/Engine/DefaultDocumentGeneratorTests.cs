@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Execution.RulesEngine.DocumentConstructionTestData;
     using GraphQL.AspNet.Tests.Framework;
@@ -42,11 +42,8 @@ namespace GraphQL.AspNet.Tests.Engine
                     name
                 }";
 
-            var generator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = new GraphQLParser().ParseQueryDocument(ref source);
-
-            var document = generator.CreateDocument(source, syntaxTree);
+            var generator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var document = generator.CreateDocument(text.AsSpan());
 
             var spread = Enumerable.OfType<IFragmentSpreadDocumentPart>(Enumerable.OfType<IFieldDocumentPart>(document.Operations[string.Empty].FieldSelectionSet
                         .Children).Single().FieldSelectionSet
@@ -78,11 +75,8 @@ namespace GraphQL.AspNet.Tests.Engine
                     name
                 }";
 
-            var generator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = new GraphQLParser().ParseQueryDocument(ref source);
-
-            var document = generator.CreateDocument(source, syntaxTree);
+            var generator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var document = generator.CreateDocument(text.AsSpan());
 
             var spread = Enumerable.OfType<IFragmentSpreadDocumentPart>(Enumerable.OfType<IFieldDocumentPart>(document.Operations[string.Empty].FieldSelectionSet
                         .Children).Single().FieldSelectionSet
@@ -123,11 +117,8 @@ namespace GraphQL.AspNet.Tests.Engine
                         flavor
                     }";
 
-            var generator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var source = new SourceText(text.AsSpan());
-            var syntaxTree = new GraphQLParser().ParseQueryDocument(ref source);
-
-            var document = generator.CreateDocument(source, syntaxTree);
+            var generator = new DefaultQueryDocumentGenerator<GraphSchema>(server.Schema);
+            var document = generator.CreateDocument(text.AsSpan());
 
             var retrieveDonut = document.Operations[0]
                 .FieldSelectionSet.ExecutableFields[0] // bakery

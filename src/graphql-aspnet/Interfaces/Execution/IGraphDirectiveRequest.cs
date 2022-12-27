@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// This value will be null during the execution of Type System Directives at startup.
         /// </remarks>
         /// <value>The operation request.</value>
-        IGraphOperationRequest OperationRequest { get; }
+        IQueryExecutionRequest OperationRequest { get; }
 
         /// <summary>
         /// Gets the invocation context containing the specific details

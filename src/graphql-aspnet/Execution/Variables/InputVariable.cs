@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution.Variables
     /// <summary>
     /// A base input variable defining items common  across all variable types.
     /// </summary>
-    public abstract class InputVariable : IInputVariable
+    internal abstract class InputVariable : IInputVariable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InputVariable"/> class.

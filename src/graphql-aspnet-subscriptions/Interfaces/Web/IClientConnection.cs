@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Interfaces.Web
         /// <param name="stream">The stream to be filled with the bits of the full message.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.ValueTuple&lt;WebSocketReceiveResult, IEnumerable&lt;System.Byte&gt;&gt;&gt;.</returns>
-        Task<IClientConnectionReceiveResult> ReceiveFullMessage(Stream stream, CancellationToken cancelToken = default);
+        Task<IClientConnectionReceiveResult> ReceiveFullMessageAsync(Stream stream, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Sends a block of data over the connection asynchronously.

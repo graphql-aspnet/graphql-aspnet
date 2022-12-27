@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Configuration.Mvc;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Directives.DirectiveTestData;
@@ -30,8 +30,8 @@ namespace GraphQL.AspNet.Tests.Execution
             serverBuilder.AddGraphQLLocalQueryCache();
             var server = serverBuilder.Build();
 
-            var cacheProvider = server.ServiceProvider.GetRequiredService<IGraphQueryPlanCacheProvider>();
-            var cacheKeyProvider = server.ServiceProvider.GetRequiredService<IGraphQueryPlanCacheKeyManager>();
+            var cacheProvider = server.ServiceProvider.GetRequiredService<IQueryExecutionPlanCacheProvider>();
+            var cacheKeyProvider = server.ServiceProvider.GetRequiredService<IQueryExecutionPlanCacheKeyManager>();
 
             var builder = server.CreateQueryContextBuilder();
 
@@ -74,8 +74,8 @@ namespace GraphQL.AspNet.Tests.Execution
             serverBuilder.AddGraphQLLocalQueryCache();
             var server = serverBuilder.Build();
 
-            var cacheProvider = server.ServiceProvider.GetRequiredService<IGraphQueryPlanCacheProvider>();
-            var cacheKeyProvider = server.ServiceProvider.GetRequiredService<IGraphQueryPlanCacheKeyManager>();
+            var cacheProvider = server.ServiceProvider.GetRequiredService<IQueryExecutionPlanCacheProvider>();
+            var cacheKeyProvider = server.ServiceProvider.GetRequiredService<IQueryExecutionPlanCacheKeyManager>();
 
             var builder = server.CreateQueryContextBuilder();
 

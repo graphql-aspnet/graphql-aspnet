@@ -12,11 +12,11 @@ namespace GraphQL.AspNet.Attributes
     using System;
 
     /// <summary>
-    /// An attribute that can be applied to an enum value to denote its name in the object graph. This
-    /// name is subject to any name formatting rules for enumerations of the target schema.
+    /// When applied to an enum value, explicitly marks it as being included in a graph.
+    /// Optionally, denotes its name in the graph as well.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    public class GraphEnumValueAttribute : BaseGraphAttribute
+    public class GraphEnumValueAttribute : GraphAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphEnumValueAttribute"/> class.
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Gets the name to give this enumeration value.
         /// </summary>
-        /// <value>The name.</value>
+        /// <value>The name given to this enum value.</value>
         public string Name { get; }
     }
 }

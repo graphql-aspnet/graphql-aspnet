@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution.RulesEngine
+namespace GraphQL.AspNet.Tests.Execution.RulesEngine
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -15,8 +15,8 @@ namespace GraphQL.Subscriptions.Tests.Execution.RulesEngine
     using GraphQL.AspNet.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.Execution.RulesEngine.RuleCheckTestData;
-    using GraphQL.Subscriptions.Tests.Mock;
+    using GraphQL.AspNet.Tests.Execution.RulesEngine.RuleCheckTestData;
+    using GraphQL.AspNet.Tests.Mocks;
     using NUnit.Framework;
 
     [TestFixture]

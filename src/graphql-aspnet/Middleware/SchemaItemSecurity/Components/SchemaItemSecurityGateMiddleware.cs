@@ -23,8 +23,8 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
     {
         /// <inheritdoc />
         public async Task InvokeAsync(
-            GraphSchemaItemSecurityChallengeContext context,
-            GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityChallengeContext> next,
+            SchemaItemSecurityChallengeContext context,
+            GraphMiddlewareInvocationDelegate<SchemaItemSecurityChallengeContext> next,
             CancellationToken cancelToken = default)
         {
             // if the target item absolutely does not require any auth checks

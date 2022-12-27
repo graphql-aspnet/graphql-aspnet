@@ -9,14 +9,14 @@
 
 namespace GraphQL.AspNet.Engine.TypeMakers
 {
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
-    /// The complete result of turning a <see cref="IGraphFieldBaseTemplate" /> into a <typeparamref name="TFieldType"/>.
+    /// The complete result of turning a <see cref="IGraphFieldTemplateBase" /> into a <typeparamref name="TFieldType"/>.
     /// </summary>
     /// <typeparam name="TFieldType">The type of the field that was created.</typeparam>
-    public class GraphFieldCreationResult<TFieldType> : BaseItemDependencyCollection
+    public class GraphFieldCreationResult<TFieldType> : DependentTypeCollection
         where TFieldType : IGraphFieldBase
     {
         /// <summary>
