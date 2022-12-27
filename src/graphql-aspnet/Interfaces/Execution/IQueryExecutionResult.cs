@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the original request that was executed to produce this result.
         /// </summary>
         /// <value>The original request.</value>
-        IQueryExecutionRequest Request { get; }
+        IQueryExecutionRequest QueryRequest { get; }
 
         /// <summary>
         /// Gets the resultant, top-level data item that was generated during the operation. This is the

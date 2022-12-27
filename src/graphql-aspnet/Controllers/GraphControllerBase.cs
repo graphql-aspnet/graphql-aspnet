@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Controllers
 
             _schemaItemContext.Logger?.ActionMethodInvocationRequestStarted(_action, this.Request);
 
-            if (_schemaItemContext.OperationRequest is IQueryExecutionWebRequest webRequest)
+            if (_schemaItemContext.QueryRequest is IQueryExecutionWebRequest webRequest)
                 this.HttpContext = webRequest.HttpContext;
 
             if (_action?.Method == null)
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Controllers
         public InputModelStateDictionary ModelState { get; private set; }
 
         /// <summary>
-        /// Gets the raw request for this operation provided by the action invoker.
+        /// Gets the raw request for this request provided by the action invoker.
         /// </summary>
         /// <value>The field context.</value>
         [GraphSkip]

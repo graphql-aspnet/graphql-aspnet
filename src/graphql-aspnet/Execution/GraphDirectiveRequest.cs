@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Execution
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveRequest" /> class.
         /// </summary>
-        /// <param name="operationRequest">The operation request governing
+        /// <param name="queryRequest">The query request governing
         /// this execution directive invocation.</param>
         /// <param name="invocationContext">The context detailing the specifics
         /// of what directive needs to be processed to fulfill this request.</param>
@@ -34,13 +34,13 @@ namespace GraphQL.AspNet.Execution
         /// is being processed through.</param>
         /// <param name="targetData">The real data object that is the target of this request.</param>
         public GraphDirectiveRequest(
-            IQueryExecutionRequest operationRequest,
+            IQueryExecutionRequest queryRequest,
             IDirectiveInvocationContext invocationContext,
             DirectiveInvocationPhase invocationPhase,
             object targetData)
             : this(invocationContext, invocationPhase, targetData)
         {
-            this.OperationRequest = Validation.ThrowIfNullOrReturn(operationRequest, nameof(operationRequest));
+            this.QueryRequest = Validation.ThrowIfNullOrReturn(queryRequest, nameof(queryRequest));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Execution
             this.InvocationContext = Validation.ThrowIfNullOrReturn(invocationContext, nameof(invocationContext));
             this.DirectivePhase = invocationPhase;
             this.DirectiveTarget = targetData;
-            this.OperationRequest = null;
+            this.QueryRequest = null;
         }
 
         /// <inheritdoc />
@@ -82,6 +82,6 @@ namespace GraphQL.AspNet.Execution
         public IDirective Directive => this.InvocationContext.Directive;
 
         /// <inheritdoc />
-        public IQueryExecutionRequest OperationRequest { get; }
+        public IQueryExecutionRequest QueryRequest { get; }
     }
 }

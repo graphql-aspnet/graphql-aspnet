@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Execution
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldRequest" /> class.
         /// </summary>
-        /// <param name="parentOperationRequest">The original operation request from which ths field
+        /// <param name="parentQueryRequest">The original request from which ths field
         /// request was generated.</param>
         /// <param name="invocationContext">The invocation context that defines how hte field
         /// should be processed according to the query plan.</param>
@@ -36,16 +36,16 @@ namespace GraphQL.AspNet.Execution
         /// the graph items referenced by said input data.</param>
         /// <param name="origin">The place in a source document where this request appeared.</param>
         public GraphFieldRequest(
-            IQueryExecutionRequest parentOperationRequest,
+            IQueryExecutionRequest parentQueryRequest,
             IGraphFieldInvocationContext invocationContext,
             FieldDataItemContainer dataSource,
             SourceOrigin origin = default)
         {
-            this.OperationRequest = Validation.ThrowIfNullOrReturn(parentOperationRequest, nameof(parentOperationRequest));
+            this.QueryRequest = Validation.ThrowIfNullOrReturn(parentQueryRequest, nameof(parentQueryRequest));
             this.Id = Guid.NewGuid();
             this.InvocationContext = Validation.ThrowIfNullOrReturn(invocationContext, nameof(invocationContext));
             this.Data = dataSource;
-            this.Items = parentOperationRequest.Items;
+            this.Items = parentQueryRequest.Items;
 
             // this may be different than the source indicated by teh parent operation request
             // do to child item resolution on arrays
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <inheritdoc />
-        public IQueryExecutionRequest OperationRequest { get; }
+        public IQueryExecutionRequest QueryRequest { get; }
 
         /// <inheritdoc />
         public Guid Id { get; }

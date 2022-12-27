@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Engine
             var queryResponse = context.Result;
             if (queryResponse == null)
             {
-                queryResponse = new QueryExecutionResult(context.OperationRequest);
+                queryResponse = new QueryExecutionResult(context.QueryRequest);
                 queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
                 context.Result = queryResponse;
             }

@@ -58,11 +58,11 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols
         [Test]
         public void SingleOperationCompleted_PropCheck()
         {
-            var operationResult = new Mock<IQueryExecutionResult>();
+            var queryResult = new Mock<IQueryExecutionResult>();
 
-            var result = SubscriptionQueryExecutionResult<GraphSchema>.SingleOperationCompleted("abc", operationResult.Object);
+            var result = SubscriptionQueryExecutionResult<GraphSchema>.SingleOperationCompleted("abc", queryResult.Object);
 
-            Assert.AreEqual(operationResult.Object, result.OperationResult);
+            Assert.AreEqual(queryResult.Object, result.QueryResult);
             Assert.AreEqual(SubscriptionQueryResultType.SingleQueryCompleted, result.Status);
         }
     }

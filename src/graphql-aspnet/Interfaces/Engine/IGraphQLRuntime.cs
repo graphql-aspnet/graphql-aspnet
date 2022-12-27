@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// </summary>
         /// <param name="context">The execution context to process.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        /// <returns>Task&lt;IQueryExecutionResult&gt;.</returns>
         Task<IQueryExecutionResult> ExecuteRequestAsync(
             QueryExecutionContext context,
             CancellationToken cancelToken = default);
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="session">The query session governing the execution of a query. A new
         /// one will be generated if not supplied.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        /// <returns>Task&lt;IQueryExecutionResult&gt;.</returns>
         Task<IQueryExecutionResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
             IQueryExecutionRequest request,
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="enableMetrics">if set to <c>true</c> a metrics package will be created using the default
         /// metrics package factory for the runtime.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        /// <returns>Task&lt;IQueryExecutionResult&gt;.</returns>
         Task<IQueryExecutionResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
             IQueryExecutionRequest request,
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// graph objects.</param>
         /// <param name="request">The primary data request.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        /// <returns>Task&lt;IQueryExecutionResult&gt;.</returns>
         Task<IQueryExecutionResult> ExecuteRequestAsync(
             IServiceProvider serviceProvider,
             IQueryExecutionRequest request,

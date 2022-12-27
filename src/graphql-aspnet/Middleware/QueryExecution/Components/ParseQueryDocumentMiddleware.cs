@@ -55,8 +55,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 try
                 {
                     var text = ReadOnlySpan<char>.Empty;
-                    if (context.OperationRequest.QueryText != null)
-                        text = context.OperationRequest.QueryText.AsSpan();
+                    if (context.QueryRequest.QueryText != null)
+                        text = context.QueryRequest.QueryText.AsSpan();
 
                     // convert the AST into a functional document
                     // matched against the target schema

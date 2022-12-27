@@ -24,10 +24,10 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         public RequestReceivedLogEntry(QueryExecutionContext context)
             : base(LogEventIds.RequestReceived)
         {
-            this.OperationRequestId = context?.OperationRequest?.Id.ToString();
+            this.QueryRequestId = context?.QueryRequest?.Id.ToString();
             this.Username = context?.SecurityContext?.DefaultUser?.Identity?.Name;
-            this.QueryOperationName = context?.OperationRequest?.OperationName;
-            this.QueryText = context?.OperationRequest?.QueryText;
+            this.QueryOperationName = context?.QueryRequest?.OperationName;
+            this.QueryText = context?.QueryRequest?.QueryText;
         }
 
         /// <summary>
@@ -41,13 +41,13 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         }
 
         /// <summary>
-        /// Gets the globally unique id of the operation request on this event.
+        /// Gets the globally unique id of the query request on this event.
         /// </summary>
         /// <value>The unique operation request id.</value>
-        public string OperationRequestId
+        public string QueryRequestId
         {
-            get => this.GetProperty<string>(LogPropertyNames.OPERATION_REQUEST_ID);
-            private set => this.SetProperty(LogPropertyNames.OPERATION_REQUEST_ID, value);
+            get => this.GetProperty<string>(LogPropertyNames.QUERY_REQUEST_ID);
+            private set => this.SetProperty(LogPropertyNames.QUERY_REQUEST_ID, value);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
-            var idTruncated = (this.OperationRequestId?.Length ?? 0) > 8 ? this.OperationRequestId.Substring(0, 8) : string.Empty;
+            var idTruncated = (this.QueryRequestId?.Length ?? 0) > 8 ? this.QueryRequestId.Substring(0, 8) : string.Empty;
             return $"Graph Query Received | User: {this.Username ?? "{anon}"},  Id: {idTruncated}, Query Length: {this.QueryText?.Length ?? 0}";
         }
     }

@@ -276,7 +276,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
                     }
                     else
                     {
-                        responseMessage = new GraphqlWsLegacyServerDataMessage(message.Id, result.OperationResult);
+                        responseMessage = new GraphqlWsLegacyServerDataMessage(message.Id, result.QueryResult);
                     }
 
                     await this.SendMessageAsync(responseMessage).ConfigureAwait(false);
@@ -311,9 +311,9 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
         }
 
         /// <inheritdoc />
-        protected override GraphqlWsLegacyMessage CreateDataMessage(string subscriptionId, IQueryExecutionResult operationResult)
+        protected override GraphqlWsLegacyMessage CreateDataMessage(string subscriptionId, IQueryExecutionResult queryResult)
         {
-            return new GraphqlWsLegacyServerDataMessage(subscriptionId, operationResult);
+            return new GraphqlWsLegacyServerDataMessage(subscriptionId, queryResult);
         }
 
         /// <inheritdoc />

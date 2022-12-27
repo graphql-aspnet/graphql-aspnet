@@ -50,14 +50,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     this.ResolveVariables(
                         context,
                         context.QueryPlan.Operation.Variables,
-                        context.OperationRequest.VariableData);
+                        context.QueryRequest.VariableData);
                 }
                 else if (context.Operation != null)
                 {
                     this.ResolveVariables(
                         context,
                         context.Operation.Variables,
-                        context.OperationRequest.VariableData);
+                        context.QueryRequest.VariableData);
                 }
             }
 

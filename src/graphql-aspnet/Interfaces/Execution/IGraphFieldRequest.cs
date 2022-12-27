@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the original operation request governing this field request.
         /// </summary>
         /// <value>The operation request.</value>
-        public IQueryExecutionRequest OperationRequest { get; }
+        public IQueryExecutionRequest QueryRequest { get; }
 
         /// <summary>
         /// Gets the invocation context, an object containing details about

@@ -247,15 +247,15 @@ namespace GraphQL.AspNet.Tests.Framework
             var messages = new GraphMessageCollection();
             var metaData = new MetaDataCollection();
 
-            var operationRequest = new Mock<IQueryExecutionRequest>();
+            var queryRequest = new Mock<IQueryExecutionRequest>();
             var fieldInvocationContext = new Mock<IGraphFieldInvocationContext>();
             var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
             var graphFieldRequest = new Mock<IGraphFieldRequest>();
             var fieldDocumentPart = new Mock<IFieldDocumentPart>();
 
-            operationRequest.Setup(x => x.Items).Returns(metaData);
+            queryRequest.Setup(x => x.Items).Returns(metaData);
 
-            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
+            parentContext.Setup(x => x.QueryRequest).Returns(queryRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
             parentContext.Setup(x => x.SecurityContext).Returns(this.SecurityContext);
             parentContext.Setup(x => x.Metrics).Returns(null as IQueryExecutionMetrics);
@@ -406,7 +406,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
             var targetDirective = server.Schema.KnownTypes.FindDirective(typeof(TDirective));
 
-            var operationRequest = new Mock<IQueryExecutionRequest>();
+            var queryRequest = new Mock<IQueryExecutionRequest>();
             var directiveRequest = new Mock<IGraphDirectiveRequest>();
             var invocationContext = new Mock<IDirectiveInvocationContext>();
             var argCollection = new InputArgumentCollection();
@@ -440,7 +440,7 @@ namespace GraphQL.AspNet.Tests.Framework
             var context = new GraphDirectiveExecutionContext(
                 server.Schema,
                 directiveRequest.Object,
-                operationRequest.Object,
+                queryRequest.Object,
                 server.ServiceProvider,
                 new QuerySession());
 
@@ -451,7 +451,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Creates a new mocked query context to which standard parameters (query text, variables etc.) can be configured
         /// and then submitted to the top level query execution pipeline.
         /// </summary>
-        /// <returns>MockOperationRequest.</returns>
+        /// <returns>QueryContextBuilder.</returns>
         public QueryContextBuilder CreateQueryContextBuilder()
         {
             return new QueryContextBuilder(this.ServiceProvider, _userSecurityContext);

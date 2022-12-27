@@ -138,7 +138,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
                     else
                     {
                         // report everything else as a completed request via "next"
-                        var responseMessage = new GqltwsServerNextDataMessage(message.Id, result.OperationResult);
+                        var responseMessage = new GqltwsServerNextDataMessage(message.Id, result.QueryResult);
                         var completedMessage = new GqltwsSubscriptionCompleteMessage(message.Id);
 
                         await this.SendMessageAsync(responseMessage).ConfigureAwait(false);
@@ -324,9 +324,9 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        protected override GqltwsMessage CreateDataMessage(string subscriptionId, IQueryExecutionResult operationResult)
+        protected override GqltwsMessage CreateDataMessage(string subscriptionId, IQueryExecutionResult queryResult)
         {
-            return new GqltwsServerNextDataMessage(subscriptionId, operationResult);
+            return new GqltwsServerNextDataMessage(subscriptionId, queryResult);
         }
 
         /// <inheritdoc />

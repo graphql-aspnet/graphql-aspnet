@@ -131,13 +131,13 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var builder = server.CreateQueryContextBuilder();
             builder.AddQueryText("{ testField }");
-            var request = builder.OperationRequest;
+            var request = builder.QueryRequest;
             var context = builder.Build();
 
             var entry = new RequestReceivedLogEntry(context);
 
             Assert.AreEqual(LogEventIds.RequestReceived.Id, entry.EventId);
-            Assert.AreEqual(request.Id.ToString(), entry.OperationRequestId);
+            Assert.AreEqual(request.Id.ToString(), entry.QueryRequestId);
             Assert.AreEqual("fakeUserName", entry.Username);
             Assert.AreEqual(request.OperationName, entry.QueryOperationName);
             Assert.AreEqual("{ testField }", entry.QueryText);
@@ -153,11 +153,11 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var builder = server.CreateQueryContextBuilder();
             builder.AddQueryText("{ testField }");
-            var request = builder.OperationRequest;
+            var request = builder.QueryRequest;
             var context = builder.Build();
 
             var mock = new Mock<IQueryExecutionResult>();
-            mock.Setup(x => x.Request).Returns(request);
+            mock.Setup(x => x.QueryRequest).Returns(request);
             mock.Setup(x => x.Data).Returns(new ResponseFieldSet());
             mock.Setup(x => x.Messages).Returns(new GraphMessageCollection());
 
@@ -166,7 +166,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new RequestCompletedLogEntry(context);
 
             Assert.AreEqual(LogEventIds.RequestCompleted.Id, entry.EventId);
-            Assert.AreEqual(request.Id.ToString(), entry.OperationRequestId);
+            Assert.AreEqual(request.Id.ToString(), entry.QueryRequestId);
             Assert.AreEqual(false, entry.ResultHasErrors);
             Assert.AreEqual(true, entry.ResultHasData);
             Assert.IsNotNull(entry.ToString());

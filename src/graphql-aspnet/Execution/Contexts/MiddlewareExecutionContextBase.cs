@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="otherContext">The other context on which this context is based.</param>
         protected MiddlewareExecutionContextBase(IGraphQLMiddlewareExecutionContext otherContext)
             : this(
-                    otherContext?.OperationRequest,
+                    otherContext?.QueryRequest,
                     otherContext?.ServiceProvider,
                     otherContext?.Session,
                     otherContext?.SecurityContext,
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <summary>
         /// Initializes a new instance of the <see cref="MiddlewareExecutionContextBase" /> class.
         /// </summary>
-        /// <param name="operationRequest">The original operation request.</param>
+        /// <param name="queryRequest">The original operation request.</param>
         /// <param name="serviceProvider">The service provider passed on the HttpContext.</param>
         /// <param name="querySession">The query session governing the execution of a query.</param>
         /// <param name="securityContext">The security context used to authenticate
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="logger">The logger instance to record events related to this context.</param>
         /// <param name="cancelToken">The cancel token governing this execution context.</param>
         protected MiddlewareExecutionContextBase(
-            IQueryExecutionRequest operationRequest,
+            IQueryExecutionRequest queryRequest,
             IServiceProvider serviceProvider,
             IQuerySession querySession,
             IUserSecurityContext securityContext = null,
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Execution.Contexts
             IGraphEventLogger logger = null,
             CancellationToken cancelToken = default)
         {
-            this.OperationRequest = Validation.ThrowIfNullOrReturn(operationRequest, nameof(operationRequest));
+            this.QueryRequest = Validation.ThrowIfNullOrReturn(queryRequest, nameof(queryRequest));
             this.ServiceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
             this.Session = Validation.ThrowIfNullOrReturn(querySession, nameof(Session));
 
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         public bool IsValid => !this.Messages.Severity.IsCritical();
 
         /// <inheritdoc />
-        public IQueryExecutionRequest OperationRequest { get; }
+        public IQueryExecutionRequest QueryRequest { get; }
 
         /// <inheritdoc />
         public CancellationToken CancellationToken { get; set; }
