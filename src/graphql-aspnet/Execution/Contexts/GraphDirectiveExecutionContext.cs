@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// </summary>
         /// <param name="schema">The schema this context targets.</param>
         /// <param name="directiveRequest">The directive request to be completed.</param>
-        /// <param name="operationRequest">The parent operation under which
+        /// <param name="queryRequest">The parent request under which
         /// this directive execution is taking place.</param>
         /// <param name="serviceProvider">The service provider used to resolve needed
         /// objects for this context.</param>
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         public GraphDirectiveExecutionContext(
             ISchema schema,
             IGraphDirectiveRequest directiveRequest,
-            IQueryExecutionRequest operationRequest,
+            IQueryExecutionRequest queryRequest,
             IServiceProvider serviceProvider,
             IQuerySession querySession,
             IUserSecurityContext userSecurityContext = null,
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Execution.Contexts
             IResolvedVariableCollection variableData = null,
             ClaimsPrincipal user = null)
             : base(
-                  operationRequest,
+                  queryRequest,
                   serviceProvider,
                   querySession,
                   userSecurityContext,

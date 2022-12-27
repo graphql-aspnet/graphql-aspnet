@@ -173,7 +173,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 targetDirective,
                 directiveDocumentPart);
 
-            var parentRequest = queryContext.OperationRequest;
+            var parentRequest = queryContext.QueryRequest;
 
             var invocationContext = new DirectiveInvocationContext(
                 targetDirective,
@@ -182,7 +182,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 inputArgs);
 
             var request = new GraphDirectiveRequest(
-                queryContext.OperationRequest,
+                queryContext.QueryRequest,
                 invocationContext,
                 DirectiveInvocationPhase.QueryDocumentExecution,
                 targetDocumentPart);

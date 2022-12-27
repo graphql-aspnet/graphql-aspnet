@@ -90,17 +90,17 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// successfully executed and no subscription was created.
         /// </summary>
         /// <param name="subscriptionId">The subscription id that was executed.</param>
-        /// <param name="operationResult">The completed query operation result.</param>
+        /// <param name="queryResult">The completed query operation result.</param>
         /// <returns>SubscriptionDataExecutionResult&lt;TSchema&gt;.</returns>
-        public static SubscriptionQueryExecutionResult<TSchema> SingleOperationCompleted(string subscriptionId, IQueryExecutionResult operationResult)
+        public static SubscriptionQueryExecutionResult<TSchema> SingleOperationCompleted(string subscriptionId, IQueryExecutionResult queryResult)
         {
             var result = new SubscriptionQueryExecutionResult<TSchema>();
             result.SubscriptionId = subscriptionId;
 
             result.Status = SubscriptionQueryResultType.SingleQueryCompleted;
 
-            result.OperationResult = operationResult;
-            result.Messages = operationResult.Messages;
+            result.QueryResult = queryResult;
+            result.Messages = queryResult.Messages;
 
             return result;
         }
@@ -129,12 +129,12 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// null if the executed operation registered a <see cref="Subscription"/> instead.
         /// </summary>
         /// <value>The operation result.</value>
-        public IQueryExecutionResult OperationResult { get; private set; }
+        public IQueryExecutionResult QueryResult { get; private set; }
 
         /// <summary>
         /// Gets the subscription that was created if the executed query was a
         /// subscription based query that was completed. Will be null of the executed operation
-        /// generated a <see cref="OperationResult"/> instead.
+        /// generated a <see cref="QueryResult"/> instead.
         /// </summary>
         /// <value>The subscription.</value>
         public ISubscription<TSchema> Subscription { get; private set; }

@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="queryData">The query data parsed from an <see cref="HttpRequest" />; may be null.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task&lt;IActionResult&gt;.</returns>
+        /// <returns>Task.</returns>
         protected virtual async Task SubmitQueryAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
             // ensure data was received
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="queryData">The query data.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        /// <returns>Task.</returns>
         protected virtual async Task ExecuteQueryAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
             try
@@ -151,14 +151,14 @@ namespace GraphQL.AspNet.Engine
                 // *******************************
                 // Setup
                 // *******************************
-                var request = await this.CreateOperationRequestAsync(queryData, cancelToken);
+                var request = await this.CreateQueryRequestAsync(queryData, cancelToken);
                 if (request == null)
                 {
                     await this.WriteStatusCodeResponseAsync(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED, cancelToken).ConfigureAwait(false);
                     return;
                 }
 
-                this.GraphQLOperationRequest = request;
+                this.GraphQLQueryRequest = request;
                 var securityContext = this.CreateUserSecurityContext();
 
                 // *******************************
@@ -167,7 +167,7 @@ namespace GraphQL.AspNet.Engine
                 var queryResponse = await _runtime
                     .ExecuteRequestAsync(
                         this.HttpContext.RequestServices,
-                        this.GraphQLOperationRequest,
+                        this.GraphQLQueryRequest,
                         securityContext,
                         this.EnableMetrics,
                         cancelToken)
@@ -218,8 +218,8 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="queryData">The query data that needs to be packaged into a <see cref="IQueryExecutionRequest" />.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>IGraphOperationRequest.</returns>
-        protected virtual Task<IQueryExecutionRequest> CreateOperationRequestAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
+        /// <returns>IQueryExecutionRequest.</returns>
+        protected virtual Task<IQueryExecutionRequest> CreateQueryRequestAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
             var request = _runtime.CreateRequest(queryData);
             if (request == null)
@@ -321,7 +321,7 @@ namespace GraphQL.AspNet.Engine
             string message,
             string errorCode = Constants.ErrorCodes.GENERAL_ERROR)
         {
-            var response = new QueryExecutionResult(this.GraphQLOperationRequest);
+            var response = new QueryExecutionResult(this.GraphQLQueryRequest);
             response.Messages.Add(GraphMessageSeverity.Critical, message, errorCode);
             return response;
         }
@@ -386,9 +386,9 @@ namespace GraphQL.AspNet.Engine
         /// Gets the GraphQL request that was created and processed.
         /// </summary>
         /// <remarks>
-        /// This property may not be populated until after <see cref="CreateOperationRequestAsync"/> is called.
+        /// This property may not be populated until after <see cref="CreateQueryRequestAsync"/> is called.
         /// </remarks>
         /// <value>The graphQL request being executed by this processor.</value>
-        protected virtual IQueryExecutionRequest GraphQLOperationRequest { get; private set; }
+        protected virtual IQueryExecutionRequest GraphQLQueryRequest { get; private set; }
     }
 }

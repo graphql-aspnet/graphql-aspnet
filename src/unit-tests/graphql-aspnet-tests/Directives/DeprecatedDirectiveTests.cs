@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Directives
         private Mock<IInputArgumentCollection> _argCollection;
         private Mock<IInputValue> _argValue;
         private string _reason = null;
-        private QueryExecutionRequest _operationRequest;
+        private QueryExecutionRequest _queryRequest;
         private DirectiveInvocationContext _invocationContext;
         private DirectiveLocation _directiveLocation;
         private IServiceProvider _provider;
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Tests.Directives
             _argCollection.Setup(x => x.Merge(It.IsAny<IResolvedVariableCollection>()))
                 .Returns(executionArgs);
 
-            _operationRequest = new QueryExecutionRequest(GraphQueryData.Empty);
+            _queryRequest = new QueryExecutionRequest(GraphQueryData.Empty);
 
             _invocationContext = new DirectiveInvocationContext(
                 _directive,
@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Tests.Directives
             var context = new GraphDirectiveExecutionContext(
                 _schema,
                 directiveRequest,
-                _operationRequest,
+                _queryRequest,
                 _scopedProvider.ServiceProvider,
                 new QuerySession(),
                 logger: _logger.Object);

@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="errorMessages">The set of messages to create a result from.</param>
         /// <param name="queryData">The original, raw query data.</param>
-        /// <returns>GraphOperationResult.</returns>
+        /// <returns>QueryExecutionResult.</returns>
         public static QueryExecutionResult FromErrorMessages(IGraphMessageCollection errorMessages, GraphQueryData queryData = null)
         {
             Validation.ThrowIfNull(errorMessages, nameof(errorMessages));

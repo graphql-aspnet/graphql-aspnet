@@ -61,18 +61,18 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task OperationRequestIsCorrectlySetOnInvokedExecutionDirective()
+        public async Task QueryRequestIsCorrectlySetOnInvokedExecutionDirective()
         {
-            var queryText = "query  { retrieveObject @operationRequestCheck { property1 } }";
+            var queryText = "query  { retrieveObject @queryRequestCheck { property1 } }";
 
-            var directiveInstance = new OperationRequestCheckDirective();
+            var directiveInstance = new QueryRequestCheckDirective();
             directiveInstance.ExpectedQueryText = queryText;
 
             var serverBuilder = new TestServerBuilder();
             serverBuilder.AddSingleton(directiveInstance);
             serverBuilder.AddGraphController<DirectiveTestController>()
                    .AddSubscriptionServer()
-                   .AddDirective<OperationRequestCheckDirective>();
+                   .AddDirective<QueryRequestCheckDirective>();
 
             var server = serverBuilder.Build();
 
@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var context = builder.Build(id);
             await server.ExecuteQuery(context);
 
-            Assert.IsTrue(directiveInstance.OperationRequestReceived);
+            Assert.IsTrue(directiveInstance.QueryRequestReceived);
         }
     }
 }

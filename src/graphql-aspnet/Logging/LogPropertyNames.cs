@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Logging
         /// <summary>
         /// The unique id assigned to an individual operation request.
         /// </summary>
-        public const string OPERATION_REQUEST_ID = "operationRequestId";
+        public const string QUERY_REQUEST_ID = "queryRequestId";
 
         /// <summary>
         /// The unique id assigned to an individual pipele/field resolution request.

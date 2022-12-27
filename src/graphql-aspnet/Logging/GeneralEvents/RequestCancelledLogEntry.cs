@@ -25,26 +25,26 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         public RequestCancelledLogEntry(QueryExecutionContext context)
             : base(LogEventIds.RequestCancelled)
         {
-            this.OperationRequestId = context?.OperationRequest?.Id.ToString();
+            this.QueryRequestId = context?.QueryRequest?.Id.ToString();
 
             this.TotalExecutionMs = 0;
-            if (context?.OperationRequest?.StartTimeUTC != null)
+            if (context?.QueryRequest?.StartTimeUTC != null)
             {
                 this.TotalExecutionMs = DateTimeOffset
                     .UtcNow
-                    .Subtract(context.OperationRequest.StartTimeUTC)
+                    .Subtract(context.QueryRequest.StartTimeUTC)
                     .TotalMilliseconds;
             }
         }
 
         /// <summary>
-        /// Gets the globally unique id of the operation request on this event.
+        /// Gets the globally unique id of the query request on this event.
         /// </summary>
         /// <value>The unique operation request id.</value>
-        public string OperationRequestId
+        public string QueryRequestId
         {
-            get => this.GetProperty<string>(LogPropertyNames.OPERATION_REQUEST_ID);
-            private set => this.SetProperty(LogPropertyNames.OPERATION_REQUEST_ID, value);
+            get => this.GetProperty<string>(LogPropertyNames.QUERY_REQUEST_ID);
+            private set => this.SetProperty(LogPropertyNames.QUERY_REQUEST_ID, value);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
-            var idTruncated = this.OperationRequestId?.Length > 8 ? this.OperationRequestId.Substring(0, 8) : this.OperationRequestId;
+            var idTruncated = this.QueryRequestId?.Length > 8 ? this.QueryRequestId.Substring(0, 8) : this.QueryRequestId;
             return $"Request Cancelled | Id: {idTruncated}";
         }
     }

@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Tests.Mocks
         /// Adds a set of variables to use in the request.
         /// </summary>
         /// <param name="jsonDocument">The json document containing the variable data.</param>
-        /// <returns>MockOperationRequest.</returns>
+        /// <returns>SubscriptionContextBuilder.</returns>
         public SubscriptionContextBuilder AddVariableData(string jsonDocument)
         {
             var variableData = JsonSerializer.Deserialize<InputVariableCollection>(jsonDocument);
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Tests.Mocks
         /// Adds the name of the operation to be executed to this instance.
         /// </summary>
         /// <param name="operationName">Name of the operation.</param>
-        /// <returns>MockOperationRequest.</returns>
+        /// <returns>SubscriptionContextBuilder.</returns>
         public SubscriptionContextBuilder AddOperationName(string operationName)
         {
             _mockRequest.Setup(x => x.OperationName).Returns(operationName);
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Tests.Mocks
         /// Adds the speficied query text as the query to execute.
         /// </summary>
         /// <param name="queryText">The query text.</param>
-        /// <returns>MockOperationRequest.</returns>
+        /// <returns>SubscriptionContextBuilder.</returns>
         public SubscriptionContextBuilder AddQueryText(string queryText)
         {
             _mockRequest.Setup(x => x.QueryText).Returns(queryText);
@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Tests.Mocks
 
             // updateable items about the request
             var context = new SubcriptionQueryExecutionContext(
-                this.OperationRequest,
+                this.QueryRequest,
                 _client,
                 _serviceProvider,
                 new QuerySession(),
@@ -170,9 +170,9 @@ namespace GraphQL.AspNet.Tests.Mocks
         }
 
         /// <summary>
-        /// Gets the mocked operation request as its currently defined by this builder.
+        /// Gets the mocked request as its currently defined by this builder.
         /// </summary>
         /// <value>The operation request.</value>
-        public IQueryExecutionRequest OperationRequest => _mockRequest.Object;
+        public IQueryExecutionRequest QueryRequest => _mockRequest.Object;
     }
 }

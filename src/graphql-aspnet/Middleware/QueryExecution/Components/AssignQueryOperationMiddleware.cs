@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 }
                 else
                 {
-                    var operationToExecute = context.OperationRequest.OperationName?.Trim() ?? string.Empty;
+                    var operationToExecute = context.QueryRequest.OperationName?.Trim() ?? string.Empty;
                     var operation = context.QueryDocument.Operations.RetrieveOperation(operationToExecute);
                     context.Operation = operation;
                     if (context.Operation == null)

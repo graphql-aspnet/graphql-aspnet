@@ -28,14 +28,14 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
 
-            var operationRequest = new Mock<IQueryExecutionRequest>();
+            var queryRequest = new Mock<IQueryExecutionRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();
             var serviceProvider = new Mock<IServiceProvider>();
             var logger = new Mock<IGraphEventLogger>();
             var metrics = new Mock<IQueryExecutionMetrics>();
             var securityContext = new Mock<IUserSecurityContext>();
 
-            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
+            parentContext.Setup(x => x.QueryRequest).Returns(queryRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
             parentContext.Setup(x => x.SecurityContext).Returns(securityContext.Object);
             parentContext.Setup(x => x.Metrics).Returns(metrics.Object);
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 variableData.Object,
                 sourceFieldCollection);
 
-            Assert.AreEqual(operationRequest.Object, context.OperationRequest);
+            Assert.AreEqual(queryRequest.Object, context.QueryRequest);
             Assert.AreEqual(variableData.Object, context.VariableData);
             Assert.AreEqual(sourceFieldCollection, context.DefaultFieldSources);
             Assert.AreEqual(fieldRequest.Object, context.Request);
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
 
-            var operationRequest = new Mock<IQueryExecutionRequest>();
+            var queryRequest = new Mock<IQueryExecutionRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();
             var serviceProvider = new Mock<IServiceProvider>();
             var logger = new Mock<IGraphEventLogger>();
@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var items = new MetaDataCollection();
 
             var context = new QueryExecutionContext(
-                operationRequest.Object,
+                queryRequest.Object,
                 serviceProvider.Object,
                 session,
                 items,
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 metrics.Object,
                 logger.Object);
 
-            Assert.AreEqual(operationRequest.Object, context.OperationRequest);
+            Assert.AreEqual(queryRequest.Object, context.QueryRequest);
             Assert.AreEqual(sourceFieldCollection, context.DefaultFieldSources);
             Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
             Assert.AreEqual(logger.Object, context.Logger);
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
 
-            var operationRequest = new Mock<IQueryExecutionRequest>();
+            var queryRequest = new Mock<IQueryExecutionRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();
             var serviceProvider = new Mock<IServiceProvider>();
             var logger = new Mock<IGraphEventLogger>();
@@ -115,7 +115,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var securityContext = new Mock<IUserSecurityContext>();
             var schema = new GraphSchema();
 
-            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
+            parentContext.Setup(x => x.QueryRequest).Returns(queryRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
             parentContext.Setup(x => x.SecurityContext).Returns(securityContext.Object);
             parentContext.Setup(x => x.Metrics).Returns(metrics.Object);
@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 directiveRequest.Object,
                 args.Object);
 
-            Assert.AreEqual(operationRequest.Object, context.OperationRequest);
+            Assert.AreEqual(queryRequest.Object, context.QueryRequest);
             Assert.AreEqual(directiveRequest.Object, context.Request);
             Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
             Assert.AreEqual(logger.Object, context.Logger);
