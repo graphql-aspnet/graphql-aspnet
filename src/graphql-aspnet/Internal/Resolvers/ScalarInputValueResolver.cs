@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Internal.Resolvers
 {
+    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
@@ -23,7 +24,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         private readonly ILeafValueResolver _scalarResolver;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ScalarInputValueResolver"/> class.
+        /// Initializes a new instance of the <see cref="ScalarInputValueResolver" /> class.
         /// </summary>
         /// <param name="scalarResolver">The resolver to resolve a scalar leaf value.</param>
         public ScalarInputValueResolver(ILeafValueResolver scalarResolver)
@@ -32,7 +33,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         }
 
         /// <inheritdoc />
-        public object Resolve(IResolvableValueItem resolvableItem, IResolvedVariableCollection variableData = null)
+        public virtual object Resolve(IResolvableValueItem resolvableItem, IResolvedVariableCollection variableData = null)
         {
             if (resolvableItem is IResolvablePointer pointer)
             {

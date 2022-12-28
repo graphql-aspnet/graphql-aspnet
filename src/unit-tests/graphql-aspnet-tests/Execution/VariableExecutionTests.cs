@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
@@ -183,6 +184,704 @@ namespace GraphQL.AspNet.Tests.Execution
                             }";
 
             CommonAssertions.AreEqualJsonStrings(expected, result);
+        }
+
+        [Test]
+        public async Task NullableInputObject_WhenSuppliedOnVariableAsNull_IsTreatedAsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Input_ModelWithGuid){
+                    createWithModelGuid(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"": null }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelGuid"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableInputObject_WhenPartiallySuppliedOnVariableAsNull_IsTreatedAsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Input_ModelWithGuid){
+                    createWithModelGuidNullId(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"": { ""id"": null }  }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelGuidNullId"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableInputObject_WhenNotSuppliedOnVariable_IsTreatedAsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Input_ModelWithGuid){
+                    createWithModelGuid(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelGuid"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableInputObject_WhenSuppliedOnVariable_IsParsedCorrectly()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Input_ModelWithGuid){
+                    createWithModelGuid(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"": { ""id"": ""e4b693dd-8a89-4565-af17-769daa93452d"" } }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelGuid"" : {
+                        ""property1"" : ""e4b693dd-8a89-4565-af17-769daa93452d"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableGuid_AsInputField_WhenSupplied_IsCoerced()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            // id is a nullable guid (Guid?)
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation {
+                    createWithModelGuid(param: {id: ""E4B693DD-8A89-4565-AF17-769DAA93452D""})  {
+                       property1
+                        property2
+                    }
+                }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelGuid"" : {
+                        ""property1"" : ""e4b693dd-8a89-4565-af17-769daa93452d"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableGuid_AsInputField_WhenNull_IsNull()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation {
+                    createWithModelGuid(param: {id: null})  {
+                       property1
+                        property2
+                    }
+                }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelGuid"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableGuid_AsInputField_WhenSuppliedOnVariable_IsSupplied()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Guid){
+                    createWithModelGuid(param: {id: $arg1})  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"": ""E4B693DD-8A89-4565-AF17-769DAA93452D"" }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelGuid"" : {
+                        ""property1"" : ""e4b693dd-8a89-4565-af17-769daa93452d"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableModelGuid_AsInputField_WhenSuppliedOnVariableAsNull_IsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Guid){
+                    createWithModelGuid(param: {id: $arg1})  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"":  null }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelGuid"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableModelGuid_AsInputField_WhenNotSuppliedOnVariable_IsTreatedAsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Guid){
+                    createWithModelGuid(param: {id: $arg1})  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelGuid"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableModelGuid_AsInputField_WhenIdValueSuppliedOnVariableAsNull_IsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Guid){
+                    createWithModelGuidNullId(param: {id: $arg1})  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"":  { ""id"": null }  }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelGuidNullId"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableModelInt_AsInputField_WhenSuppliedOnVariableAsNull_IsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int){
+                    createWithModelInt(param: {id: $arg1})  {
+                       property1
+                       property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"":  null }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelInt"" : {
+                        ""property1"" : ""some value"",
+                        ""property2"": -1
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableModelInt_AsInputField_WhenNoVariableSupplied_IsTreatedAsNullBeingSupplied()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int){
+                    createWithModelInt(param: {id: $arg1})  {
+                       property1
+                       property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelInt"" : {
+                        ""property1"" : ""some value"",
+                        ""property2"": -1
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableGraphId_AsInputField_WhenSuppliedOnVariableAsNull_IsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: ID){
+                    createWithId(param: $arg1)  {
+                       property1
+                       property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"":  null }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithId"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableGraphId_AsInputField_WhenNotSuppliedOnVariable_IsTreatedAsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: ID){
+                    createWithId(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithId"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableEnum_AsInputField_WhenSuppliedOnVariableAsNull_IsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: TestEnum){
+                    createWithEnum(param: $arg1)  {
+                       property1
+                       property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"":  null }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithEnum"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableEnum_AsInputField_WhenNotSuppliedOnVariable_IsTreatedAsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: TestEnum){
+                    createWithEnum(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithEnum"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableInt_AsInputField_WhenSuppliedOnVariableAsNull_IsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int){
+                    createWithNullableInt(param: $arg1)  {
+                       property1
+                       property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"":  null }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithNullableInt"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NullableInt_AsInputField_WhenNotSuppliedOnVariable_IsTreatedAsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int){
+                    createWithNullableInt(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithNullableInt"" : {
+                        ""property1"" : null,
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NonNullableInt_AsInputField_WhenNotSuppliedOnVariable_IsTreatedAsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int!){
+                    createWithInt(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ }");
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task NonNullableInt_AsInputField_WhenSuppliedOnVariableAsNull_IsTreatedAsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int!){
+                    createWithInt(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"": null }");
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task NonNullableInt_AsInputField_WhenNotSuppliedOnVariable_ButWithDefaultValue_IsTreatedAsDefaultValue()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int! = 34){
+                    createWithInt(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithInt"" : {
+                        ""property1"" : ""34"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task NonNullableInt_AsInputField_WhenSuppliedOnVariableAsNull_ButWithDefaultValue_IsTreatedAsNullValue()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int! = 34){
+                    createWithInt(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // supplied null value will take prescendents over the 34 (default value)
+            // and fail the query
+            queryContext.AddVariableData(@"{ ""arg1"" : null }");
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
         }
     }
 }
