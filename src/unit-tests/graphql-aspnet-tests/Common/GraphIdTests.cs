@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Tests.Common
 {
-    using System;
     using NUnit.Framework;
 
     [TestFixture]
@@ -30,10 +29,17 @@ namespace GraphQL.AspNet.Tests.Common
         }
 
         [Test]
-        public void NotInitializedGraphId_IsNull()
+        public void EmptyGraphIdCtor_IsEmptyString()
+        {
+            GraphId id = new ();
+            Assert.IsNull(id.Value);
+        }
+
+        [Test]
+        public void NotInitializedGraphId_IsNullString()
         {
             var t = new Test();
-            Assert.IsNull(t.Prop1);
+            Assert.IsNull(t.Prop1.Value);
         }
 
         [Test]
@@ -128,12 +134,10 @@ namespace GraphQL.AspNet.Tests.Common
         }
 
         [Test]
-        public void ConstructorCannotAcceptNull()
+        public void EmptyConstructorHasNullValue()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                var id = new GraphId(null);
-            });
+            var id = new GraphId(null);
+            Assert.AreEqual(null, id.Value);
         }
 
         [TestCase("123", "123", true)]
@@ -164,17 +168,10 @@ namespace GraphQL.AspNet.Tests.Common
         }
 
         [Test]
-        public void EqualsOperatorWithNullValueAgaintNulValue_IsTrue()
-        {
-            GraphId id = null;
-            GraphId id2 = null;
-            Assert.IsTrue(id == id2);
-        }
-
-        [Test]
         public void EqualsOperatorWithNullValueAgaintNullObject_IsFalse()
         {
-            GraphId id = null;
+            var id = new GraphId(null);
+
             object obj = null;
             Assert.IsFalse(id == obj);
         }

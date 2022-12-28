@@ -357,11 +357,8 @@ namespace GraphQL.AspNet.Tests.Execution
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
 
-        [TestCase("ID!", "\"3\"")]
-        [TestCase("ID", "\"3\"")]
-        public async Task SingleValueVariableInDeclaredArray_IsCoercableToArrayOfValidType(
-            string variableType,
-            string value)
+        [Test]
+        public async Task SingleValueVariableInDeclaredArray_IsCoercableToArrayOfValidType()
         {
             var server = new TestServerBuilder()
              .AddGraphQL(o =>
@@ -377,12 +374,12 @@ namespace GraphQL.AspNet.Tests.Execution
             // the value resolves correctly
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
-                "query ($additionalId: " + variableType + @"){
+                @"query ($additionalId: ID!){
                         idsAccepted(ids: [""1"", ""2"", $additionalId])
                 }")
                 .AddVariableData(
                 @"{
-                    ""additionalId"" : " + value + @"
+                    ""additionalId"" : ""3""
                   }");
 
             var expectedOutput =
@@ -432,11 +429,8 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
         }
 
-        [TestCase("ID", "3")]
-        [TestCase("ID!", "3")]
-        public async Task SingleValueVariableInDeclaredArray_OfWrongValue_IsNotCoercableToArrayOfValidType(
-            string variableType,
-            string value)
+        [Test]
+        public async Task SingleValueVariableInDeclaredArray_OfWrongValue_IsNotCoercableToArrayOfValidType()
         {
             var server = new TestServerBuilder()
              .AddGraphQL(o =>
@@ -448,12 +442,12 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
-                "query ($additionalId: " + variableType + @"){
+                @"query ($additionalId: ID!){ 
                         idsAccepted(ids: [""1"", ""2"", $additionalId])
                 }")
                 .AddVariableData(
                 @"{
-                    ""additionalId"" : " + value + @"
+                    ""additionalId"" : 3
                   }");
 
             var result = await server.ExecuteQuery(builder);

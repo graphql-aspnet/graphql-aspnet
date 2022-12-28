@@ -11,29 +11,27 @@ namespace GraphQL.AspNet
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common;
 
     /// <summary>
     /// <para>A scalar representation of the graphql defined "ID" scalar.</para>
     /// <para>spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-ID" /> .</para>
     /// </summary>
     [DebuggerDisplay("{Value}")]
-    public sealed class GraphId : IEquatable<GraphId>
+    public readonly struct GraphId : IEquatable<GraphId>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphId" /> class.
+        /// Initializes a new instance of the <see cref="GraphId" /> struct.
         /// </summary>
-        /// <param name="id">The graphid to copy from.</param>
+        /// <param name="id">The identifier to copy from.</param>
         public GraphId(GraphId id)
         {
-            Validation.ThrowIfNull(id, nameof(id));
             this.Value = id.Value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphId"/> class.
+        /// Initializes a new instance of the <see cref="GraphId"/> struct.
         /// </summary>
-        /// <param name="idValue">The id value to wrap.</param>
+        /// <param name="idValue">The identifier value.</param>
         public GraphId(string idValue)
         {
             this.Value = idValue;
@@ -52,10 +50,6 @@ namespace GraphQL.AspNet
         /// <returns>true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.</returns>
         public bool Equals(GraphId other)
         {
-            // this non-null id can't be equal to a null'd id
-            if (other == null)
-                return false;
-
             return string.Equals(this.Value, other.Value, StringComparison.Ordinal);
         }
 
@@ -73,7 +67,7 @@ namespace GraphQL.AspNet
                 return this.Equals(id);
 
             if (obj is string str)
-                return string.Equals(this.Value, str, StringComparison.Ordinal);
+                return this.Equals((GraphId)str);
 
             return false;
         }
@@ -84,7 +78,7 @@ namespace GraphQL.AspNet
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public override int GetHashCode()
         {
-            return this.Value.GetHashCode();
+            return this.Value != null ? this.Value.GetHashCode() : 0;
         }
 
         /// <summary>
@@ -104,12 +98,6 @@ namespace GraphQL.AspNet
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(GraphId ls, GraphId rs)
         {
-            if (ReferenceEquals(null, ls))
-                return ReferenceEquals(null, rs);
-
-            if (ReferenceEquals(null, rs))
-                return false;
-
             return ls.Equals(rs);
         }
 
@@ -132,13 +120,11 @@ namespace GraphQL.AspNet
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(GraphId ls, object rs)
         {
-            // a graph id (null or not) is never equal to another object
-            // unless that other object is a string that can be cast correctly
-            if (ReferenceEquals(null, ls) || ReferenceEquals(null, rs))
+            if (rs is null)
                 return false;
 
             if (rs is string rss)
-                return string.Equals(ls.Value, rss, StringComparison.Ordinal);
+                return ls.Value == rss;
 
             return false;
         }
@@ -162,7 +148,13 @@ namespace GraphQL.AspNet
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(object ls, GraphId rs)
         {
-            return rs == ls;
+            if (ls is null)
+                return false;
+
+            if (ls is string lss)
+                return lss == rs.Value;
+
+            return false;
         }
 
         /// <summary>

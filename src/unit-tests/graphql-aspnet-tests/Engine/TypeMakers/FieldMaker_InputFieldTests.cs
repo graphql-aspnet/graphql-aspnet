@@ -163,7 +163,8 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.AreEqual("graphIdRequired", graphField.Name);
             Assert.IsTrue((bool)graphField.IsRequired);
 
-            Assert.AreEqual("ID", graphField.TypeExpression.ToString());
+            // scalar is required by default
+            Assert.AreEqual("ID!", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/GraphIdRequired", graphField.Route.ToString());
             Assert.AreEqual("GraphIdRequired", graphField.InternalName);
             Assert.AreEqual(typeof(GraphId), graphField.DeclaredReturnType);
@@ -187,7 +188,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.AreEqual("graphIdNotRequired", graphField.Name);
             Assert.IsFalse((bool)graphField.IsRequired);
 
-            Assert.AreEqual("ID", graphField.TypeExpression.ToString());
+            Assert.AreEqual("ID!", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/GraphIdNotRequired", graphField.Route.ToString());
             Assert.AreEqual("GraphIdNotRequired", graphField.InternalName);
             Assert.AreEqual(typeof(GraphId), graphField.DeclaredReturnType);
@@ -196,7 +197,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         }
 
         [Test]
-        public void Parse_NotRequiredNonNullGraphIdPropertyCheck()
+        public void Parse_NotRequiredNullableGraphIdPropertyCheck()
         {
             var server = new TestServerBuilder().Build();
             var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
@@ -204,17 +205,17 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var fieldTemplate = template
                 .FieldTemplates
                 .Values
-                .Single(x => x.Name == nameof(InputTestObject.GraphIdNonNullable));
+                .Single(x => x.Name == nameof(InputTestObject.GraphIdNullable));
 
             var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
 
-            Assert.AreEqual("graphIdNonNullable", graphField.Name);
+            Assert.AreEqual("graphIdNullable", graphField.Name);
             Assert.IsFalse((bool)graphField.IsRequired);
 
-            Assert.AreEqual("ID!", graphField.TypeExpression.ToString());
-            Assert.AreEqual("[type]/Input_InputTestObject/GraphIdNonNullable", graphField.Route.ToString());
-            Assert.AreEqual("GraphIdNonNullable", graphField.InternalName);
-            Assert.AreEqual(typeof(GraphId), graphField.DeclaredReturnType);
+            Assert.AreEqual("ID", graphField.TypeExpression.ToString());
+            Assert.AreEqual("[type]/Input_InputTestObject/GraphIdNullable", graphField.Route.ToString());
+            Assert.AreEqual("GraphIdNullable", graphField.InternalName);
+            Assert.AreEqual(typeof(GraphId?), graphField.DeclaredReturnType);
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);
         }

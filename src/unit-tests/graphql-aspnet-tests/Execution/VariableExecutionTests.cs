@@ -587,7 +587,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var queryContext = server.CreateQueryContextBuilder();
             queryContext.AddQueryText(
                 @"mutation ($arg1: ID){
-                    createWithId(param: $arg1)  {
+                    createWithNullableId(param: $arg1)  {
                        property1
                        property2
                     }
@@ -598,7 +598,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var expectedJson = @"
             {
                 ""data"" : {
-                    ""createWithId"" : {
+                    ""createWithNullableId"" : {
                         ""property1"" : null,
                         ""property2"": 5
                     }
@@ -620,7 +620,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var queryContext = server.CreateQueryContextBuilder();
             queryContext.AddQueryText(
                 @"mutation ($arg1: ID){
-                    createWithId(param: $arg1)  {
+                    createWithNullableId(param: $arg1)  {
                        property1
                         property2
                     }
@@ -631,7 +631,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var expectedJson = @"
             {
                 ""data"" : {
-                    ""createWithId"" : {
+                    ""createWithNullableId"" : {
                         ""property1"" : null,
                         ""property2"": 5
                     }
@@ -640,6 +640,56 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var result = await server.RenderResult(queryContext);
             CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task GraphId_AsInputField_WhenSuppliedOnVariableAsNull_IsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: ID!){
+                    createWithId(param: $arg1)  {
+                       property1
+                       property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"":  null }");
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task GraphId_AsInputField_WhenNotSuppliedOnVariable_IsTreatedAsNull()
+        {
+            // github issue 95
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: ID!){
+                    createWithId(param: $arg1)  {
+                       property1
+                       property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{  }");
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
         }
 
         [Test]

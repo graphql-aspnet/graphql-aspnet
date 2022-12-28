@@ -52,11 +52,21 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
         }
 
         [MutationRoot]
-        public TwoPropertyObject CreateWithId(GraphId param)
+        public TwoPropertyObject CreateWithNullableId(GraphId? param)
         {
             return new TwoPropertyObject()
             {
                 Property1 = param?.Value,
+                Property2 = 5,
+            };
+        }
+
+        [MutationRoot]
+        public TwoPropertyObject CreateWithId(GraphId param)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = param.Value,
                 Property2 = 5,
             };
         }
