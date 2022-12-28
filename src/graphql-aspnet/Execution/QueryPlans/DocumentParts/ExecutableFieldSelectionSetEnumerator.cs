@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
@@ -20,6 +21,12 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     /// </summary>
     internal class ExecutableFieldSelectionSetEnumerator : IEnumerator<(IFieldDocumentPart DocPart, bool IsIncluded)>
     {
+        // Rewrite to be an "include chain"
+        // determine which includeable fields determine the includability of a field in a selection
+        // set and carry a reference to each such that it can be evaluated in real time
+        // when needed to determine if a field is or should be included
+
+
         private readonly bool _forceExclude;
         private readonly List<IDocumentPart> _partsToIterate;
 

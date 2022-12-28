@@ -596,7 +596,7 @@ namespace GraphQL.AspNet.Tests.Directives
                  .AddType<SkipDirective>()
                  .Build();
 
-            // super silly but ultimately not included!
+            // super silly but ultimately valid, field would not be included!
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
                     @"query {
@@ -683,6 +683,185 @@ namespace GraphQL.AspNet.Tests.Directives
                             }
                         }
                     }");
+
+            var expectedJson = @"
+                {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"": {
+                        ""property2"" : 5
+                       }
+                     }
+                   }
+                }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedJson,
+                result);
+        }
+
+        [Test]
+        public async Task NestedDirectives_Scenario11()
+        {
+            var server = new TestServerBuilder()
+                .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                 .AddType<SkipDirective>()
+                 .Build();
+
+            // super silly + nested fragment
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property2
+                                ... frag1 @include(if: true)
+                            }
+                        }
+                    }
+                    fragment frag1 on TwoPropertyObject {
+                        ... @skip(if: false) {
+                            ... @include(if: true) {
+                                ... @skip(if: false) {
+                                    ... @include(if: true) {
+                                        ... @skip(if: false) {
+                                            ... @include(if: true) {
+                                                ... @skip(if: false) {
+                                                    ... @include(if: true) {
+                                                           ... frag2 @include(if: true)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    fragment frag2 on TwoPropertyObject {
+                        property1 @skip(if: false)
+                    }");
+
+            var expectedJson = @"
+                {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"": {
+                        ""property2"" : 5,
+                        ""property1"": ""default string""
+                       }
+                     }
+                   }
+                }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedJson,
+                result);
+        }
+
+        [Test]
+        public async Task NestedDirectives_Scenario12()
+        {
+            var server = new TestServerBuilder()
+                .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                 .AddType<SkipDirective>()
+                 .Build();
+
+            // super silly + nested fragment
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                ... frag1 @include(if: true)
+                            }
+                        }
+                    }
+
+                    fragment frag1 on TwoPropertyObject {
+                        ... frag2 @include(if: true)
+                    }
+                    fragment frag2 on TwoPropertyObject {
+                        ... frag3 @include(if: true)
+                    }
+                    fragment frag3 on TwoPropertyObject {
+                        ... frag4 @include(if: true)
+                    }
+                    fragment frag4 on TwoPropertyObject {
+                        ... frag5 @skip(if: false)
+                        property1 @include(if: true)
+                    }
+                    fragment frag5 on TwoPropertyObject {
+                        ... frag6 @skip(if: false)
+                    }
+                    fragment frag6 on TwoPropertyObject {
+                        property2 @include(if: true)
+                    }
+                    ");
+
+            var expectedJson = @"
+                {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"": {
+                        ""property2"" : 5,
+                        ""property1"": ""default string""
+                       }
+                     }
+                   }
+                }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedJson,
+                result);
+        }
+
+        [Test]
+        public async Task NestedDirectives_Scenario13()
+        {
+            var server = new TestServerBuilder()
+                .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                 .AddType<SkipDirective>()
+                 .Build();
+
+            // super silly + nested fragment
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                ... frag1 @include(if: true)
+                            }
+                        }
+                    }
+
+                    fragment frag1 on TwoPropertyObject {
+                        ... frag2 @include(if: true)
+                    }
+                    fragment frag2 on TwoPropertyObject {
+                        ... frag3 @include(if: true)
+                    }
+                    fragment frag3 on TwoPropertyObject {
+                        ... frag4 @include(if: true)
+                    }
+                    fragment frag4 on TwoPropertyObject {
+                        ... frag5 @skip(if: false)
+                        property1 @include(if: false) # dont include property1
+                    }
+                    fragment frag5 on TwoPropertyObject {
+                        ... frag6 @skip(if: false)
+                    }
+                    fragment frag6 on TwoPropertyObject {
+                        property2 @include(if: true)
+                    }
+                    ");
 
             var expectedJson = @"
                 {

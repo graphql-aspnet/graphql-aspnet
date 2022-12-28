@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
 
             _directives = new DocumentDirectiveCollection(this);
             _arguments = new DocumentInputArgumentCollection(this);
-            this.IsIncluded = true;
+            _isIncluded = true;
         }
 
         /// <inheritdoc />

@@ -248,6 +248,46 @@ namespace GraphQL.AspNet.Tests.Directives
                 result);
         }
 
+
+        [Test]
+        public async Task IncludeDirectiveWithFalse_OnFieldInFragmentSpread_FieldIsNotIncluded()
+        {
+            var server = new TestServerBuilder()
+            .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
+                                ... frag1 @include(if: true)
+                            }
+                        }
+                    }
+                    fragment frag1 on TwoPropertyObject {
+                        property2 @include(if: false)
+                    }");
+
+            var expectedResponse = @"
+            {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"" : {
+                                ""property1"" : ""default string"",
+                        }
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedResponse,
+                result);
+        }
+
         [Test]
         public async Task IncludeDirectiveOnInlineFragment_DropsAllFields_YieldsError_5_3_3()
         {
@@ -331,6 +371,49 @@ namespace GraphQL.AspNet.Tests.Directives
 
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task IncludeDirectiveWithFalse_OnFieldInNestedFragment_FieldIsNotIncluded()
+        {
+            var server = new TestServerBuilder()
+            .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
+                                ... frag1
+                            }
+                        }
+                    }
+                    fragment frag1 on TwoPropertyObject {
+                        ...frag2
+                    }
+
+                    fragment frag2 on TwoPropertyObject {
+                        property2 @include(if: false)
+                    }");
+
+            var expectedResponse = @"
+            {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"" : {
+                                ""property1"" : ""default string"",
+                        }
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedResponse,
+                result);
         }
     }
 }
