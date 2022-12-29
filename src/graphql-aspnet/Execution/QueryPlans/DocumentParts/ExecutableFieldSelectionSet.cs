@@ -101,7 +101,11 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         {
             get
             {
-                this.EnsureCurrentSnapshot();
+                // those fields that are included must always be deteremined in real time
+                // directives executed against various parts of a document can change the included fields
+                // either directly or via a spread or inline fragment. Its currently impossible to know if a set of
+                // included fields should be recomuted because there is no relationships between a named fragment
+                // and where its spread
                 return ExecutableFieldSelectionSetBuilder.FlattenFieldList(this.Owner, true);
             }
         }
