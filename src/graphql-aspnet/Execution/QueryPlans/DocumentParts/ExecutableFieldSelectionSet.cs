@@ -15,6 +15,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
+    using ExecutableFieldList = System.Collections.Generic.List<(GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.IFieldDocumentPart DocPart, System.Collections.Generic.List<GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.IIncludeableDocumentPart> InclusionGoverners)>;
+
     /// <summary>
     /// An execution set that manages the actual fields to be resolved within
     /// a given field selection set. This includes fields directly included as well as those
@@ -24,7 +26,19 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     {
         private int _sequence;
         private int _lastBuiltSequence;
-        private List<(IFieldDocumentPart DocPart, bool IsIncluded)> _cachedExecutableFields;
+
+        // for any field that should be included
+        // track a list of fields that will have a hand in determining its includability
+        // for instance a field defined in a fragment is only included if:
+        // 1) the field itself is included
+        // 2) the fragment spread is included
+        // 3) the field containing the spread is included
+        // 4) etc...
+        //
+        // The include status of each of those governing parts
+        // will change as directives are executed so keep a reference to the parts
+        // so includability can be deteremined quickly on the fly when needed
+        private ExecutableFieldList _cachedExecutableFields;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutableFieldSelectionSet"/> class.
@@ -45,6 +59,10 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         /// </summary>
         internal void ResetFieldSelectionSet()
         {
+            // don't immediately rebuild the selection set
+            // its likely to change more as a document is built
+            // instead just mark the current snapshot (if there is one)
+            // as being invalid and only rebuild on the next time the fields are needed
             _sequence++;
         }
 
@@ -53,14 +71,9 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             if (_lastBuiltSequence == _sequence && _cachedExecutableFields != null)
                 return;
 
-            var newList = new List<(IFieldDocumentPart, bool)>((_cachedExecutableFields?.Count ?? 8) * 2);
-
-            var iterator = new ExecutableFieldSelectionSetEnumerator(this.Owner);
-            while (iterator.MoveNext())
-                newList.Add(iterator.Current);
-
+            var setBuilder = new ExecutableFieldSelectionSetBuilder(this.Owner);
+            _cachedExecutableFields = setBuilder.CreateFieldList();
             _lastBuiltSequence = _sequence;
-            _cachedExecutableFields = newList;
         }
 
         /// <inheritdoc />
@@ -94,7 +107,17 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
                 this.EnsureCurrentSnapshot();
                 for (var i = 0; i < _cachedExecutableFields.Count; i++)
                 {
-                    if (_cachedExecutableFields[i].IsIncluded)
+                    bool shouldInclude = true;
+                    for (var j = 0; j < _cachedExecutableFields[i].InclusionGoverners.Count; j++)
+                    {
+                        if (!_cachedExecutableFields[i].InclusionGoverners[j].IsIncluded)
+                        {
+                            shouldInclude = false;
+                            break;
+                        }
+                    }
+
+                    if (shouldInclude)
                         yield return _cachedExecutableFields[i].DocPart;
                 }
             }

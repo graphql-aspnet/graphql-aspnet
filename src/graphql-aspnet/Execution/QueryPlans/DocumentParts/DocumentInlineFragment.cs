@@ -20,8 +20,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     [DebuggerDisplay("Inline Fragment. Target Type: {GraphType?.Name}")]
     internal class DocumentInlineFragment : DocumentFragmentBase, IInlineFragmentDocumentPart
     {
-        private bool _isIncluded;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentInlineFragment"/> class.
         /// </summary>
@@ -53,19 +51,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         public override DocumentPartType PartType => DocumentPartType.InlineFragment;
 
         /// <inheritdoc />
-        public bool IsIncluded
-        {
-            get
-            {
-                return _isIncluded;
-            }
-
-            set
-            {
-                _isIncluded = value;
-                this.RefreshAllAscendantFields();
-            }
-        }
+        public bool IsIncluded { get; set; }
 
         /// <inheritdoc />
         public override string Description => "Inline Fragment";

@@ -23,7 +23,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     internal class DocumentFragmentSpread : DocumentPartBase, IFragmentSpreadDocumentPart, IDescendentDocumentPartSubscriber
     {
         private DocumentDirectiveCollection _directives;
-        private bool _isIncluded;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFragmentSpread"/> class.
@@ -69,6 +68,11 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
                 this.AssignGraphType(targetFragment?.GraphType);
                 targetFragment.MarkAsReferenced();
             }
+
+            // assigning a named fragment will potentially expand
+            // the execution field set where this spread occurs
+            // force the field set to recalculate
+            this.RefreshAllAscendantFields();
         }
 
         /// <inheritdoc />
@@ -84,19 +88,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         public IDirectiveCollectionDocumentPart Directives => _directives;
 
         /// <inheritdoc />
-        public bool IsIncluded
-        {
-            get
-            {
-                return _isIncluded;
-            }
-
-            set
-            {
-                _isIncluded = value;
-                this.RefreshAllAscendantFields();
-            }
-        }
+        public bool IsIncluded { get; set; }
 
         /// <inheritdoc />
         public override string Description => $"Spread: {this.FragmentName}";

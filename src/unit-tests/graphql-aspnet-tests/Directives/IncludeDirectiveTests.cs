@@ -248,7 +248,6 @@ namespace GraphQL.AspNet.Tests.Directives
                 result);
         }
 
-
         [Test]
         public async Task IncludeDirectiveWithFalse_OnFieldInFragmentSpread_FieldIsNotIncluded()
         {

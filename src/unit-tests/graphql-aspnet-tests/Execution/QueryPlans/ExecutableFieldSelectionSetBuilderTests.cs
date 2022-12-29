@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
@@ -22,11 +23,11 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-    public class ExeceutableFieldSelectionSetEnumeratorTests
+    public class ExecutableFieldSelectionSetBuilderTests
     {
         private readonly TestServer<GraphSchema> _server;
 
-        public ExeceutableFieldSelectionSetEnumeratorTests()
+        public ExecutableFieldSelectionSetBuilderTests()
         {
             _server = new TestServerBuilder()
                 .AddGraphController<GameController>()
@@ -52,33 +53,35 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             }
         }
 
-        private int IterateThroughFieldSelectionSet(
+        private void IterateThroughFieldSelectionSet(
             IFieldSelectionSetDocumentPart fieldSelectionSet,
             bool iterateIncludedFieldsOnly,
             List<string> expectedFields,
-            int expectedFieldIndex)
+            ref int expectedFieldIndex)
         {
-            var enumerator = new ExecutableFieldSelectionSetEnumerator(fieldSelectionSet);
-            while (enumerator.MoveNext())
+            var builder = new ExecutableFieldSelectionSetBuilder(fieldSelectionSet);
+            var fields = builder.CreateFieldList();
+
+            foreach (var fieldItem in fields)
             {
-                var (field, fieldIsIncluded) = enumerator.Current;
-                if (fieldIsIncluded || !iterateIncludedFieldsOnly)
+                var (field, governers) = fieldItem;
+
+                var shouldBeInspected = !iterateIncludedFieldsOnly || governers.All(x => x.IsIncluded);
+                if (shouldBeInspected)
                 {
                     Assert.AreEqual(expectedFields[expectedFieldIndex], field.Name);
                     expectedFieldIndex++;
                 }
 
-                if (field is IFieldSelectionSetDocumentPart fieldSet)
+                if (field.FieldSelectionSet != null && shouldBeInspected)
                 {
-                    expectedFieldIndex = this.IterateThroughFieldSelectionSet(
-                        fieldSet,
+                    this.IterateThroughFieldSelectionSet(
+                        field.FieldSelectionSet,
                         iterateIncludedFieldsOnly,
                         expectedFields,
-                        expectedFieldIndex);
+                        ref expectedFieldIndex);
                 }
             }
-
-            return expectedFieldIndex;
         }
 
         private void ExecuteTest(
@@ -90,8 +93,15 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var document = this.CreateDocument(text);
             var operation = document.Operations[0];
 
-            this.MarkPartOrChildPartAsNotIncluded(operation, excludePredicate);
-            this.IterateThroughFieldSelectionSet(operation.FieldSelectionSet, iterateIncludedFieldsOnly, expectedFields, 0);
+            var currentIndex = 0;
+            this.MarkPartOrChildPartAsNotIncluded(document, excludePredicate);
+            this.IterateThroughFieldSelectionSet(
+                operation.FieldSelectionSet,
+                iterateIncludedFieldsOnly,
+                expectedFields,
+                ref currentIndex);
+
+            Assert.AreEqual(expectedFields.Count, currentIndex);
         }
 
         [TestCase(true, new string[] { "game", "retrieveGame", "id", "name" })]
@@ -195,6 +205,33 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             this.ExecuteTest(
                 text,
                 x => x is IFragmentSpreadDocumentPart,
+                includedOnly,
+                new List<string>(expectedFields));
+        }
+
+        [TestCase(true, new string[] { "game", "retrieveGame", "id" })]
+        [TestCase(false, new string[] { "game", "retrieveGame", "id", "name" })]
+        public void DoubleNestedFragmentSpread(bool includedOnly, string[] expectedFields)
+        {
+            var text = @"query {
+                game {
+                    retrieveGame(int: 5) {
+                        id
+                        ... frag1
+                    }
+                }
+            }
+            fragment frag1 on Game {
+                ... frag2
+            }
+
+            fragment frag2 on Game {
+                name
+            }";
+
+            this.ExecuteTest(
+                text,
+                x => (x is IFieldDocumentPart fd && fd.Name == "name"),
                 includedOnly,
                 new List<string>(expectedFields));
         }

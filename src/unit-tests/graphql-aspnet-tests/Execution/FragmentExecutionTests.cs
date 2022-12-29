@@ -188,7 +188,6 @@ namespace GraphQL.AspNet.Tests.Execution
             CommonAssertions.AreEqualJsonStrings(expectedResult, result);
         }
 
-
         [Test]
         public async Task MultiNestedNamedFragments_RendersCorrectly()
         {
