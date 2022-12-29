@@ -15,8 +15,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
-    using ExecutableFieldList = System.Collections.Generic.List<(GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.IFieldDocumentPart DocPart, System.Collections.Generic.List<GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.IIncludeableDocumentPart> InclusionGoverners)>;
-
     /// <summary>
     /// An execution set that manages the actual fields to be resolved within
     /// a given field selection set. This includes fields directly included as well as those
@@ -38,7 +36,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         // The include status of each of those governing parts
         // will change as directives are executed so keep a reference to the parts
         // so includability can be deteremined quickly on the fly when needed
-        private ExecutableFieldList _cachedExecutableFields;
+        private List<IFieldDocumentPart> _allFields;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutableFieldSelectionSet"/> class.
@@ -48,7 +46,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         public ExecutableFieldSelectionSet(IFieldSelectionSetDocumentPart owner)
         {
             this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
-            _cachedExecutableFields = null;
+            _allFields = null;
             _lastBuiltSequence = -1;
             _currentSequence = 0;
         }
@@ -68,11 +66,10 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
 
         private void EnsureCurrentSnapshot()
         {
-            if (_lastBuiltSequence == _currentSequence && _cachedExecutableFields != null)
+            if (_lastBuiltSequence == _currentSequence && _allFields != null)
                 return;
 
-            var setBuilder = new ExecutableFieldSelectionSetBuilder(this.Owner);
-            _cachedExecutableFields = setBuilder.CreateFieldList();
+            _allFields = ExecutableFieldSelectionSetBuilder.FlattenFieldList(this.Owner, false);
             _lastBuiltSequence = _currentSequence;
         }
 
@@ -80,7 +77,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         public IEnumerator<IFieldDocumentPart> GetEnumerator()
         {
             this.EnsureCurrentSnapshot();
-            return _cachedExecutableFields.Select(x => x.DocPart).GetEnumerator();
+            return _allFields.GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -95,7 +92,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             get
             {
                 this.EnsureCurrentSnapshot();
-                return _cachedExecutableFields[index].DocPart;
+                return _allFields[index];
             }
         }
 
@@ -105,21 +102,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             get
             {
                 this.EnsureCurrentSnapshot();
-                for (var i = 0; i < _cachedExecutableFields.Count; i++)
-                {
-                    bool shouldInclude = true;
-                    for (var j = 0; j < _cachedExecutableFields[i].InclusionGoverners.Count; j++)
-                    {
-                        if (!_cachedExecutableFields[i].InclusionGoverners[j].IsIncluded)
-                        {
-                            shouldInclude = false;
-                            break;
-                        }
-                    }
-
-                    if (shouldInclude)
-                        yield return _cachedExecutableFields[i].DocPart;
-                }
+                return ExecutableFieldSelectionSetBuilder.FlattenFieldList(this.Owner, true);
             }
         }
 
@@ -132,7 +115,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             get
             {
                 this.EnsureCurrentSnapshot();
-                return _cachedExecutableFields.Count;
+                return _allFields.Count;
             }
         }
     }

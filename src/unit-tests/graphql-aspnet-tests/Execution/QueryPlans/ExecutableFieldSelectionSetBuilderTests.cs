@@ -56,31 +56,14 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         private void IterateThroughFieldSelectionSet(
             IFieldSelectionSetDocumentPart fieldSelectionSet,
             bool iterateIncludedFieldsOnly,
-            List<string> expectedFields,
-            ref int expectedFieldIndex)
+            List<string> foundFields)
         {
-            var builder = new ExecutableFieldSelectionSetBuilder(fieldSelectionSet);
-            var fields = builder.CreateFieldList();
+            var fields = ExecutableFieldSelectionSetBuilder.FlattenFieldList(fieldSelectionSet, iterateIncludedFieldsOnly);
 
-            foreach (var fieldItem in fields)
+            foreach (var field in fields)
             {
-                var (field, governers) = fieldItem;
-
-                var shouldBeInspected = !iterateIncludedFieldsOnly || governers.All(x => x.IsIncluded);
-                if (shouldBeInspected)
-                {
-                    Assert.AreEqual(expectedFields[expectedFieldIndex], field.Name);
-                    expectedFieldIndex++;
-                }
-
-                if (field.FieldSelectionSet != null && shouldBeInspected)
-                {
-                    this.IterateThroughFieldSelectionSet(
-                        field.FieldSelectionSet,
-                        iterateIncludedFieldsOnly,
-                        expectedFields,
-                        ref expectedFieldIndex);
-                }
+                foundFields.Add(field.Name);
+                this.IterateThroughFieldSelectionSet(field.FieldSelectionSet, iterateIncludedFieldsOnly, foundFields);
             }
         }
 
@@ -93,15 +76,15 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var document = this.CreateDocument(text);
             var operation = document.Operations[0];
 
-            var currentIndex = 0;
             this.MarkPartOrChildPartAsNotIncluded(document, excludePredicate);
+
+            var foundFields = new List<string>();
             this.IterateThroughFieldSelectionSet(
                 operation.FieldSelectionSet,
                 iterateIncludedFieldsOnly,
-                expectedFields,
-                ref currentIndex);
+                foundFields);
 
-            Assert.AreEqual(expectedFields.Count, currentIndex);
+            CollectionAssert.AreEqual(expectedFields, foundFields);
         }
 
         [TestCase(true, new string[] { "game", "retrieveGame", "id", "name" })]
@@ -216,6 +199,38 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var text = @"query {
                 game {
                     retrieveGame(int: 5) {
+                        id
+                        ... frag1
+                    }
+                }
+            }
+            fragment frag1 on Game {
+                ... frag2
+            }
+
+            fragment frag2 on Game {
+                name
+            }";
+
+            this.ExecuteTest(
+                text,
+                x => (x is IFieldDocumentPart fd && fd.Name == "name"),
+                includedOnly,
+                new List<string>(expectedFields));
+        }
+
+        [TestCase(true, new string[] { "game", "retrieveGame", "id", "retrieveGame", "id" })]
+        [TestCase(false, new string[] { "game", "retrieveGame", "id", "name", "retrieveGame", "id", "name" })]
+        public void MultiNodal(bool includedOnly, string[] expectedFields)
+        {
+            var text = @"query {
+                game {
+                    retrieveGame(int: 5) {
+                        id
+                        ... frag1
+                    }
+
+                    bob: retrieveGame(int: 5) {
                         id
                         ... frag1
                     }
