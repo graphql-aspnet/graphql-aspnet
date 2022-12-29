@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     /// </summary>
     internal class ExecutableFieldSelectionSet : IExecutableFieldSelectionSet
     {
-        private int _sequence;
+        private int _currentSequence;
         private int _lastBuiltSequence;
 
         // for any field that should be included
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
             _cachedExecutableFields = null;
             _lastBuiltSequence = -1;
-            _sequence = 0;
+            _currentSequence = 0;
         }
 
         /// <summary>
@@ -63,17 +63,17 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             // its likely to change more as a document is built
             // instead just mark the current snapshot (if there is one)
             // as being invalid and only rebuild on the next time the fields are needed
-            _sequence++;
+            _currentSequence++;
         }
 
         private void EnsureCurrentSnapshot()
         {
-            if (_lastBuiltSequence == _sequence && _cachedExecutableFields != null)
+            if (_lastBuiltSequence == _currentSequence && _cachedExecutableFields != null)
                 return;
 
             var setBuilder = new ExecutableFieldSelectionSetBuilder(this.Owner);
             _cachedExecutableFields = setBuilder.CreateFieldList();
-            _lastBuiltSequence = _sequence;
+            _lastBuiltSequence = _currentSequence;
         }
 
         /// <inheritdoc />

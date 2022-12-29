@@ -9,19 +9,14 @@
 
 namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
 {
-    using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Steps;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
     using ExecutableFieldList = System.Collections.Generic.List<(GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.IFieldDocumentPart DocPart, System.Collections.Generic.List<GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.IIncludeableDocumentPart> InclusionGoverners)>;
 
     /// <summary>
-    /// An enumerator that walks a field selection set looking for the next
-    /// executable field in its scope. This can be a directly attached field,
+    /// An builder that walks a field selection set looking for the set of fields
+    /// that should be included. These fields can be a directly attached field,
     /// or one that would be included via an inline fragment or named fragment spread.
     /// </summary>
     internal class ExecutableFieldSelectionSetBuilder
@@ -63,7 +58,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             if (selectionSet == null || selectionSet.Children.Count == 0)
                 return;
 
-            // then advance the pointer on this selection set
             for (var i = 0; i < selectionSet.Children.Count; i++)
             {
                 var childPart = selectionSet.Children[i];
