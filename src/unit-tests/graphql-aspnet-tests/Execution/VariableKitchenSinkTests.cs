@@ -103,6 +103,9 @@ namespace GraphQL.AspNet.Tests.Execution
 
                     ""regularTimeOnly"": ""18:30:38.259"",
                     ""nullTimeOnly"": ""19:30:39.255"",
+
+                    ""regularEnum"": ""VALUE1"",
+                    ""nullEnum"": ""VALUE2"",
                 }",
                  @"{
                     ""data"" : {
@@ -139,7 +142,9 @@ namespace GraphQL.AspNet.Tests.Execution
                         ""parseDateOnlys"" : ""2022-12-30 2022-12-31"",
                         ""parseDateOnlysAsNumbers"" : ""2022-12-30 2022-12-31"",
 
-                        ""parseTimeOnlys"" : ""18:30:38.259 19:30:39.255""
+                        ""parseTimeOnlys"" : ""18:30:38.259 19:30:39.255"",
+
+                        ""parseEnums"": ""VALUE3""
                     }
                 }",
             });
@@ -215,6 +220,9 @@ namespace GraphQL.AspNet.Tests.Execution
 
                     ""regularTimeOnly"": ""18:30:38.259"",
                     ""nullTimeOnly"": null,
+
+                    ""regularEnum"": ""VALUE1"",
+                    ""nullEnum"": null,
                 }",
                  @"{
                     ""data"" : {
@@ -251,7 +259,9 @@ namespace GraphQL.AspNet.Tests.Execution
                         ""parseDateOnlys"" : ""2022-12-30 "",
                         ""parseDateOnlysAsNumbers"" : ""2022-12-30 "",
 
-                        ""parseTimeOnlys"" : ""18:30:38.259 ""
+                        ""parseTimeOnlys"" : ""18:30:38.259 "",
+
+                        ""parseEnums"": ""VALUE1""
                     }
                 }",
             });
@@ -415,9 +425,12 @@ namespace GraphQL.AspNet.Tests.Execution
 
                     $regularTimeOnly: TimeOnly!,
                     $nullTimeOnly: TimeOnly,
+
+                    $regularEnum: VariableSuppliedEnum!,
+                    $nullEnum: VariableSuppliedEnum,
                     ) {
-# Signed Integer Numbers
-                parseSbytes(regularSbyte: $regularSbyte, nullSbyte: $nullSbyte)
+                        # Signed Integer Numbers
+                        parseSbytes(regularSbyte: $regularSbyte, nullSbyte: $nullSbyte)
                         parseShorts(regularShort: $regularShort, nullShort: $nullShort)
                         parseInts(regularInt: $regularInt, nullInt: $nullInt)
                         parseLongs(regularLong: $regularLong, nullLong: $nullLong)
@@ -448,22 +461,25 @@ namespace GraphQL.AspNet.Tests.Execution
                         parseDateTimes(regularDateTime: $regularDateTime, nullDateTime: $nullDateTime)
 
                         parseDateTimesAsNumbers:
-                parseDateTimes(regularDateTime: $regularDateTimeNumber, nullDateTime: $nullDateTimeNumber)
+                            parseDateTimes(regularDateTime: $regularDateTimeNumber, nullDateTime: $nullDateTimeNumber)
 
                         # DateTimeOffset
                         parseDateTimeOffsets(regularDateTimeOffset: $regularDateTimeOffset, nullDateTimeOffset: $nullDateTimeOffset)
 
                         parseDateTimeOffsetsAsNumbers:
-                parseDateTimeOffsets(regularDateTimeOffset: $regularDateTimeOffsetNumber, nullDateTimeOffset: $nullDateTimeOffsetNumber)
+                            parseDateTimeOffsets(regularDateTimeOffset: $regularDateTimeOffsetNumber, nullDateTimeOffset: $nullDateTimeOffsetNumber)
 
                         # DateOnly
                         parseDateOnlys(regularDateOnly: $regularDateOnly, nullDateOnly: $nullDateOnly)
 
                         parseDateOnlysAsNumbers:
-                parseDateOnlys(regularDateOnly: $regularDateOnlyNumber, nullDateOnly: $nullDateOnlyNumber)
+                            parseDateOnlys(regularDateOnly: $regularDateOnlyNumber, nullDateOnly: $nullDateOnlyNumber)
 
                         # TimeOnly
                         parseTimeOnlys(regularTimeOnly: $regularTimeOnly, nullTimeOnly: $nullTimeOnly)
+
+                        # Enum
+                       parseEnums(regularEnum: $regularEnum, nullEnum: $nullEnum)
                 }
             ")
                 .AddVariableData(variableSet)

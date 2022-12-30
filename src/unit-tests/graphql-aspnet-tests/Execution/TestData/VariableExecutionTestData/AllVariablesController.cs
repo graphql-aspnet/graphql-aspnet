@@ -163,6 +163,13 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.VariableExecutionTestData
         }
 
         [QueryRoot]
+        public VariableSuppliedEnum ParseEnums(VariableSuppliedEnum regularEnum, VariableSuppliedEnum? nullEnum)
+        {
+            var ret = regularEnum | (nullEnum ?? VariableSuppliedEnum.Value0);
+            return ret;
+        }
+
+        [QueryRoot]
         public VariableSuppliedRepeatableObject ParseObject(
             [FromGraphQL(TypeExpression = "Type!")]
             VariableSuppliedRepeatableObject item,
