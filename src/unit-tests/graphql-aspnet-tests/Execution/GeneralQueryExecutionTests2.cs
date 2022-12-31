@@ -432,8 +432,8 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
         }
 
-        [TestCase("ID", "3")]
-        [TestCase("ID!", "3")]
+        [TestCase("ID", "123.45")]
+        [TestCase("ID!", "123.45")]
         [TestCase("ID", "null")]
         public async Task SingleValueVariableInDeclaredArray_OfWrongValue_IsNotCoercableToArrayOfValidType(
             string variableType,

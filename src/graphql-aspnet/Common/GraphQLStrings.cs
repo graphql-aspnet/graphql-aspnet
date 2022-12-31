@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Common
     {
         /// <summary>
         /// Helper method that will take a raw, double-quoted, and unicode escaped block of characters and
-        /// generate a string value devoid of delimiters and unescaped using the rules of string delimiting
+        /// generate a string value devoid of delimiters and unescaped characters using the rules of string delimiting
         /// for graphql. (supports single and triple quote blocks). An improperly delimited string will be
         /// returned as null.
         /// </summary>
@@ -30,6 +30,8 @@ namespace GraphQL.AspNet.Common
         /// false and the string is not correctly delimited, the original string is returned unaltered.</param>
         /// <remarks>
         /// e.g.  Converts  "Hell\u019f" => HellƟ.
+        /// <br/>
+        /// spec: <see href="http://spec.graphql.org/October2021/#sec-String"/>.
         /// </remarks>
         /// <returns>The unescaped string or <c>null</c>.</returns>
         public static string UnescapeAndTrimDelimiters(ReadOnlySpan<char> text, bool nullOnFailure = true)
@@ -42,7 +44,7 @@ namespace GraphQL.AspNet.Common
                     text.StartsWith(ParserConstants.BlockStringDelimiterMemory.Span, StringComparison.Ordinal) &&
                     text.EndsWith(ParserConstants.BlockStringDelimiterMemory.Span, StringComparison.Ordinal))
                 {
-                    // convert    """ some text """  => "some text"
+                    // convert    """some text"""  => "some text"
                     text = text.Slice(2, text.Length - 4);
                 }
 

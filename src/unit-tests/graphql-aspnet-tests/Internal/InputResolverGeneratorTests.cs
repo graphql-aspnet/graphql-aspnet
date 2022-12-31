@@ -132,7 +132,8 @@ namespace GraphQL.AspNet.Tests.Internal
             AddValidTestCase("Boolean", "false", false);
 
             AddValidTestCase("ID", "\"bob\"", new GraphId("bob"));
-            AddInvalidTestCase("ID", "1234");
+            AddValidTestCase("ID", "1234", new GraphId("1234"));
+            AddInvalidTestCase("ID", "1234.56");
 
             AddValidTestCase("ID", null, null);
             AddValidTestCase("Uri", "\"http://www.google.com/\"", new Uri("http://www.google.com", UriKind.RelativeOrAbsolute));
