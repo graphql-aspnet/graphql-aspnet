@@ -59,8 +59,11 @@ namespace GraphQL.AspNet.Tests.Schemas
             new object[] { typeof(GraphIdScalarType), "\"\"", new GraphId(string.Empty), false },
             new object[] { typeof(GraphIdScalarType), string.Empty, null, true },
             new object[] { typeof(GraphIdScalarType), "123", new GraphId("123"), false },
+            new object[] { typeof(GraphIdScalarType), "-123", new GraphId("-123"), false },
             new object[] { typeof(GraphIdScalarType), "18446744073709551615", new GraphId("18446744073709551615"), false },
             new object[] { typeof(GraphIdScalarType), "123.45", null, true }, // floats are not allowed
+            new object[] { typeof(GraphIdScalarType), "35.0", null, true }, // floats are not allowed
+            new object[] { typeof(GraphIdScalarType), "-23.0", null, true }, // floats are not allowed
             new object[] { typeof(GraphIdScalarType), "true", null, true }, // bools are not allowed
             new object[] { typeof(GraphIdScalarType), null, null, true },
 
