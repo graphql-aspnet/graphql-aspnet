@@ -16,6 +16,12 @@ namespace GraphQL.AspNet.Tests.Execution.Variables.ResolvedVariableTestData
     public class VariableTestController : GraphController
     {
         [QueryRoot]
+        public string NullableScalarTest(int? arg1)
+        {
+            return arg1?.ToString() ?? "not provided";
+        }
+
+        [QueryRoot]
         public string SingleObjectTest(VariableTestObject arg1)
         {
             return null;

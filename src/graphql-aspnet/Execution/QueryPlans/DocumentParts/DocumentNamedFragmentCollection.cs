@@ -76,15 +76,32 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         }
 
         /// <inheritdoc />
-        public void MarkAsReferenced(string fragmentName)
+        public void AddSpreadReference(IFragmentSpreadDocumentPart spreadPart)
         {
-            if (_fragments.TryGetValue(fragmentName, out var namedFrag))
-                namedFrag.MarkAsReferenced();
+            Validation.ThrowIfNull(spreadPart, nameof(spreadPart));
 
-            if (_overflowFragments != null && _overflowFragments.ContainsKey(fragmentName))
+            // if a fragment is already assigned we dont need to do anything
+            // this can happen if a fragment was read before a spread was encountered
+            // this doesn't happen with the default doc generator, but custom implemnetations may
+            // change that
+            if (spreadPart.Fragment != null)
+                return;
+
+            // the document is not yet validated there might be multiple fragments
+            // with the same name (yes its an error, but its not a "named fragment not referenced" error).
+            // Assign any overflow fragments as being spread by this spreadPart
+            if (_overflowFragments != null && _overflowFragments.ContainsKey(spreadPart.FragmentName))
             {
-                foreach (var frag in _overflowFragments[fragmentName])
-                    frag.MarkAsReferenced();
+                foreach (var overflowNamedFragment in _overflowFragments[spreadPart.FragmentName])
+                    overflowNamedFragment.SpreadBy(spreadPart);
+            }
+
+            // assign the "officially chosen" named fragment (the first encountered)
+            // as the fragment referenced by the spread
+            if (_fragments.TryGetValue(spreadPart.FragmentName, out var foundFragment))
+            {
+                spreadPart.AssignNamedFragment(foundFragment);
+                foundFragment.SpreadBy(spreadPart);
             }
         }
 

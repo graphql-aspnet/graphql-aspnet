@@ -27,8 +27,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
 
         public GraphId GraphIdNotRequired { get; set; }
 
-        [GraphField(TypeExpression = "Type!")]
-        public GraphId GraphIdNonNullable { get; set; }
+        public GraphId? GraphIdNullable { get; set; }
 
         public TwoPropertyObject NotRequiredReferenceTypeField { get; set; }
 

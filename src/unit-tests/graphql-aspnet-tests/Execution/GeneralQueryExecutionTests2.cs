@@ -357,11 +357,8 @@ namespace GraphQL.AspNet.Tests.Execution
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
 
-        [TestCase("ID!", "\"3\"")]
-        [TestCase("ID", "\"3\"")]
-        public async Task SingleValueVariableInDeclaredArray_IsCoercableToArrayOfValidType(
-            string variableType,
-            string value)
+        [Test]
+        public async Task SingleValueVariableInDeclaredArray_IsCoercableToArrayOfValidType()
         {
             var server = new TestServerBuilder()
              .AddGraphQL(o =>
@@ -377,12 +374,12 @@ namespace GraphQL.AspNet.Tests.Execution
             // the value resolves correctly
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
-                "query ($additionalId: " + variableType + @"){
+                @"query ($additionalId: ID!){
                         idsAccepted(ids: [""1"", ""2"", $additionalId])
                 }")
                 .AddVariableData(
                 @"{
-                    ""additionalId"" : " + value + @"
+                    ""additionalId"" : ""3""
                   }");
 
             var expectedOutput =
@@ -432,12 +429,8 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
         }
 
-        [TestCase("ID", "123.45")]
-        [TestCase("ID!", "123.45")]
-        [TestCase("ID", "null")]
-        public async Task SingleValueVariableInDeclaredArray_OfWrongValue_IsNotCoercableToArrayOfValidType(
-            string variableType,
-            string value)
+        [Test]
+        public async Task SingleValueVariableInDeclaredArray_OfWrongValue_IsNotCoercableToArrayOfValidType()
         {
             var server = new TestServerBuilder()
              .AddGraphQL(o =>
@@ -447,18 +440,14 @@ namespace GraphQL.AspNet.Tests.Execution
              })
              .Build();
 
-            // simple.nonNullableInputField.inputFIeld.id has a argument of type Int!
-            // but receives null via the variable
-            // however, since the field has a default value defined (because its not required)
-            // the value resolves correctly
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
-                "query ($additionalId: " + variableType + @"){
+                @"query ($additionalId: ID!){ 
                         idsAccepted(ids: [""1"", ""2"", $additionalId])
                 }")
                 .AddVariableData(
                 @"{
-                    ""additionalId"" : " + value + @"
+                    ""additionalId"" : true
                   }");
 
             var result = await server.ExecuteQuery(builder);
@@ -466,6 +455,41 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsFalse(result.Data != null);
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task ResolveNullForSuppliedNumber()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<SimpleExecutionController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                  .Build();
+
+            // simple.nonNullableInputField.inputFIeld.id has a argument of type Int!
+            // but receives null via the variable
+            // however, since the field has a default value defined (because its not required)
+            // the value resolves correctly
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                    simple  {
+                        nullableInputIntValue(number: null)
+                    }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""simple"" : {
+                            ""nullableInputIntValue"": null
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
     }
 }

@@ -19,105 +19,399 @@ namespace GraphQL.AspNet.Tests.Directives
     [TestFixture]
     internal class IncludeDirectiveTests
     {
-        [TestCase(true, "{ \"data\" :{ \"simple\": {\"simpleQueryMethod\" : { \"property1\" : \"default string\", \"property2\": 5 } } } }")]
-        [TestCase(false, "{ \"data\" :{ \"simple\": {\"simpleQueryMethod\" : { \"property1\" : \"default string\" } } } }")]
-        public async Task IncludeDirective_ResponseAppropriately(bool includeValue, string expectedJson)
+        [Test]
+        public async Task IncludeDirectiveWithFalse_OnField_FieldIsNotIncluded()
         {
             var server = new TestServerBuilder()
-             .AddType<SimpleExecutionController>()
-                 .AddType<IncludeDirective>()
-                 .Build();
+            .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
-                    "query Operation1{  simple {  simpleQueryMethod { property1, property2 @include(if: " +
-                    includeValue.ToString().ToLower() +
-                    ") } } }")
-                .AddOperationName("Operation1");
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
+                                property2 @include(if: false)
+                            }
+                        }
+                    }");
+
+            var expectedResponse = @"
+            {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"" : {
+                                ""property1"" : ""default string""
+                        }
+                    }
+                }
+            }";
 
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(
-                expectedJson,
+                expectedResponse,
                 result);
         }
 
-        [TestCase(true, false, true)]
-        [TestCase(false, false, false)]
-        [TestCase(false, true, false)]
-        [TestCase(true, true, false)]
-        public async Task IncludeDirective_ThenSkipDirective_OrderTest(bool includeIf, bool skipIf, bool fieldShouldBeIncluded)
+        [Test]
+        public async Task IncludeDirectiveWithTrue_OnField_FieldIsIncluded()
         {
             var server = new TestServerBuilder()
-         .AddType<SimpleExecutionController>()
-             .AddType<IncludeDirective>()
-             .AddType<SkipDirective>()
-             .Build();
+            .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
-                    "query Operation1{  simple {  simpleQueryMethod { property1, property2 " +
-                    "@include(if: " + includeIf.ToString().ToLower() + ") " +
-                    "@skip(if: " + skipIf.ToString().ToLower() + ")" +
-                    "} } }")
-                .AddOperationName("Operation1");
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
+                                property2 @include(if: true)
+                            }
+                        }
+                    }");
 
-            var expectedJson = @"
+            var expectedResponse = @"
             {
-            ""data"" : {
-                ""simple"": {
-                  ""simpleQueryMethod"": {
-                    ""property1"": ""default string""" +
-                    (fieldShouldBeIncluded ? ",\"property2\" : 5" : string.Empty) +
-            @"
-                  }
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"" : {
+                                ""property1"" : ""default string"",
+                                ""property2"": 5
+                        }
+                    }
                 }
-              }
-            }
-            ";
+            }";
 
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(
-                expectedJson,
+                expectedResponse,
                 result);
         }
 
-        [TestCase(true, false, true)]
-        [TestCase(false, true, false)]
-        [TestCase(false, false, false)]
-        [TestCase(true, true, false)]
-        public async Task SkipDirective_ThenIncludeDirective_OrderTest(bool includeIf, bool skipIf, bool fieldShouldBeIncluded)
+        [Test]
+        public async Task IncludeDirectiveWithFalse_OnInlineFragment_FieldIsNotIncluded()
         {
             var server = new TestServerBuilder()
-         .AddType<SimpleExecutionController>()
-             .AddType<IncludeDirective>()
-             .AddType<SkipDirective>()
-             .Build();
+            .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
-                    "query Operation1{  simple {  simpleQueryMethod { property1, property2 " +
-                    "@skip(if: " + skipIf.ToString().ToLower() + ")" +
-                    "@include(if: " + includeIf.ToString().ToLower() + ") " +
-                    "} } }")
-                .AddOperationName("Operation1");
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
+                                ... @include(if: false) {
+                                    property2
+                                }
+                            }
+                        }
+                    }");
 
-            var expectedJson = @"
+            var expectedResponse = @"
             {
-            ""data"" : {
-                ""simple"": {
-                  ""simpleQueryMethod"": {
-                    ""property1"": ""default string""" +
-                    (fieldShouldBeIncluded ? ",\"property2\" : 5" : string.Empty) +
-            @"
-                  }
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"" : {
+                                ""property1"" : ""default string""
+                        }
+                    }
                 }
-              }
-            }
-            ";
+            }";
 
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(
-                expectedJson,
+                expectedResponse,
+                result);
+        }
+
+        [Test]
+        public async Task IncludeDirectiveWithTrue_OnInlineFragment_FieldIsIncluded()
+        {
+            var server = new TestServerBuilder()
+            .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
+                                ... @include(if: true) {
+                                    property2
+                                }
+                            }
+                        }
+                    }");
+
+            var expectedResponse = @"
+            {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"" : {
+                                ""property1"" : ""default string"",
+                                ""property2"": 5
+                        }
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedResponse,
+                result);
+        }
+
+        [Test]
+        public async Task IncludeDirectiveWithFalse_OnFragmentSpread_FieldIsNotIncluded()
+        {
+            var server = new TestServerBuilder()
+            .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
+                                ... frag1 @include(if: false)
+                            }
+                        }
+                    }
+                    fragment frag1 on TwoPropertyObject {
+                        property2
+                    }");
+
+            var expectedResponse = @"
+            {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"" : {
+                                ""property1"" : ""default string""
+                        }
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedResponse,
+                result);
+        }
+
+        [Test]
+        public async Task IncludeDirectiveWithTrue_OnFragmentSpread_FieldIsIncluded()
+        {
+            var server = new TestServerBuilder()
+            .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
+                                ... frag1 @include(if: true)
+                            }
+                        }
+                    }
+                    fragment frag1 on TwoPropertyObject {
+                        property2
+                    }");
+
+            var expectedResponse = @"
+            {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"" : {
+                                ""property1"" : ""default string"",
+                                ""property2"": 5
+                        }
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedResponse,
+                result);
+        }
+
+        [Test]
+        public async Task IncludeDirectiveWithFalse_OnFieldInFragmentSpread_FieldIsNotIncluded()
+        {
+            var server = new TestServerBuilder()
+            .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
+                                ... frag1 @include(if: true)
+                            }
+                        }
+                    }
+                    fragment frag1 on TwoPropertyObject {
+                        property2 @include(if: false)
+                    }");
+
+            var expectedResponse = @"
+            {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"" : {
+                                ""property1"" : ""default string"",
+                        }
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedResponse,
+                result);
+        }
+
+        [Test]
+        public async Task IncludeDirectiveOnInlineFragment_DropsAllFields_YieldsError_5_3_3()
+        {
+            var server = new TestServerBuilder()
+                .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            // result is no leaf fields on simpleQueryMethod
+            // violate rule 5.3.3 (leaf field selections)
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                ... @include(if: false) {
+                                    property1,
+                                    property2
+                                }
+                            }
+                        }
+                    }");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual("5.3.3", result.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
+        }
+
+        [Test]
+        public async Task IncludeDirectiveOnFragmentSpread_DropsAllFields_YieldsError_5_3_3()
+        {
+            var server = new TestServerBuilder()
+                .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            // result is no leaf fields on simpleQueryMethod
+            // violate rule 5.3.3 (leaf field selections)
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                ... frag1 @include(if: false)
+                            }
+                        }
+                    }
+
+                    fragment frag1 on TwoPropertyObject {
+                        property1
+                        property2
+                    }");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual("5.3.3", result.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
+        }
+
+        [Test]
+        public async Task IncludeDirectiveIsNotRepeatable()
+        {
+            var server = new TestServerBuilder()
+                .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1
+                                property2 @include(if: true) @include(if: false)
+                            }
+                        }
+                    }");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task IncludeDirectiveWithFalse_OnFieldInNestedFragment_FieldIsNotIncluded()
+        {
+            var server = new TestServerBuilder()
+            .AddType<SimpleExecutionController>()
+                .AddType<IncludeDirective>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        simple {
+                            simpleQueryMethod {
+                                property1,
+                                ... frag1
+                            }
+                        }
+                    }
+                    fragment frag1 on TwoPropertyObject {
+                        ...frag2
+                    }
+
+                    fragment frag2 on TwoPropertyObject {
+                        property2 @include(if: false)
+                    }");
+
+            var expectedResponse = @"
+            {
+                ""data"" : {
+                    ""simple"": {
+                        ""simpleQueryMethod"" : {
+                                ""property1"" : ""default string"",
+                        }
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                expectedResponse,
                 result);
         }
     }

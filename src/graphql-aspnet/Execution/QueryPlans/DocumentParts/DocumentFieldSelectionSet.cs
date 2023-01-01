@@ -40,7 +40,13 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         /// <inheritdoc cref="IDescendentDocumentPartSubscriber.OnDescendentPartAdded" />
         void IDescendentDocumentPartSubscriber.OnDescendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
-            _executionSet.UpdateSnapshot();
+            this.Refresh();
+        }
+
+        /// <inheritdoc />
+        public override void Refresh()
+        {
+            _executionSet.ResetFieldSelectionSet();
         }
 
         /// <inheritdoc />

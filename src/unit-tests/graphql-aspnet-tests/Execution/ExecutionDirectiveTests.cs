@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Directives;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Execution.TestData.ExecutionDirectiveTestData;
     using GraphQL.AspNet.Tests.Framework;
@@ -301,6 +302,46 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(0, result.Messages.Count);
 
             Assert.AreEqual(expectedLocation, directiveInstance.RecordedLocation);
+        }
+
+        [Test]
+        public async Task DirectiveOnNestedNamedFragment_IsInvoked()
+        {
+            var directiveInstance = new DirectiveDocumentPartRecorderDirective();
+
+            var builder = new TestServerBuilder();
+            builder.AddSingleton(directiveInstance);
+            builder.AddGraphController<DirectiveTestController>()
+                  .AddDirective<DirectiveDocumentPartRecorderDirective>();
+
+            var server = builder.Build();
+
+            // field "child" is executed as a batch extension
+            // @adjustBatchData will upper case any child items found
+            // via a batch
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(@"
+                query {
+                    retrieveObject {
+                        property1
+                        ... frag1
+                    }
+                }
+                fragment frag1 on TwoPropertyObject {
+                    ... frag2
+                }
+                fragment frag2 on TwoPropertyObject {
+                    property2 @recordPart
+                }");
+
+            var result = await server.ExecuteQuery(queryContext);
+
+            Assert.IsNotNull(result.Data);
+            Assert.AreEqual(0, result.Messages.Count);
+
+            var fieldPart = directiveInstance.RecordedDocumentPart as IFieldDocumentPart;
+            Assert.IsNotNull(fieldPart);
+            Assert.AreEqual("property2", fieldPart.Name);
         }
     }
 }

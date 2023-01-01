@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Execution.Variables
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
@@ -54,65 +55,37 @@ namespace GraphQL.AspNet.Execution.Variables
             _variables.Add(variable.Name, variable);
         }
 
-        /// <summary>
-        /// Determines whether the specified key contains key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns><c>true</c> if the specified key contains key; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public bool ContainsKey(string key)
         {
             return _variables.ContainsKey(key);
         }
 
-        /// <summary>
-        /// Tries the get value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
         public bool TryGetValue(string key, out IResolvedVariable value)
         {
             return _variables.TryGetValue(key, out value);
         }
 
-        /// <summary>
-        /// Gets the <see cref="IResolvedVariable"/> with the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>IResolvedVariable.</returns>
+        /// <inheritdoc />
         public IResolvedVariable this[string key] => _variables[key];
 
-        /// <summary>
-        /// Gets the keys.
-        /// </summary>
-        /// <value>The keys.</value>
+        /// <inheritdoc />
         public IEnumerable<string> Keys => _variables.Keys;
 
-        /// <summary>
-        /// Gets the values.
-        /// </summary>
-        /// <value>The values.</value>
+        /// <inheritdoc />
         public IEnumerable<IResolvedVariable> Values => _variables.Values;
 
-        /// <summary>
-        /// Gets the count.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc />
         public int Count => _variables.Count;
 
-        /// <summary>
-        /// Gets the enumerator.
-        /// </summary>
-        /// <returns>IEnumerator&lt;KeyValuePair&lt;System.String, IResolvedVariable&gt;&gt;.</returns>
+        /// <inheritdoc />
         public IEnumerator<KeyValuePair<string, IResolvedVariable>> GetEnumerator()
         {
             return _variables.GetEnumerator();
         }
 
-        /// <summary>
-        /// Gets the enumerator.
-        /// </summary>
-        /// <returns>IEnumerator.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();

@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         private readonly DocumentFragmentSpreadCollection _fragmentSpreads;
         private readonly DocumentVariableUsageCollection _variableUsages;
         private readonly List<IDirectiveDocumentPart> _allDirectives;
+        private readonly HashSet<IFragmentSpreadDocumentPart> _allSpreads;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentNamedFragment"/> class.
@@ -46,6 +47,13 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
             _variableUsages = new DocumentVariableUsageCollection(this);
             _allDirectives = new List<IDirectiveDocumentPart>();
+
+            // all fragments must be spread at least once
+#if NET6_0_OR_GREATER
+            _allSpreads = new HashSet<IFragmentSpreadDocumentPart>(1);
+#else
+            _allSpreads = new HashSet<IFragmentSpreadDocumentPart>();
+#endif
         }
 
         /// <inheritdoc />
@@ -73,6 +81,25 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
                 _allDirectives.Add(ddp);
             }
         }
+
+        /// <inheritdoc />
+        public void SpreadBy(IFragmentSpreadDocumentPart spreadBy)
+        {
+            _allSpreads.Add(spreadBy);
+            this.IsReferenced = true;
+        }
+
+        /// <inheritdoc />
+        public override void Refresh()
+        {
+            base.Refresh();
+
+            foreach (var spread in _allSpreads)
+                spread.Refresh();
+        }
+
+        /// <inheritdoc />
+        public bool IsReferenced { get; protected set; }
 
         /// <inheritdoc />
         public string Name { get; }

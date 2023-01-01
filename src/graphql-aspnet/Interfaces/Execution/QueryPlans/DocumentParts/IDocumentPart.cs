@@ -25,6 +25,11 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
         void AssignGraphType(IGraphType graphType);
 
         /// <summary>
+        /// Forces this document part to do an internal refresh in a manner suitable to its function.
+        /// </summary>
+        void Refresh();
+
+        /// <summary>
         /// Gets the child parts declared on this instance, if any. Child parts may include
         /// child fields, input arguments, variable collections, assigned directives etc.
         /// </summary>
