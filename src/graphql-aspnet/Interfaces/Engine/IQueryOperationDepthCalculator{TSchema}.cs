@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// Inspects the operation and determines a final complexity score.
         /// </summary>
         /// <param name="operation">The operation to inspect.</param>
-        /// <returns>System.Single.</returns>
+        /// <returns>The computed max depth of the operation.</returns>
         int Calculate(IOperationDocumentPart operation);
     }
 }

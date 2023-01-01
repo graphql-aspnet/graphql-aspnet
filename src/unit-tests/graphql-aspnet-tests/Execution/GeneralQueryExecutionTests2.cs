@@ -447,7 +447,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 }")
                 .AddVariableData(
                 @"{
-                    ""additionalId"" : 3
+                    ""additionalId"" : true
                   }");
 
             var result = await server.ExecuteQuery(builder);

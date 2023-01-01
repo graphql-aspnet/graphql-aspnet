@@ -37,7 +37,22 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             var output = GraphQLStrings.UnescapeAndTrimDelimiters(data, true);
 
             if (output == null)
-                throw new UnresolvedValueException(data, typeof(GraphId));
+            {
+                // integer values are allowed per the spec
+                // try a regular long then an expanded upper range via ulong
+                if (long.TryParse(data.ToString(), out var l))
+                {
+                    output = l.ToString();
+                }
+                else if (ulong.TryParse(data.ToString(), out var ul))
+                {
+                    output = ul.ToString();
+                }
+                else
+                {
+                    throw new UnresolvedValueException(data, typeof(GraphId));
+                }
+            }
 
             return new GraphId(output);
         }
@@ -67,6 +82,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
-        public override ScalarValueType ValueType => ScalarValueType.String;
+        public override ScalarValueType ValueType => ScalarValueType.StringOrNumber;
     }
 }
