@@ -10,7 +10,9 @@
 namespace GraphQL.AspNet.Execution.Variables
 {
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.QueryPlans;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
@@ -32,10 +34,32 @@ namespace GraphQL.AspNet.Execution.Variables
         /// <param name="schema">A schema to resolve against.</param>
         /// <param name="variableCollection">A set of declared variable references
         /// on an operation (from a supplied query document).</param>
-        public ResolvedVariableGenerator(ISchema schema, IVariableCollectionDocumentPart variableCollection)
+        public ResolvedVariableGenerator(
+            ISchema schema,
+            IVariableCollectionDocumentPart variableCollection)
+            : this(schema, variableCollection, new GraphMessageCollection())
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _variableCollection = Validation.ThrowIfNullOrReturn(variableCollection, nameof(variableCollection));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResolvedVariableGenerator" /> class.
+        /// </summary>
+        /// <param name="schema">A schema to resolve against.</param>
+        /// <param name="variableCollection">A set of declared variable references
+        /// on an operation (from a supplied query document).</param>
+        /// <param name="messagesToFill">A pre-existing collection of messages to write any
+        /// generated messages to.</param>
+        public ResolvedVariableGenerator(
+            ISchema schema,
+            IVariableCollectionDocumentPart variableCollection,
+            IGraphMessageCollection messagesToFill)
+        {
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            _variableCollection = Validation.ThrowIfNullOrReturn(variableCollection, nameof(variableCollection));
+
+            this.Messages = Validation.ThrowIfNullOrReturn(messagesToFill, nameof(messagesToFill));
         }
 
         /// <summary>
@@ -49,26 +73,53 @@ namespace GraphQL.AspNet.Execution.Variables
         {
             var resolverGenerator = new InputValueResolverMethodGenerator(_schema);
             var result = new ResolvedVariableCollection();
-
             foreach (var variable in _variableCollection)
             {
-                var resolver = resolverGenerator.CreateResolver(variable.TypeExpression);
+                try
+                {
+                    var resolver = resolverGenerator.CreateResolver(variable.TypeExpression);
 
-                IResolvableValueItem resolvableItem = null;
-                IInputVariable suppliedValue = null;
-                var found = false;
-                if (inputVariables != null)
-                    found = inputVariables.TryGetVariable(variable.Name, out suppliedValue);
+                    IResolvableValueItem resolvableItem = null;
+                    IInputVariable suppliedValue = null;
 
-                resolvableItem = found ? suppliedValue : variable.DefaultValue as IResolvableValueItem;
+                    var found = false;
+                    if (inputVariables != null)
+                        found = inputVariables.TryGetVariable(variable.Name, out suppliedValue);
 
-                var resolvedValue = resolver.Resolve(resolvableItem);
+                    resolvableItem = found ? suppliedValue : variable.DefaultValue;
 
-                var resolvedVariable = new ResolvedVariable(variable.Name, variable.TypeExpression, resolvedValue);
-                result.AddVariable(resolvedVariable);
+                    object resolvedValue = resolver.Resolve(resolvableItem);
+
+                    var resolvedVariable = new ResolvedVariable(variable.Name, variable.TypeExpression, resolvedValue);
+
+                    if (!resolvedVariable.TypeExpression.IsNullable && resolvedVariable.Value == null)
+                    {
+                        this.Messages.Critical(
+                             "The resolved variable value of <null> is not valid for non-nullable variable " +
+                             $"'{resolvedVariable.Name}'",
+                             Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
+                             _variableCollection.Operation.SourceLocation.AsOrigin());
+                    }
+
+                    result.AddVariable(resolvedVariable);
+                }
+                catch (UnresolvedValueException svce)
+                {
+                    this.Messages.Critical(
+                       svce.Message,
+                       Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
+                       _variableCollection.Operation.SourceLocation.AsOrigin(),
+                       exceptionThrown: svce.InnerException);
+                }
             }
 
             return result;
         }
+
+        /// <summary>
+        /// Gets the collection of messages filled by this instance when it resolved variables.
+        /// </summary>
+        /// <value>The message collection.</value>
+        public IGraphMessageCollection Messages { get; }
     }
 }

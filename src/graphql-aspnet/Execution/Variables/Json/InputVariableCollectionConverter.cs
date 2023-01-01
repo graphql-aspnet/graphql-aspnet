@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Execution.Variables.Json
                 switch (reader.TokenType)
                 {
                     case JsonTokenType.Null:
-                        return new InputSingleValueVariable(name, null);
+                        return new InputNullValueVariable(name);
 
                     case JsonTokenType.StartArray:
                         return this.CreateListVariable(name, ref reader);

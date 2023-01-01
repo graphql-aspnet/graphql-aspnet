@@ -44,6 +44,42 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
         }
 
         [Test]
+        public async Task NullableFlatScalar_WithSuppliedValue()
+        {
+            var result = await this.CreateResolvedVariableCollection(
+                @"query ($var1: Int){
+                            nullableScalarTest(arg1: $var1)
+                } ",
+                @"{
+                    ""var1"" : 5
+                }");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+
+            var item = (int)result["var1"].Value;
+            Assert.AreEqual(5, item);
+        }
+
+        [Test]
+        public async Task NullableFlatScalar_WithSuppliedNull()
+        {
+            var result = await this.CreateResolvedVariableCollection(
+                @"query ($var1: Int){
+                            nullableScalarTest(arg1: $var1)
+                } ",
+                @"{
+                    ""var1"" : null
+                }");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+
+            var item = result["var1"].Value;
+            Assert.IsNull(item);
+        }
+
+        [Test]
         public async Task FlatInputObject()
         {
             var result = await this.CreateResolvedVariableCollection(

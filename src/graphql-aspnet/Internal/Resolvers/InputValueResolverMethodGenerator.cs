@@ -62,6 +62,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             if (graphType is IScalarGraphType scalar)
             {
                 coreType = _schema.KnownTypes.FindConcreteType(scalar);
+
                 coreResolver = new ScalarInputValueResolver(scalar.SourceResolver);
             }
             else if (graphType is IEnumGraphType enumGraphType)

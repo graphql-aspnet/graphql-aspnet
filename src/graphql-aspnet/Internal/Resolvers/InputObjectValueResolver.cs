@@ -66,6 +66,9 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// <inheritdoc />
         public object Resolve(IResolvableValueItem resolvableItem, IResolvedVariableCollection variableData = null)
         {
+            if (resolvableItem == null)
+                return null;
+
             if (resolvableItem is IResolvablePointer pointer)
             {
                 IResolvedVariable variable = null;
@@ -81,6 +84,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
             if (resolvableItem is DefaultInputObjectResolutionValue)
                 return instance;
 
+            // supplied value must be a field set to be resolved
+            // as an input object... anything else is an error condition
             if (!(resolvableItem is IResolvableFieldSet suppliedFields))
             {
                 SourceOrigin origin = default;

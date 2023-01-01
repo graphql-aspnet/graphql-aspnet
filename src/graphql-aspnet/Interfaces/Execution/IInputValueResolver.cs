@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="resolvableItem">The resolvable item.</param>
         /// <param name="variableData">An optiona collection of supplied variable data that
         /// can be used to resolve variable references contained within the <paramref name="resolvableItem"/>.</param>
-        /// <returns>System.Object.</returns>
+        /// <returns>A fully instantiated .NET object (or null).</returns>
         object Resolve(IResolvableValueItem resolvableItem, IResolvedVariableCollection variableData = null);
     }
 }

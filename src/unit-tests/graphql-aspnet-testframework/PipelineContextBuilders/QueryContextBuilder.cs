@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <returns>QueryContextBuilder.</returns>
         public QueryContextBuilder AddVariableData(string jsonDocument)
         {
-            var variableData = JsonSerializer.Deserialize<InputVariableCollection>(jsonDocument);
+            var variableData = InputVariableCollection.FromJsonDocument(jsonDocument);
             _mockRequest.Setup(x => x.VariableData).Returns(variableData);
             return this;
         }

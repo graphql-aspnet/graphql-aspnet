@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Web
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Net;
     using System.Text;
@@ -48,6 +49,7 @@ namespace GraphQL.AspNet.Tests.Web
 
         public static List<object[]> _testData;
 
+        [DebuggerStepperBoundary]
         static GraphQLHttpPayloadParserTests()
         {
             _testData = new List<object[]>();

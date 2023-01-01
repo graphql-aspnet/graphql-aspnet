@@ -60,11 +60,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
             return passed;
         }
 
-        /// <summary>
-        /// Ensure that all variables are unique within the operation.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns>bool.</returns>
+        // Enforce 5.8.1, Variable names are unique per operation
         private bool Check581(DocumentValidationContext context)
         {
             var operation = (IOperationDocumentPart)context.ActivePart;
@@ -86,11 +82,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
             return noDuplicates;
         }
 
-        /// <summary>
-        /// Ensure that all declared variables are of correct input variable types.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns>bool.</returns>
+        // Enforce 5.8.2, Declared variable types are valid input types (SCALAR, ENUM, INPUT_OBJECT)
         private bool Check582(DocumentValidationContext context)
         {
             var operation = (IOperationDocumentPart)context.ActivePart;
@@ -143,6 +135,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
             return allVariablesPassed;
         }
 
+        // Enforce rule 5.8.3, All variable uses are defined
         private bool Check583(DocumentValidationContext context)
         {
             var operation = (IOperationDocumentPart)context.ActivePart;
@@ -154,6 +147,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
                 new HashSet<INamedFragmentDocumentPart>());
         }
 
+        // Enforce rule 5.8.4, All defined variables are used
         private bool Check584(DocumentValidationContext context)
         {
             var operation = (IOperationDocumentPart)context.ActivePart;
@@ -175,6 +169,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
             return allVariablesPassed;
         }
 
+        // enforce rule 5.8.5, All variable uses are allowed
         private bool Check585(DocumentValidationContext context)
         {
             var operation = (IOperationDocumentPart)context.ActivePart;

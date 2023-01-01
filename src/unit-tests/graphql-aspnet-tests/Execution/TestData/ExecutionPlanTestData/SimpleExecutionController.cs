@@ -126,5 +126,11 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData
                     return 0;
             }
         }
+
+        [Query("nullableInputIntValue")]
+        public int? ReturnNullableNumber(int? number)
+        {
+            return number;
+        }
     }
 }
