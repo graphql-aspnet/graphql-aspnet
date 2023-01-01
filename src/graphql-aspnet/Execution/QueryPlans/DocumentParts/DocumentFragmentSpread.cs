@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Steps;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
@@ -65,8 +66,12 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             {
                 this.Fragment = targetFragment;
                 this.AssignGraphType(targetFragment?.GraphType);
-                targetFragment.MarkAsReferenced();
             }
+
+            // assigning a named fragment will potentially expand
+            // the execution field set where this spread occurs
+            // force the field set to recalculate
+            this.RefreshAllAscendantFields();
         }
 
         /// <inheritdoc />

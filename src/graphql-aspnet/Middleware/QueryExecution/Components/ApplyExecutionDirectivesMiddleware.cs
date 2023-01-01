@@ -64,9 +64,17 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             GraphMiddlewareInvocationDelegate<QueryExecutionContext> next,
             CancellationToken cancelToken = default)
         {
-            if (context.IsValid && context.QueryPlan == null && context.Operation != null)
+            if (!context.IsCancelled
+                && context.IsValid
+                && context.QueryPlan == null
+                && context.Operation != null)
             {
-                var directivesToExecute = this.DetermineDirectiveToExecute(context);
+                var directivesToExecute = new List<IDirectiveDocumentPart>();
+
+                this.DetermineDirectiveToExecute(
+                    context.Operation,
+                    directivesToExecute);
+
                 if (directivesToExecute.Count > 0)
                 {
                     // when there are directives to apply, start the exectuion phase
@@ -95,28 +103,45 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             await next(context, cancelToken).ConfigureAwait(false);
         }
 
-        private List<IDirectiveDocumentPart> DetermineDirectiveToExecute(QueryExecutionContext context)
+        private void DetermineDirectiveToExecute(
+            IDocumentPart docPart,
+            List<IDirectiveDocumentPart> foundDirectives,
+            HashSet<string> alreadyWalkedNameFragments = null)
         {
-            var list = new List<IDirectiveDocumentPart>(context.Operation.AllDirectives.Count);
-            list.AddRange(context.Operation.AllDirectives);
+            if (docPart is ITopLevelDocumentPart tldp)
+                foundDirectives.AddRange(tldp.AllDirectives);
 
             // fragments may be spread more than once in a single operation
             // but we dont want to execute the directives of the fragment more than once
-            var includedFragments = new HashSet<string>();
-            for (var i = 0; i < context.Operation.FragmentSpreads.Count; i++)
+            if (docPart is IReferenceDocumentPart refPart)
             {
-                var spread = context.Operation.FragmentSpreads[i];
-                if (string.IsNullOrWhiteSpace(spread.Fragment?.Name))
-                    continue;
+                if (alreadyWalkedNameFragments == null)
+                {
+#if NET6_0_OR_GREATER
+                    alreadyWalkedNameFragments = new HashSet<string>(refPart.FragmentSpreads.Count);
+#else
+                    alreadyWalkedNameFragments = new HashSet<string>();
+#endif
+                }
 
-                if (includedFragments.Contains(spread.Fragment.Name))
-                    continue;
+                for (var i = 0; i < refPart.FragmentSpreads.Count; i++)
+                {
+                    var spread = refPart.FragmentSpreads[i];
+                    if (string.IsNullOrWhiteSpace(spread.Fragment?.Name))
+                        continue;
 
-                includedFragments.Add(spread.Fragment.Name);
-                list.AddRange(spread.Fragment.AllDirectives);
+                    if (alreadyWalkedNameFragments.Contains(spread.Fragment.Name))
+                        continue;
+
+                    alreadyWalkedNameFragments.Add(spread.Fragment.Name);
+                    foundDirectives.AddRange(spread.Fragment.AllDirectives);
+
+                    this.DetermineDirectiveToExecute(
+                        spread.Fragment,
+                        foundDirectives,
+                        alreadyWalkedNameFragments);
+                }
             }
-
-            return list;
         }
 
         private async Task<int> ApplyDirectivesAsync(
