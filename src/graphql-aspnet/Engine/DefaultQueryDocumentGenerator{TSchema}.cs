@@ -117,26 +117,18 @@ namespace GraphQL.AspNet.Engine
             // Fragment spreads refernece other document parts (named fragments).
             // Ensure those linkages are wired up properly.
             // --------------------------------------------
+            // Since the named fragments
+            // may not exist when the spread is encountered a second pass must be done
+            // to link them to their associated named fragment.
+            // --------------------------------------------
             foreach (var spread in constructionContext.Spreads)
             {
-                if (spread.Fragment != null)
-                {
-                    spread.Fragment.MarkAsReferenced();
-                    continue;
-                }
-
                 // its possible that the query text contains multiple named fragments
                 // with the same name (the document is not validated yet)
                 // the query document will contain these duplicated named fragments
                 //
                 // mark all fragments with the name in the spread as being referenced
-                document.NamedFragments.MarkAsReferenced(spread.FragmentName);
-
-                // assign the officially "chosen" named fragment reference to the spread
-                if (document.NamedFragments.TryGetValue(spread.FragmentName, out var foundFragment))
-                {
-                    spread.AssignNamedFragment(foundFragment);
-                }
+                document.NamedFragments.AddSpreadReference(spread);
             }
         }
     }

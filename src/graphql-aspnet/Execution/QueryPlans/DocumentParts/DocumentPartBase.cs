@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     /// A base class with common functionality of all <see cref="IDocumentPart" />
     /// implementations.
     /// </summary>
-    internal abstract class DocumentPartBase : IDocumentPart, IRefreshableDocumentPart
+    internal abstract class DocumentPartBase : IDocumentPart
     {
         private SourcePath _path = null;
 
@@ -68,9 +68,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
 
             while (docPart != null)
             {
-                if (docPart is IRefreshableDocumentPart fsdp)
-                    fsdp.Refresh();
-
+                docPart.Refresh();
                 docPart = docPart.Parent;
             }
         }

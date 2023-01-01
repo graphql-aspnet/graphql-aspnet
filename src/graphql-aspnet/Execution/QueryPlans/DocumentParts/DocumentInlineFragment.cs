@@ -34,8 +34,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             SourceLocation sourceLocation)
             : base(parentPart, sourceLocation)
         {
-            // inline fragments are, by nature, already referenced in the document
-            this.MarkAsReferenced();
             this.TargetGraphTypeName = targetType;
             this.IsIncluded = true;
         }

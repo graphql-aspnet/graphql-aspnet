@@ -66,7 +66,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             {
                 this.Fragment = targetFragment;
                 this.AssignGraphType(targetFragment?.GraphType);
-                targetFragment.MarkAsReferenced();
             }
 
             // assigning a named fragment will potentially expand
