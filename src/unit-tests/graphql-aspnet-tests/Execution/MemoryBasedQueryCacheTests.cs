@@ -36,9 +36,9 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             using var cache = new DefaultQueryExecutionPlanCacheProvider();
             var hash = Guid.NewGuid().ToString("N");
-            var found = await cache.TryGetPlanAsync(hash, out var plan);
-            Assert.IsNull(plan);
-            Assert.IsFalse(found);
+
+            var foundPlan = await cache.TryGetPlanAsync(hash);
+            Assert.IsNull(foundPlan);
         }
 
         [Test]
@@ -53,8 +53,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var wasCached = await cache.TryCachePlanAsync(hash, plan);
             Assert.IsTrue(wasCached);
 
-            var found = await cache.TryGetPlanAsync(hash, out var foundPlan);
-            Assert.IsTrue(found);
+            var foundPlan = await cache.TryGetPlanAsync(hash);
             Assert.AreEqual(plan, foundPlan);
         }
 
@@ -73,8 +72,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var evicted = await cache.EvictAsync(hash);
             Assert.IsTrue(evicted);
 
-            var found = await cache.TryGetPlanAsync(hash, out var foundPlan);
-            Assert.IsFalse(found);
+            var foundPlan = await cache.TryGetPlanAsync(hash);
             Assert.IsNull(foundPlan);
         }
     }

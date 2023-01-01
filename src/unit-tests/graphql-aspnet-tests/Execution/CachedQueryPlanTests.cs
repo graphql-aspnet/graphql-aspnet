@@ -59,9 +59,7 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNotNull(result.Data);
 
             var key = cacheKeyProvider.CreateKey<GraphSchema>(query, operation);
-            var found = await cacheProvider.TryGetPlanAsync(key, out var plan);
-
-            Assert.IsTrue(found);
+            var plan = await cacheProvider.TryGetPlanAsync(key);
             Assert.IsNotNull(plan);
         }
 
@@ -103,9 +101,8 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNotNull(result.Data);
 
             var key = cacheKeyProvider.CreateKey<GraphSchema>(query, operation);
-            var found = await cacheProvider.TryGetPlanAsync(key, out var plan);
+            var plan = await cacheProvider.TryGetPlanAsync(key);
 
-            Assert.IsFalse(found);
             Assert.IsNull(plan);
         }
     }

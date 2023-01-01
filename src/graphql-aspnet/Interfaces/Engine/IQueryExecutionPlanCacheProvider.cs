@@ -21,12 +21,11 @@ namespace GraphQL.AspNet.Interfaces.Engine
     public interface IQueryExecutionPlanCacheProvider
     {
         /// <summary>
-        /// Attempts to retrieve a query plan from the cache for the given schema if it sexists.
+        /// Attempts to retrieve a query plan from the cache for the given schema if it exists.
         /// </summary>
         /// <param name="key">The unique key for the plan of a given schema.</param>
-        /// <param name="plan">The plan that was retrieved or null if it was not found.</param>
-        /// <returns><c>true</c> if the plan was successfully retrieved; otherwise, <c>false</c>.</returns>
-        Task<bool> TryGetPlanAsync(string key, out IQueryExecutionPlan plan);
+        /// <returns>Returns the query plan if it was found, otherwise null.</returns>
+        Task<IQueryExecutionPlan> TryGetPlanAsync(string key);
 
         /// <summary>
         /// Caches the plan instance for later retrieval.

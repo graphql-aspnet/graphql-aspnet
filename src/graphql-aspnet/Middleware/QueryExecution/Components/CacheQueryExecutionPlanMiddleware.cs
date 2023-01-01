@@ -65,8 +65,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     context.QueryRequest.QueryText,
                     context.QueryRequest.OperationName);
 
-                planFound = await _cacheProvider.TryGetPlanAsync(key, out var queryPlan).ConfigureAwait(false);
-                if (planFound)
+                var queryPlan = await _cacheProvider.TryGetPlanAsync(key).ConfigureAwait(false);
+                if (queryPlan != null)
                 {
                     context.QueryPlan = queryPlan;
                     context.Logger?.QueryPlanCacheFetchHit<TSchema>(key);
