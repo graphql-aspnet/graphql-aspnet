@@ -16,17 +16,6 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
     public interface IFragmentDocumentPart : IDirectiveContainerDocumentPart, IDocumentPart
     {
         /// <summary>
-        /// Marks this fragment as being referenced and used in at least one operation in the document.
-        /// </summary>
-        void MarkAsReferenced();
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is referenced by an operation in the query document.
-        /// </summary>
-        /// <value><c>true</c> if this instance is referenced; otherwise, <c>false</c>.</value>
-        bool IsReferenced { get; }
-
-        /// <summary>
         /// Gets the name of the target graph type if any.
         /// </summary>
         /// <value>The name of the target graph type.</value>

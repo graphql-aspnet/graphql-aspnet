@@ -63,15 +63,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         }
 
         /// <inheritdoc />
-        public void MarkAsReferenced()
-        {
-            this.IsReferenced = true;
-        }
-
-        /// <inheritdoc />
-        public bool IsReferenced { get; protected set; }
-
-        /// <inheritdoc />
         public string TargetGraphTypeName { get; protected set; }
 
         /// <inheritdoc />

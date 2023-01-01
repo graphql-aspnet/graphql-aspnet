@@ -55,6 +55,11 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         }
 
         /// <inheritdoc />
+        public void Refresh()
+        {
+        }
+
+        /// <inheritdoc />
         public IGraphMessageCollection Messages { get; }
 
         /// <inheritdoc />

@@ -22,9 +22,21 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     /// </summary>
     internal class ExecutableFieldSelectionSet : IExecutableFieldSelectionSet
     {
-        private int _sequence;
+        private int _currentSequence;
         private int _lastBuiltSequence;
-        private List<IFieldDocumentPart> _cachedExecutableFields;
+
+        // for any field that should be included
+        // track a list of fields that will have a hand in determining its includability
+        // for instance a field defined in a fragment is only included if:
+        // 1) the field itself is included
+        // 2) the fragment spread is included
+        // 3) the field containing the spread is included
+        // 4) etc...
+        //
+        // The include status of each of those governing parts
+        // will change as directives are executed so keep a reference to the parts
+        // so includability can be deteremined quickly on the fly when needed
+        private List<IFieldDocumentPart> _allFields;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutableFieldSelectionSet"/> class.
@@ -34,40 +46,38 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         public ExecutableFieldSelectionSet(IFieldSelectionSetDocumentPart owner)
         {
             this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
-            _cachedExecutableFields = null;
+            _allFields = null;
             _lastBuiltSequence = -1;
-            _sequence = 0;
+            _currentSequence = 0;
         }
 
         /// <summary>
         /// Instructs this execution set to update its snapshot, clearing any
         /// cached fields and rebuilding from its owner.
         /// </summary>
-        internal void UpdateSnapshot()
+        internal void ResetFieldSelectionSet()
         {
-            _sequence++;
+            // don't immediately rebuild the selection set
+            // its likely to change more as a document is built
+            // instead just mark the current snapshot (if there is one)
+            // as being invalid and only rebuild on the next time the fields are needed
+            _currentSequence++;
         }
 
         private void EnsureCurrentSnapshot()
         {
-            if (_lastBuiltSequence == _sequence && _cachedExecutableFields != null)
+            if (_lastBuiltSequence == _currentSequence && _allFields != null)
                 return;
 
-            var newList = new List<IFieldDocumentPart>((_cachedExecutableFields?.Count ?? 8) * 2);
-
-            var iterator = new ExecutableFieldSelectionSetEnumerator(this.Owner);
-            while (iterator.MoveNext())
-                newList.Add(iterator.Current);
-
-            _lastBuiltSequence = _sequence;
-            _cachedExecutableFields = newList;
+            _allFields = ExecutableFieldSelectionSetBuilder.FlattenFieldList(this.Owner, false);
+            _lastBuiltSequence = _currentSequence;
         }
 
         /// <inheritdoc />
         public IEnumerator<IFieldDocumentPart> GetEnumerator()
         {
             this.EnsureCurrentSnapshot();
-            return _cachedExecutableFields.GetEnumerator();
+            return _allFields.GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -82,7 +92,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             get
             {
                 this.EnsureCurrentSnapshot();
-                return _cachedExecutableFields[index];
+                return _allFields[index];
             }
         }
 
@@ -91,8 +101,12 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         {
             get
             {
-                this.EnsureCurrentSnapshot();
-                return _cachedExecutableFields.Where(x => x.IsIncluded);
+                // those fields that are included must always be deteremined in real time
+                // directives executed against various parts of a document can change the included fields
+                // either directly or via a spread or inline fragment. Its currently impossible to know if a set of
+                // included fields should be recomuted because there is no relationships between a named fragment
+                // and where its spread
+                return ExecutableFieldSelectionSetBuilder.FlattenFieldList(this.Owner, true);
             }
         }
 
@@ -105,7 +119,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             get
             {
                 this.EnsureCurrentSnapshot();
-                return _cachedExecutableFields.Count;
+                return _allFields.Count;
             }
         }
     }

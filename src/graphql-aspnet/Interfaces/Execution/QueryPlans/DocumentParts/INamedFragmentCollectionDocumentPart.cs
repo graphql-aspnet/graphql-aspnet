@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
         /// Searches this collection for any named fragments of the matching name
         /// and marks this as "referenced".
         /// </summary>
-        /// <param name="fragmentName">Name of the fragment.</param>
-        void MarkAsReferenced(string fragmentName);
+        /// <param name="spreadPart">The document part where a fragment spread took place.</param>
+        void AddSpreadReference(IFragmentSpreadDocumentPart spreadPart);
     }
 }

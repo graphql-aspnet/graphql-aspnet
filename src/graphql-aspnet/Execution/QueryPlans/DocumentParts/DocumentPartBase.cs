@@ -54,6 +54,30 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
             this.GraphType = graphType;
         }
 
+        /// <summary>
+        /// When called, walks the document part chain from this part upwards forcing a refresh
+        /// on all encountered <see cref="IReferenceDocumentPart"/> instances.
+        /// </summary>
+        /// <param name="refreshSelf">if set to <c>true</c> a refresh will be issued against
+        /// this document part first, before the parents of this field.</param>
+        protected void RefreshAllAscendantFields(bool refreshSelf = true)
+        {
+            var docPart = this as IDocumentPart;
+            if (docPart != null && !refreshSelf)
+                docPart = docPart.Parent;
+
+            while (docPart != null)
+            {
+                docPart.Refresh();
+                docPart = docPart.Parent;
+            }
+        }
+
+        /// <inheritdoc />
+        public virtual void Refresh()
+        {
+        }
+
         /// <inheritdoc />
         public abstract DocumentPartType PartType { get; }
 

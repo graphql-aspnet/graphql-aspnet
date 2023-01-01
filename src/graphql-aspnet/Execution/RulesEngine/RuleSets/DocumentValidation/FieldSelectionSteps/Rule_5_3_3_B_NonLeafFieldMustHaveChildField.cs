@@ -37,14 +37,14 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
         {
             var field = (IFieldDocumentPart)context.ActivePart;
             var selectionSet = field.FieldSelectionSet;
-            var hasChildFields = selectionSet != null && selectionSet.ExecutableFields.Any();
+            var hasChildFields = selectionSet != null && selectionSet.ExecutableFields.IncludedOnly.Any();
 
             if (!field.GraphType.Kind.IsLeafKind() && !hasChildFields)
             {
                 this.ValidationError(
                     context,
                     $"The graph type '{field.GraphType.Name}' is of kind '{field.GraphType.Kind.ToString()}'. " +
-                    $"At least 1 child field must be declared against it.");
+                    $"At least 1 child field must be selected against it.");
 
                 return false;
             }

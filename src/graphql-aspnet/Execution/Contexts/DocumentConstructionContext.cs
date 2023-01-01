@@ -251,9 +251,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         public int Depth { get; }
 
         /// <summary>
-        /// Gets the fragment spreads targeting named fragments. Since the named fragments
-        /// may not exist when the spread is encountered a second pass must be done
-        /// to link them to their associated named fragment.
+        /// Gets the fragment spreads targeting named fragments.
         /// </summary>
         /// <value>The late bound parts of the document being built.</value>
         public IList<IFragmentSpreadDocumentPart> Spreads { get; }
