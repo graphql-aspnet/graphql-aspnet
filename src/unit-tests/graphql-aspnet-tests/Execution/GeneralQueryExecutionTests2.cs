@@ -285,8 +285,11 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task NonNullableInputFieldWithDefaultValue_WhenVariableSuppliedIsNull_UsesDefaultValue()
+        public async Task NonNullableInputFieldWithDefaultValue_WhenVariableSuppliedViaDefaultNull_UsesDefaultValueOfField()
         {
+            // Direct Test of:
+            // https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed.Allowing-optional-variables-when-default-values-exist
+
             var server = new TestServerBuilder()
                   .AddGraphQL(o =>
                   {
@@ -296,7 +299,7 @@ namespace GraphQL.AspNet.Tests.Execution
                   .Build();
 
             // simple.nonNullableInputField.inputFIeld.id has a argument of type Int!
-            // but receives null via the variable
+            // but receives null via the default value of the variable
             // however, since the field has a default value defined (because its not required)
             // the value resolves correctly
             var builder = server.CreateQueryContextBuilder()

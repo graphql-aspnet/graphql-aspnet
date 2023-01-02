@@ -933,5 +933,205 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
         }
+
+        [Test]
+        public async Task InputObject_WithNotRequiredNonNullableInt_WhenVariableNotSupplied_DefaultValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = null){
+                    createWithModelWithIntWithDefaultValue(param: {id: $arg1} )  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied meaning the default value of param.id
+            // shoudl take effect
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelWithIntWithDefaultValue"" : {
+                        ""property1"" : ""98"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task InputObject_WithNotRequiredNonNullableInt_WhenVariableNotSupplied_VariableDefaultValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = 409){
+                    createWithModelWithIntWithDefaultValue(param: {id: $arg1} )  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied meaning the default value of param.id
+            // shoudl take effect
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelWithIntWithDefaultValue"" : {
+                        ""property1"" : ""409"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task InputObject_WithNotRequiredNonNullableInt_WhenVariableIsSuppliedAsNull_ResultsIn585Error()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = null){
+                    createWithModelWithIntWithDefaultValue(param: {id: $arg1} )  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // Variable data is EXPLICITLY supplied as null, meaning the default value of param.id
+            // cannot take effect and 5.8.5 has been violated (
+            // https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed.Allowing-optional-variables-when-default-values-exist
+            queryContext.AddVariableData(@"{ ""arg1"" : null }");
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+
+            var message = result.Messages[0];
+            Assert.IsTrue(message.MetaData.ContainsKey("Rule"));
+            var rule = message.MetaData["Rule"];
+            Assert.AreEqual("5.8.5", rule);
+        }
+
+        [Test]
+        public async Task SingleArgument_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_DefaultValueOfVariableIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = 11){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of the
+            // variable should take effect since it was defined
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelWithIntWithDefaultValue"" : {
+                        ""property1"" : ""11"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+
+        [Test]
+        public async Task SingleArgument_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_DefaultValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = null){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of param
+            // should take effect
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelWithIntWithDefaultValue"" : {
+                        ""property1"" : ""33"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleArgument_WithNotRequiredNonNullableInt_WhenVariableIsSuppliedAsNull_ResultsIn585Error()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = null){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"" : null }");
+
+            // Variable data is EXPLICITLY supplied as null, meaning the default value of param
+            // cannot take effect and 5.8.5 has been violated
+            // https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed.Allowing-optional-variables-when-default-values-exist
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+
+            var message = result.Messages[0];
+            Assert.IsTrue(message.MetaData.ContainsKey("Rule"));
+            var rule = message.MetaData["Rule"];
+            Assert.AreEqual("5.8.5", rule);
+        }
     }
 }

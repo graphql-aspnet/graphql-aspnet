@@ -32,6 +32,16 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
         }
 
         [MutationRoot]
+        public TwoPropertyObject CreateWithModelWithIntWithDefaultValue(ModelWithIntWithDefaultValue param)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = param.Id.ToString(),
+                Property2 = 5,
+            };
+        }
+
+        [MutationRoot]
         public TwoPropertyObject CreateWithModelGuid(ModelWithGuid param)
         {
             return new TwoPropertyObject()
@@ -93,6 +103,17 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
 
         [MutationRoot]
         public TwoPropertyObject CreateWithInt(int param)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = param.ToString(),
+                Property2 = 5,
+            };
+        }
+
+
+        [MutationRoot]
+        public TwoPropertyObject CreateWithIntWithDefaultValue(int param = 33)
         {
             return new TwoPropertyObject()
             {
