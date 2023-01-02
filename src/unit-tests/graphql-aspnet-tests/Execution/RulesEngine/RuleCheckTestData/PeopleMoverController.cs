@@ -60,6 +60,12 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine.RuleCheckTestData
             return null;
         }
 
+        [Query("matchDefaultValueElevator")]
+        public Elevator MatchElevator2(ElevatorBindingModel2 e)
+        {
+            return null;
+        }
+
         [Query("escalator")]
         public Escalator RetrieveEscalator(int id)
         {

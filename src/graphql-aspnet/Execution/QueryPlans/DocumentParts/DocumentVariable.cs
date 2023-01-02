@@ -72,5 +72,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
 
         /// <inheritdoc />
         public override string Description => $"Variable: {this.Name ?? "-unknown-"}";
+
+        /// <inheritdoc />
+        public bool HasDefaultValue => this.DefaultValue != null;
     }
 }

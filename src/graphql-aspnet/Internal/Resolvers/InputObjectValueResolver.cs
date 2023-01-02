@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// if necessary.
     /// </summary>
     [DebuggerDisplay("Input Object: {_objectType.Name}")]
-    internal class InputObjectValueResolver : IInputValueResolver
+    internal class InputObjectValueResolver : InputValueResolverBase, IInputValueResolver
     {
         private readonly IInputObjectGraphType _graphType;
         private readonly Type _objectType;
@@ -42,8 +42,15 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// </summary>
         /// <param name="graphType">The graph type in the target schema for the object in question.</param>
         /// <param name="concreteType">The concrete type to render the data as.</param>
-        /// <param name="schema">The schema that owns the supplied <paramref name="graphType"/>.</param>
-        public InputObjectValueResolver(IInputObjectGraphType graphType, Type concreteType, ISchema schema)
+        /// <param name="schema">The schema that owns the supplied <paramref name="graphType" />.</param>
+        /// <param name="defaultValueProvider">A provider that can supply a default value when such value is warranted
+        /// during value resolution.</param>
+        public InputObjectValueResolver(
+            IInputObjectGraphType graphType,
+            Type concreteType,
+            ISchema schema,
+            IDefaultValueSchemaItem defaultValueProvider)
+            : base(defaultValueProvider)
         {
             _graphType = Validation.ThrowIfNullOrReturn(graphType, nameof(graphType));
             _objectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
@@ -66,19 +73,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// <inheritdoc />
         public object Resolve(IResolvableValueItem resolvableItem, IResolvedVariableCollection variableData = null)
         {
-            if (resolvableItem == null)
-                return null;
-
-            if (resolvableItem is IResolvablePointer pointer)
-            {
-                IResolvedVariable variable = null;
-                var variableFound = variableData?.TryGetValue(pointer.PointsTo, out variable) ?? false;
-                if (variableFound)
-                    return variable.Value;
-            }
-
-            if (resolvableItem is IResolvableNullValue)
-                return null;
+            if (this.TryResolveViaCommonMethods(resolvableItem, variableData, out var commonResolvedValue))
+                return commonResolvedValue;
 
             var instance = InstanceFactory.CreateInstance(_objectType);
             if (resolvableItem is DefaultInputObjectResolutionValue)
@@ -147,7 +143,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             }
 
             // check all the fields that "must have a value"
-            // to ensure they are put on the input objec being constructed
+            // to ensure they are put on the input object being constructed
             foreach (var field in _graphType.Fields.NonNullableFields)
             {
                 // if a non-nullable field was supplied on the request

@@ -50,16 +50,22 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         {
             Validation.ThrowIfNull(argument, nameof(argument));
 
-            if (!_suppliedArguments.ContainsKey(argument.Name))
+            if (!_suppliedArguments.ContainsKey(argument.Name) && argument.HasDefaultValue)
             {
-                return new ArgumentGenerationResult(new ResolvedInputArgumentValue(argument.Name, argument.DefaultValue));
+                return new ArgumentGenerationResult(
+                    new ResolvedInputArgumentValue(
+                        argument.Name,
+                        argument.DefaultValue));
             }
 
             var coreValue = _suppliedArguments[argument.Name].Value;
-            var resolver = _inputResolverGenerator.CreateResolver(argument.TypeExpression);
+            var resolver = _inputResolverGenerator.CreateResolver(argument);
 
             if (this.ShouldDeferResolution(coreValue))
-                return new ArgumentGenerationResult(new DeferredInputArgumentValue(coreValue, resolver));
+            {
+                return new ArgumentGenerationResult(
+                    new DeferredInputArgumentValue(coreValue, resolver));
+            }
 
             try
             {

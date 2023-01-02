@@ -32,6 +32,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
         /// <param name="isRequired">if set to <c>true</c> this field was explicitly marked as being required.</param>
+        /// <param name="defaultValue">When <paramref name="isRequired"/> is <c>false</c>, represents
+        /// the value that should be used for this field when its not declared on a query document.</param>
         /// <param name="directives">The directives to apply to this field when its added to a schema.</param>
         public InputGraphField(
             string fieldName,
@@ -41,6 +43,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             Type objectType,
             Type declaredReturnType,
             bool isRequired,
+            object defaultValue = null,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
@@ -53,7 +56,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
             this.InternalName = declaredPropertyName;
-            this.IsRequired = isRequired;
+            this.HasDefaultValue = !isRequired;
+            this.DefaultValue = this.HasDefaultValue ? defaultValue : null;
             this.Publish = true;
         }
 
@@ -99,6 +103,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public string InternalName { get; }
 
         /// <inheritdoc />
-        public bool IsRequired { get; }
+        public object DefaultValue { get; }
+
+        /// <inheritdoc />
+        public bool HasDefaultValue { get; }
+
+        /// <inheritdoc />
+        public bool IsRequired => !this.HasDefaultValue;
     }
 }

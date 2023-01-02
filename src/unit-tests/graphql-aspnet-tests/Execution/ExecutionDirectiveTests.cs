@@ -167,9 +167,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task ExecutionDirectiveAddsAFieldPostProcessor_ForSingleField_ProcessorIsExecutedAsExpected()
         {
-            var directiveInstance = new SampleDirective();
             var builder = new TestServerBuilder();
-            builder.AddSingleton(directiveInstance);
             builder.AddGraphController<DirectiveTestController>()
                   .AddDirective<ToUpperCaseExecutionDirective>();
 
@@ -199,9 +197,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task ExecutionDirectiveAddsAFieldPostProcessor_ForTypeExtensionField_ProcessorIsExecutedAsExpected()
         {
-            var directiveInstance = new SampleDirective();
             var builder = new TestServerBuilder();
-            builder.AddSingleton(directiveInstance);
             builder.AddGraphController<DirectiveTestController>()
                   .AddDirective<ToUpperCaseExecutionDirective>();
 
@@ -231,9 +227,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task ExecutionDirectiveAddsAFieldPostProcessor_ForBatchExtensionField_ProcessorIsExecutedAsExpected()
         {
-            var directiveInstance = new SampleDirective();
             var builder = new TestServerBuilder();
-            builder.AddSingleton(directiveInstance);
             builder.AddGraphController<DirectiveTestController>()
                   .AddDirective<AdjustBatchDataDirective>();
 

@@ -22,8 +22,9 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
     [TestFixture]
     public class ResolvedVariableGeneratorTests
     {
-        public async Task<IResolvedVariableCollection> CreateResolvedVariableCollection(string queryText,  string jsonDoc)
+        private async Task<ResolvedVariableGenerator> CreateGenerator(string queryText)
         {
+
             var server = new TestServerBuilder()
                 .AddType<VariableTestController>()
                 .Build();
@@ -37,7 +38,12 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
 
             var operation = plan.Operation;
 
-            var resolver = new ResolvedVariableGenerator(server.Schema, operation.Variables);
+            return new ResolvedVariableGenerator(server.Schema, operation.Variables);
+        }
+
+        public async Task<IResolvedVariableCollection> CreateResolvedVariableCollection(string queryText,  string jsonDoc)
+        {
+            var resolver = await this.CreateGenerator(queryText);
             var variableSet = InputVariableCollection.FromJsonDocument(jsonDoc);
 
             return resolver.Resolve(variableSet);
@@ -398,6 +404,77 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
             var item = result["var1"].Value as IEnumerable<IEnumerable<IEnumerable<IEnumerable<int>>>>;
             Assert.IsNotNull(item);
             CollectionAssert.AreEqual(expected, item);
+        }
+
+        [Test]
+        public async Task NullPassedToNonNullableVariableDefinition_ErrorMessageRecorded()
+        {
+            var generator = await this.CreateGenerator(
+                @"query ($var1: Int!){
+                            nonNullableIntValue(arg1: $var1)
+                } ");
+
+            // can't supply null to a non-nullable variable
+            var variableSet = InputVariableCollection.FromJsonDocument(@"{ ""var1"": null }");
+            var result = generator.Resolve(variableSet);
+
+            Assert.AreEqual(1, generator.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, generator.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task ValueNotPassedToVariableWithDefault_DefaultIsUsed()
+        {
+            var results = await this.CreateResolvedVariableCollection(
+                @"query ($var1: Int= null){
+                            nullableIntValue(arg1: $var1)
+                } ",
+                "{ }");
+
+            Assert.AreEqual(null, results["var1"].Value);
+            Assert.IsTrue(results["var1"].IsDefaultValue);
+        }
+
+        [Test]
+        public async Task NullValuePassedToVariableWithDefault_ValueIsUsed()
+        {
+            var results = await this.CreateResolvedVariableCollection(
+                @"query ($var1: Int= null){
+                            nullableIntValue(arg1: $var1)
+                } ",
+                @"{ ""var1"": null }");
+
+            Assert.IsNull(results["var1"].Value);
+            Assert.IsFalse(results["var1"].IsDefaultValue);
+        }
+
+        [Test]
+        public async Task ValuePassedToVariableWithDefault_ValueIsUsed()
+        {
+            var results = await this.CreateResolvedVariableCollection(
+                @"query ($var1: Int= null){
+                            nullableIntValue(arg1: $var1)
+                } ",
+                @"{ ""var1"": 18 }");
+
+            Assert.AreEqual(18, results["var1"].Value);
+            Assert.IsFalse(results["var1"].IsDefaultValue);
+        }
+
+        [Test]
+        public async Task RequiredVariableNotProvided_ErrorMessageRecorded()
+        {
+            var generator = await this.CreateGenerator(
+                @"query ($var1: Int){
+                            nonNullableIntValue(arg1: $var1)
+                } ");
+
+            // var1 is not supplied to the query
+            var variableSet = InputVariableCollection.FromJsonDocument(@"{ }");
+            var result = generator.Resolve(variableSet);
+
+            Assert.AreEqual(1, generator.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, generator.Messages[0].Code);
         }
 
         [Test]

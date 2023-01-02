@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -70,6 +71,63 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.IsNotNull(prop1);
             Assert.AreEqual(0, prop1.TypeExpression.Wrappers.Length);
             Assert.AreEqual(Constants.ScalarNames.STRING, prop1.TypeExpression.TypeName);
+            Assert.IsFalse(prop1.IsRequired);
+            Assert.IsTrue(prop1.HasDefaultValue);
+            Assert.IsNull(prop1.DefaultValue);
+        }
+
+        [Test]
+        public void InputObject_CreateGraphType_DefaultFieldValuesAreParsed()
+        {
+            var template = TemplateHelper.CreateInputObjectTemplate<TypeCreationItem>();
+
+            var result = this.MakeGraphType(typeof(InputTestObjectWithDefaultFieldValues), TypeKind.INPUT_OBJECT);
+            var objectGraphType = result.GraphType as IInputObjectGraphType;
+
+            Assert.IsNotNull(objectGraphType);
+            Assert.AreEqual($"Input_{nameof(InputTestObjectWithDefaultFieldValues)}", objectGraphType.Name);
+            Assert.AreEqual(template.Description, objectGraphType.Description);
+            Assert.AreEqual(TypeKind.INPUT_OBJECT, objectGraphType.Kind);
+
+            // Prop1-4 (there is no __typename on input objects)
+            Assert.AreEqual(4, objectGraphType.Fields.Count);
+
+            var prop1 = objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(InputTestObjectWithDefaultFieldValues.Prop1));
+            Assert.IsNotNull(prop1);
+            Assert.AreEqual("Int!", prop1.TypeExpression.ToString());
+            Assert.IsFalse(prop1.IsRequired);
+            Assert.IsTrue(prop1.HasDefaultValue);
+            Assert.AreEqual(34, prop1.DefaultValue);
+
+            var prop2 = objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(InputTestObjectWithDefaultFieldValues.Prop2));
+            Assert.IsNotNull(prop2);
+            Assert.AreEqual("String", prop2.TypeExpression.ToString());
+            Assert.IsFalse(prop2.IsRequired);
+            Assert.IsTrue(prop2.HasDefaultValue);
+            Assert.AreEqual("default prop2 string", prop2.DefaultValue);
+
+            var prop3 = objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(InputTestObjectWithDefaultFieldValues.Prop3));
+            Assert.IsNotNull(prop3);
+            Assert.AreEqual("Int!", prop3.TypeExpression.ToString());
+            Assert.IsTrue(prop3.IsRequired);
+            Assert.IsFalse(prop3.HasDefaultValue);
+
+            // even though prop3 is an int, defaultValue should still be
+            // null since the field is marked required (has no default value)
+            Assert.IsNull(prop3.DefaultValue);
+
+            var prop4 = objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(InputTestObjectWithDefaultFieldValues.Prop4));
+            Assert.IsNotNull(prop4);
+            Assert.AreEqual("Input_TwoPropertyObject", prop4.TypeExpression.ToString());
+            Assert.IsFalse(prop4.IsRequired);
+            Assert.IsTrue(prop4.HasDefaultValue);
+
+            // even though its int, defaultValue should still be
+            // null since the field is marked required
+            var prop4DefaultObj = prop4.DefaultValue as TwoPropertyObject;
+            Assert.IsNotNull(prop4DefaultObj);
+            Assert.AreEqual("twoPropString1", prop4DefaultObj.Property1);
+            Assert.AreEqual(99, prop4DefaultObj.Property2);
         }
 
         [Test]

@@ -191,23 +191,17 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             if (!(this.GraphType is IInputObjectGraphType inputType))
                 return;
 
-            var defaultObject = InstanceFactory.CreateInstance(inputType.ObjectType);
-            var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(inputType.ObjectType);
-
             // populate inputFields collection
             // populate the fields for this object type
             var inputFields = new List<IntrospectedInputValueType>();
             foreach (var field in inputType.Fields)
             {
-                object defaultValue = null;
-                if (field.IsRequired)
+                object defaultValue = field.DefaultValue;
+                if (field.IsRequired || !field.HasDefaultValue)
                 {
+                    // ensure the introspection system does not attach a default
+                    // value when not allowed to
                     defaultValue = IntrospectionNoDefaultValue.Instance;
-                }
-                else if (propGetters.ContainsKey(field.InternalName))
-                {
-                    var getter = propGetters[field.InternalName];
-                    defaultValue = getter.Invoke(ref defaultObject);
                 }
 
                 var introspectedType = introspectedSchema.FindIntrospectedType(field.TypeExpression.TypeName);

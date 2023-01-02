@@ -7,6 +7,15 @@
 // License:  MIT
 // *************************************************************
 
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
 namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
 {
     using System.Diagnostics;
@@ -17,9 +26,9 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A represenetation of a value to an input argument that has yet to be fully realized
+    /// A represenetation of a value to an argument or input field that has yet to be fully realized
     /// and will need to make use of runtime data (variables provided by on user request) to finalize its
-    /// value so that it can provide data to a resolution context.
+    /// value so that it can provide a value to a resolution context.
     /// </summary>
     [DebuggerDisplay("{_coreValue.OwnerArgument.Name}")]
     internal class DeferredInputArgumentValue : IInputValue
@@ -28,7 +37,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         private readonly IInputValueResolver _resolver;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DeferredInputArgumentValue"/> class.
+        /// Initializes a new instance of the <see cref="DeferredInputArgumentValue" /> class.
         /// </summary>
         /// <param name="coreValue">The core value.</param>
         /// <param name="valueResolver">The resolver to use when rendering out a variable value for this

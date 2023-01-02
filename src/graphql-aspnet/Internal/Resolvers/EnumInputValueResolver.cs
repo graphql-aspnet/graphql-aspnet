@@ -11,14 +11,18 @@ namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A resolver that will convert a source value into a valid <see cref="Enum"/>.
     /// </summary>
-    internal class EnumInputValueResolver : IInputValueResolver
+    internal class EnumInputValueResolver : InputValueResolverBase, IInputValueResolver
     {
         private readonly ILeafValueResolver _enumResolver;
 
@@ -26,7 +30,10 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// Initializes a new instance of the <see cref="EnumInputValueResolver" /> class.
         /// </summary>
         /// <param name="resolver">The root resolver for the enum.</param>
-        public EnumInputValueResolver(ILeafValueResolver resolver)
+        /// <param name="defaultValueProvider">A provider that can supply a default value when such value is warranted
+        /// during value resolution.</param>
+        public EnumInputValueResolver(ILeafValueResolver resolver, IDefaultValueSchemaItem defaultValueProvider = null)
+            : base(defaultValueProvider)
         {
             _enumResolver = Validation.ThrowIfNullOrReturn(resolver, nameof(resolver));
         }
@@ -34,13 +41,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// <inheritdoc />
         public object Resolve(IResolvableValueItem resolvableItem, IResolvedVariableCollection variableData = null)
         {
-            if (resolvableItem is IResolvablePointer pointer)
-            {
-                IResolvedVariable variable = null;
-                var variableFound = variableData?.TryGetValue(pointer.PointsTo, out variable) ?? false;
-                if (variableFound)
-                    return variable.Value;
-            }
+            if (this.TryResolveViaCommonMethods(resolvableItem, variableData, out var resolvedValue))
+                return resolvedValue;
 
             if (resolvableItem is IResolvableValue resolvableValue)
             {
@@ -50,7 +52,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 return _enumResolver.Resolve(value.AsSpan());
             }
 
-            return null;
+            throw this.CreateUnresolvableValueException(resolvableItem);
         }
     }
 }

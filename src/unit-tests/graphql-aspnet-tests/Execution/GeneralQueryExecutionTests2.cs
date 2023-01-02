@@ -289,7 +289,6 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             // Direct Test of:
             // https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed.Allowing-optional-variables-when-default-values-exist
-
             var server = new TestServerBuilder()
                   .AddGraphQL(o =>
                   {

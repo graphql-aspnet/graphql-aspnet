@@ -62,6 +62,16 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
         }
 
         [MutationRoot]
+        public TwoPropertyObject CreateWithModelRequiredInt(ModelWithRequiredInt param)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = "some value",
+                Property2 = param?.Id ?? -1,
+            };
+        }
+
+        [MutationRoot]
         public TwoPropertyObject CreateWithNullableId(GraphId? param)
         {
             return new TwoPropertyObject()

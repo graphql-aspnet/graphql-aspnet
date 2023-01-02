@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Execution.Variables
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.QueryPlans;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
@@ -39,8 +40,6 @@ namespace GraphQL.AspNet.Execution.Variables
             IVariableCollectionDocumentPart variableCollection)
             : this(schema, variableCollection, new GraphMessageCollection())
         {
-            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _variableCollection = Validation.ThrowIfNullOrReturn(variableCollection, nameof(variableCollection));
         }
 
         /// <summary>
@@ -73,8 +72,10 @@ namespace GraphQL.AspNet.Execution.Variables
         {
             var resolverGenerator = new InputValueResolverMethodGenerator(_schema);
             var result = new ResolvedVariableCollection();
+
             foreach (var variable in _variableCollection)
             {
+
                 try
                 {
                     var resolver = resolverGenerator.CreateResolver(variable.TypeExpression);
@@ -86,19 +87,34 @@ namespace GraphQL.AspNet.Execution.Variables
                     if (inputVariables != null)
                         found = inputVariables.TryGetVariable(variable.Name, out suppliedValue);
 
+                    if (!found && !variable.HasDefaultValue)
+                    {
+                        var operationName = _variableCollection.Operation.Name ?? "~anonymous~";
+                        this.Messages.Critical(
+                             $"The declared variable '{variable.Name}' for operation '{operationName}' is required but was not supplied.",
+                             Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
+                             _variableCollection.Operation.SourceLocation.AsOrigin());
+
+                        continue;
+                    }
                     resolvableItem = found ? suppliedValue : variable.DefaultValue;
+
 
                     object resolvedValue = resolver.Resolve(resolvableItem);
 
-                    var resolvedVariable = new ResolvedVariable(variable.Name, variable.TypeExpression, resolvedValue);
+                    var resolvedVariable = new ResolvedVariable(variable.Name, variable.TypeExpression, resolvedValue, !found);
 
+                    // validate nullability of the provided value against the TypeExpression of the declaration
+                    // on the operation
                     if (!resolvedVariable.TypeExpression.IsNullable && resolvedVariable.Value == null)
                     {
+                        var operationName = _variableCollection.Operation.Name ?? "~anonymous~";
                         this.Messages.Critical(
                              "The resolved variable value of <null> is not valid for non-nullable variable " +
-                             $"'{resolvedVariable.Name}'",
+                             $"'{resolvedVariable.Name}' on operation '{operationName}'",
                              Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
                              _variableCollection.Operation.SourceLocation.AsOrigin());
+                        continue;
                     }
 
                     result.AddVariable(resolvedVariable);

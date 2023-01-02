@@ -101,5 +101,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public ISchemaItem Parent { get; }
+
+        /// <inheritdoc />
+        public bool IsRequired => !this.HasDefaultValue;
     }
 }

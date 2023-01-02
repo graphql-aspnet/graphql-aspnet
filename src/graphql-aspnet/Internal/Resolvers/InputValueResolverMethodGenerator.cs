@@ -45,16 +45,44 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// <returns>IQueryInputValueResolver.</returns>
         public IInputValueResolver CreateResolver(GraphTypeExpression typeExpression)
         {
+            // used for variable definitions
+            return this.CreateResolver(typeExpression, null);
+        }
+
+        /// <summary>
+        /// Creates the resolver for the given expression. The Typename of the expression must be
+        /// type represented in the schema this generator references or null will be returned.
+        /// </summary>
+        /// <param name="field">The input field from which to create the resolver.</param>
+        /// <returns>IQueryInputValueResolver.</returns>
+        public IInputValueResolver CreateResolver(IInputGraphField field)
+        {
+            return this.CreateResolver(field.TypeExpression, field);
+        }
+
+        /// <summary>
+        /// Creates the resolver for the given expression. The Typename of the expression must be
+        /// type represented in the schema this generator references or null will be returned.
+        /// </summary>
+        /// <param name="argument">The field argument from which to create the resolver.</param>
+        /// <returns>IQueryInputValueResolver.</returns>
+        public IInputValueResolver CreateResolver(IGraphArgument argument)
+        {
+            return this.CreateResolver(argument.TypeExpression, argument);
+        }
+
+        private IInputValueResolver CreateResolver(GraphTypeExpression typeExpression, IDefaultValueSchemaItem defaultValueProvider)
+        {
             Validation.ThrowIfNull(typeExpression, nameof(typeExpression));
 
             var graphType = _schema.KnownTypes.FindGraphType(typeExpression.TypeName);
             if (graphType == null)
                 return null;
 
-            return this.CreateResolver(graphType, typeExpression);
+            return this.CreateResolver(graphType, typeExpression, defaultValueProvider);
         }
 
-        private IInputValueResolver CreateResolver(IGraphType graphType, GraphTypeExpression expression)
+        private IInputValueResolver CreateResolver(IGraphType graphType, GraphTypeExpression expression, IDefaultValueSchemaItem defaultValueProvider)
         {
             // extract the core resolver for the input type being processed
             IInputValueResolver coreResolver = null;
@@ -63,17 +91,17 @@ namespace GraphQL.AspNet.Internal.Resolvers
             {
                 coreType = _schema.KnownTypes.FindConcreteType(scalar);
 
-                coreResolver = new ScalarInputValueResolver(scalar.SourceResolver);
+                coreResolver = new ScalarInputValueResolver(scalar.SourceResolver, defaultValueProvider);
             }
             else if (graphType is IEnumGraphType enumGraphType)
             {
                 coreType = _schema.KnownTypes.FindConcreteType(enumGraphType);
-                coreResolver = new EnumInputValueResolver(enumGraphType.SourceResolver);
+                coreResolver = new EnumInputValueResolver(enumGraphType.SourceResolver, defaultValueProvider);
             }
             else if (graphType is IInputObjectGraphType inputType)
             {
                 coreType = _schema.KnownTypes.FindConcreteType(inputType);
-                coreResolver = this.CreateObjectResolver(inputType, coreType);
+                coreResolver = this.CreateInputObjectResolver(inputType, coreType, defaultValueProvider);
             }
 
             // wrap any list wrappers around core resolver according to the type expression
@@ -81,7 +109,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             {
                 if (expression.Wrappers[i] == MetaGraphTypes.IsList)
                 {
-                    coreResolver = new ListInputValueResolver(coreType, coreResolver);
+                    coreResolver = new ListInputValueResolver(coreType, coreResolver, defaultValueProvider);
                     coreType = typeof(IEnumerable<>).MakeGenericType(coreType);
                 }
             }
@@ -89,9 +117,9 @@ namespace GraphQL.AspNet.Internal.Resolvers
             return coreResolver;
         }
 
-        private IInputValueResolver CreateObjectResolver(IInputObjectGraphType inputType, Type type)
+        private IInputValueResolver CreateInputObjectResolver(IInputObjectGraphType inputType, Type type, IDefaultValueSchemaItem defaultValueProvider)
         {
-            var inputObjectResolver = new InputObjectValueResolver(inputType, type, _schema);
+            var inputObjectResolver = new InputObjectValueResolver(inputType, type, _schema, defaultValueProvider);
 
             foreach (var field in inputType.Fields)
             {
@@ -103,7 +131,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 else
                 {
                     var graphType = _schema.KnownTypes.FindGraphType(field.TypeExpression.TypeName);
-                    childResolver = this.CreateResolver(graphType, field.TypeExpression);
+                    childResolver = this.CreateResolver(graphType, field.TypeExpression, field);
                 }
 
                 inputObjectResolver.AddFieldResolver(field.Name, childResolver);
