@@ -215,13 +215,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         {
             var context = this.CreateExecutionContext();
 
-            var generator = new ExecutionArgumentGenerator(
-                 context.InvocationContext.Arguments,
-                 context.Messages);
-
-            generator.TryConvert(
+            ExecutionArgumentGenerator.TryConvert(
+                context.InvocationContext.Arguments,
                 context.VariableData,
-                out var executionArguments);
+                context.Messages,
+                out var executionArguments
+                );
 
             executionArguments = executionArguments.ForContext(context);
 

@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Execution
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
@@ -23,40 +22,32 @@ namespace GraphQL.AspNet.Execution
     /// An object that can generate an <see cref="IExecutionArgumentCollection"/>
     /// from a set of arguments and variable values.
     /// </summary>
-    public class ExecutionArgumentGenerator
+    public static class ExecutionArgumentGenerator
     {
-        private readonly IInputArgumentCollection _arguments;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExecutionArgumentGenerator" /> class.
+        /// Attempts to resolve a set of input arguments, combined with a set of known variables, into a
+        /// usable collection of values that can be submitted to a resolver.
         /// </summary>
-        /// <param name="argumentCollection">The argument collection defined
-        /// on some query operation that needs to be converted to execution arguments.</param>
-        /// <param name="messages">If provided, the set of messages to be appended
-        /// to with any messages generated via the use of this instance.</param>
-        public ExecutionArgumentGenerator(
-            IInputArgumentCollection argumentCollection,
-            IGraphMessageCollection messages = null)
-        {
-            _arguments = Validation.ThrowIfNullOrReturn(argumentCollection, nameof(argumentCollection));
-            this.Messages = messages ?? new GraphMessageCollection();
-        }
-
-        /// <summary>
-        /// Combines the supplied set of variables with the contained arguments
-        /// to generate a set of arguments that can be used to execute a resolver.
-        /// </summary>
-        /// <param name="variableData">The variable data to process.</param>
+        /// <param name="definedArguments">The defined arguments that need to be resolved.</param>
+        /// <param name="variableData">The variable data to resolve against.</param>
+        /// <param name="messages">The messages collection to fill with messages generated during the operation.</param>
         /// <param name="generatedCollection">When successful, this parameter
         /// will be populated with the generated collection.</param>
         /// <returns>IExecutionArgumentCollection.</returns>
-        public bool TryConvert(IResolvedVariableCollection variableData, out IExecutionArgumentCollection generatedCollection)
+        public static bool TryConvert(
+            IInputArgumentCollection definedArguments,
+            IResolvedVariableCollection variableData,
+            IGraphMessageCollection messages,
+            out IExecutionArgumentCollection generatedCollection)
         {
             generatedCollection = null;
 
+            Validation.ThrowIfNull(definedArguments, nameof(definedArguments));
+            Validation.ThrowIfNull(messages, nameof(messages));
+
             var successful = true;
-            var collection = new ExecutionArgumentCollection(_arguments.Count);
-            foreach (var arg in _arguments)
+            var collection = new ExecutionArgumentCollection(definedArguments.Count);
+            foreach (var arg in definedArguments)
             {
                 try
                 {
@@ -73,7 +64,7 @@ namespace GraphQL.AspNet.Execution
                         // see: https://spec.graphql.org/October2021/#sel-GALbLHNCCBCGIp9O
                         if (resolvedValue == null && argDefinition.TypeExpression.IsNonNullable)
                         {
-                            this.Messages.Critical(
+                            messages.Critical(
                               $"The value supplied to argument '{argDefinition.Name}' was <null> but its expected type expression " +
                               $"is {argDefinition.TypeExpression}.",
                               Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
@@ -98,7 +89,7 @@ namespace GraphQL.AspNet.Execution
                         ? "input field"
                         : "field";
 
-                    this.Messages.Critical(
+                    messages.Critical(
                       $"The value supplied to argument '{arg.Name}' for {parentType} '{arg.Argument.Parent.Name}' was " +
                       $"not valid for the invocation. {uve.Message}",
                       Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
@@ -125,12 +116,5 @@ namespace GraphQL.AspNet.Execution
 
             return successful;
         }
-
-        /// <summary>
-        /// Gets the set of messages generated while trying to convert the
-        /// arguments.
-        /// </summary>
-        /// <value>The messages generated.</value>
-        public IGraphMessageCollection Messages { get; }
     }
 }

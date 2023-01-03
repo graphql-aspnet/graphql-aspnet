@@ -32,11 +32,13 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
             // build a collection of invokable parameters from the supplied context
             if (context.IsValid && !context.IsCancelled)
             {
-                var generator = new ExecutionArgumentGenerator(
-                     context.Request.InvocationContext.Arguments,
-                     context.Messages);
+                var isSuccessful = ExecutionArgumentGenerator.TryConvert(
+                    context.Request.InvocationContext.Arguments,
+                    context.VariableData,
+                    context.Messages,
+                    out var executionArguments);
 
-                if (!generator.TryConvert(context.VariableData, out var executionArguments))
+                if (!isSuccessful)
                 {
                     context.Cancel();
                 }

@@ -95,11 +95,13 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         {
             // Step 1: Build a collection of arguments from the supplied context that will
             //         be supplied to the resolver
-            var generator = new ExecutionArgumentGenerator(
+            var isSuccessful = ExecutionArgumentGenerator.TryConvert(
                 context.InvocationContext.Arguments,
-                context.Messages);
+                context.VariableData,
+                context.Messages,
+                out var executionArguments);
 
-            if (!generator.TryConvert(context.VariableData, out var executionArguments))
+            if (!isSuccessful)
             {
                 context.Cancel();
                 return false;

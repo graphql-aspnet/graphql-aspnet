@@ -1078,6 +1078,67 @@ namespace GraphQL.AspNet.Tests.Execution
             CommonAssertions.AreEqualJsonStrings(expectedJson, result);
         }
 
+
+        [Test]
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_DefaultValueOfVariableIsUsed_CausesErrorWhenDefaultIsInvalid()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = 11.23){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of the
+            // variable should take effect since it was defined
+            queryContext.AddVariableData(@"{ }");
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsIsSupplied_ButHasInvalidDefaultValue_DefaultValueIsIgnored()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = 11.23){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of the
+            // variable should take effect since it was defined
+            queryContext.AddVariableData(@"{ ""arg1"": 31 }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithIntWithDefaultValue"" : {
+                        ""property1"" : ""31"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
         [Test]
         public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_ArgumentDefaultValueIsUsed()
         {

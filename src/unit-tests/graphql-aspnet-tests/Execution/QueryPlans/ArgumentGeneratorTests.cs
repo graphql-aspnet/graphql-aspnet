@@ -38,14 +38,14 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var queryInputCollection = document.Operations["TestQuery"]
                 .FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
-            var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
+            var argGenerator = new ArgumentGenerator(server.Schema);
 
             var schemaType = server.Schema.KnownTypes.FindGraphType("Query_Input");
             var graphFieldArguments = (schemaType as IGraphFieldContainer).Fields["fetchString"].Arguments;
 
             var arg1 = graphFieldArguments["arg1"];
 
-            var result = argGenerator.CreateInputArgument(arg1);
+            var result = argGenerator.CreateInputArgument(queryInputCollection,arg1);
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
@@ -69,13 +69,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
-            var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
+            var argGenerator = new ArgumentGenerator(server.Schema);
 
             var schemaType = server.Schema.KnownTypes.FindGraphType("Query_Input");
             var graphFieldArguments = (schemaType as IGraphFieldContainer).Fields["fetchString"].Arguments;
             var arg2 = graphFieldArguments["arg2"];
 
-            var result = argGenerator.CreateInputArgument(arg2);
+            var result = argGenerator.CreateInputArgument(queryInputCollection, arg2);
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
@@ -102,13 +102,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
-            var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
+            var argGenerator = new ArgumentGenerator(server.Schema);
 
             var schemaType = server.Schema.KnownTypes.FindGraphType("Query_Input");
             var graphFieldArguments = (schemaType as IGraphFieldContainer).Fields["fetchString"].Arguments;
             var arg1 = graphFieldArguments["arg1"];
 
-            var result = argGenerator.CreateInputArgument(arg1);
+            var result = argGenerator.CreateInputArgument(queryInputCollection, arg1);
 
             Assert.IsNotNull(result);
             Assert.IsFalse((bool)result.IsValid);
@@ -133,13 +133,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
-            var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
+            var argGenerator = new ArgumentGenerator(server.Schema);
 
             var schemaType = server.Schema.KnownTypes.FindGraphType("Query_Input");
             var graphFieldArguments = (schemaType as IGraphFieldContainer).Fields["fetchArrayTotal"].Arguments;
             var arg3 = graphFieldArguments["arg3"];
 
-            var result = argGenerator.CreateInputArgument(arg3);
+            var result = argGenerator.CreateInputArgument(queryInputCollection, arg3);
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
@@ -168,13 +168,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
-            var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
+            var argGenerator = new ArgumentGenerator(server.Schema);
 
             var schemaType = server.Schema.KnownTypes.FindGraphType("Query_Input");
             var graphFieldArguments = (schemaType as IGraphFieldContainer).Fields["fetchArrayTotal"].Arguments;
             var arg3 = graphFieldArguments["arg3"];
 
-            var result = argGenerator.CreateInputArgument(arg3);
+            var result = argGenerator.CreateInputArgument(queryInputCollection, arg3);
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
@@ -206,13 +206,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
-            var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
+            var argGenerator = new ArgumentGenerator(server.Schema);
 
             var schemaType = server.Schema.KnownTypes.FindGraphType("Query_Input");
             var graphFieldArguments = (schemaType as IGraphFieldContainer).Fields["fetchComplexValue"].Arguments;
             var arg3 = graphFieldArguments["arg4"];
 
-            var result = argGenerator.CreateInputArgument(arg3);
+            var result = argGenerator.CreateInputArgument(queryInputCollection, arg3);
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
@@ -250,13 +250,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var queryInputCollection = document.Operations["TestQuery"]
                 .FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
-            var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
+            var argGenerator = new ArgumentGenerator(server.Schema);
 
             var schemaType = server.Schema.KnownTypes.FindGraphType("Query_Input");
             var graphFieldArguments = (schemaType as IGraphFieldContainer).Fields["fetchComplexValue"].Arguments;
             var arg3 = graphFieldArguments["arg4"];
 
-            var result = argGenerator.CreateInputArgument(arg3);
+            var result = argGenerator.CreateInputArgument(queryInputCollection, arg3);
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
