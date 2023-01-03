@@ -171,31 +171,45 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var generator = new InputValueResolverMethodGenerator(this.CreateSchema());
 
-            var text = ReadOnlySpan<char>.Empty;
+            ISuppliedValueDocumentPart inputValue;
+
             if (inputText != null)
-                text = inputText.AsSpan();
-
-            var tree = SyntaxTree.WithDocumentRoot();
-            var rootNode = tree.RootNode;
-            var source = new SourceText(text);
-            var tokenStream = Lexer.Tokenize(source);
-
-            tokenStream.Prime();
-            SyntaxNode testNode = SyntaxNode.None;
-            if (!tokenStream.EndOfStream)
             {
-                var builder = ValueNodeBuilderFactory.CreateBuilder(tokenStream);
-                if (builder != null)
-                {
-                    builder.BuildNode(ref tree, ref rootNode, ref tokenStream);
-                    testNode = tree.NodePool[rootNode.Coordinates.ChildBlockIndex][rootNode.Coordinates.ChildBlockLength - 1];
-                }
-            }
+                // simulate having read a supplied input value
+                // from a token stream (this is the value normally passed to the resolver)
+                var text = inputText.AsSpan();
 
-            var inputValue = DocumentSuppliedValueFactory.CreateInputValue(
-                source,
-                owner.Object,
-                testNode);
+                var tree = SyntaxTree.WithDocumentRoot();
+                var rootNode = tree.RootNode;
+                var source = new SourceText(text);
+                var tokenStream = Lexer.Tokenize(source);
+
+                tokenStream.Prime();
+                SyntaxNode testNode = SyntaxNode.None;
+                if (!tokenStream.EndOfStream)
+                {
+                    var builder = ValueNodeBuilderFactory.CreateBuilder(tokenStream);
+                    if (builder != null)
+                    {
+                        builder.BuildNode(ref tree, ref rootNode, ref tokenStream);
+                        testNode = tree.NodePool[rootNode.Coordinates.ChildBlockIndex][rootNode.Coordinates.ChildBlockLength - 1];
+                    }
+                }
+
+                inputValue = DocumentSuppliedValueFactory.CreateInputValue(
+                    source,
+                    owner.Object,
+                    testNode);
+            }
+            else
+            {
+                // imitate the lexer parsing a null value as a valid input
+                // rather than trying to lex the value
+                var parent = new Mock<IDocumentPart>();
+                inputValue = new DocumentNullSuppliedValue(
+                    parent.Object,
+                    new SourceLocation(1, 1, 1));
+            }
 
             var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
             var resolver = generator.CreateResolver(typeExpression);
@@ -357,7 +371,7 @@ namespace GraphQL.AspNet.Tests.Internal
         }
 
         [Test]
-        public void InputObjectValueResolver_ReturnsNull_WhenPassedNull()
+        public void InputObjectValueResolver_ThrowsException_WhenPassedNull()
         {
             var schema = this.CreateSchema();
 
@@ -365,9 +379,11 @@ namespace GraphQL.AspNet.Tests.Internal
             var generator = new InputValueResolverMethodGenerator(schema);
 
             var resolver = generator.CreateResolver(typeExpression);
-            var result = resolver.Resolve(null);
 
-            Assert.IsNull(result);
+            Assert.Throws<GraphExecutionException>(() =>
+            {
+                resolver.Resolve(null);
+            });
         }
 
         [Test]

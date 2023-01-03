@@ -214,11 +214,16 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         public FieldResolutionContext CreateResolutionContext()
         {
             var context = this.CreateExecutionContext();
-            var executionArguments = context
-                .InvocationContext
-                .Arguments
-                .Merge(context.VariableData)
-                .ForContext(context);
+
+            var generator = new ExecutionArgumentGenerator(
+                 context.InvocationContext.Arguments,
+                 context.Messages);
+
+            generator.TryConvert(
+                context.VariableData,
+                out var executionArguments);
+
+            executionArguments = executionArguments.ForContext(context);
 
             return new FieldResolutionContext(
                 _schema,

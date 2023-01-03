@@ -101,9 +101,6 @@ namespace GraphQL.AspNet.Tests.Directives
             if (_reason != "do-not-add")
                 executionArgs.Add(new ExecutionArgument(_directive.Arguments[0], _reason));
 
-            _argCollection.Setup(x => x.Merge(It.IsAny<IResolvedVariableCollection>()))
-                .Returns(executionArgs);
-
             _queryRequest = new QueryExecutionRequest(GraphQueryData.Empty);
 
             _invocationContext = new DirectiveInvocationContext(

@@ -8,6 +8,8 @@
 // *************************************************************
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
+    using System.Runtime.CompilerServices;
+
     /// <summary>
     /// Extension helper methods for <see cref="GraphArgumentModifiers"/>.
     /// </summary>
@@ -42,6 +44,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public static bool IsCancellationToken(this GraphArgumentModifiers modifiers)
         {
             return modifiers.HasFlag(GraphArgumentModifiers.CancellationToken);
+        }
+
+        /// <summary>
+        /// Determines whether the modifiers indicate that the argument is, for one reason or another,
+        /// not part of the externally exposed schema. This method cannot determine
+        /// what special type of argument is represented, only that it is special.
+        /// </summary>
+        /// <param name="modifiers">The modifiers to check.</param>
+        /// <returns><c>true</c> if the modifiers indicate the argument is not part of the schema; otherwise, <c>false</c>.</returns>
+        public static bool IsNotPartOfTheSchema(this GraphArgumentModifiers modifiers)
+        {
+            return modifiers != GraphArgumentModifiers.None;
         }
     }
 }

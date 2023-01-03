@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Resolvers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An object capable of taking a <see cref="DocumentSuppliedValue"/> from a document and converting it into a
@@ -50,12 +51,16 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         {
             Validation.ThrowIfNull(argument, nameof(argument));
 
-            if (!_suppliedArguments.ContainsKey(argument.Name) && argument.HasDefaultValue)
+            if (!_suppliedArguments.ContainsKey(argument.Name))
             {
-                return new ArgumentGenerationResult(
-                    new ResolvedInputArgumentValue(
-                        argument.Name,
-                        argument.DefaultValue));
+                if (argument.HasDefaultValue
+                    || argument.ArgumentModifiers.IsNotPartOfTheSchema())
+                {
+                    return new ArgumentGenerationResult(
+                        new ResolvedInputArgumentValue(
+                            argument.Name,
+                            argument.DefaultValue));
+                }
             }
 
             var coreValue = _suppliedArguments[argument.Name].Value;

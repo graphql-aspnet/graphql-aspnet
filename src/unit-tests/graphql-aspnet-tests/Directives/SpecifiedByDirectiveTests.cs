@@ -94,9 +94,6 @@ namespace GraphQL.AspNet.Tests.Directives
             var executionArgs = new ExecutionArgumentCollection();
             executionArgs.Add(new ExecutionArgument(_directive.Arguments[0], _url));
 
-            _argCollection.Setup(x => x.Merge(It.IsAny<IResolvedVariableCollection>()))
-                .Returns(executionArgs);
-
             _queryRequest = new QueryExecutionRequest(GraphQueryData.Empty);
 
             _invocationContext = new DirectiveInvocationContext(

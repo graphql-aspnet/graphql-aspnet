@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Execution.Variables
 
     /// <summary>
     /// An object that attempts to convert the untyped keyvalue pairs (usually pulled from a json doc)
-    /// into context-sensitive variables for a specific operation in a query document.
+    /// into context-sensitive variable values for a specific operation in a query document.
     /// </summary>
     public class ResolvedVariableGenerator
     {
@@ -75,7 +75,6 @@ namespace GraphQL.AspNet.Execution.Variables
 
             foreach (var variable in _variableCollection)
             {
-
                 try
                 {
                     var resolver = resolverGenerator.CreateResolver(variable.TypeExpression);

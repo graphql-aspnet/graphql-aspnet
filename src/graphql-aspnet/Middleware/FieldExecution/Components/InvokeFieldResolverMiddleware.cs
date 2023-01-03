@@ -94,12 +94,18 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         private async Task<bool> ExecuteContextAsync(GraphFieldExecutionContext context, CancellationToken cancelToken = default)
         {
             // Step 1: Build a collection of arguments from the supplied context that will
-            //         be supplied to teh resolver
-            var executionArguments = context
-                .InvocationContext
-                .Arguments
-                .Merge(context.VariableData)
-                .ForContext(context);
+            //         be supplied to the resolver
+            var generator = new ExecutionArgumentGenerator(
+                context.InvocationContext.Arguments,
+                context.Messages);
+
+            if (!generator.TryConvert(context.VariableData, out var executionArguments))
+            {
+                context.Cancel();
+                return false;
+            }
+
+            executionArguments = executionArguments.ForContext(context);
 
             var resolutionContext = new FieldResolutionContext(
                 _schema,

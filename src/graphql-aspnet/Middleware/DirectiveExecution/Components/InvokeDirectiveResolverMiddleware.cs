@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -31,30 +32,35 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
             // build a collection of invokable parameters from the supplied context
             if (context.IsValid && !context.IsCancelled)
             {
-                var executionArgs = context
-                    .Request
-                    .InvocationContext
-                    .Arguments
-                    .Merge(context.VariableData);
+                var generator = new ExecutionArgumentGenerator(
+                     context.Request.InvocationContext.Arguments,
+                     context.Messages);
 
-                var resolutionContext = new DirectiveResolutionContext(
-                    context.Schema,
-                    context,
-                    context.Request,
-                    executionArgs,
-                    context.User);
-
-                // execute the directive
-                await context
-                    .Directive
-                    .Resolver
-                    .ResolveAsync(resolutionContext, cancelToken)
-                    .ConfigureAwait(false);
-
-                context.Messages.AddRange(resolutionContext.Messages);
-
-                if (resolutionContext.IsCancelled)
+                if (!generator.TryConvert(context.VariableData, out var executionArguments))
+                {
                     context.Cancel();
+                }
+                else
+                {
+                    var resolutionContext = new DirectiveResolutionContext(
+                        context.Schema,
+                        context,
+                        context.Request,
+                        executionArguments,
+                        context.User);
+
+                    // execute the directive
+                    await context
+                        .Directive
+                        .Resolver
+                        .ResolveAsync(resolutionContext, cancelToken)
+                        .ConfigureAwait(false);
+
+                    context.Messages.AddRange(resolutionContext.Messages);
+
+                    if (resolutionContext.IsCancelled)
+                        context.Cancel();
+                }
             }
 
             await next.Invoke(context, cancelToken);
