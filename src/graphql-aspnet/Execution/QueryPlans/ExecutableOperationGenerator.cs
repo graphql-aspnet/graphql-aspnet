@@ -197,7 +197,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
             {
                 var argResult = argGenerator.CreateInputArgument(argument);
                 if (argResult.IsValid)
-                    collection.Add(new InputArgument(argument, argResult.Argument));
+                    collection.Add(argResult.Argument);
                 else
                     _messages.Add(argResult.Message);
             }

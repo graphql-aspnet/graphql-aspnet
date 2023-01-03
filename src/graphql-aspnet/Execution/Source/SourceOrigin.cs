@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Execution.Source
     /// <summary>
     /// A complete represention (location and path) of a place within a query's source text.
     /// </summary>
+    [Serializable]
     public readonly struct SourceOrigin
     {
         /// <summary>

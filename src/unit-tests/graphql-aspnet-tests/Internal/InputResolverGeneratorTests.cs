@@ -421,7 +421,7 @@ namespace GraphQL.AspNet.Tests.Internal
         }
 
         [Test]
-        public void InputObjectValueResolver_WhenNullPasssedToNonNullableAndRequiredField_ExecutionExceptionisThrown()
+        public void InputObjectValueResolver_WhenNullPasssedToNonNullableAndRequiredField_UnresolvedValueExceptionThrown()
         {
             var schema = this.CreateSchema();
             var obj = schema.KnownTypes.FindGraphType("Input_Telephone") as IInputObjectGraphType;
@@ -450,7 +450,7 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var resolver = generator.CreateResolver(typeExpression);
 
-            Assert.Throws<GraphExecutionException>(() =>
+            Assert.Throws<UnresolvedValueException>(() =>
             {
                 var result = resolver.Resolve(complexObject);
             });

@@ -10,9 +10,12 @@
 namespace GraphQL.AspNet.Execution
 {
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An object that can generate an <see cref="IExecutionArgumentCollection"/>
@@ -34,24 +37,76 @@ namespace GraphQL.AspNet.Execution
             IGraphMessageCollection messages = null)
         {
             _arguments = Validation.ThrowIfNullOrReturn(argumentCollection, nameof(argumentCollection));
-            messages = messages ?? new GraphMessageCollection();
+            this.Messages = messages ?? new GraphMessageCollection();
         }
 
         /// <summary>
-        /// Converts the
+        /// Combines the supplied set of variables with the contained arguments
+        /// to generate a set of arguments that can be used to execute a resolver.
         /// </summary>
-        /// <param name="variableData">The variable data.</param>
+        /// <param name="variableData">The variable data to process.</param>
+        /// <param name="generatedCollection">When successful, this parameter
+        /// will be populated with the generated collection.</param>
         /// <returns>IExecutionArgumentCollection.</returns>
         public bool TryConvert(IResolvedVariableCollection variableData, out IExecutionArgumentCollection generatedCollection)
         {
-            generatedCollection = new ExecutionArgumentCollection(_arguments.Count);
+            generatedCollection = null;
+
+            var successful = true;
+            var collection = new ExecutionArgumentCollection(_arguments.Count);
             foreach (var arg in _arguments)
             {
-                var resolvedValue = arg.Value.Resolve(variableData);
-                generatedCollection.Add(new ExecutionArgument(arg.Argument, resolvedValue));
+                try
+                {
+                    var argDefinition = arg.Argument;
+                    var resolvedValue = arg.Value.Resolve(variableData);
+
+                    // no schema arguments are internally controlled
+                    // the resolved value is the value we want
+                    if (argDefinition.ArgumentModifiers.IsPartOfTheSchema())
+                    {
+                        // its possible for a non-nullable variable to receive a
+                        // null value due to a variable supplying null
+                        // trap it and fail out the execution if so
+                        // see: https://spec.graphql.org/October2021/#sel-GALbLHNCCBCGIp9O
+                        if (resolvedValue == null && argDefinition.TypeExpression.IsNonNullable)
+                        {
+                            this.Messages.Critical(
+                              $"The value supplied to argument '{argDefinition.Name}' was <null> but its expected type expression " +
+                              $"is {argDefinition.TypeExpression}.",
+                              Constants.ErrorCodes.INVALID_ARGUMENT,
+                              arg.Origin);
+
+                            continue;
+                        }
+                    }
+
+                    collection.Add(new ExecutionArgument(arg.Argument, resolvedValue));
+                }
+                catch (UnresolvedValueException uve)
+                {
+                    // This may catch if there is a scenario where an input object
+                    // has its fields constructed from nullable variables that
+                    // are explicitly supplied a null value
+                    var parentType = arg.Argument.Parent is IInputGraphField
+                        ? "input field"
+                        : "field";
+
+                    this.Messages.Critical(
+                      $"The value supplied to argument '{arg.Name}' for {parentType} '{arg.Argument.Parent.Name}' was " +
+                      $"not valid for the invocation. {uve.Message}",
+                      Constants.ErrorCodes.INVALID_ARGUMENT,
+                      arg.Origin,
+                      uve);
+
+                    successful = false;
+                }
             }
 
-            return true;
+            if (successful)
+                generatedCollection = collection;
+
+            return successful;
         }
 
         /// <summary>

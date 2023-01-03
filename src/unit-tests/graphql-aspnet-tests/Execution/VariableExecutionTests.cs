@@ -501,8 +501,8 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var queryContext = server.CreateQueryContextBuilder();
             queryContext.AddQueryText(
-                @"mutation ($arg1: Guid){
-                    createWithModelGuidNullId(param: {id: $arg1})  {
+                @"mutation ($arg1: Input_ModelWithGuid){
+                    createWithModelGuidNullId(param: $arg1)  {
                        property1
                         property2
                     }
@@ -1041,7 +1041,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.ExecuteQuery(queryContext);
             Assert.IsTrue(result.Messages.Severity.IsCritical());
             Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT, result.Messages[0].Code);
         }
 
         [Test]
@@ -1135,7 +1135,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.ExecuteQuery(queryContext);
             Assert.IsTrue(result.Messages.Severity.IsCritical());
             Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT, result.Messages[0].Code);
         }
 
         [Test]

@@ -24,7 +24,6 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
     {
         private async Task<ResolvedVariableGenerator> CreateGenerator(string queryText)
         {
-
             var server = new TestServerBuilder()
                 .AddType<VariableTestController>()
                 .Build();

@@ -49,10 +49,10 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
-            Assert.IsNotNull(result.Argument as ResolvedInputArgumentValue);
+            Assert.IsNotNull(result.Argument.Value as ResolvedInputArgumentValue);
 
             Assert.IsNull(result.Message);
-            var data = result.Argument.Resolve(ResolvedVariableCollection.Empty);
+            var data = result.Argument.Value.Resolve(ResolvedVariableCollection.Empty);
             Assert.AreEqual(5, data);
         }
 
@@ -79,11 +79,11 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
-            Assert.IsNotNull(result.Argument as ResolvedInputArgumentValue);
+            Assert.IsNotNull(result.Argument.Value as ResolvedInputArgumentValue);
             Assert.IsNull(result.Message);
 
             // default value on the parameter
-            var data = result.Argument.Resolve(ResolvedVariableCollection.Empty);
+            var data = result.Argument.Value.Resolve(ResolvedVariableCollection.Empty);
             Assert.AreEqual(15, data);
         }
 
@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             Assert.IsNotNull(result);
             Assert.IsFalse((bool)result.IsValid);
-            Assert.IsNull(result.Argument as ResolvedInputArgumentValue);
+            Assert.IsNull(result.Argument?.Value as ResolvedInputArgumentValue);
 
             Assert.IsNotNull(result.Message);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT, result.Message.Code);
@@ -143,10 +143,10 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
-            Assert.IsNotNull(result.Argument as ResolvedInputArgumentValue);
+            Assert.IsNotNull(result.Argument.Value as ResolvedInputArgumentValue);
             Assert.IsNull(result.Message);
 
-            var data = result.Argument.Resolve(ResolvedVariableCollection.Empty) as IEnumerable<int>;
+            var data = result.Argument.Value.Resolve(ResolvedVariableCollection.Empty) as IEnumerable<int>;
             Assert.IsNotNull(data);
 
             var expected = new List<int> { 1, 2, 3 };
@@ -178,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
-            Assert.IsNotNull(result.Argument as DeferredInputArgumentValue);
+            Assert.IsNotNull(result.Argument.Value as DeferredInputArgumentValue);
             Assert.IsNull(result.Message);
         }
 
@@ -216,10 +216,10 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
-            Assert.IsNotNull(result.Argument as ResolvedInputArgumentValue);
+            Assert.IsNotNull(result.Argument.Value as ResolvedInputArgumentValue);
             Assert.IsNull(result.Message);
 
-            var data = result.Argument.Resolve(ResolvedVariableCollection.Empty) as TwoPropertyObject;
+            var data = result.Argument.Value.Resolve(ResolvedVariableCollection.Empty) as TwoPropertyObject;
             Assert.IsNotNull(data);
             Assert.AreEqual("bob", data.Property1);
             Assert.AreEqual(10, data.Property2);
@@ -260,7 +260,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);
-            Assert.IsNotNull(result.Argument as DeferredInputArgumentValue);
+            Assert.IsNotNull(result.Argument.Value as DeferredInputArgumentValue);
             Assert.IsNull(result.Message);
         }
     }

@@ -222,7 +222,7 @@ namespace GraphQL.AspNet.Execution
                 var resolvedValue = arguments[i];
 
                 var argValue = new ResolvedInputArgumentValue(directiveArg.Name, resolvedValue);
-                var inputArg = new InputArgument(directiveArg, argValue);
+                var inputArg = new InputArgument(directiveArg, argValue, SourceOrigin.None);
                 argCollection.Add(inputArg);
             }
 

@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 return _enumResolver.Resolve(value.AsSpan());
             }
 
-            throw this.CreateUnresolvableValueException(resolvableItem);
+            throw new UnresolvedValueException("Unresolvable enum data value.");
         }
     }
 }

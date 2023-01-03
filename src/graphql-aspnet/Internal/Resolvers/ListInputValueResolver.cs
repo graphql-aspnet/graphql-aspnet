@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
@@ -60,7 +61,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 return listInstance;
             }
 
-            throw this.CreateUnresolvableValueException(resolvableItem);
+            throw new UnresolvedValueException("Invalid or unresolvable list data value.");
         }
     }
 }

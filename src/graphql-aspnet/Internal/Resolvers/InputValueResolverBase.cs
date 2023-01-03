@@ -78,20 +78,5 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
             return false;
         }
-
-        /// <summary>
-        /// Creates a new exception indicating that the given resolvable item was not resolvable
-        /// via this instance.
-        /// </summary>
-        /// <param name="resolvableItem">The resolvable item that was unsuccessful.</param>
-        /// <returns>Exception.</returns>
-        protected virtual Exception CreateUnresolvableValueException(IResolvableValueItem resolvableItem)
-        {
-            var origin = SourceOrigin.None;
-            if (resolvableItem is IDocumentPart dp)
-                origin = dp.Origin;
-
-            return new GraphExecutionException("Unable to resolve the supplied resolvable enum value to an acceptable value", origin);
-        }
     }
 }

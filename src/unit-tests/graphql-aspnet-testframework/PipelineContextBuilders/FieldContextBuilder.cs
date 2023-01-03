@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         {
             var resolvedInputValue = new ResolvedInputArgumentValue(argumentName, value);
             var fieldArgument = _graphField.Arguments[argumentName];
-            var inputArgument = new InputArgument(fieldArgument, resolvedInputValue);
+            var inputArgument = new InputArgument(fieldArgument, resolvedInputValue, SourceOrigin.None);
             _arguments.Add(inputArgument);
             return this;
         }

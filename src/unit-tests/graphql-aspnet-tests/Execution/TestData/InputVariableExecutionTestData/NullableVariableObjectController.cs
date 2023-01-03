@@ -121,7 +121,6 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
             };
         }
 
-
         [MutationRoot]
         public TwoPropertyObject CreateWithIntWithDefaultValue(int param = 33)
         {

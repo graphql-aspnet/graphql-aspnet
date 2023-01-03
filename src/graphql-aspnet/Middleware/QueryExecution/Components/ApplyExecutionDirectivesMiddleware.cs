@@ -269,7 +269,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 var directiveArg = targetDirective.Arguments[i];
                 var argResult = argGenerator.CreateInputArgument(directiveArg);
                 if (argResult.IsValid)
-                    collection.Add(new InputArgument(directiveArg, argResult.Argument));
+                    collection.Add(argResult.Argument);
                 else
                     queryContext.Messages.Add(argResult.Message);
             }

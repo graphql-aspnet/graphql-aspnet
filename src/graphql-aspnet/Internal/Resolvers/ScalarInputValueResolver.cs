@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             if (resolvableItem is IResolvableValue resolvableValue)
                 return _scalarResolver.Resolve(resolvableValue.ResolvableValue);
 
-            throw this.CreateUnresolvableValueException(resolvableItem);
+            throw new UnresolvedValueException("Unresolvable scalar data value.");
         }
     }
 }

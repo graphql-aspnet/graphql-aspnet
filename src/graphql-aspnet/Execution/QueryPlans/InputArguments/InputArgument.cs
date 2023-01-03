@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Schema;
 
@@ -23,16 +24,27 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     [Serializable]
     [DebuggerDisplay("{Name}")]
     public class InputArgument
-    {
+    { /// <summary>
+      /// Initializes a new instance of the <see cref="InputArgument" /> class.
+      /// </summary>
+      /// <param name="argument">The field argument defined in a schema.</param>
+      /// <param name="value">The value representing this field argument as its defined in a query document.</param>
+        public InputArgument(IGraphArgument argument, IInputValue value)
+            : this(argument, value, SourceOrigin.None)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="InputArgument" /> class.
         /// </summary>
         /// <param name="argument">The field argument defined in a schema.</param>
         /// <param name="value">The value representing this field argument as its defined in a query document.</param>
-        public InputArgument(IGraphArgument argument, IInputValue value)
+        /// <param name="origin">The origin in a query document where the argument was generated.</param>
+        public InputArgument(IGraphArgument argument, IInputValue value, SourceOrigin origin)
         {
             this.Argument = Validation.ThrowIfNullOrReturn(argument, nameof(argument));
             this.Value = Validation.ThrowIfNullOrReturn(value, nameof(value));
+            this.Origin = origin;
         }
 
         /// <summary>
@@ -50,10 +62,17 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         public IInputValue Value { get; }
 
         /// <summary>
-        /// Gets or sets the underlying field that represents
+        /// Gets the underlying field that represents
         /// this argument on the target schema.
         /// </summary>
         /// <value>The argument.</value>
-        public IGraphArgument Argument { get; set; }
+        public IGraphArgument Argument { get; }
+
+        /// <summary>
+        /// Gets the origin in a query document, if any, where this argument was
+        /// created.
+        /// </summary>
+        /// <value>The origin location in a query document.</value>
+        public SourceOrigin Origin { get; }
     }
 }

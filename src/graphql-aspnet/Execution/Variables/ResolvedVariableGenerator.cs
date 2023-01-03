@@ -96,8 +96,8 @@ namespace GraphQL.AspNet.Execution.Variables
 
                         continue;
                     }
-                    resolvableItem = found ? suppliedValue : variable.DefaultValue;
 
+                    resolvableItem = found ? suppliedValue : variable.DefaultValue;
 
                     object resolvedValue = resolver.Resolve(resolvableItem);
 
@@ -120,8 +120,12 @@ namespace GraphQL.AspNet.Execution.Variables
                 }
                 catch (UnresolvedValueException svce)
                 {
+                    var messsage =
+                        $"The value for variable '{variable.Name}' was not resolvable " +
+                        $"to the expected type expression of '{variable.TypeExpression}'. Details: {svce.Message}";
+
                     this.Messages.Critical(
-                       svce.Message,
+                       messsage,
                        Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
                        _variableCollection.Operation.SourceLocation.AsOrigin(),
                        exceptionThrown: svce.InnerException);

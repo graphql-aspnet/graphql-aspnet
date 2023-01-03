@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Resolvers;
@@ -57,25 +58,36 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
                     || argument.ArgumentModifiers.IsNotPartOfTheSchema())
                 {
                     return new ArgumentGenerationResult(
-                        new ResolvedInputArgumentValue(
-                            argument.Name,
-                            argument.DefaultValue));
+                        new InputArgument(
+                            argument,
+                            new ResolvedInputArgumentValue(
+                                argument.Name,
+                                argument.DefaultValue),
+                            SourceOrigin.None));
                 }
             }
 
-            var coreValue = _suppliedArguments[argument.Name].Value;
+            var suppliedArgument = _suppliedArguments[argument.Name];
+            var coreValue = suppliedArgument.Value;
             var resolver = _inputResolverGenerator.CreateResolver(argument);
 
             if (this.ShouldDeferResolution(coreValue))
             {
                 return new ArgumentGenerationResult(
-                    new DeferredInputArgumentValue(coreValue, resolver));
+                    new InputArgument(
+                        argument,
+                        new DeferredInputArgumentValue(coreValue, resolver),
+                        suppliedArgument.Origin));
             }
 
             try
             {
                 var data = resolver.Resolve(coreValue);
-                return new ArgumentGenerationResult(new ResolvedInputArgumentValue(argument.Name, data));
+                return new ArgumentGenerationResult(
+                    new InputArgument(
+                        argument,
+                        new ResolvedInputArgumentValue(argument.Name, data),
+                        suppliedArgument.Origin));
             }
             catch (UnresolvedValueException svce)
             {
@@ -83,7 +95,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
                    GraphMessageSeverity.Critical,
                    svce.Message,
                    Constants.ErrorCodes.INVALID_ARGUMENT,
-                   coreValue.Parent.SourceLocation.AsOrigin(),
+                   suppliedArgument.Origin,
                    exception: svce.InnerException);
 
                 return new ArgumentGenerationResult(message);
@@ -94,7 +106,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
                     GraphMessageSeverity.Critical,
                     "Invalid argument value. See exception for details.",
                     Constants.ErrorCodes.INVALID_ARGUMENT,
-                    coreValue.Parent.SourceLocation.AsOrigin(),
+                    suppliedArgument.Origin,
                     ex);
 
                 return new ArgumentGenerationResult(message);

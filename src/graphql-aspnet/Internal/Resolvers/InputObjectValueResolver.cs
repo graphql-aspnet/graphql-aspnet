@@ -118,27 +118,12 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 }
                 else if (actualField.TypeExpression.IsNonNullable)
                 {
-                    // if the field is not required (meaning it has a default value)
-                    // the dfault value is already set by the instantiation of the
-                    // input object, no set action is actually required
-                    //
-                    // we just need to validate that hte field does indeed
-                    // have a default value (isRequired == false)
-                    if (actualField.IsRequired)
-                    {
-                        // the document validation rules
-                        // should prevent this scenario from ever happening
-                        // but trap it just in case to give a helpful exception
-                        SourceOrigin origin = default;
-                        if (resolvableItem is IDocumentPart docPart)
-                            origin = docPart.Origin;
-
-                        throw new GraphExecutionException(
-                            $"Unable to resolve type '{_graphType.Name}'. Field " +
-                            $"'{actualField.Name}' received a null value but is non-nullable " +
-                            $"and has no default value.",
-                            origin);
-                    }
+                    // a non-nullable field may receive a null value if a
+                    // variable supplying the value was explicitly supplied as null
+                    // on the query.
+                    throw new UnresolvedValueException(
+                        $"Unable to resolve type '{_graphType.Name}'. Field " +
+                        $"'{actualField.Name}' received a null value but is non-nullable.");
                 }
             }
 

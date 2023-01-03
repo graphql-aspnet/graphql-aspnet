@@ -55,7 +55,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns><c>true</c> if the modifiers indicate the argument is not part of the schema; otherwise, <c>false</c>.</returns>
         public static bool IsNotPartOfTheSchema(this GraphArgumentModifiers modifiers)
         {
-            return modifiers != GraphArgumentModifiers.None;
+            return !modifiers.IsPartOfTheSchema();
+        }
+
+        /// <summary>
+        /// Determines whether the modifiers indicate that the argument is included in a
+        /// an externally exposed schema.
+        /// </summary>
+        /// <param name="modifiers">The modifiers to check.</param>
+        /// <returns><c>true</c> if the modifiers indicate the argument is part of the schema; otherwise, <c>false</c>.</returns>
+        public static bool IsPartOfTheSchema(this GraphArgumentModifiers modifiers)
+        {
+            return modifiers == GraphArgumentModifiers.None;
         }
     }
 }
