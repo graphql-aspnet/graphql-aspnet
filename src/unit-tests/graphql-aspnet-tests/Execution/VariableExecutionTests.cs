@@ -1041,7 +1041,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.ExecuteQuery(queryContext);
             Assert.IsTrue(result.Messages.Severity.IsCritical());
             Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT, result.Messages[0].Code);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT_VALUE, result.Messages[0].Code);
         }
 
         [Test]
@@ -1135,7 +1135,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.ExecuteQuery(queryContext);
             Assert.IsTrue(result.Messages.Severity.IsCritical());
             Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT, result.Messages[0].Code);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT_VALUE, result.Messages[0].Code);
         }
 
         [Test]
@@ -1154,8 +1154,7 @@ namespace GraphQL.AspNet.Tests.Execution
                     }
                 }");
 
-            // No Variable data is supplied for $arg1 meaning the default value of param
-            // should take effect
+            // Actual value supplied for arg1...should be used
             queryContext.AddVariableData(@"{ ""arg1"" : 2020 }");
 
             var expectedJson = @"

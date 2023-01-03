@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Execution
                             this.Messages.Critical(
                               $"The value supplied to argument '{argDefinition.Name}' was <null> but its expected type expression " +
                               $"is {argDefinition.TypeExpression}.",
-                              Constants.ErrorCodes.INVALID_ARGUMENT,
+                              Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
                               arg.Origin);
 
                             continue;
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Execution
                     this.Messages.Critical(
                       $"The value supplied to argument '{arg.Name}' for {parentType} '{arg.Argument.Parent.Name}' was " +
                       $"not valid for the invocation. {uve.Message}",
-                      Constants.ErrorCodes.INVALID_ARGUMENT,
+                      Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
                       arg.Origin,
                       uve);
 

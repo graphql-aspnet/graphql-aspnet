@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
                 var message = new GraphExecutionMessage(
                    GraphMessageSeverity.Critical,
                    svce.Message,
-                   Constants.ErrorCodes.INVALID_ARGUMENT,
+                   Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
                    suppliedArgument.Origin,
                    exception: svce.InnerException);
 
@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
                 var message = new GraphExecutionMessage(
                     GraphMessageSeverity.Critical,
                     "Invalid argument value. See exception for details.",
-                    Constants.ErrorCodes.INVALID_ARGUMENT,
+                    Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
                     suppliedArgument.Origin,
                     ex);
 

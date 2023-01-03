@@ -115,7 +115,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             Assert.IsNull(result.Argument?.Value as ResolvedInputArgumentValue);
 
             Assert.IsNotNull(result.Message);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT, result.Message.Code);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT_VALUE, result.Message.Code);
         }
 
         [Test]
