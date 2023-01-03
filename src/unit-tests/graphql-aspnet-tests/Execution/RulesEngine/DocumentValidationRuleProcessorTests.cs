@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             QueriesToFail.Add(new object[] { ruleNumberToBreak, query });
         }
 
-        private static void AddQuerySuccess(string query)
+        private static void AddQuerySuccess(string relatedRule, string query)
         {
             QueriesToPass.Add(new object[] { query });
         }
@@ -202,6 +202,9 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             AddQueryFailure("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: SOMEENUM) { id name } } }");
             AddQueryFailure("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: true) { id name } } }");
 
+            // passing null for Input_Elevator is successfull
+            AddQuerySuccess("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: null) { id name } } }");
+
             // elevator.id value requires a non-null integer
             AddQueryFailure("5.6.1", "query Operation1{ peopleMovers { elevator(id: null) { id name } } }");
 
@@ -249,6 +252,9 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
 
             // all variable must be used ($var2 is not referenced through fragment)
             AddQueryFailure("5.8.4", "query Operation1($var1: Int!, $var2: String){ peopleMovers { ...frag1 } } fragment frag1 on Query_PeopleMovers { elevator (id: $var1) { id name } } ");
+
+            // all ariables must be used ($var1 IS referenced through fragment)
+            AddQuerySuccess("5.8.4", "query Operation1($var1: Int!){ peopleMovers { ...frag1 } } fragment frag1 on Query_PeopleMovers { elevator (id: $var1) { id name } } ");
 
             // all variable must be valid where used ($var1 is an int as required by elevator:id)
             AddQueryFailure(
@@ -301,18 +307,21 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             // var1 is declared as an Int with 18 default, e.id is declared
             // as Int! with no valid default, 18 is acceptable to e.id
             AddQuerySuccess(
+                "5.8.5",
                 "query Operation1($var1: Int = 18){ peopleMovers { matchElevator (e: {id: $var1 name: \"bob\" }) { id } } }");
 
             // 5.8.5 Positive Test
             // var1 declares a nullable, but required variable (must be supplied); e.id is declred as Int! but DOES declare
             // a default value of 35 whichis acceptable
             AddQuerySuccess(
+                "5.8.5",
                 "query Operation1($var1: Int){ peopleMovers { matchDefaultValueElevator (e: {id: $var1 name: \"bob\" }) { id } } }");
 
             // 5.8.5 Positive Test
             // var1 declares a default value of <null>; e.id is declred as Int! but DOES declare
             // a default value of 35 whichis acceptable
             AddQuerySuccess(
+                "5.8.5",
                 "query Operation1($var1: Int = null){ peopleMovers { matchDefaultValueElevator (e: {id: $var1 name: \"bob\" }) { id } } }");
         }
 

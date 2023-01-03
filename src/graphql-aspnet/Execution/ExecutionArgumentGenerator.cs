@@ -9,8 +9,10 @@
 
 namespace GraphQL.AspNet.Execution
 {
+    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
@@ -88,6 +90,10 @@ namespace GraphQL.AspNet.Execution
                     // This may catch if there is a scenario where an input object
                     // has its fields constructed from nullable variables that
                     // are explicitly supplied a null value
+                    //
+                    // its also highly likely that at this stage there is no value resolver issue
+                    // just a flat out failure. As a result append a semi-helpful message to the begining
+                    // of the message.
                     var parentType = arg.Argument.Parent is IInputGraphField
                         ? "input field"
                         : "field";
@@ -98,6 +104,17 @@ namespace GraphQL.AspNet.Execution
                       Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
                       arg.Origin,
                       uve);
+
+                    successful = false;
+                }
+                catch (Exception ex)
+                {
+                    var message = new GraphExecutionMessage(
+                        GraphMessageSeverity.Critical,
+                        "Invalid argument value. See exception for details.",
+                        Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
+                        arg.Origin,
+                        ex);
 
                     successful = false;
                 }

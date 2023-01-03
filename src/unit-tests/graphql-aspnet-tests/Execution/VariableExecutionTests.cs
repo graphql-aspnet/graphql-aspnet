@@ -1045,7 +1045,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task SingleArgument_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_DefaultValueOfVariableIsUsed()
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_DefaultValueOfVariableIsUsed()
         {
             var builder = new TestServerBuilder();
             builder.AddGraphController<NullableVariableObjectController>();
@@ -1079,7 +1079,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task SingleArgument_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_ArgumentDefaultValueIsUsed()
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_ArgumentDefaultValueIsUsed()
         {
             var builder = new TestServerBuilder();
             builder.AddGraphController<NullableVariableObjectController>();
@@ -1113,7 +1113,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task SingleArgument_WithNotRequiredNonNullableInt_WhenVariableExplicitlySuppliedAsNull_FieldErrorOccurs()
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableExplicitlySuppliedAsNull_FieldErrorOccurs()
         {
             var builder = new TestServerBuilder();
             builder.AddGraphController<NullableVariableObjectController>();
@@ -1139,7 +1139,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task SingleArgument_WithNotRequiredNonNullableInt_WhenVariableIsSupplied_VariableValueIsUsed()
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsSupplied_VariableValueIsUsed()
         {
             var builder = new TestServerBuilder();
             builder.AddGraphController<NullableVariableObjectController>();
@@ -1162,6 +1162,133 @@ namespace GraphQL.AspNet.Tests.Execution
                 ""data"" : {
                     ""createWithIntWithDefaultValue"" : {
                         ""property1"" : ""2020"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleArgumentEnum_WithNotRequiredNonNullableEnum_WhenVariableIsNotSupplied_DefaultValueOfVariableIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: TestEnum = VALUE1){
+                    createWithEnumWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of the
+            // variable should take effect since it was defined
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithEnumWithDefaultValue"" : {
+                        ""property1"" : ""Value1"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleArgumentEnum_WithNotRequiredNonNullableEnum_WhenVariableIsNotSupplied_ArgumentDefaultValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: TestEnum = null){
+                    createWithEnumWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of param
+            // should take effect
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithEnumWithDefaultValue"" : {
+                        ""property1"" : ""Value2"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleArgumentEnum_WithNotRequiredNonNullableEnum_WhenVariableExplicitlySuppliedAsNull_FieldErrorOccurs()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: TestEnum = null){
+                    createWithEnumWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"" : null }");
+
+            // Variable data is EXPLICITLY supplied as null, meaning the default value of param
+            // cannot take effect and thus the value supplied cannot be used.
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task SingleArgumentEnum_WithNotRequiredNonNullableEnum_WhenVariableIsSupplied_VariableValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: TestEnum = null){
+                    createWithEnumWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // Actual value supplied for arg1...should be used
+            queryContext.AddVariableData(@"{ ""arg1"" : ""Value3"" }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithEnumWithDefaultValue"" : {
+                        ""property1"" : ""Value3"",
                         ""property2"": 5
                     }
                 }

@@ -282,7 +282,10 @@ namespace GraphQL.AspNet.Tests.Execution
 
                         ""veryDeepObject"" : {
                             ""dataField"": ""veryDeepObjectFieldValue"",
-                            ""dataObject"": null
+                            ""dataObject"": {
+                                ""dataField"" : ""veryVeryDeepObjectFieldValue"",
+                                ""dataObject"": null
+                            }
                         },
 
                         ""nullItem"": {
@@ -302,7 +305,10 @@ namespace GraphQL.AspNet.Tests.Execution
                               ""dataObject"": {
                                 ""dataField"": ""veryDeepFieldValue"",
                                 ""dataObject"": {
-                                  ""dataField"": ""veryDeepObjectFieldValue""
+                                  ""dataField"": ""veryDeepObjectFieldValue"",
+                                  ""dataObject"": {
+                                    ""dataField"" : ""veryVeryDeepObjectFieldValue"",
+                                  }
                                 }
                               }
                             }
@@ -535,6 +541,9 @@ namespace GraphQL.AspNet.Tests.Execution
                                         dataField
                                         dataObject {
                                             dataField
+                                            dataObject {
+                                                dataField
+                                            }
                                         }
                                     }
                                 }

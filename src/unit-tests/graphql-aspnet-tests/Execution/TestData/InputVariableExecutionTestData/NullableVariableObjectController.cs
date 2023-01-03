@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
         {
             Value1,
             Value2,
+            Value3,
         }
 
         [MutationRoot]
@@ -123,6 +124,16 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
 
         [MutationRoot]
         public TwoPropertyObject CreateWithIntWithDefaultValue(int param = 33)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = param.ToString(),
+                Property2 = 5,
+            };
+        }
+
+        [MutationRoot]
+        public TwoPropertyObject CreateWithEnumWithDefaultValue(TestEnum param = TestEnum.Value2)
         {
             return new TwoPropertyObject()
             {
