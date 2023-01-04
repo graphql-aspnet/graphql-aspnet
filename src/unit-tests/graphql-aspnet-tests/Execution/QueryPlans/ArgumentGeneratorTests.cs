@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 
             var arg1 = graphFieldArguments["arg1"];
 
-            var result = argGenerator.CreateInputArgument(queryInputCollection,arg1);
+            var result = argGenerator.CreateInputArgument(queryInputCollection, arg1);
 
             Assert.IsNotNull(result);
             Assert.IsTrue((bool)result.IsValid);

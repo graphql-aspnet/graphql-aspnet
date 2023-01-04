@@ -54,16 +54,17 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         public InternalServerErrorGraphActionResult(IGraphFieldResolverMethod action, Exception exception)
         {
             _action = action;
+            _errorMessage = $"An unhandled exception was thrown during the execution of field '{_action?.Name ?? "-unknown-"}'.";
+
             _exception = exception;
         }
 
         /// <inheritdoc />
         public Task CompleteAsync(SchemaItemResolutionContext context)
         {
-            var message = _errorMessage ?? $"An unhandled exception was thrown during the execution of field '{_action?.Name ?? "-unknown-"}'.";
             context.Messages.Critical(
-                message,
-                Constants.ErrorCodes.UNHANDLED_EXCEPTION,
+                _errorMessage,
+                Constants.ErrorCodes.INTERNAL_SERVER_ERROR,
                 context.Request.Origin,
                 _exception);
 

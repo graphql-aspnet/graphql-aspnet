@@ -63,7 +63,6 @@ namespace GraphQL.AspNet.Engine
             if (!queryPlan.IsValid)
                 return queryPlan;
 
-
             var executableOperation = await _generator.CreateAsync(operation).ConfigureAwait(false);
             queryPlan.Operation = executableOperation;
             queryPlan.Messages.AddRange(executableOperation.Messages);

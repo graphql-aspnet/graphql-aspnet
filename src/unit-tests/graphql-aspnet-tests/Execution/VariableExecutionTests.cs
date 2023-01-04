@@ -1078,7 +1078,6 @@ namespace GraphQL.AspNet.Tests.Execution
             CommonAssertions.AreEqualJsonStrings(expectedJson, result);
         }
 
-
         [Test]
         public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_DefaultValueOfVariableIsUsed_CausesErrorWhenDefaultIsInvalid()
         {

@@ -129,7 +129,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.UNHANDLED_EXCEPTION, context.Messages[0].Code);
+            Assert.AreEqual(Constants.ErrorCodes.INTERNAL_SERVER_ERROR, context.Messages[0].Code);
             Assert.IsTrue(context.Messages[0].Message.Contains("An unhandled exception was thrown during"));
             Assert.AreEqual(exception, context.Messages[0].Exception);
         }
@@ -145,7 +145,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.UNHANDLED_EXCEPTION, context.Messages[0].Code);
+            Assert.AreEqual(Constants.ErrorCodes.INTERNAL_SERVER_ERROR, context.Messages[0].Code);
             Assert.AreEqual("big fail", context.Messages[0].Message);
             Assert.AreEqual(exception, context.Messages[0].Exception);
         }

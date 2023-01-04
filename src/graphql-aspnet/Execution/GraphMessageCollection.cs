@@ -67,9 +67,7 @@ namespace GraphQL.AspNet.Execution
                         newCapacity += 1;
 
                     do
-                    {
                         newCapacity = newCapacity * 2;
-                    }
                     while (newCount > newCapacity);
 
                     _messages.Capacity = newCapacity;

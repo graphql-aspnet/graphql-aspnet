@@ -219,8 +219,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
                 context.InvocationContext.Arguments,
                 context.VariableData,
                 context.Messages,
-                out var executionArguments
-                );
+                out var executionArguments);
 
             executionArguments = executionArguments.ForContext(context);
 

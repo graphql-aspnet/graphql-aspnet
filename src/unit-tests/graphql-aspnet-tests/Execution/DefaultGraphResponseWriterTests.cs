@@ -223,7 +223,7 @@ namespace GraphQL.AspNet.Tests.Execution
                                         ""throwsException""
                                       ],
                                       ""extensions"": {
-                                        ""code"": ""UNHANDLED_EXCEPTION"",
+                                        ""code"": ""INTERNAL_SERVER_ERROR"",
                                         ""timestamp"": """ + fixedDate.ToRfc3339String() + @""",
                                         ""severity"": ""CRITICAL"",
                                         ""exception"": {
