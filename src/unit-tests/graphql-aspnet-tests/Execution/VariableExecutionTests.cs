@@ -14,8 +14,10 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData;
+    using GraphQL.AspNet.Tests.Execution.Variables;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
     [TestFixture]
@@ -1356,6 +1358,30 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var result = await server.RenderResult(queryContext);
             CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleRequiredScalar_WhenExplicitlySuppliedAsNull_ControllerMethodNotInvoked()
+        {
+            var instance = new InvokableVariableController();
+            var builder = new TestServerBuilder();
+            builder.AddSingleton<InvokableVariableController>(instance);
+            builder.AddGraphController<InvokableVariableController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"query ($arg1: Int = null){
+                    invokeMethod(param: $arg1)
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"" : null }");
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT_VALUE, result.Messages[0].Code);
+            Assert.AreEqual(0, instance.TotalInvocations);
         }
     }
 }
