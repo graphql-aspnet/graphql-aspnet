@@ -14,6 +14,8 @@ namespace GraphQL.AspNet.Tests.Controllers.ControllerTestData
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Controllers.InputModel;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Controllers;
 
     [GraphRoute("invoke")]
@@ -50,6 +52,54 @@ namespace GraphQL.AspNet.Tests.Controllers.ControllerTestData
         public IGraphActionResult ErrorResult()
         {
             return this.Error("an error happened", "12345", new Exception("exception text"));
+        }
+
+        [Query(typeof(string))]
+        public IGraphActionResult InternalServerErrorResult()
+        {
+            return this.InternalServerError("Server error");
+        }
+
+        [Query(typeof(string))]
+        public IGraphActionResult NotFoundResult()
+        {
+            return this.NotFound("thing wasnt found");
+        }
+
+        [Query(typeof(string))]
+        public IGraphActionResult UnauthorizedResult()
+        {
+            return this.Unauthorized("nope not authorized");
+        }
+
+        [Query(typeof(string))]
+        public IGraphActionResult OkNoObjectResult()
+        {
+            return this.Ok();
+        }
+
+        [Query(typeof(string))]
+        public IGraphActionResult BadRequestMessageResult()
+        {
+            return this.BadRequest("it was bad");
+        }
+
+        [Query(typeof(string))]
+        public IGraphActionResult BadRequestModelResult(InputModelForModelState model)
+        {
+            if (!this.ModelState.IsValid)
+                return this.BadRequest(this.ModelState);
+
+            return this.Ok();
+        }
+
+        [Query(typeof(string))]
+        public IGraphActionResult ErrorResultBySeverity()
+        {
+            return this.Error(
+                GraphMessageSeverity.Warning,
+                "my message",
+                "my code");
         }
 
         public Dictionary<string, object> CapturedItems { get; }

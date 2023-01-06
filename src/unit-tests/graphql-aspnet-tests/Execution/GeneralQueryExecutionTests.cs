@@ -177,7 +177,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages.Severity);
-            Assert.AreEqual(Constants.ErrorCodes.UNHANDLED_EXCEPTION, result.Messages[0].Code);
+            Assert.AreEqual(Constants.ErrorCodes.INTERNAL_SERVER_ERROR, result.Messages[0].Code);
             Assert.IsNotNull(result.Messages[0].Exception);
             Assert.AreEqual("Failure from Controller", result.Messages[0].Exception.Message);
 

@@ -39,6 +39,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         private readonly TSchema _schema;
         private readonly ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> _directivePipeline;
         private readonly IQueryDocumentGenerator<TSchema> _documentGenerator;
+        private readonly ArgumentGenerator _argumentGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplyExecutionDirectivesMiddleware{TSchema}" /> class.
@@ -56,6 +57,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _directivePipeline = Validation.ThrowIfNullOrReturn(directivePipeline, nameof(directivePipeline));
             _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));
+            _argumentGenerator = new ArgumentGenerator(_schema);
         }
 
         /// <inheritdoc />
@@ -261,15 +263,13 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             IDirective targetDirective,
             IDirectiveDocumentPart directivePart)
         {
-            var argGenerator = new ArgumentGenerator(_schema, directivePart.Arguments);
-
             var collection = new InputArgumentCollection(targetDirective.Arguments.Count);
             for (var i = 0; i < targetDirective.Arguments.Count; i++)
             {
                 var directiveArg = targetDirective.Arguments[i];
-                var argResult = argGenerator.CreateInputArgument(directiveArg);
+                var argResult = _argumentGenerator.CreateInputArgument(directivePart.Arguments, directiveArg);
                 if (argResult.IsValid)
-                    collection.Add(new InputArgument(directiveArg, argResult.Argument));
+                    collection.Add(argResult.Argument);
                 else
                     queryContext.Messages.Add(argResult.Message);
             }

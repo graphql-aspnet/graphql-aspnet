@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
     internal class ExecutableOperationGenerator
     {
         private readonly ISchema _schema;
+        private readonly ArgumentGenerator _argumentGenerator;
         private IGraphMessageCollection _messages;
 
         /// <summary>
@@ -39,6 +40,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
         public ExecutableOperationGenerator(ISchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            _argumentGenerator = new ArgumentGenerator(schema);
         }
 
         /// <summary>
@@ -183,21 +185,20 @@ namespace GraphQL.AspNet.Execution.QueryPlans
         /// Inspects the arguments supplied on the user's query document, merges them with those defaulted from the graph field itself
         /// and applies variable data as necessary to generate a single unified set of input arguments to be used when resolving a field of data.
         /// </summary>
-        /// <param name="argumentContainer">The field selection.</param>
+        /// <param name="argumentDefinitions">The set of arguments defined on a field.</param>
         /// <param name="querySuppliedArguments">The supplied argument collection parsed from the user query document.</param>
         /// <returns>Task&lt;IInputArgumentCollection&gt;.</returns>
         private IInputArgumentCollection CreateArgumentList(
-            IGraphArgumentContainer argumentContainer,
+            IGraphArgumentContainer argumentDefinitions,
             IInputArgumentCollectionDocumentPart querySuppliedArguments)
         {
-            var collection = new InputArgumentCollection(argumentContainer.Arguments.Count);
-            var argGenerator = new ArgumentGenerator(_schema, querySuppliedArguments);
+            var collection = new InputArgumentCollection(argumentDefinitions.Arguments.Count);
 
-            foreach (var argument in argumentContainer.Arguments)
+            foreach (var argumentDefinition in argumentDefinitions.Arguments)
             {
-                var argResult = argGenerator.CreateInputArgument(argument);
+                var argResult = _argumentGenerator.CreateInputArgument(querySuppliedArguments, argumentDefinition);
                 if (argResult.IsValid)
-                    collection.Add(new InputArgument(argument, argResult.Argument));
+                    collection.Add(argResult.Argument);
                 else
                     _messages.Add(argResult.Message);
             }

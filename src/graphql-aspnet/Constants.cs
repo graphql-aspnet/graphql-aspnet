@@ -178,7 +178,8 @@ namespace GraphQL.AspNet
             public const string INVALID_OBJECT = "INVALID_OBJECT";
             public const string DEFAULT = "UNKNOWN";
             public const string GENERAL_ERROR = "GENERAL_ERROR";
-            public const string INVALID_ARGUMENT = "INVALID_ARGUMENT";
+            public const string INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR";
+            public const string INVALID_ARGUMENT_VALUE = "INVALID_ARGUMENT_VALUE";
             public const string INVALID_VARIABLE_VALUE = "INVALID_VARIABLE_VALUE";
             public const string INVALID_ACTION_RESULT = "INVALID_ACTION_RESULT";
         }

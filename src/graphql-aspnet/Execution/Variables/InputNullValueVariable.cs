@@ -14,10 +14,10 @@ namespace GraphQL.AspNet.Execution.Variables
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
-    /// A variable representing a variable value passed as <c>null</c>.
+    /// An item representing a variable value as being <c>null</c>.
     /// </summary>
     [DebuggerDisplay("InputValue: {Name}  (Value = null)")]
-    internal class InputNullValueVariable : InputVariable, IInputSingleValueVariable, IResolvableNullValue
+    internal sealed class InputNullValueVariable : InputVariable, IInputSingleValueVariable, IResolvableNullValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InputNullValueVariable" /> class.

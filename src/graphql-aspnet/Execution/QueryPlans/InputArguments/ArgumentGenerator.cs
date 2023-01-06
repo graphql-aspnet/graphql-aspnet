@@ -14,9 +14,11 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Resolvers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An object capable of taking a <see cref="DocumentSuppliedValue"/> from a document and converting it into a
@@ -24,18 +26,14 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     /// </summary>
     internal class ArgumentGenerator
     {
-        private readonly IInputArgumentCollectionDocumentPart _suppliedArguments;
         private readonly InputValueResolverMethodGenerator _inputResolverGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ArgumentGenerator" /> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        /// <param name="suppliedArguments">A collection of arguments passed on a user's query
-        /// to be used first in the chain of object resolution for any created arguments.</param>
-        public ArgumentGenerator(ISchema schema, IInputArgumentCollectionDocumentPart suppliedArguments)
+        public ArgumentGenerator(ISchema schema)
         {
-            _suppliedArguments = Validation.ThrowIfNullOrReturn(suppliedArguments, nameof(suppliedArguments));
             Validation.ThrowIfNull(schema, nameof(schema));
             _inputResolverGenerator = new InputValueResolverMethodGenerator(schema);
         }
@@ -43,36 +41,61 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         /// <summary>
         /// Attempts to create a qualified input argument for the supplied schema field.
         /// </summary>
-        /// <param name="argument">The argument defined on schema that needs to have
-        /// an input value created fro.</param>
+        /// <param name="suppliedArgumentData">The supplied arguments on a query document.</param>
+        /// <param name="argumentDefinition">The argument defined on schema that needs to have
+        /// an input value created.</param>
         /// <returns>Task.</returns>
-        public ArgumentGenerationResult CreateInputArgument(IGraphArgument argument)
+        public ArgumentGenerationResult CreateInputArgument(
+            IInputArgumentCollectionDocumentPart suppliedArgumentData,
+            IGraphArgument argumentDefinition)
         {
-            Validation.ThrowIfNull(argument, nameof(argument));
+            Validation.ThrowIfNull(suppliedArgumentData, nameof(suppliedArgumentData));
+            Validation.ThrowIfNull(argumentDefinition, nameof(argumentDefinition));
 
-            if (!_suppliedArguments.ContainsKey(argument.Name))
+            if (!suppliedArgumentData.ContainsKey(argumentDefinition.Name))
             {
-                return new ArgumentGenerationResult(new ResolvedInputArgumentValue(argument.Name, argument.DefaultValue));
+                if (argumentDefinition.HasDefaultValue
+                    || argumentDefinition.ArgumentModifiers.IsNotPartOfTheSchema())
+                {
+                    return new ArgumentGenerationResult(
+                        new InputArgument(
+                            argumentDefinition,
+                            new ResolvedInputArgumentValue(
+                                argumentDefinition.Name,
+                                argumentDefinition.DefaultValue),
+                            SourceOrigin.None));
+                }
             }
 
-            var coreValue = _suppliedArguments[argument.Name].Value;
-            var resolver = _inputResolverGenerator.CreateResolver(argument.TypeExpression);
+            var suppliedArgument = suppliedArgumentData[argumentDefinition.Name];
+            var coreValue = suppliedArgument.Value;
+            var resolver = _inputResolverGenerator.CreateResolver(argumentDefinition);
 
             if (this.ShouldDeferResolution(coreValue))
-                return new ArgumentGenerationResult(new DeferredInputArgumentValue(coreValue, resolver));
+            {
+                return new ArgumentGenerationResult(
+                    new InputArgument(
+                        argumentDefinition,
+                        new DeferredInputArgumentValue(coreValue, resolver),
+                        suppliedArgument.Origin));
+            }
 
             try
             {
                 var data = resolver.Resolve(coreValue);
-                return new ArgumentGenerationResult(new ResolvedInputArgumentValue(argument.Name, data));
+                return new ArgumentGenerationResult(
+                    new InputArgument(
+                        argumentDefinition,
+                        new ResolvedInputArgumentValue(argumentDefinition.Name, data),
+                        suppliedArgument.Origin));
             }
             catch (UnresolvedValueException svce)
             {
                 var message = new GraphExecutionMessage(
                    GraphMessageSeverity.Critical,
                    svce.Message,
-                   Constants.ErrorCodes.INVALID_ARGUMENT,
-                   coreValue.Parent.SourceLocation.AsOrigin(),
+                   Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
+                   suppliedArgument.Origin,
                    exception: svce.InnerException);
 
                 return new ArgumentGenerationResult(message);
@@ -82,8 +105,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
                 var message = new GraphExecutionMessage(
                     GraphMessageSeverity.Critical,
                     "Invalid argument value. See exception for details.",
-                    Constants.ErrorCodes.INVALID_ARGUMENT,
-                    coreValue.Parent.SourceLocation.AsOrigin(),
+                    Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
+                    suppliedArgument.Origin,
                     ex);
 
                 return new ArgumentGenerationResult(message);

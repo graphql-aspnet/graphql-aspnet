@@ -20,34 +20,31 @@ namespace GraphQL.AspNet.Execution.Variables
     internal class ResolvedVariable : IResolvedVariable
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResolvedVariable"/> class.
+        /// Initializes a new instance of the <see cref="ResolvedVariable" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="typeExpression">The type expression.</param>
         /// <param name="value">The value.</param>
-        public ResolvedVariable(string name, GraphTypeExpression typeExpression, object value)
+        /// <param name="isDefaultValue">if set to <c>true</c>, indicates that <paramref name="value"/>
+        /// is the default value declared on the original variable definition..</param>
+        public ResolvedVariable(string name, GraphTypeExpression typeExpression, object value, bool isDefaultValue = false)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.Value = value;
+            this.IsDefaultValue = isDefaultValue;
         }
 
-        /// <summary>
-        /// Gets the name of the variable as it was declared in the user's supplied data.
-        /// </summary>
-        /// <value>The name.</value>
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <summary>
-        /// Gets the value of the variable as a fully resolved .NET object.
-        /// </summary>
-        /// <value>The value.</value>
+        /// <inheritdoc />
         public object Value { get; }
 
-        /// <summary>
-        /// Gets the type expression this variable represents.
-        /// </summary>
-        /// <value>The type expression.</value>
+        /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; }
+
+        /// <inheritdoc />
+        public bool IsDefaultValue { get; }
     }
 }

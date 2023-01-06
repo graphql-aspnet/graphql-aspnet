@@ -26,15 +26,6 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments
         void Add(InputArgument input);
 
         /// <summary>
-        /// Merges the supplied variable data into a new collection of arguments
-        /// capable of fulfilling a request. Any deferred arguments in this instance are resolved
-        /// to the data contained in the provided dataset or null if not found.
-        /// </summary>
-        /// <param name="variableData">The variable data.</param>
-        /// <returns>IInputArgumentCollection.</returns>
-        IExecutionArgumentCollection Merge(IResolvedVariableCollection variableData);
-
-        /// <summary>
         /// Determines whether the read-only dictionary contains an element that has the specified key.
         /// </summary>
         /// <param name="name">The name of the variable to locate.</param>

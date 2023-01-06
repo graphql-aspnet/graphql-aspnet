@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
 {
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
 
     /// <summary>
     /// The result of attempting to resolve an input argument in a query document.
@@ -18,10 +17,10 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     internal class ArgumentGenerationResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentGenerationResult"/> class.
+        /// Initializes a new instance of the <see cref="ArgumentGenerationResult" /> class.
         /// </summary>
         /// <param name="argument">The argument that was successfully resolved.</param>
-        public ArgumentGenerationResult(IInputValue argument)
+        public ArgumentGenerationResult(InputArgument argument)
         {
             this.Argument = argument;
         }
@@ -40,7 +39,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         /// Gets the argument that was generated.
         /// </summary>
         /// <value>The argument that was resolved.</value>
-        public IInputValue Argument { get; }
+        public InputArgument Argument { get; }
 
         /// <summary>
         /// Gets a message that was generated due to a failure in creating the argument.

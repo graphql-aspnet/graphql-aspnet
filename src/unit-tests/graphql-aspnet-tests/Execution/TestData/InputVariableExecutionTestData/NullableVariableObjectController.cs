@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
         {
             Value1,
             Value2,
+            Value3,
         }
 
         [MutationRoot]
@@ -27,6 +28,16 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
             return new TwoPropertyObject()
             {
                 Property1 = param == null ? "no param" : param.Id?.ToString(),
+                Property2 = 5,
+            };
+        }
+
+        [MutationRoot]
+        public TwoPropertyObject CreateWithModelWithIntWithDefaultValue(ModelWithIntWithDefaultValue param)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = param.Id.ToString(),
                 Property2 = 5,
             };
         }
@@ -48,6 +59,16 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
             {
                 Property1 = "some value",
                 Property2 = param.Id ?? -1,
+            };
+        }
+
+        [MutationRoot]
+        public TwoPropertyObject CreateWithModelRequiredInt(ModelWithRequiredInt param)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = "some value",
+                Property2 = param?.Id ?? -1,
             };
         }
 
@@ -93,6 +114,26 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
 
         [MutationRoot]
         public TwoPropertyObject CreateWithInt(int param)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = param.ToString(),
+                Property2 = 5,
+            };
+        }
+
+        [MutationRoot]
+        public TwoPropertyObject CreateWithIntWithDefaultValue(int param = 33)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = param.ToString(),
+                Property2 = 5,
+            };
+        }
+
+        [MutationRoot]
+        public TwoPropertyObject CreateWithEnumWithDefaultValue(TestEnum param = TestEnum.Value2)
         {
             return new TwoPropertyObject()
             {

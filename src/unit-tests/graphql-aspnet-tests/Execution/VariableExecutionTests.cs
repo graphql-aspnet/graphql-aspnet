@@ -9,6 +9,8 @@
 
 namespace GraphQL.AspNet.Tests.Execution
 {
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData;
@@ -27,8 +29,14 @@ namespace GraphQL.AspNet.Tests.Execution
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(
+                @"query($variable1: String) {
+                    scalarValue(arg1: $variable1)
+                  }");
+
             builder.AddVariableData("{ \"variable1\" : \"test string 86\" }");
-            builder.AddQueryText("query($variable1: String){ scalarValue(arg1: $variable1) }");
+
             var result = await server.RenderResult(builder);
 
             var expected = @"
@@ -49,8 +57,23 @@ namespace GraphQL.AspNet.Tests.Execution
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
-            builder.AddVariableData("{ \"variable1\" : { \"property1\" : \"value1\", \"property2\": 15 } }");
-            builder.AddQueryText("query($variable1: Input_TwoPropertyObject){ complexValue(arg1: $variable1) { property1 property2 } }");
+
+            builder.AddQueryText(
+                @"query($variable1: Input_TwoPropertyObject) {
+                    complexValue(arg1: $variable1) {
+                        property1
+                        property2
+                    }
+                }");
+
+            builder.AddVariableData(
+                @"{
+                    ""variable1"" : {
+                            ""property1"" : ""value1"",
+                            ""property2"": 15
+                    }
+                  }");
+
             var result = await server.RenderResult(builder);
 
             var expected = @"{
@@ -66,7 +89,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task NestedScalarVariable_IsUsedInsteadOfDefault()
+        public async Task ScalarVariable_NestedInInputObject_IsUsedInsteadOfDefault()
         {
             var server = new TestServerBuilder()
                 .AddType<InputValueController>()
@@ -78,10 +101,16 @@ namespace GraphQL.AspNet.Tests.Execution
 
             // variable passed is just 1 value of hte input object (not the whole thing)
             var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(
+                @"query($variable1: String){
+                        complexValue(arg1: { property1: $variable1, property2: 15} ) {
+                            property1
+                            property2
+                        }
+                }");
+
             builder.AddVariableData("{ \"variable1\" : \"stringPassedValue\" }");
-            builder.AddQueryText("query($variable1: String){ " +
-                "complexValue(arg1: { property1: $variable1, property2: 15} ) " +
-                "{ property1 property2 } }");
+
             var result = await server.RenderResult(builder);
 
             var expected = @"{
@@ -109,11 +138,12 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder();
 
-            builder.AddVariableData("{ \"variable1\" : 4 }");
+            builder.AddQueryText(
+                @"query($variable1: Int!){
+                   sumListValues(arg1: [1,2,$variable1])
+                }");
 
-            builder.AddQueryText("query($variable1: Int!){ " +
-                "   sumListValues(arg1: [1,2,$variable1]) " +
-                "}");
+            builder.AddVariableData("{ \"variable1\" : 4 }");
 
             var result = await server.RenderResult(builder);
 
@@ -141,9 +171,10 @@ namespace GraphQL.AspNet.Tests.Execution
 
             builder.AddVariableData("{ \"variable1\" : 86 }");
 
-            builder.AddQueryText("query($variable1: Int!){ " +
-                "   sumListListValues(arg1: [[1,2],[$variable1, 4]]) " +
-                "}");
+            builder.AddQueryText(
+                @"query($variable1: Int!){
+                   sumListListValues(arg1: [[1,2],[$variable1, 4]])
+                }");
 
             var result = await server.RenderResult(builder);
 
@@ -171,9 +202,10 @@ namespace GraphQL.AspNet.Tests.Execution
 
             builder.AddVariableData("{ \"variable1\" : 74, \"variable2\" : 99 }");
 
-            builder.AddQueryText("query($variable1: Int!,$variable2: Int!){ " +
-                "   stupidDeepListValues(arg1: [[[[[[[1,2],[$variable1, 4]],[[$variable2, 6]]]]]]]) " +
-                "}");
+            builder.AddQueryText(
+                @"query($variable1: Int!,$variable2: Int!){
+                   stupidDeepListValues(arg1: [[[[[[[1,2],[$variable1, 4]],[[$variable2, 6]]]]]]])
+                }");
 
             var result = await server.RenderResult(builder);
 
@@ -269,20 +301,10 @@ namespace GraphQL.AspNet.Tests.Execution
                     }
                 }");
 
-            queryContext.AddVariableData(@"{ }");
-
-            var expectedJson = @"
-            {
-                ""data"" : {
-                    ""createWithModelGuid"" : {
-                        ""property1"" : null,
-                        ""property2"": 5
-                    }
-                }
-            }";
-
-            var result = await server.RenderResult(queryContext);
-            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
         }
 
         [Test]
@@ -445,7 +467,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task NullableModelGuid_AsInputField_WhenNotSuppliedOnVariable_IsTreatedAsNull()
+        public async Task NullableModelGuid_AsInputField_WhenNotSuppliedOnVariable_RecordsError()
         {
             // github issue 95
             var builder = new TestServerBuilder();
@@ -463,18 +485,10 @@ namespace GraphQL.AspNet.Tests.Execution
 
             queryContext.AddVariableData(@"{ }");
 
-            var expectedJson = @"
-            {
-                ""data"" : {
-                    ""createWithModelGuid"" : {
-                        ""property1"" : null,
-                        ""property2"": 5
-                    }
-                }
-            }";
-
-            var result = await server.RenderResult(queryContext);
-            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
         }
 
         [Test]
@@ -487,8 +501,8 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var queryContext = server.CreateQueryContextBuilder();
             queryContext.AddQueryText(
-                @"mutation ($arg1: Guid){
-                    createWithModelGuidNullId(param: {id: $arg1})  {
+                @"mutation ($arg1: Input_ModelWithGuid){
+                    createWithModelGuidNullId(param: $arg1)  {
                        property1
                         property2
                     }
@@ -562,18 +576,10 @@ namespace GraphQL.AspNet.Tests.Execution
 
             queryContext.AddVariableData(@"{ }");
 
-            var expectedJson = @"
-            {
-                ""data"" : {
-                    ""createWithModelInt"" : {
-                        ""property1"" : ""some value"",
-                        ""property2"": -1
-                    }
-                }
-            }";
-
-            var result = await server.RenderResult(queryContext);
-            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
         }
 
         [Test]
@@ -628,18 +634,10 @@ namespace GraphQL.AspNet.Tests.Execution
 
             queryContext.AddVariableData(@"{ }");
 
-            var expectedJson = @"
-            {
-                ""data"" : {
-                    ""createWithNullableId"" : {
-                        ""property1"" : null,
-                        ""property2"": 5
-                    }
-                }
-            }";
-
-            var result = await server.RenderResult(queryContext);
-            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
         }
 
         [Test]
@@ -726,7 +724,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task NullableEnum_AsInputField_WhenNotSuppliedOnVariable_IsTreatedAsNull()
+        public async Task NullableEnum_AsInputField_WhenNotSuppliedOnVariable_ReturnsError()
         {
             // github issue 95
             var builder = new TestServerBuilder();
@@ -744,18 +742,10 @@ namespace GraphQL.AspNet.Tests.Execution
 
             queryContext.AddVariableData(@"{ }");
 
-            var expectedJson = @"
-            {
-                ""data"" : {
-                    ""createWithEnum"" : {
-                        ""property1"" : null,
-                        ""property2"": 5
-                    }
-                }
-            }";
-
-            var result = await server.RenderResult(queryContext);
-            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
         }
 
         [Test]
@@ -810,18 +800,10 @@ namespace GraphQL.AspNet.Tests.Execution
 
             queryContext.AddVariableData(@"{ }");
 
-            var expectedJson = @"
-            {
-                ""data"" : {
-                    ""createWithNullableInt"" : {
-                        ""property1"" : null,
-                        ""property2"": 5
-                    }
-                }
-            }";
-
-            var result = await server.RenderResult(queryContext);
-            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
         }
 
         [Test]
@@ -932,6 +914,448 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsTrue(result.Messages.Severity.IsCritical());
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task InputObject_WithNotRequiredNonNullableInt_WhenVariableNotSupplied_DefaultValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = null){
+                    createWithModelWithIntWithDefaultValue(param: {id: $arg1} )  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied to a variable with a default value of null
+            // meaning the default value of param.id should take effect
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelWithIntWithDefaultValue"" : {
+                        ""property1"" : ""98"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task InputObject_WithNotRequiredNonNullableInt_WhenVariableNotSupplied_VariableDefaultValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = 409){
+                    createWithModelWithIntWithDefaultValue(param: {id: $arg1} )  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied meaning the default value of param.id
+            // shoudl take effect
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelWithIntWithDefaultValue"" : {
+                        ""property1"" : ""409"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task InputObject_WithNotRequiredNonNullableInt_WhenVariableSupplied_VariableValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = 409){
+                    createWithModelWithIntWithDefaultValue(param: {id: $arg1} )  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied meaning the default value of param.id
+            // shoudl take effect
+            queryContext.AddVariableData(@"{ ""arg1"" : 65 }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithModelWithIntWithDefaultValue"" : {
+                        ""property1"" : ""65"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task InputObject_WithNotRequiredNonNullableInt_WhenVariableIsSuppliedAsNull_FieldErrorOccurs()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = null){
+                    createWithModelWithIntWithDefaultValue(param: {id: $arg1} )  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // Variable data is EXPLICITLY supplied as null, meaning the default value of param.id
+            // cannot take effect and a field error should occur
+            queryContext.AddVariableData(@"{ ""arg1"" : null }");
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_DefaultValueOfVariableIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = 11){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of the
+            // variable should take effect since it was defined
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithIntWithDefaultValue"" : {
+                        ""property1"" : ""11"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_DefaultValueOfVariableIsUsed_CausesErrorWhenDefaultIsInvalid()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = 11.23){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of the
+            // variable should take effect since it was defined
+            queryContext.AddVariableData(@"{ }");
+
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsIsSupplied_ButHasInvalidDefaultValue_DefaultValueIsIgnored()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = 11.23){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of the
+            // variable should take effect since it was defined
+            queryContext.AddVariableData(@"{ ""arg1"": 31 }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithIntWithDefaultValue"" : {
+                        ""property1"" : ""31"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsNotSupplied_ArgumentDefaultValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = null){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of param
+            // should take effect
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithIntWithDefaultValue"" : {
+                        ""property1"" : ""33"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableExplicitlySuppliedAsNull_FieldErrorOccurs()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = null){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"" : null }");
+
+            // Variable data is EXPLICITLY supplied as null, meaning the default value of param
+            // cannot take effect and thus the value supplied cannot be used.
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task SingleArgumentScalar_WithNotRequiredNonNullableInt_WhenVariableIsSupplied_VariableValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: Int = null){
+                    createWithIntWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // Actual value supplied for arg1...should be used
+            queryContext.AddVariableData(@"{ ""arg1"" : 2020 }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithIntWithDefaultValue"" : {
+                        ""property1"" : ""2020"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleArgumentEnum_WithNotRequiredNonNullableEnum_WhenVariableIsNotSupplied_DefaultValueOfVariableIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: TestEnum = VALUE1){
+                    createWithEnumWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of the
+            // variable should take effect since it was defined
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithEnumWithDefaultValue"" : {
+                        ""property1"" : ""Value1"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleArgumentEnum_WithNotRequiredNonNullableEnum_WhenVariableIsNotSupplied_ArgumentDefaultValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: TestEnum = null){
+                    createWithEnumWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // No Variable data is supplied for $arg1 meaning the default value of param
+            // should take effect
+            queryContext.AddVariableData(@"{ }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithEnumWithDefaultValue"" : {
+                        ""property1"" : ""Value2"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task SingleArgumentEnum_WithNotRequiredNonNullableEnum_WhenVariableExplicitlySuppliedAsNull_FieldErrorOccurs()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: TestEnum = null){
+                    createWithEnumWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            queryContext.AddVariableData(@"{ ""arg1"" : null }");
+
+            // Variable data is EXPLICITLY supplied as null, meaning the default value of param
+            // cannot take effect and thus the value supplied cannot be used.
+            var result = await server.ExecuteQuery(queryContext);
+            Assert.IsTrue(result.Messages.Severity.IsCritical());
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_ARGUMENT_VALUE, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task SingleArgumentEnum_WithNotRequiredNonNullableEnum_WhenVariableIsSupplied_VariableValueIsUsed()
+        {
+            var builder = new TestServerBuilder();
+            builder.AddGraphController<NullableVariableObjectController>();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(
+                @"mutation ($arg1: TestEnum = null){
+                    createWithEnumWithDefaultValue(param: $arg1)  {
+                       property1
+                        property2
+                    }
+                }");
+
+            // Actual value supplied for arg1...should be used
+            queryContext.AddVariableData(@"{ ""arg1"" : ""Value3"" }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""createWithEnumWithDefaultValue"" : {
+                        ""property1"" : ""Value3"",
+                        ""property2"": 5
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
         }
     }
 }

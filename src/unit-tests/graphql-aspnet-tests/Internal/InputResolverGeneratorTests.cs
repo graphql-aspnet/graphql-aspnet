@@ -19,16 +19,21 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Internal.InputValueNodeTestData;
     using Moq;
     using NUnit.Framework;
+    using NUnit.Framework.Constraints;
 
     [TestFixture]
     public class InputResolverGeneratorTests
@@ -50,6 +55,7 @@ namespace GraphQL.AspNet.Tests.Internal
             }
 
             builder.AddType(typeof(TestEnum));
+            builder.AddType(typeof(Telephone), TypeKind.INPUT_OBJECT);
             return builder.Build().Schema;
         }
 
@@ -165,31 +171,45 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var generator = new InputValueResolverMethodGenerator(this.CreateSchema());
 
-            var text = ReadOnlySpan<char>.Empty;
+            ISuppliedValueDocumentPart inputValue;
+
             if (inputText != null)
-                text = inputText.AsSpan();
-
-            var tree = SyntaxTree.WithDocumentRoot();
-            var rootNode = tree.RootNode;
-            var source = new SourceText(text);
-            var tokenStream = Lexer.Tokenize(source);
-
-            tokenStream.Prime();
-            SyntaxNode testNode = SyntaxNode.None;
-            if (!tokenStream.EndOfStream)
             {
-                var builder = ValueNodeBuilderFactory.CreateBuilder(tokenStream);
-                if (builder != null)
-                {
-                    builder.BuildNode(ref tree, ref rootNode, ref tokenStream);
-                    testNode = tree.NodePool[rootNode.Coordinates.ChildBlockIndex][rootNode.Coordinates.ChildBlockLength - 1];
-                }
-            }
+                // simulate having read a supplied input value
+                // from a token stream (this is the value normally passed to the resolver)
+                var text = inputText.AsSpan();
 
-            var inputValue = DocumentSuppliedValueFactory.CreateInputValue(
-                source,
-                owner.Object,
-                testNode);
+                var tree = SyntaxTree.WithDocumentRoot();
+                var rootNode = tree.RootNode;
+                var source = new SourceText(text);
+                var tokenStream = Lexer.Tokenize(source);
+
+                tokenStream.Prime();
+                SyntaxNode testNode = SyntaxNode.None;
+                if (!tokenStream.EndOfStream)
+                {
+                    var builder = ValueNodeBuilderFactory.CreateBuilder(tokenStream);
+                    if (builder != null)
+                    {
+                        builder.BuildNode(ref tree, ref rootNode, ref tokenStream);
+                        testNode = tree.NodePool[rootNode.Coordinates.ChildBlockIndex][rootNode.Coordinates.ChildBlockLength - 1];
+                    }
+                }
+
+                inputValue = DocumentSuppliedValueFactory.CreateInputValue(
+                    source,
+                    owner.Object,
+                    testNode);
+            }
+            else
+            {
+                // imitate the lexer parsing a null value as a valid input
+                // rather than trying to lex the value
+                var parent = new Mock<IDocumentPart>();
+                inputValue = new DocumentNullSuppliedValue(
+                    parent.Object,
+                    new SourceLocation(1, 1, 1));
+            }
 
             var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
             var resolver = generator.CreateResolver(typeExpression);
@@ -290,6 +310,150 @@ namespace GraphQL.AspNet.Tests.Internal
             var result = resolver.Resolve(outerList) as IEnumerable;
 
             CollectionAssert.AreEqual(new List<IEnumerable<int>> { new List<int> { 15, 12 }, new List<int> { 30, 40 } }, result);
+        }
+
+        [Test]
+        public void InputObjectValueResolver_GeneratesObjectWhenPassed()
+        {
+            var schema = this.CreateSchema();
+            var obj = schema.KnownTypes.FindGraphType("Input_Telephone") as IInputObjectGraphType;
+
+            var owner = new Mock<IDocumentPart>();
+
+            var complexObject = new DocumentComplexSuppliedValue(owner.Object, SourceLocation.None);
+            var idField = new DocumentInputObjectField(complexObject, "id", obj.Fields["id"], SourceLocation.None);
+            var brandField = new DocumentInputObjectField(complexObject, "brand", obj.Fields["brand"], SourceLocation.None);
+
+            var idValue = new DocumentScalarSuppliedValue(idField, "15", ScalarValueType.Number, SourceLocation.None);
+            var brandValue = new DocumentScalarSuppliedValue(brandField, "\"StarTrucks\"", ScalarValueType.String, SourceLocation.None);
+
+            idField.Children.Add(idValue);
+            brandField.Children.Add(brandValue);
+
+            complexObject.Children.Add(idField);
+            complexObject.Children.Add(brandField);
+
+            var typeExpression = GraphTypeExpression.FromDeclaration("Input_Telephone");
+            var generator = new InputValueResolverMethodGenerator(schema);
+
+            var resolver = generator.CreateResolver(typeExpression);
+            var result = resolver.Resolve(complexObject) as Telephone;
+
+            Assert.AreEqual(15, result.Id);
+            Assert.AreEqual("StarTrucks", result.Brand);
+        }
+
+        [Test]
+        public void InputObjectValueResolver_RequiredFieldNotSupplied_ExceptionThrown()
+        {
+            var schema = this.CreateSchema();
+            var obj = schema.KnownTypes.FindGraphType("Input_Telephone") as IInputObjectGraphType;
+
+            var owner = new Mock<IDocumentPart>();
+
+            var complexObject = new DocumentComplexSuppliedValue(owner.Object, SourceLocation.None);
+            var brandField = new DocumentInputObjectField(complexObject, "brand", obj.Fields["brand"], SourceLocation.None);
+
+            var brandValue = new DocumentScalarSuppliedValue(brandField, "\"StarTrucks\"", ScalarValueType.String, SourceLocation.None);
+
+            brandField.Children.Add(brandValue);
+
+            complexObject.Children.Add(brandField);
+
+            var typeExpression = GraphTypeExpression.FromDeclaration("Input_Telephone");
+            var generator = new InputValueResolverMethodGenerator(schema);
+
+            var resolver = generator.CreateResolver(typeExpression);
+            Assert.Throws<GraphExecutionException>(() =>
+            {
+                var result = resolver.Resolve(complexObject) as Telephone;
+            });
+        }
+
+        [Test]
+        public void InputObjectValueResolver_ThrowsException_WhenPassedNull()
+        {
+            var schema = this.CreateSchema();
+
+            var typeExpression = GraphTypeExpression.FromDeclaration("Input_Telephone");
+            var generator = new InputValueResolverMethodGenerator(schema);
+
+            var resolver = generator.CreateResolver(typeExpression);
+
+            Assert.Throws<GraphExecutionException>(() =>
+            {
+                resolver.Resolve(null);
+            });
+        }
+
+        [Test]
+        public void InputObjectValueResolver_ReturnsNull_WhenPassedInterface()
+        {
+            var schema = this.CreateSchema();
+
+            var testObject = new Mock<IResolvableNullValue>();
+
+            var typeExpression = GraphTypeExpression.FromDeclaration("Input_Telephone");
+            var generator = new InputValueResolverMethodGenerator(schema);
+
+            var resolver = generator.CreateResolver(typeExpression);
+            var result = resolver.Resolve(testObject.Object);
+
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void InputObjectValueResolver_ThrowsException_WhenNotPassedFieldSet()
+        {
+            var schema = this.CreateSchema();
+
+            var owner = new Mock<IDocumentPart>();
+            var idValue = new DocumentScalarSuppliedValue(owner.Object, "15", ScalarValueType.String, SourceLocation.None);
+
+            var typeExpression = GraphTypeExpression.FromDeclaration("Input_Telephone");
+            var generator = new InputValueResolverMethodGenerator(schema);
+
+            var resolver = generator.CreateResolver(typeExpression);
+            Assert.Throws<GraphExecutionException>(() =>
+            {
+                var result = resolver.Resolve(idValue);
+            });
+        }
+
+        [Test]
+        public void InputObjectValueResolver_WhenNullPasssedToNonNullableAndRequiredField_UnresolvedValueExceptionThrown()
+        {
+            var schema = this.CreateSchema();
+            var obj = schema.KnownTypes.FindGraphType("Input_Telephone") as IInputObjectGraphType;
+
+            var owner = new Mock<IDocumentPart>();
+
+            var path = new SourcePath();
+            path.AddFieldName("topfield");
+            owner.Setup(x => x.Path).Returns(path);
+
+            var complexObject = new DocumentComplexSuppliedValue(owner.Object, SourceLocation.None);
+            var idField = new DocumentInputObjectField(complexObject, "id", obj.Fields["id"], SourceLocation.None);
+            var brandField = new DocumentInputObjectField(complexObject, "brand", obj.Fields["brand"], SourceLocation.None);
+
+            var idValue = new DocumentNullSuppliedValue(idField, SourceLocation.None);
+            var brandValue = new DocumentScalarSuppliedValue(brandField, "\"StarTrucks\"", ScalarValueType.String, SourceLocation.None);
+
+            idField.Children.Add(idValue);
+            brandField.Children.Add(brandValue);
+
+            complexObject.Children.Add(idField);
+            complexObject.Children.Add(brandField);
+
+            var typeExpression = GraphTypeExpression.FromDeclaration("Input_Telephone");
+            var generator = new InputValueResolverMethodGenerator(schema);
+
+            var resolver = generator.CreateResolver(typeExpression);
+
+            Assert.Throws<UnresolvedValueException>(() =>
+            {
+                var result = resolver.Resolve(complexObject);
+            });
         }
     }
 }

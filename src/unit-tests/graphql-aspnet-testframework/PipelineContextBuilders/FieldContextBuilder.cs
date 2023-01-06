@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         {
             var resolvedInputValue = new ResolvedInputArgumentValue(argumentName, value);
             var fieldArgument = _graphField.Arguments[argumentName];
-            var inputArgument = new InputArgument(fieldArgument, resolvedInputValue);
+            var inputArgument = new InputArgument(fieldArgument, resolvedInputValue, SourceOrigin.None);
             _arguments.Add(inputArgument);
             return this;
         }
@@ -214,11 +214,14 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         public FieldResolutionContext CreateResolutionContext()
         {
             var context = this.CreateExecutionContext();
-            var executionArguments = context
-                .InvocationContext
-                .Arguments
-                .Merge(context.VariableData)
-                .ForContext(context);
+
+            ExecutionArgumentGenerator.TryConvert(
+                context.InvocationContext.Arguments,
+                context.VariableData,
+                context.Messages,
+                out var executionArguments);
+
+            executionArguments = executionArguments.ForContext(context);
 
             return new FieldResolutionContext(
                 _schema,

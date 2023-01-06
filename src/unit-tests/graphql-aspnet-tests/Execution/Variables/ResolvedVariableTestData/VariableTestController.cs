@@ -68,5 +68,17 @@ namespace GraphQL.AspNet.Tests.Execution.Variables.ResolvedVariableTestData
         {
             return null;
         }
+
+        [QueryRoot]
+        public string NonNullableIntValue(int arg1)
+        {
+            return null;
+        }
+
+        [QueryRoot]
+        public string NullableIntValue(int? arg1)
+        {
+            return null;
+        }
     }
 }

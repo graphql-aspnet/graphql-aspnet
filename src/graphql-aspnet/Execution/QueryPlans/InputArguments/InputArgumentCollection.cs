@@ -61,19 +61,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         }
 
         /// <inheritdoc />
-        public IExecutionArgumentCollection Merge(IResolvedVariableCollection variableData)
-        {
-            var collection = new ExecutionArgumentCollection(_arguments.Count);
-            foreach (var arg in _arguments.Values)
-            {
-                var resolvedValue = arg.Value.Resolve(variableData);
-                collection.Add(new ExecutionArgument(arg.Argument, resolvedValue));
-            }
-
-            return collection;
-        }
-
-        /// <inheritdoc />
         public bool Contains(string name)
         {
             return _arguments.ContainsKey(name);

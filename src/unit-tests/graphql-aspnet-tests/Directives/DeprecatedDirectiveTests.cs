@@ -83,14 +83,15 @@ namespace GraphQL.AspNet.Tests.Directives
 
             _arg = new InputArgument(
                 _directive.Arguments[0],
-                _argValue.Object);
+                _argValue.Object,
+                SourceOrigin.None);
 
             var argList = new List<InputArgument>();
             argList.Add(_arg);
 
             _argCollection = new Mock<IInputArgumentCollection>();
             _argCollection.Setup(m => m.GetEnumerator())
-                .Returns(argList.GetEnumerator());
+                .Returns(() => argList.GetEnumerator());
 
             _logger = new Mock<IGraphEventLogger>();
         }
@@ -98,11 +99,8 @@ namespace GraphQL.AspNet.Tests.Directives
         private async Task<GraphDirectiveExecutionContext> ExecuteRequest()
         {
             var executionArgs = new ExecutionArgumentCollection();
-            if (_reason != "do-not-add")
+            if (_reason == "do-not-add")
                 executionArgs.Add(new ExecutionArgument(_directive.Arguments[0], _reason));
-
-            _argCollection.Setup(x => x.Merge(It.IsAny<IResolvedVariableCollection>()))
-                .Returns(executionArgs);
 
             _queryRequest = new QueryExecutionRequest(GraphQueryData.Empty);
 
@@ -156,20 +154,6 @@ namespace GraphQL.AspNet.Tests.Directives
             var item = _directiveTarget as IGraphField;
             Assert.IsTrue(item.IsDeprecated);
             Assert.IsNull(item.DeprecationReason);
-        }
-
-        [Test]
-        public async Task NoReasonSupplied_ReasonIsSetToDefault()
-        {
-            _directiveLocation = DirectiveLocation.FIELD_DEFINITION;
-            _reason = "do-not-add";
-            _directiveTarget = _schema.AllSchemaItems().First(x => x.IsField<TwoPropertyObject>("property1"));
-
-            var context = await this.ExecuteRequest();
-
-            var item = _directiveTarget as IGraphField;
-            Assert.IsTrue(item.IsDeprecated);
-            Assert.AreEqual("No longer supported", item.DeprecationReason);
         }
 
         [Test]

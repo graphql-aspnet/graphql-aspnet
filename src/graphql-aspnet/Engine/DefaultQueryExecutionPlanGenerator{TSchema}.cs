@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Engine
         private readonly ISchema _schema;
         private readonly IQueryOperationComplexityCalculator<TSchema> _complexityCalculator;
         private readonly IQueryOperationDepthCalculator<TSchema> _depthCalculator;
+        private readonly ExecutableOperationGenerator _generator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultQueryExecutionPlanGenerator{TSchema}" /> class.
@@ -46,6 +47,8 @@ namespace GraphQL.AspNet.Engine
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _complexityCalculator = Validation.ThrowIfNullOrReturn(complexityCalculator, nameof(complexityCalculator));
             _depthCalculator = Validation.ThrowIfNullOrReturn(depthCalculator, nameof(depthCalculator));
+
+            _generator = new ExecutableOperationGenerator(_schema);
         }
 
         /// <inheritdoc />
@@ -60,9 +63,7 @@ namespace GraphQL.AspNet.Engine
             if (!queryPlan.IsValid)
                 return queryPlan;
 
-            var generator = new ExecutableOperationGenerator(_schema);
-
-            var executableOperation = await generator.CreateAsync(operation).ConfigureAwait(false);
+            var executableOperation = await _generator.CreateAsync(operation).ConfigureAwait(false);
             queryPlan.Operation = executableOperation;
             queryPlan.Messages.AddRange(executableOperation.Messages);
 

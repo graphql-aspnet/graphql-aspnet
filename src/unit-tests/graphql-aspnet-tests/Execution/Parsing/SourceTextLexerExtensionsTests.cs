@@ -8,7 +8,7 @@
 // *************************************************************
 
 // ReSharper disable All
-namespace GraphQL.AspNet.Tests.Parsing2
+namespace GraphQL.AspNet.Tests.Parsing
 {
     using System;
     using System.Linq;

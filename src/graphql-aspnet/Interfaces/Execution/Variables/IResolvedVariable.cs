@@ -34,5 +34,15 @@ namespace GraphQL.AspNet.Interfaces.Execution.Variables
         /// </summary>
         /// <value>The type expression.</value>
         GraphTypeExpression TypeExpression { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this resolved variable value represents a declared default value.
+        /// </summary>
+        /// <remarks>
+        /// When <c>false</c>, indicates that the <see cref="Value"/> was explicitly supplied. When <c>true</c>, indicates that
+        /// no variable value was supplied and that <see cref="Value"/> is the default value declared on the operation.
+        /// </remarks>
+        /// <value><c>true</c> if this instance is default value; otherwise, <c>false</c>.</value>
+        bool IsDefaultValue { get; }
     }
 }

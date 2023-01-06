@@ -12,7 +12,9 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration.Formatting;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -148,6 +150,17 @@ namespace GraphQL.AspNet.Engine.TypeMakers
         public GraphFieldCreationResult<IInputGraphField> CreateField(IInputGraphFieldTemplate template)
         {
             var formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
+
+            var defaultInputObject = InstanceFactory.CreateInstance(template.Parent.ObjectType);
+            var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(template.Parent.ObjectType);
+
+            object defaultValue = null;
+
+            if (!template.IsRequired && propGetters.ContainsKey(template.InternalName))
+            {
+                defaultValue = propGetters[template.InternalName](ref defaultInputObject);
+            }
+
             var result = new GraphFieldCreationResult<IInputGraphField>();
 
             var directives = template.CreateAppliedDirectives();
@@ -160,6 +173,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
                     template.ObjectType,
                     template.DeclaredReturnType,
                     template.IsRequired,
+                    defaultValue,
                     directives);
 
             field.Description = template.Description;

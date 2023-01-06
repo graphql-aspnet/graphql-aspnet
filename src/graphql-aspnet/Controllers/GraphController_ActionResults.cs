@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult.</returns>
         protected virtual IGraphActionResult Unauthorized(string message = null, string errorCode = null)
         {
-            return new UnauthorizedGraphActionResult(errorCode ?? "Unauthorized", message ?? string.Empty);
+            return new UnauthorizedGraphActionResult(message, errorCode);
         }
 
         /// <summary>

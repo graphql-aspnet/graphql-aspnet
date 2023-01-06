@@ -34,5 +34,11 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts
         /// </summary>
         /// <value>The default value.</value>
         ISuppliedValueDocumentPart DefaultValue { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this variable instance has a declared <see cref="DefaultValue"/>.
+        /// </summary>
+        /// <value><c>true</c> if this instance has a default value; otherwise, <c>false</c>.</value>
+        bool HasDefaultValue { get; }
     }
 }
