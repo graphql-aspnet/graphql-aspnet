@@ -60,10 +60,10 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public Task<bool> TryGetPlanAsync(string key, out IQueryExecutionPlan plan)
+        public Task<IQueryExecutionPlan> TryGetPlanAsync(string key)
         {
-            plan = _cachedPlans.Get(key) as IQueryExecutionPlan;
-            return (plan != null).AsCompletedTask();
+            var plan = _cachedPlans.Get(key) as IQueryExecutionPlan;
+            return Task.FromResult(plan as IQueryExecutionPlan);
         }
 
         /// <inheritdoc />
