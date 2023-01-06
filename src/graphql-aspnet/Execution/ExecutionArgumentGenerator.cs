@@ -70,6 +70,7 @@ namespace GraphQL.AspNet.Execution
                               Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
                               arg.Origin);
 
+                            successful = false;
                             continue;
                         }
                     }
