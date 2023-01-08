@@ -1,4 +1,4 @@
-## GraphQL ASP.NET (beta)
+## GraphQL ASP.NET
 
 ### Documentation: [https://graphql-aspnet.github.io](https://graphql-aspnet.github.io)
 
@@ -67,17 +67,16 @@ query {
 }
 ```
 
-#### 📦 Add the Package from Nuget\*:
+#### 📦 Add the Package from Nuget:
 
 ```powershell
 # Package Manager Console
-> Install-Package GraphQL.AspNet -IncludePrerelease
+> Install-Package GraphQL.AspNet
 
 # cli
-> dotnet add package GraphQL.AspNet --prerelease
+> dotnet add package GraphQL.AspNet
 ```
 
-_\*This library is still in beta_
 
 #### 📐 Register GraphQL with your Application:
 
