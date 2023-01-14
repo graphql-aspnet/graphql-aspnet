@@ -28,19 +28,19 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// When a controller action is encountered it will be executed
         /// in isolation, no other reslolvers will be allowed to execute while
-        /// the resolver action is processing. This includes Type and Batch Extensions.
+        /// the resolver action is processing. Type and Batch Extensions are included in this category.
         /// </summary>
         ControllerActions = GraphFieldSource.Action,
 
         /// <summary>
-        /// When an object method resolver is encountered it will be executed in isolation,
-        /// no other reslolvers will be allowed to execute while the method resolver is processing.
+        /// When an POCO object method resolver is encountered it will be executed in isolation,
+        /// no other resolvers will be allowed to execute while the method resolver is processing.
         /// </summary>
         Methods = GraphFieldSource.Method,
 
         /// <summary>
         /// When an object property resolver is encountered it will be executed in isolation,
-        /// no other reslolvers will be allowed to execute while the property resolver is processing.
+        /// no other resolvers will be allowed to execute while the property resolver is processing.
         /// </summary>
         Properties = GraphFieldSource.Property,
 

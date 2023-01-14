@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNameFormatter"/> class.
         /// </summary>
-        /// <param name="singleStrategy">The single strategy to use for all naming options.</param>
+        /// <param name="singleStrategy">A single strategy to use for all naming options.</param>
         public GraphNameFormatter(GraphNameFormatStrategy singleStrategy)
         {
             _typeNameStrategy = singleStrategy;
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// Initializes a new instance of the <see cref="GraphNameFormatter" /> class.
         /// </summary>
         /// <param name="typeNameStrategy">The strategy to use for naming graph types.</param>
-        /// <param name="fieldNameStrategy">The strategy to use for naming fields.</param>
+        /// <param name="fieldNameStrategy">The strategy to use for naming fields and arguments.</param>
         /// <param name="enumValueStrategy">The strategy to use for naming individual enum values.</param>
         public GraphNameFormatter(
             GraphNameFormatStrategy typeNameStrategy = GraphNameFormatStrategy.ProperCase,
@@ -61,9 +61,9 @@ namespace GraphQL.AspNet.Configuration.Formatting
         }
 
         /// <summary>
-        /// Formats the field name according to the strategy declared on this formatter.
+        /// Formats a field or argument name according to the strategy declared on this formatter.
         /// </summary>
-        /// <param name="name">The name to format.</param>
+        /// <param name="name">The field or argument name to format.</param>
         /// <returns>System.String.</returns>
         public virtual string FormatFieldName(string name)
         {
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <summary>
         /// Formats the enum value name according to the strategy declared on this formatter.
         /// </summary>
-        /// <param name="name">The name to format.</param>
+        /// <param name="name">The enum value name to format.</param>
         /// <returns>System.String.</returns>
         public virtual string FormatEnumValueName(string name)
         {
@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <summary>
         /// Formats the graph type name according to the strategy declared on this formatter.
         /// </summary>
-        /// <param name="name">The name to format.</param>
+        /// <param name="name">The type name to format.</param>
         /// <returns>System.String.</returns>
         public virtual string FormatGraphTypeName(string name)
         {
@@ -97,8 +97,8 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <summary>
         /// Formats or reformats the name according to the rules of this formatter.
         /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="strategy">The strategy to invoke.</param>
+        /// <param name="name">The name value being formatted.</param>
+        /// <param name="strategy">The selected strategy to format with.</param>
         /// <returns>System.String.</returns>
         protected virtual string FormatName(string name, GraphNameFormatStrategy strategy)
         {
