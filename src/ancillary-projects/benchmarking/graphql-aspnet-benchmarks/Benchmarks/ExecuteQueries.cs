@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
             using var serviceScope = _serviceProvider.CreateScope();
 
             var runtime = serviceScope.ServiceProvider.GetService<IGraphQLRuntime<GraphSchema>>();
-            var writer = serviceScope.ServiceProvider.GetService<IGraphQueryResponseWriter<GraphSchema>>();
+            var writer = serviceScope.ServiceProvider.GetService<IQueryResponseWriter<GraphSchema>>();
 
             // parse the json doc, simulating a request recieved to the QueryController
             var inputVars = InputVariableCollection.FromJsonDocument(jsonText);
