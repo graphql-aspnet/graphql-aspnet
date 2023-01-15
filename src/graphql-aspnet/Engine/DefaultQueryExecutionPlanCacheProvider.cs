@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Engine
     using System;
     using System.Runtime.Caching;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -28,6 +29,7 @@ namespace GraphQL.AspNet.Engine
         public const int DEFAULT_SLIDING_EXPIRATION_MINUTES = 15;
 
         private readonly MemoryCache _cachedPlans;
+        private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultQueryExecutionPlanCacheProvider"/> class.
@@ -53,21 +55,22 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public Task<bool> EvictAsync(string key)
+        public virtual Task<bool> EvictAsync(string key)
         {
+            Validation.ThrowIfNullWhiteSpace(key, nameof(key));
             _cachedPlans.Remove(key);
             return true.AsCompletedTask();
         }
 
         /// <inheritdoc />
-        public Task<IQueryExecutionPlan> TryGetPlanAsync(string key)
+        public virtual Task<IQueryExecutionPlan> TryGetPlanAsync(string key)
         {
             var plan = _cachedPlans.Get(key) as IQueryExecutionPlan;
             return Task.FromResult(plan as IQueryExecutionPlan);
         }
 
         /// <inheritdoc />
-        public Task<bool> TryCachePlanAsync(string key, IQueryExecutionPlan plan, DateTimeOffset? absoluteExpiration = null, TimeSpan? slidingExpiration = null)
+        public virtual Task<bool> TryCachePlanAsync(string key, IQueryExecutionPlan plan, DateTimeOffset? absoluteExpiration = null, TimeSpan? slidingExpiration = null)
         {
             var policy = new CacheItemPolicy();
             if (absoluteExpiration.HasValue)
@@ -102,8 +105,11 @@ namespace GraphQL.AspNet.Engine
         {
             if (isDisposing)
             {
-                if (_cachedPlans != MemoryCache.Default)
+                if (_cachedPlans != MemoryCache.Default && !_isDisposed)
+                {
                     _cachedPlans.Dispose();
+                    _isDisposed = true;
+                }
             }
         }
 
@@ -117,7 +123,7 @@ namespace GraphQL.AspNet.Engine
         /// <summary>
         /// Gets the number of plans cached.
         /// </summary>
-        /// <value>The count.</value>
+        /// <value>The number of plans cached.</value>
         public long Count => _cachedPlans.GetCount();
     }
 }

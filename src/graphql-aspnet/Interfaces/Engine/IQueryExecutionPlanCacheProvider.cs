@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         Task<bool> TryCachePlanAsync(string key, IQueryExecutionPlan plan, DateTimeOffset? absoluteExpiration = null, TimeSpan? slidingExpiration = null);
 
         /// <summary>
-        /// Immediately evicts the query plan from the cache.
+        /// Immediately evicts the query plan with the given key from the cache. If no plan is found, no action is taken.
         /// </summary>
         /// <param name="key">The unique key for the plan of a given schema.</param>
         /// <returns><c>true</c> if the plan was successfully evicted, <c>false</c> otherwise.</returns>

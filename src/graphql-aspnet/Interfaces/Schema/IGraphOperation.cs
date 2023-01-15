@@ -12,15 +12,15 @@ namespace GraphQL.AspNet.Interfaces.Schema
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// An interface representing a top level object graph type with in a schema
+    /// An interface representing a top level object graph type within a schema
     /// that is typed for one of the allowed operation types of graphql.
     /// </summary>
     public interface IGraphOperation : IObjectGraphType
     {
         /// <summary>
-        /// Gets the graph operation represented by this instance.
+        /// Gets the enum value representing the graph operation.
         /// </summary>
-        /// <value>The type of the root.</value>
+        /// <value>The root type this operation represents.</value>
         GraphOperationType OperationType { get; }
     }
 }
