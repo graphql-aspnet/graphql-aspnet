@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Configuration
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
@@ -32,7 +33,6 @@ namespace GraphQL.AspNet.Configuration
         private readonly Dictionary<Type, IGraphQLServerExtension> _serverExtensions;
         private readonly HashSet<SchemaTypeToRegister> _possibleTypes;
 
-        private readonly Type _schemaType;
         private readonly List<ServiceToRegister> _registeredServices;
         private List<ISchemaConfigurationExtension> _configExtensions;
 
@@ -45,7 +45,10 @@ namespace GraphQL.AspNet.Configuration
         public SchemaOptions(Type schemaType, IServiceCollection serviceCollection)
         {
             this.ServiceCollection = Validation.ThrowIfNullOrReturn(serviceCollection, nameof(serviceCollection));
-            _schemaType = Validation.ThrowIfNullOrReturn(schemaType, nameof(schemaType));
+            this.SchemaType = Validation.ThrowIfNullOrReturn(schemaType, nameof(schemaType));
+
+            Validation.ThrowIfNotCastable<ISchema>(schemaType, nameof(schemaType));
+
             _possibleTypes = new HashSet<SchemaTypeToRegister>(SchemaTypeToRegister.DefaultEqualityComparer);
             _serverExtensions = new Dictionary<Type, IGraphQLServerExtension>();
             _registeredServices = new List<ServiceToRegister>();
@@ -57,6 +60,7 @@ namespace GraphQL.AspNet.Configuration
             this.ExecutionOptions = new SchemaExecutionConfiguration();
             this.ResponseOptions = new SchemaResponseConfiguration();
             this.QueryHandler = new SchemaQueryHandlerConfiguration();
+
         }
 
         /// <summary>
@@ -79,7 +83,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>SchemaOptions.</returns>
         public SchemaOptions AddSchemaAssembly()
         {
-            var assemblyToCheck = _schemaType.Assembly;
+            var assemblyToCheck = this.SchemaType.Assembly;
             if (assemblyToCheck != typeof(GraphSchema).Assembly)
                 this.AddAssembly(assemblyToCheck);
 
@@ -244,6 +248,18 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
+        /// Registers a server extension for this schema. The extension is instantiated using a public
+        /// parameterless constructor. If such a constructor does not exist, an exception will be thrown.
+        /// </summary>
+        /// <typeparam name="TExtensionType">The type of the extension to register.</typeparam>
+        public void RegisterExtension<TExtensionType>()
+            where TExtensionType : class, IGraphQLServerExtension
+        {
+            var extension = InstanceFactory.CreateInstance(typeof(TExtensionType));
+            this.RegisterExtension<TExtensionType>(extension as TExtensionType);
+        }
+
+        /// <summary>
         /// Registers a server extension for this schema.
         /// </summary>
         /// <typeparam name="TExtensionType">The type of the extension to register.</typeparam>
@@ -404,5 +420,11 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value>The service collection.</value>
         public IServiceCollection ServiceCollection { get; }
+
+        /// <summary>
+        /// Gets the concrete type that represents the schema being configured by this set of options.
+        /// </summary>
+        /// <value>The type of the schema.</value>
+        public Type SchemaType { get; }
     }
 }

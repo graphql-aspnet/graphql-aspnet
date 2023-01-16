@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Engine
 {
     using System;
     using System.Net;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -21,7 +20,6 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Web.Exceptions;
@@ -38,7 +36,7 @@ namespace GraphQL.AspNet.Engine
     /// </para>
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this processor is built for.</typeparam>
-    public class DefaultGraphQLHttpProcessor<TSchema> : IGraphQLHttpProcessor<TSchema>
+    public class DefaultGraphQLHttpProcessor<TSchema> : GraphQLHttpProcessorBase<TSchema>
             where TSchema : class, ISchema
     {
         /// <summary>
@@ -57,9 +55,6 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         protected const string ERROR_NO_REQUEST_CREATED = "GraphQL Operation Request is null. Unable to execute the query.";
 
-        private readonly IGraphEventLogger _logger;
-        private readonly TSchema _schema;
-        private readonly IGraphQLRuntime<TSchema> _runtime;
         private readonly IQueryResponseWriter<TSchema> _writer;
 
         /// <summary>
@@ -75,16 +70,13 @@ namespace GraphQL.AspNet.Engine
             IGraphQLRuntime<TSchema> runtime,
             IQueryResponseWriter<TSchema> writer,
             IGraphEventLogger logger = null)
+            : base(schema, runtime, logger)
         {
-            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _runtime = Validation.ThrowIfNullOrReturn(runtime, nameof(runtime));
             _writer = Validation.ThrowIfNullOrReturn(writer, nameof(writer));
-
-            _logger = logger;
         }
 
         /// <inheritdoc />
-        public virtual async Task InvokeAsync(HttpContext context)
+        public override async Task InvokeAsync(HttpContext context)
         {
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
 
@@ -164,7 +156,7 @@ namespace GraphQL.AspNet.Engine
                 // *******************************
                 // Primary query execution
                 // *******************************
-                var queryResponse = await _runtime
+                var queryResponse = await this.Runtime
                     .ExecuteRequestAsync(
                         this.HttpContext.RequestServices,
                         this.GraphQLQueryRequest,
@@ -188,16 +180,16 @@ namespace GraphQL.AspNet.Engine
                 {
                     // no one was able to handle the exception?
                     // Log it if able and just fail out to the caller
-                    if (_logger != null)
+                    if (this.Logger != null)
                     {
                         if (ex is AggregateException ae)
                         {
                             foreach (var internalException in ae.InnerExceptions)
-                                _logger.UnhandledExceptionEvent(internalException);
+                                this.Logger.UnhandledExceptionEvent(internalException);
                         }
                         else
                         {
-                            _logger.UnhandledExceptionEvent(ex);
+                            this.Logger.UnhandledExceptionEvent(ex);
                         }
                     }
 
@@ -211,57 +203,6 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <summary>
-        /// When overriden in a child class, allows for alternate creation of the primary graphql operation
-        /// request. The generated request is sent to the graphql runtime for processing
-        /// and should NOT contain any errors. If an error does occur, return <c>null</c>,
-        /// and an appropriate error response will be written to the response.
-        /// </summary>
-        /// <param name="queryData">The query data that needs to be packaged into a <see cref="IQueryExecutionRequest" />.</param>
-        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>IQueryExecutionRequest.</returns>
-        protected virtual Task<IQueryExecutionRequest> CreateQueryRequestAsync(GraphQueryData queryData, CancellationToken cancelToken = default)
-        {
-            var request = _runtime.CreateRequest(queryData);
-            if (request == null)
-                return Task.FromResult(null as IQueryExecutionRequest);
-
-            // repackage the runtime request to carry the
-            // HttpContext along. It's not used or needed by the runtime
-            // but its useful within controller action method invocations
-            request = new QueryExecutionWebRequest(request, this.HttpContext);
-            return Task.FromResult(request);
-        }
-
-        /// <summary>
-        /// When overriden in a child class, allows for alternate creation of the security context
-        /// that represent the user's supplied credentials to the graphql pipeline.
-        /// </summary>
-        /// <returns>IUserSecurityContext.</returns>
-        protected virtual IUserSecurityContext CreateUserSecurityContext()
-        {
-            return new HttpUserSecurityContext(this.HttpContext);
-        }
-
-        /// <summary>
-        /// Writes directly to the <see cref="HttpResponse" /> stream with the given status code
-        /// and message.
-        /// </summary>
-        /// <param name="statusCode">The status code to deliver on the response.</param>
-        /// <param name="message">The message to deliver with the given code.</param>
-        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task.</returns>
-        protected async Task WriteStatusCodeResponseAsync(HttpStatusCode statusCode, string message, CancellationToken cancelToken = default)
-        {
-            if (_schema.Configuration.ResponseOptions.AppendServerHeader)
-            {
-                this.Response.Headers.Add(Constants.ServerInformation.SERVER_INFORMATION_HEADER, Constants.ServerInformation.ServerData);
-            }
-
-            this.Response.StatusCode = (int)statusCode;
-            await this.Response.WriteAsync(message, cancelToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// When overriden in a child class, allows for altering the way an operation result
         /// is written to the response stream.
         /// </summary>
@@ -271,7 +212,7 @@ namespace GraphQL.AspNet.Engine
         protected virtual async Task WriteResponseAsync(IQueryExecutionResult result, CancellationToken cancelToken = default)
         {
             this.Response.ContentType = Constants.MediaTypes.JSON;
-            if (_schema.Configuration.ResponseOptions.AppendServerHeader)
+            if (this.Schema.Configuration.ResponseOptions.AppendServerHeader)
             {
                 this.Response.Headers.Add(Constants.ServerInformation.SERVER_INFORMATION_HEADER, Constants.ServerInformation.ServerData);
             }
@@ -321,9 +262,7 @@ namespace GraphQL.AspNet.Engine
             string message,
             string errorCode = Constants.ErrorCodes.GENERAL_ERROR)
         {
-            var response = new QueryExecutionResult(this.GraphQLQueryRequest);
-            response.Messages.Add(GraphMessageSeverity.Critical, message, errorCode);
-            return response;
+            return this.ErrorMessageAsGraphQLResponse(this.GraphQLQueryRequest, message, errorCode);
         }
 
         /// <summary>
@@ -338,49 +277,6 @@ namespace GraphQL.AspNet.Engine
         {
             return result;
         }
-
-        /// <summary>
-        /// Gets a value indicating whether this graphql request should enable and track internal metrics or not.
-        /// </summary>
-        /// <value><c>true</c> if metrics should be enabled, <c>false</c> otherwise.</value>
-        protected virtual bool EnableMetrics => _schema.Configuration.ExecutionOptions.EnableMetrics;
-
-        /// <summary>
-        /// Gets a value indicating whether metrics, when enabled through <see cref="EnableMetrics"/>, are delivered to the user as
-        /// part of the graphql result.
-        /// </summary>
-        /// <value><c>true</c> if metrics should be exposed to the requestor; otherwise, <c>false</c>.</value>
-        protected virtual bool ExposeMetrics => _schema.Configuration.ResponseOptions.ExposeMetrics;
-
-        /// <summary>
-        /// Gets a value indicating whether this graphql request will expose exceptions to the requestor.
-        /// </summary>
-        /// <value><c>true</c> if exceptions should be exposed on the execution result, <c>false</c> otherwise.</value>
-        protected virtual bool ExposeExceptions => _schema.Configuration.ResponseOptions.ExposeExceptions;
-
-        /// <summary>
-        /// Gets the claims principle representing the active, default user on the http context.
-        /// </summary>
-        /// <value>The user.</value>
-        protected virtual ClaimsPrincipal User => this.HttpContext?.User;
-
-        /// <summary>
-        /// Gets the <see cref="HttpResponse"/> of the active <see cref="HttpContext"/>.
-        /// </summary>
-        /// <value>The response.</value>
-        protected virtual HttpResponse Response => this.HttpContext?.Response;
-
-        /// <summary>
-        /// Gets the HTTP context assigned to this instance.
-        /// </summary>
-        /// <value>The HTTP context.</value>
-        protected virtual HttpContext HttpContext { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="HttpRequest"/> object of the active <see cref="HttpContext"/>.
-        /// </summary>
-        /// <value>The request.</value>
-        protected virtual HttpRequest Request => this.HttpContext?.Request;
 
         /// <summary>
         /// Gets the GraphQL request that was created and processed.

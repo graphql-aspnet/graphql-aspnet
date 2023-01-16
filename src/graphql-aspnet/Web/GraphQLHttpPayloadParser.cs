@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Web
 
     /// <summary>
     /// An implementation of the business rules that extract the data received on an
-    /// <see cref="Microsoft.AspNetCore.Http.HttpContext"/> to create a <see cref="GraphQueryData" />
+    /// <see cref="Microsoft.AspNetCore.Http.HttpContext"/> to create a single <see cref="GraphQueryData" />
     /// object used by the graphql runtime.
     /// </summary>
     public class GraphQLHttpPayloadParser
