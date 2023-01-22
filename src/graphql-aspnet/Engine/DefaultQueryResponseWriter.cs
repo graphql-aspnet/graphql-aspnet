@@ -9,19 +9,16 @@
 
 namespace GraphQL.AspNet.Engine
 {
-    using System;
     using System.IO;
     using System.Linq;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
@@ -81,7 +78,7 @@ namespace GraphQL.AspNet.Engine
         /// Converts the operation reslt into a dictionary map of the required fields for a graphql response.
         /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Response" /> .
         /// </summary>
-        /// <param name="writer">The json writer to output the reslts to.</param>
+        /// <param name="writer">The writer to stream to.</param>
         /// <param name="resultToWrite">The operation result to write.</param>
         /// <param name="options">A set options to customize how the response is serialized to the stream.</param>
         protected virtual void WriteResult(Utf8JsonWriter writer, IQueryExecutionResult resultToWrite, ResponseWriterOptions options)
@@ -111,85 +108,6 @@ namespace GraphQL.AspNet.Engine
             }
 
             writer.WriteEndObject(); // {document}
-        }
-
-        /// <summary>
-        /// Writes a single response item to the supplied writer.
-        /// </summary>
-        /// <param name="writer">The writer to stream to.</param>
-        /// <param name="dataItem">The data item to serialize.</param>
-        protected virtual void WriteResponseItem(Utf8JsonWriter writer, IQueryResponseItem dataItem)
-        {
-            if (dataItem == null)
-            {
-                this.WriteLeafValue(writer, dataItem);
-                return;
-            }
-
-            switch (dataItem)
-            {
-                case IQueryResponseFieldSet fieldSet:
-                    this.WriteObjectCollection(writer, fieldSet);
-                    break;
-                case IQueryResponseItemList list:
-                    this.WriteList(writer, list);
-                    break;
-                case IQueryResponseSingleValue singleValue:
-                    this.WriteLeafValue(writer, singleValue.Value);
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(
-                        $"Unknown {nameof(IQueryResponseItem)} type. " +
-                        $"Default writer is unable to write type '{dataItem.GetType().FriendlyName()}' to the output stream.");
-            }
-        }
-
-        /// <summary>
-        /// Walks the the object collection and writes it to the provided writer.
-        /// </summary>
-        /// <param name="writer">The json writer to output the reslts to.</param>
-        /// <param name="data">The dictionary to output to the writer.</param>
-        private void WriteObjectCollection(Utf8JsonWriter writer, IQueryResponseFieldSet data)
-        {
-            if (data == null)
-            {
-                writer.WriteNullValue();
-            }
-            else
-            {
-                writer.WriteStartObject();
-                foreach (var kvp in data.Fields)
-                {
-                    writer.WritePropertyName(kvp.Key);
-                    this.WriteResponseItem(writer, kvp.Value);
-                }
-
-                writer.WriteEndObject();
-            }
-        }
-
-        /// <summary>
-        /// Writes the list of values as an array into the response stream.
-        /// </summary>
-        /// <param name="writer">The writer to stream to.</param>
-        /// <param name="list">The list to write.</param>
-        private void WriteList(Utf8JsonWriter writer, IQueryResponseItemList list)
-        {
-            if (list?.Items == null)
-            {
-                writer.WriteNullValue();
-            }
-            else
-            {
-                writer.WriteStartArray();
-                foreach (var item in list.Items)
-                {
-                    this.WriteResponseItem(writer, item);
-                }
-
-                writer.WriteEndArray();
-            }
         }
     }
 }
