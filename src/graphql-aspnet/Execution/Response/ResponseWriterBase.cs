@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Execution.Response
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
 
     /// <summary>
     /// A class containing many shared methods for writing all or part of a <see cref="IQueryExecutionResult"/>
@@ -136,9 +137,90 @@ namespace GraphQL.AspNet.Execution.Response
         }
 
         /// <summary>
-        /// Writes the entire leaf property to the writer.
+        /// Writes a single response item to the supplied writer at its current position.
         /// </summary>
-        /// <param name="writer">The writer.</param>
+        /// <param name="writer">The writer to stream to.</param>
+        /// <param name="dataItem">The data item to serialize.</param>
+        protected virtual void WriteResponseItem(Utf8JsonWriter writer, IQueryResponseItem dataItem)
+        {
+            if (dataItem == null)
+            {
+                this.WriteLeafValue(writer, dataItem);
+                return;
+            }
+
+            switch (dataItem)
+            {
+                case IQueryResponseFieldSet fieldSet:
+                    this.WriteObjectCollection(writer, fieldSet);
+                    break;
+                case IQueryResponseItemList list:
+                    this.WriteList(writer, list);
+                    break;
+                case IQueryResponseSingleValue singleValue:
+                    this.WriteLeafValue(writer, singleValue.Value);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        $"Unknown {nameof(IQueryResponseItem)} type. " +
+                        $"Default writer is unable to write type '{dataItem.GetType().FriendlyName()}' to the output stream.");
+            }
+        }
+
+        /// <summary>
+        /// Walks the the object collection and writes it to the provided writer. This method assumes a property
+        /// name has already been written and just the value of the property is being serialized for said property.
+        /// </summary>
+        /// <param name="writer">The writer to stream to.</param>
+        /// <param name="data">The dictionary to output to the writer.</param>
+        protected virtual void WriteObjectCollection(Utf8JsonWriter writer, IQueryResponseFieldSet data)
+        {
+            if (data == null)
+            {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.WriteStartObject();
+                foreach (var kvp in data.Fields)
+                {
+                    writer.WritePropertyName(kvp.Key);
+                    this.WriteResponseItem(writer, kvp.Value);
+                }
+
+                writer.WriteEndObject();
+            }
+        }
+
+        /// <summary>
+        /// Writes the list of values as an array into the response stream.This method assumes a property
+        /// name has already been written and just the value of the property is being serialized for said property.
+        /// </summary>
+        /// <param name="writer">The writer to stream to.</param>
+        /// <param name="list">The list to write.</param>
+        protected virtual void WriteList(Utf8JsonWriter writer, IQueryResponseItemList list)
+        {
+            if (list?.Items == null)
+            {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.WriteStartArray();
+                foreach (var item in list.Items)
+                {
+                    this.WriteResponseItem(writer, item);
+                }
+
+                writer.WriteEndArray();
+            }
+        }
+
+        /// <summary>
+        /// Writes the entire leaf property (name and value) to the writer.
+        /// </summary>
+        /// <param name="writer">The writer to stream to.</param>
         /// <param name="name">The property name to assign.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="convertUnsupportedToString">When <c>true</c> if the object type
@@ -153,8 +235,8 @@ namespace GraphQL.AspNet.Execution.Response
         /// Writes the leaf value provided to the json writer. This method assumes a coorisponding property name
         /// has already been written.
         /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="value">The value.</param>
+        /// <param name="writer">The writer to stream to.</param>
+        /// <param name="value">The value to write.</param>
         /// <param name="convertUnsupportedToString">When <c>true</c> if the object type
         /// is not natively supported by this method its internally serialized to a string then written to the response.</param>
         protected virtual void WriteLeafValue(Utf8JsonWriter writer, object value, bool convertUnsupportedToString = false)
@@ -262,7 +344,7 @@ namespace GraphQL.AspNet.Execution.Response
         /// property to the writer. Prevents over-escaping caused by <see cref="JsonSerializer"/> while still
         /// providing required UTF-8 escaping.
         /// </summary>
-        /// <param name="writer">The writer to write to.</param>
+        /// <param name="writer">The writer to stream to.</param>
         /// <param name="value">The value to serialize.</param>
         protected virtual void WritePreEncodedStringValue(Utf8JsonWriter writer, string value)
         {
@@ -274,7 +356,7 @@ namespace GraphQL.AspNet.Execution.Response
         /// property to the writer. Prevents over-escaping caused by <see cref="JsonSerializer"/> while still
         /// providing required UTF-8 escaping.
         /// </summary>
-        /// <param name="writer">The writer to write to.</param>
+        /// <param name="writer">The writer to stream to.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="value">The value to serialize.</param>
         protected virtual void WritePreEncodedString(Utf8JsonWriter writer, string propertyName, string value)
