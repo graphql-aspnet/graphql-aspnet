@@ -282,7 +282,7 @@ namespace GraphQL.AspNet.Engine
         /// Gets the GraphQL request that was created and processed.
         /// </summary>
         /// <remarks>
-        /// This property may not be populated until after <see cref="CreateQueryRequestAsync"/> is called.
+        /// This property may not be populated until after <see cref="GraphQLHttpProcessorBase{TSchema}.CreateQueryRequestAsync"/> is called.
         /// </remarks>
         /// <value>The graphQL request being executed by this processor.</value>
         protected virtual IQueryExecutionRequest GraphQLQueryRequest { get; private set; }

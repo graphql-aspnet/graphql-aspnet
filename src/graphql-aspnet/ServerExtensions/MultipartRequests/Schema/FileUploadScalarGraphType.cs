@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             if (item == null)
                 return null;
 
-            return $"{((FileUpload)item).Id}";
+            return $"{((FileUpload)item).FileName}";
         }
 
         /// <inheritdoc />
@@ -53,7 +53,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes => TypeCollection.Empty;
-
 
         /// <inheritdoc />
         public override object Resolve(ReadOnlySpan<char> data)

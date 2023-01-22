@@ -17,8 +17,11 @@ namespace GraphQL.AspNet.ServerExtensions
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
     /// A server extension that configures support for the <c>graphql-multipart-request</c> specification on the
@@ -72,7 +75,12 @@ namespace GraphQL.AspNet.ServerExtensions
                 options.QueryHandler.HttpProcessorType = _expectedProcessorType;
             }
 
-            // register the rest of the required types for this schema
+            // register scalars that represent the files
+            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(FileUploadScalarGraphType));
+            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(FileUploadListScalarGraphType));
+
+            // perform the rest of the DI registrations
+            options.ServiceCollection.TryAddSingleton<IFileUploadScalarValueMaker, DefaultFileUploadScalarValueMaker>();
         }
 
         /// <inheritdoc />

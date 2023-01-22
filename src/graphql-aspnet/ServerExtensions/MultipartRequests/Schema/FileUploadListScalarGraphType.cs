@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             if (item == null)
                 return null;
 
-            return $"{((FileUploadList)item).Count} files";
+            return $"{((FileUploadList)item).Files.Count} files";
         }
 
         /// <inheritdoc />

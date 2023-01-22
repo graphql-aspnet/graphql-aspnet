@@ -9,11 +9,12 @@
 
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 {
-    using System.IO;
+    using System.Collections;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
 
     /// <summary>
-    /// An input object representing a single file uploaded to a query or mutation.
+    /// An object representing the an arbitrary collection of files uploaded to a mutation or query.
     /// </summary>
     /// <remarks>
     /// Attempting to use this class without registering the <see cref="MultipartRequestServerExtension"/>
@@ -22,25 +23,23 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// </remarks>
     [GraphSkip]
     [GraphType(PreventAutoInclusion = true)]
-    public class FileUpload
+    public class FileUploadList
     {
-        /// <summary>
-        /// Gets the `Content-Type` header provided with the file data. May null if no
-        /// content type was specified.
-        /// </summary>
-        /// <value>The 'Content-Type' header supplied with the file.</value>
-        public string ContentType { get; }
+        private readonly List<FileUpload> _files;
 
         /// <summary>
-        /// Gets the stream representing the uploaded file.
+        /// Initializes a new instance of the <see cref="FileUploadList"/> class.
         /// </summary>
-        /// <value>The stream of bits representing the uploaded file.</value>
-        public Stream FileStream { get; }
+        public FileUploadList()
+        {
+            _files = new List<FileUpload>();
+        }
 
         /// <summary>
-        /// Gets the identifier provided or created for this file in the multi-part form data.
+        /// Gets the files found on this instance.
         /// </summary>
-        /// <value>The unique identifier of this file on the request.</value>
-        public string Id { get; }
+        /// <value>The collection of files assembled from the query.</value>
+        [GraphSkip]
+        public IReadOnlyList<FileUpload> Files => _files;
     }
 }
