@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.ArgumentModifiers = modifiers;
-            this.HasDefaultValue = hasDefaultValue;
+            this.HasDefaultValue = hasDefaultValue || this.TypeExpression.IsNullable;
             this.DefaultValue = defaultValue;
             this.Description = description?.Trim();
 
@@ -126,6 +126,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public ISchemaItem Parent { get; }
 
         /// <inheritdoc />
-        public bool IsRequired => !this.HasDefaultValue;
+        public bool IsRequired => !this.HasDefaultValue && this.TypeExpression.IsNonNullable;
     }
 }

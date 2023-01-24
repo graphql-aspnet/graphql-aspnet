@@ -39,6 +39,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             QueriesToFail = new List<object>();
             QueriesToPass = new List<object>();
 
+
             // no such operation type as 'fakeOperationType'
             AddQueryFailure("5.1.1", "fakeOperationType Operation1{ peopleMovers { elevator(id: 5){id, name} } }");
 
@@ -134,6 +135,13 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
 
             // required argument must be provided ("someValue" required on @Restrict but not provided)
             AddQueryFailure("5.4.2.1", "query Operation1{ peopleMovers @restrict { elevator (id: 5) { id name } } }");
+
+            // argument "e" representing ElevatorBindingModel is "nullable" on the "matchElevator" field
+            // and was not supplied. This is allowed, e should be interpreted as null
+            AddQuerySuccess("5.4.2.1", "query Operation1{ peopleMovers { matchElevator { id name } } }");
+
+            // argument "e" representing ElevatorBindingModel can be supplied as null
+            AddQuerySuccess("5.4.2.1", "query Operation1{ peopleMovers { matchElevator(e: null) { id name } } }");
 
             // named fragments must be unique
             AddQueryFailure("5.5.1.1", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1  } } } fragment frag1 on Elevator { id } fragment frag1 on Elevator { name} ");

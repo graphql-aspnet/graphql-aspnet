@@ -493,5 +493,31 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [TestCase(
+            @" query { receiveNullableObject }",
+            @"{ ""data"": { ""receiveNullableObject"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveObjectWithDefaultValue }",
+            @"{ ""data"": { ""receiveObjectWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableObject }",
+            @"{ ""data"": { ""receiveNullableObject"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableObjectWithDefaultValue }",
+            @"{ ""data"": { ""receiveNullableObjectWithDefaultValue"": ""object null"" } }")]
+        public async Task InputObject_DefaultValueTests(string query, string expectedResults)
+        {
+            var server = new TestServerBuilder()
+                .AddGraphController<RequiredInputObjectTestController>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(query);
+            var result = await server.RenderResult(builder);
+
+            CommonAssertions.AreEqualJsonStrings(expectedResults, result);
+
+        }
     }
 }
