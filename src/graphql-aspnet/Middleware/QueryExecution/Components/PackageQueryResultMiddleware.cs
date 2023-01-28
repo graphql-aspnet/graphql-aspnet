@@ -9,11 +9,13 @@
 
 namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 {
+    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -27,11 +29,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             // create and attach the result
-            IQueryResponseFieldSet fieldSet = null;
-            if (context.FieldResults != null && context.FieldResults.Any())
-            {
-                fieldSet = this.CreateFinalDictionary(context);
-            }
+            this.CreateFinalDictionary(context, out var fieldSet);
 
             context.Result = new QueryExecutionResult(context.QueryRequest, context.Messages, fieldSet, context.Metrics);
             context.Logger?.RequestCompleted(context);
@@ -43,21 +41,41 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// to be returned as the graph projection. Takes care of an final messaging in case one of the tasks failed.
         /// </summary>
         /// <param name="context">The execution context to extract reponse info from.</param>
-        /// <returns>GraphQL.AspNet.Interfaces.Response.IResponseFieldSet.</returns>
-        private IQueryResponseFieldSet CreateFinalDictionary(QueryExecutionContext context)
+        /// <param name="fieldSet">This parameter will be filled with the results of the dictionary creation
+        /// operation.</param>
+        private void CreateFinalDictionary(QueryExecutionContext context, out IQueryResponseFieldSet fieldSet)
         {
-            var topFieldResponses = new ResponseFieldSet();
+            fieldSet = null;
+
+            if (context.FieldResults == null ||
+                context.FieldResults.Count == 0 ||
+                context.FieldResults.All(x => x.Status != FieldDataItemResolutionStatus.Complete))
+            {
+                // rule 6.4.4 if any top level field is nulled out or otherwise
+                // made into an error state because of an error it caused or one of its child
+                // fields caused then null out the "data" field entirely
+                return;
+            }
+
+            var response = new ResponseFieldSet();
+            var atLeastOneFieldGenerated = false;
             foreach (var fieldResult in context.FieldResults)
             {
                 var generated = fieldResult.GenerateResult(out var result);
                 if (generated)
-                    topFieldResponses.Add(fieldResult.Name, result);
+                {
+                    atLeastOneFieldGenerated = true;
+                    response.Add(fieldResult.Name, result);
+                }
             }
 
-            if (topFieldResponses.Fields.Count == 0 || topFieldResponses.Fields.All(x => x.Value == null))
-                topFieldResponses = null;
-
-            return topFieldResponses;
+            // some fields in the response set may not generate final data
+            // and are acceptable to be dropped. For instance when resolving a top-level field
+            // that returns a union and the spread of union types in teh query does not included a projection of
+            // the actual data items returned. (i.e. spread on ObjectA, but only items of ObjectB were resolved
+            // from the field)
+            if (atLeastOneFieldGenerated)
+                fieldSet = response;
         }
     }
 }

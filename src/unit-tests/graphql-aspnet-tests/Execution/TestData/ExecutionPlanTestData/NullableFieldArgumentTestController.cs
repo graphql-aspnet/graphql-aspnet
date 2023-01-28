@@ -27,19 +27,19 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData
         }
 
         [QueryRoot]
-        public string ReceiveNullableEnumWithDefaultValue(TestEnum? obj = TestEnum.Value1)
-        {
-            return obj.HasValue && obj == TestEnum.Value1 ? "object supplied" : "object null";
-        }
-
-        [QueryRoot]
-        public string ReceiveNullableInt(TestEnum? obj)
+        public string ReceiveNullableEnumWithDefaultValue(TestEnum? obj = null)
         {
             return obj.HasValue ? "object supplied" : "object null";
         }
 
         [QueryRoot]
-        public string ReceiveNullableIntWithDefaultValue(int? obj = 3)
+        public string ReceiveNullableInt(int? obj)
+        {
+            return obj.HasValue ? "object supplied" : "object null";
+        }
+
+        [QueryRoot]
+        public string ReceiveNullableIntWithDefaultValue(int? obj = null)
         {
             return obj.HasValue ? "object supplied" : "object null";
         }
@@ -69,5 +69,17 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData
             return obj != null ? "object supplied" : "object null";
         }
 #nullable disable
+
+        [QueryRoot]
+        public string ReceiveNullableStruct(InputObjStruct? obj)
+        {
+            return obj.HasValue ? "object supplied" : "object null";
+        }
+
+        [QueryRoot]
+        public string ReceiveNullableStructWithDefaultValue(InputObjStruct? obj = null)
+        {
+            return obj.HasValue ? "object supplied" : "object null";
+        }
     }
 }
