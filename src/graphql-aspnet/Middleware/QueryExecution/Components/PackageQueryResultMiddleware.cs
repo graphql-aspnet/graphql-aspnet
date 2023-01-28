@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         public Task InvokeAsync(QueryExecutionContext context, GraphMiddlewareInvocationDelegate<QueryExecutionContext> next, CancellationToken cancelToken)
         {
             // create and attach the result
-            this.CreateFinalDictionary(context, out var fieldSet);
+            var fieldSet = this.CreateFinalDictionary(context);
 
             context.Result = new QueryExecutionResult(context.QueryRequest, context.Messages, fieldSet, context.Metrics);
             context.Logger?.RequestCompleted(context);
@@ -41,12 +41,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// to be returned as the graph projection. Takes care of an final messaging in case one of the tasks failed.
         /// </summary>
         /// <param name="context">The execution context to extract reponse info from.</param>
-        /// <param name="fieldSet">This parameter will be filled with the results of the dictionary creation
-        /// operation.</param>
-        private void CreateFinalDictionary(QueryExecutionContext context, out IQueryResponseFieldSet fieldSet)
+        /// <returns>The final response field map representing the top level "data" object.</returns>
+        protected virtual IQueryResponseFieldSet CreateFinalDictionary(QueryExecutionContext context)
         {
-            fieldSet = null;
-
             if (context.FieldResults == null ||
                 context.FieldResults.Count == 0 ||
                 context.FieldResults.All(x => x.Status != FieldDataItemResolutionStatus.Complete))
@@ -54,7 +51,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 // rule 6.4.4 if any top level field is nulled out or otherwise
                 // made into an error state because of an error it caused or one of its child
                 // fields caused then null out the "data" field entirely
-                return;
+                return null;
             }
 
             var response = new ResponseFieldSet();
@@ -70,12 +67,13 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             }
 
             // some fields in the response set may not generate final data
-            // and are acceptable to be dropped. For instance when resolving a top-level field
-            // that returns a union and the spread of union types in teh query does not included a projection of
+            // and are allowed to be dropped. For instance when resolving a top-level field
+            // that returns a union and the spread of union types in the query does not included a projection of
             // the actual data items returned. (i.e. spread on ObjectA, but only items of ObjectB were resolved
             // from the field)
-            if (atLeastOneFieldGenerated)
-                fieldSet = response;
+            return atLeastOneFieldGenerated
+                ? response
+                : null;
         }
     }
 }
