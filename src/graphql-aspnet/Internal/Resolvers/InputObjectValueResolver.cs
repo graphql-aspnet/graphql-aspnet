@@ -132,10 +132,9 @@ namespace GraphQL.AspNet.Internal.Resolvers
             // ideally this is handled by the request pipeline and validation middleware
             // but since the developer can change such things we do a quick sanity check
             // here and raise a helpful exception instead of something random later
+            // as the value cannot be used to resolve a field in such a state
             foreach (var field in _graphType.Fields.RequiredFields)
             {
-                // if a non-nullable field was supplied on the request
-                // then all is god
                 if (suppliedFields != null && suppliedFields.TryGetField(field.Name, out _))
                     continue;
 
@@ -150,7 +149,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
                 throw new GraphExecutionException(
                     $"Unable to resolve type '{_graphType.Name}'. Field " +
-                    $"'{field.Name}' was not supplied but is non-nullable " +
+                    $"'{field.Name}' was not supplied on the query but is non-nullable " +
                     $"and has no default value.",
                     origin);
             }
