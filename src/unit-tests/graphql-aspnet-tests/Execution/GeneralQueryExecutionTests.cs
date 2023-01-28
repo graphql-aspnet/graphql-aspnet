@@ -493,15 +493,14 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task InputWithRequiredButNullableComplexChildObject_WhenNotSuppied_YieldsError()
+        public async Task InputWithRequiredButNullableComplexChildObject_WhenNotSuppied_IsAllowed()
         {
             var server = new TestServerBuilder()
                     .AddType<ComplexInputObjectController>()
                     .Build();
 
-            // parentObj has a required property called  'child' that is not passed on the query
-            // a error should be thrown as its required on a query
-            // breaks rule 5.6.4
+            // parentObj has a [Required] property called  'child' that is not passed on the query
+            // since its a reference type and is nullable it is optional by graphql spec standards
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
                 "      objectWithRequiredButNullableChild ( parentObj: {property1: \"prop1\" } ) { " +
@@ -512,12 +511,18 @@ namespace GraphQL.AspNet.Tests.Execution
                 "      } " +
                 "}");
 
-            var result = await server.ExecuteQuery(builder);
+            var expectedOutput = @"{
+              ""data"": {
+                ""objectWithRequiredButNullableChild"": {
+                  ""property1"": ""prop1"",
+                  ""child"": null
+                }
+              }
+            }";
 
-            Assert.IsFalse(result.Messages.IsSucessful);
-            Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
-            Assert.AreEqual("5.6.4", result.Messages[0].MetaData["Rule"]);
+            var result = await server.RenderResult(builder);
+
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
 
         [Test]

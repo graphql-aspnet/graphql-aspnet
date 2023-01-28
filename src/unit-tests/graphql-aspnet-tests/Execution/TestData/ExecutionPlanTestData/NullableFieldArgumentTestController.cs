@@ -12,8 +12,38 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class RequiredInputObjectTestController : GraphIdController
+    public class NullableFieldArgumentTestController : GraphIdController
     {
+        public enum TestEnum
+        {
+            Value1,
+            Value2,
+        }
+
+        [QueryRoot]
+        public string ReceiveNullableEnum(TestEnum? obj)
+        {
+            return obj.HasValue ? "object supplied" : "object null";
+        }
+
+        [QueryRoot]
+        public string ReceiveNullableEnumWithDefaultValue(TestEnum? obj = TestEnum.Value1)
+        {
+            return obj.HasValue && obj == TestEnum.Value1 ? "object supplied" : "object null";
+        }
+
+        [QueryRoot]
+        public string ReceiveNullableInt(TestEnum? obj)
+        {
+            return obj.HasValue ? "object supplied" : "object null";
+        }
+
+        [QueryRoot]
+        public string ReceiveNullableIntWithDefaultValue(int? obj = 3)
+        {
+            return obj.HasValue ? "object supplied" : "object null";
+        }
+
         [QueryRoot]
         public string ReceiveObject(TwoPropertyObject obj)
         {

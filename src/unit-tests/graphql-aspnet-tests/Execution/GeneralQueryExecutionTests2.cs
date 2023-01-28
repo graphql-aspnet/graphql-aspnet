@@ -495,6 +495,19 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [TestCase(
+            @" query { receiveNullableEnum }",
+            @"{ ""data"": { ""receiveNullableEnum"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableEnumWithDefaultValue }",
+            @"{ ""data"": { ""receiveNullableEnumWithDefaultValue"": ""object supplied"" } }")]
+
+        [TestCase(
+            @" query { receiveNullableInt }",
+            @"{ ""data"": { ""receiveNullableInt"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableIntWithDefaultValue }",
+            @"{ ""data"": { ""receiveNullableIntWithDefaultValue"": ""object supplied"" } }")]
+        [TestCase(
             @" query { receiveNullableObject }",
             @"{ ""data"": { ""receiveNullableObject"": ""object null"" } }")]
         [TestCase(
@@ -506,10 +519,10 @@ namespace GraphQL.AspNet.Tests.Execution
         [TestCase(
             @" query { receiveNullableObjectWithDefaultValue }",
             @"{ ""data"": { ""receiveNullableObjectWithDefaultValue"": ""object null"" } }")]
-        public async Task InputObject_DefaultValueTests(string query, string expectedResults)
+        public async Task NullableFieldArgument_DefaultValueTests(string query, string expectedResults)
         {
             var server = new TestServerBuilder()
-                .AddGraphController<RequiredInputObjectTestController>()
+                .AddGraphController<NullableFieldArgumentTestController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -517,7 +530,6 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
 
             CommonAssertions.AreEqualJsonStrings(expectedResults, result);
-
         }
     }
 }

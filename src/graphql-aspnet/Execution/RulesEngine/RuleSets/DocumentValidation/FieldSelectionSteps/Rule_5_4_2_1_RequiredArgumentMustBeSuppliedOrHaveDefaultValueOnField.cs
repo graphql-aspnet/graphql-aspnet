@@ -40,9 +40,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
                 if (argument.ArgumentModifiers.IsInternalParameter())
                     continue;
 
-                // when the argument is required but the schema defines no value
-                // and it was not on the user query document this rule fails
-
                 if (argument.IsRequired &&
                     !suppliedArguments.ContainsKey(argument.Name.AsMemory()))
                 {

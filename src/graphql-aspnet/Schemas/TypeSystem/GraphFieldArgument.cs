@@ -17,9 +17,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// An argument defined on the object graph but not tied to any concrete item. It exists as a result
-    /// of a programatic delcaration. The parameters of action methods on <see cref="GraphController"/> are generally mapped
-    /// into a <see cref="GraphFieldArgument"/> for purposes of mapping, data coersion and introspection.
+    /// An argument defined on the object graph. This object is created as a result
+    /// of a programatic delcaration. The parameters of action methods on <see cref="GraphController"/> and methods
+    /// registered as fields on POCOs are generally mapped into a <see cref="GraphFieldArgument"/> for purposes of mapping,
+    /// data coersion and introspection.
     /// </summary>
     [DebuggerDisplay("Argument: {Name}")]
     public class GraphFieldArgument : IGraphArgument
@@ -63,7 +64,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.ArgumentModifiers = modifiers;
-            this.HasDefaultValue = hasDefaultValue || this.TypeExpression.IsNullable;
+
+            // by definition (rule 5.4.2.1) a nullable type expression on an argument implies
+            // an optional field. that is to say it has an implicit default value of 'null'
+            this.HasDefaultValue = hasDefaultValue;
+            this.IsRequired = !hasDefaultValue && this.TypeExpression.IsNonNullable;
             this.DefaultValue = defaultValue;
             this.Description = description?.Trim();
 
@@ -126,6 +131,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public ISchemaItem Parent { get; }
 
         /// <inheritdoc />
-        public bool IsRequired => !this.HasDefaultValue && this.TypeExpression.IsNonNullable;
+        public bool IsRequired { get; }
     }
 }

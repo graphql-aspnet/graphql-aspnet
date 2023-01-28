@@ -54,7 +54,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.ParameterName = this.Name;
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.ArgumentModifiers = argModifiers;
-            this.HasDefaultValue = hasDefaultValue;
+
+            // by definition (rule 5.4.2.1) a nullable type expression on an argument implies
+            // an optional field. that is to say it has an implicit default value of 'null'
+            this.HasDefaultValue = hasDefaultValue || this.TypeExpression.IsNullable;
             this.DefaultValue = defaultValue;
 
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
