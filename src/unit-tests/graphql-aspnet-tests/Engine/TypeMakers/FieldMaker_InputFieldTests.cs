@@ -109,7 +109,9 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("requiredReferenceTypeField", graphField.Name);
-            Assert.IsTrue((bool)graphField.IsRequired);
+
+            // a nullable type expression can never be "required"
+            Assert.IsFalse((bool)graphField.IsRequired);
 
             // because its marked as required, even though its a reference type (which is nullable)
             // the type expression is automatically hoisted to be "non-nullable"

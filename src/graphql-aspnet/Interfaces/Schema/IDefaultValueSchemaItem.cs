@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Schema
 {
     /// <summary>
-    /// A schema item that defines an optional default value.
+    /// A schema item that may define a default value.
     /// </summary>
     public interface IDefaultValueSchemaItem : ISchemaItem
     {

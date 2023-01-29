@@ -493,5 +493,157 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [TestCase(
+            @" query { receiveNullableInt }",
+            @"{ ""data"": { ""receiveNullableInt"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableInt(obj: null) }",
+            @"{ ""data"": { ""receiveNullableInt"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableInt(obj: 1) }",
+            @"{ ""data"": { ""receiveNullableInt"": ""object supplied"" } }")]
+        [TestCase(
+            @" query { receiveNullableIntWithDefaultValue }",
+            @"{ ""data"": { ""receiveNullableIntWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableIntWithDefaultValue(obj: null) }",
+            @"{ ""data"": { ""receiveNullableIntWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableIntWithDefaultValue(obj: 1) }",
+            @"{ ""data"": { ""receiveNullableIntWithDefaultValue"": ""object supplied"" } }")]
+        [TestCase(
+            @" query { receiveNullableEnum }",
+            @"{ ""data"": { ""receiveNullableEnum"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableEnum(obj: null) }",
+            @"{ ""data"": { ""receiveNullableEnum"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableEnum(obj: VALUE1) }",
+            @"{ ""data"": { ""receiveNullableEnum"": ""object supplied"" } }")]
+        [TestCase(
+            @" query { receiveNullableEnumWithDefaultValue }",
+            @"{ ""data"": { ""receiveNullableEnumWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableEnumWithDefaultValue(obj: null) }",
+            @"{ ""data"": { ""receiveNullableEnumWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableEnumWithDefaultValue(obj: VALUE1) }",
+            @"{ ""data"": { ""receiveNullableEnumWithDefaultValue"": ""object supplied"" } }")]
+        [TestCase(
+            @" query { receiveObject }",
+            @"{ ""data"": { ""receiveObject"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveObject(obj: null) }",
+            @"{ ""data"": { ""receiveObject"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveObject(obj: {}) }",
+            @"{ ""data"": { ""receiveObject"": ""object supplied"" } }")]
+        [TestCase(
+            @" query { receiveObjectWithDefaultValue }",
+            @"{ ""data"": { ""receiveObjectWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveObjectWithDefaultValue(obj: null) }",
+            @"{ ""data"": { ""receiveObjectWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveObjectWithDefaultValue(obj: {}) }",
+            @"{ ""data"": { ""receiveObjectWithDefaultValue"": ""object supplied"" } }")]
+        [TestCase(
+            @" query { receiveNullableObject }",
+            @"{ ""data"": { ""receiveNullableObject"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableObject(obj: null) }",
+            @"{ ""data"": { ""receiveNullableObject"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableObject(obj: {}) }",
+            @"{ ""data"": { ""receiveNullableObject"": ""object supplied"" } }")]
+        [TestCase(
+            @" query { receiveNullableObjectWithDefaultValue }",
+            @"{ ""data"": { ""receiveNullableObjectWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableObjectWithDefaultValue(obj: null) }",
+            @"{ ""data"": { ""receiveNullableObjectWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableObjectWithDefaultValue(obj: {}) }",
+            @"{ ""data"": { ""receiveNullableObjectWithDefaultValue"": ""object supplied"" } }")]
+        [TestCase(
+            @" query { receiveNullableStruct }",
+            @"{ ""data"": { ""receiveNullableStruct"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableStruct(obj: null) }",
+            @"{ ""data"": { ""receiveNullableStruct"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableStruct(obj: {field1: ""bob""}) }",
+            @"{ ""data"": { ""receiveNullableStruct"": ""object supplied"" } }")]
+        [TestCase(
+            @" query { receiveNullableStructWithDefaultValue }",
+            @"{ ""data"": { ""receiveNullableStructWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableStructWithDefaultValue(obj: null) }",
+            @"{ ""data"": { ""receiveNullableStructWithDefaultValue"": ""object null"" } }")]
+        [TestCase(
+            @" query { receiveNullableStructWithDefaultValue(obj: {field1: ""bob""}) }",
+            @"{ ""data"": { ""receiveNullableStructWithDefaultValue"": ""object supplied"" } }")]
+        public async Task NullableFieldArgument_DefaultValueTests(string query, string expectedResults)
+        {
+            var server = new TestServerBuilder()
+                .AddGraphController<NullableFieldArgumentTestController>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(query);
+            var result = await server.RenderResult(builder);
+
+            CommonAssertions.AreEqualJsonStrings(expectedResults, result);
+        }
+
+        [TestCase(
+            @" query { receiveNullableInt }",
+            @"{ ""data"": { ""receiveNullableInt"": null } }")]
+        [TestCase(
+            @" query { receiveNullableInt(obj:null) }",
+            @"{ ""data"": { ""receiveNullableInt"": null } }")]
+        [TestCase(
+            @" query { receiveNullableInt(obj: 3) }",
+            @"{ ""data"": { ""receiveNullableInt"": ""3"" } }")]
+        [TestCase(
+            @" query { receiveNullableIntWithDefaultValue }",
+            @"{ ""data"": { ""receiveNullableIntWithDefaultValue"": ""5"" } }")]
+        [TestCase(
+            @" query { receiveNullableIntWithDefaultValue(obj:null) }",
+            @"{ ""data"": { ""receiveNullableIntWithDefaultValue"": null } }")]
+        [TestCase(
+            @" query { receiveNullableIntWithDefaultValue(obj: 3) }",
+            @"{ ""data"": { ""receiveNullableIntWithDefaultValue"": ""3"" } }")]
+        [TestCase(
+            @" query { receiveNullableEnum }",
+            @"{ ""data"": { ""receiveNullableEnum"": null } }")]
+        [TestCase(
+            @" query { receiveNullableEnum(obj:null) }",
+            @"{ ""data"": { ""receiveNullableEnum"": null } }")]
+        [TestCase(
+            @" query { receiveNullableEnum(obj: VALUE1) }",
+            @"{ ""data"": { ""receiveNullableEnum"": ""Value1"" } }")]
+        [TestCase(
+            @" query { receiveNullableEnumWithDefaultValue }",
+            @"{ ""data"": { ""receiveNullableEnumWithDefaultValue"": ""Value2"" } }")]
+        [TestCase(
+            @" query { receiveNullableEnumWithDefaultValue(obj:null) }",
+            @"{ ""data"": { ""receiveNullableEnumWithDefaultValue"": null } }")]
+        [TestCase(
+            @" query { receiveNullableEnumWithDefaultValue(obj: VALUE1) }",
+            @"{ ""data"": { ""receiveNullableEnumWithDefaultValue"": ""Value1"" } }")]
+        public async Task NullableFieldArgument_NonNullDefaultValueTests(string query, string expectedResults)
+        {
+            var server = new TestServerBuilder()
+                .AddGraphController<DefaultValueCheckerController>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(query);
+            var result = await server.RenderResult(builder);
+
+            CommonAssertions.AreEqualJsonStrings(expectedResults, result);
+        }
     }
 }

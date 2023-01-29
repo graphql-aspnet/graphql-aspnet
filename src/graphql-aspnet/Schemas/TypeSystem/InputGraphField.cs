@@ -22,6 +22,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("Field: {Route.Path}")]
     public class InputGraphField : IInputGraphField
     {
+        // *******************************************
+        // implementation note:
+        //
+        // IsRequired here deviates from the input object field template (which keys off the [Required]
+        // attribute).
+        //
+        // by definition (rule 5.6.4) a field is required if it is non-null and does not have a default value.
+        // which is to say that all nullable fields are "not required" by the schema definition
+        // *******************************************
+
         /// <summary>
         /// Initializes a new instance of the <see cref="InputGraphField" /> class.
         /// </summary>
@@ -31,7 +41,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="declaredPropertyName">The name of the property as it was declared on a <see cref="Type" /> (its internal name).</param>
         /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
-        /// <param name="isRequired">if set to <c>true</c> this field was explicitly marked as being required.</param>
+        /// <param name="isRequired">if set to <c>true</c> this field was explicitly marked as being required being it has no
+        /// explicitly declared default value. The value passsed on <paramref name="defaultValue"/> will be ignored. Note that
+        /// the field will only truely be marked as required if it is has a non-nullable type expression.</param>
         /// <param name="defaultValue">When <paramref name="isRequired"/> is <c>false</c>, represents
         /// the value that should be used for this field when its not declared on a query document.</param>
         /// <param name="directives">The directives to apply to this field when its added to a schema.</param>
@@ -57,7 +69,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.InternalName = declaredPropertyName;
             this.HasDefaultValue = !isRequired;
-            this.DefaultValue = this.HasDefaultValue ? defaultValue : null;
+            this.IsRequired = isRequired && this.TypeExpression.IsNonNullable;
+            this.DefaultValue = defaultValue;
             this.Publish = true;
         }
 
@@ -109,6 +122,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public bool HasDefaultValue { get; }
 
         /// <inheritdoc />
-        public bool IsRequired => !this.HasDefaultValue;
+        public bool IsRequired { get; }
     }
 }

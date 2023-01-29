@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
                     if (argument.ArgumentModifiers.IsInternalParameter())
                         continue;
 
-                    if (argument.DefaultValue == null && !suppliedArgs.ContainsKey(argument.Name.AsMemory()))
+                    if (argument.IsRequired && !suppliedArgs.ContainsKey(argument.Name.AsMemory()))
                     {
                         this.ValidationError(
                             context,
