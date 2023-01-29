@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine.DirectiveTestData
     public class ObjectTypeDirectiveWithParams : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.OBJECT)]
-        public IGraphActionResult DoThing(int arg1, string arg2)
+        public IGraphActionResult DoThing(int arg1, [FromGraphQL(TypeExpression = "Type!")] string arg2)
         {
             return this.Ok();
         }

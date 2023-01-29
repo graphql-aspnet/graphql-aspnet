@@ -129,38 +129,29 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
             // check all the fields that "must have a value"
             // to ensure they are put on the input object being constructed
-            foreach (var field in _graphType.Fields.NonNullableFields)
+            // ideally this is handled by the request pipeline and validation middleware
+            // but since the developer can change such things we do a quick sanity check
+            // here and raise a helpful exception instead of something random later
+            // as the value cannot be used to resolve a field in such a state
+            foreach (var field in _graphType.Fields.RequiredFields)
             {
-                // if a non-nullable field was supplied on the request
-                // and processed successfully then skip it
                 if (suppliedFields != null && suppliedFields.TryGetField(field.Name, out _))
                     continue;
 
-                if (field.IsRequired)
+                // the document validation rules
+                // should prevent this scenario from ever happening
+                // but trap it just in case to give a helpful exception
+                SourceOrigin origin = default;
+                if (resolvableItem is IDocumentPart docPart)
                 {
-                    // the document validation rules
-                    // should prevent this scenario from ever happening
-                    // but trap it just in case to give a helpful exception
-                    SourceOrigin origin = default;
-                    if (resolvableItem is IDocumentPart docPart)
-                    {
-                        origin = docPart.SourceLocation.AsOrigin();
-                    }
-
-                    throw new GraphExecutionException(
-                        $"Unable to resolve type '{_graphType.Name}'. Field " +
-                        $"'{field.Name}' was not supplied but is non-nullable " +
-                        $"and has no default value.",
-                        origin);
+                    origin = docPart.SourceLocation.AsOrigin();
                 }
 
-                var propSetter = _propSetters.ContainsKey(field.InternalName) ? _propSetters[field.InternalName] : null;
-                var resolver = _fieldResolvers.ContainsKey(field.Name) ? _fieldResolvers[field.Name] : null;
-                if (resolver == null || propSetter == null)
-                    continue;
-
-                var resolvedValue = resolver.Resolve(DefaultInputObjectResolutionValue.Instance);
-                propSetter(ref instance, resolvedValue);
+                throw new GraphExecutionException(
+                    $"Unable to resolve type '{_graphType.Name}'. Field " +
+                    $"'{field.Name}' was not supplied on the query but is non-nullable " +
+                    $"and has no default value.",
+                    origin);
             }
 
             return instance;

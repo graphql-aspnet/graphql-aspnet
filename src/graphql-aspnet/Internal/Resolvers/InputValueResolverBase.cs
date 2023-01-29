@@ -9,10 +9,6 @@
 
 namespace GraphQL.AspNet.Internal.Resolvers
 {
-    using System;
-    using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Source;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Schema;
