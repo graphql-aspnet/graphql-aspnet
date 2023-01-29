@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 context.FieldResults.Count == 0 ||
                 context.FieldResults.All(x => x.Status != FieldDataItemResolutionStatus.Complete))
             {
-                // rule 6.4.4 if any top level field is nulled out or otherwise
+                // rule 6.4.4 if all top level fields are nulled out or otherwise
                 // made into an error state because of an error it caused or one of its child
                 // fields caused then null out the "data" field entirely
                 return null;
