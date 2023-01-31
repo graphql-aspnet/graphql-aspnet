@@ -85,11 +85,11 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             if (files != null && files.Count > 0)
             {
                 var fileMap = this.CreateMap(map);
+                this.MapFilesToPayload(payload, files, fileMap);
             }
 
             return payload;
         }
-
 
         /// <summary>
         /// Converts the node representing a query into an actual untyped query data element

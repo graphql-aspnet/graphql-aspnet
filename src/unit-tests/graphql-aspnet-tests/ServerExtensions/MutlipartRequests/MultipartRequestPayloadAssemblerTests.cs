@@ -155,8 +155,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.AreEqual("bob", payload.QueriesToExecute[0].OperationName);
         }
 
-        [Test]
-        public async Task SingleQuerySingleFile_AddedToQueryVariable()
+        [TestCase(@"{ ""0"": [""variables"", ""var1""]}")]
+        //[TestCase(@"{ ""0"": [""variables.var1""]}")]
+        public async Task SingleQuerySingleFile_AddedToQueryVariableCorrectly(string map)
         {
             var queryText = "query { field1 {field2 field3} }";
             var operations = @"
@@ -165,7 +166,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 ""variables"" : { ""var1"": null }
             }";
 
-            string map = @"{ ""0"": [""variables.var1""]}";
             var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
 
             var files = new Dictionary<string, FileUpload>();

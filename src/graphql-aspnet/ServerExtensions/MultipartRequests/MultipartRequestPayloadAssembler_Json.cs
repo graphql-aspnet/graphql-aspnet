@@ -7,54 +7,37 @@
 // License:  MIT
 // *************************************************************
 
+/// <summary>
+/// The MultipartRequests namespace.
+/// </summary>
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Text.Json;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Generics;
 
     /// <summary>
     /// An assembler that can take the raw values required by the spec and assembly a valid payload that
     /// can be executed against the runtime.
     /// </summary>
     /// <remarks>Spec: <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.</remarks>
+    [DebuggerDisplay("{Raw}")]
     public partial class MultipartRequestPayloadAssembler
     {
-        protected class FileObjectMap
+
+
+        /// <summary>
+        /// Parses the string on the "map" key in the multipart content form and converts it into a
+        /// a list of file map keys and paths in the payload.
+        /// </summary>
+        /// <param name="map">The map.</param>
+        /// <returns>List&lt;KeyValuePair&lt;System.String, List&lt;ObjectPathSegment&gt;&gt;&gt;.</returns>
+        protected virtual List<KeyValuePair<string, List<MultipartObjectPathSegment>>> CreateMap(string map)
         {
-            public FileObjectMap(string segment)
-            {
-                if (int.TryParse(segment, out var index))
-                    this.Index = index;
-                else
-                    this.PropertyName = segment;
-            }
-
-            /// <summary>
-            /// Gets the index of the array pointed at by this segment. When null, this segment does
-            /// not point to an array index.
-            /// </summary>
-            /// <value>The index.</value>
-            public int? Index { get;  }
-
-            /// <summary>
-            /// Gets the name of the property this segment points to. When null, this segment does not
-            /// point to a property.
-            /// </summary>
-            /// <value>The name of the property.</value>
-            public string PropertyName { get;  }
-
-            /// <summary>
-            /// Gets or sets the next segment int he chain pointed at by this segment. If null, this segment
-            /// represents a terminal segment.
-            /// </summary>
-            /// <value>The next segment.</value>
-            public FileObjectMapSegment Next { get; set; }
-        }
-
-        private List<KeyValuePair<string, FileObjectMapSegment>> CreateMap(string map)
-        {
-            var segments = new List<KeyValuePair<string, FileObjectMapSegment>>();
+            var allSegments = new List<KeyValuePair<string, List<MultipartObjectPathSegment>>>();
             var doc = JsonDocument.Parse(map, _options);
 
             if (doc.RootElement.ValueKind != JsonValueKind.Object)
@@ -67,24 +50,79 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 if (prop.Value.ValueKind != JsonValueKind.Array)
                     throw new InvalidOperationException("Expected array");
 
-                FileObjectMapSegment parentSegment = null;
-                FileObjectMapSegment lastSegment = null;
+                var propSegments = new List<MultipartObjectPathSegment>();
                 foreach (var element in prop.Value.EnumerateArray())
                 {
-                    var segment = new FileObjectMapSegment(element.GetString());
-
-                    if (parentSegment == null)
-                        parentSegment = segment;
-                    if (lastSegment != null)
-                        lastSegment.Next = segment;
-
-                    lastSegment = segment;
+                    var segment = new MultipartObjectPathSegment(element.GetString());
+                    propSegments.Add(segment);
                 }
 
-                segments.Add(new KeyValuePair<string, FileObjectMapSegment>(mapKey, parentSegment));
+                allSegments.Add(new (mapKey, propSegments));
             }
 
-            return segments;
+            return allSegments;
+        }
+
+        /// <summary>
+        /// Attempts to place each file into the payload according to the path pointed at by the provided map.
+        /// </summary>
+        /// <param name="payload">The payload into which files will be inserted.</param>
+        /// <param name="files">The collection of files read from the multi-part form.</param>
+        /// <param name="fileMap">The file map created from the json string found on the multi-part form.</param>
+        protected virtual void MapFilesToPayload(
+            MultiPartRequestGraphQLPayload payload,
+            IReadOnlyDictionary<string, FileUpload> files,
+            List<KeyValuePair<string, List<MultipartObjectPathSegment>>> fileMap)
+        {
+            if (payload == null || fileMap == null || fileMap.Count == 0 || files == null || files.Count == 0)
+                return;
+
+            foreach (var map in fileMap)
+            {
+                if (!files.ContainsKey(map.Key))
+                    throw new InvalidOperationException("File Key not found in provided file set");
+
+                var segments = map.Value;
+                if (segments.Count == 0)
+                    throw new InvalidOperationException("Object Path points to nothing");
+
+                var file = files[map.Key];
+
+                GraphQueryData queryData = null;
+                if (segments[0].Index.HasValue)
+                {
+                    if (!payload.IsBatch)
+                        throw new InvalidOperationException("Single operation provided, map points to a batch");
+
+                    if (segments[0].Index.Value > (payload.QueriesToExecute.Count - 1))
+                        throw new InvalidOperationException("Index out of range, map points to an operation not in the provided batch");
+
+                    queryData = payload.QueriesToExecute[segments[0].Index.Value];
+                }
+                else if (payload.IsBatch)
+                {
+                    throw new InvalidOperationException("Batch provided, map points to a single operation");
+                }
+                else
+                {
+                    queryData = payload.QueriesToExecute[0];
+                }
+
+                this.PlaceFileInQueryData(queryData, file, segments);
+            }
+        }
+
+        /// <summary>
+        /// Atttempts to place the provided file into the query data object using the object path supplied.
+        /// </summary>
+        /// <param name="queryData">The query data in which to place the file.</param>
+        /// <param name="file">The file to be placed.</param>
+        /// <param name="segments">The segments that point into the provided <paramref name="queryData"/>.</param>
+        protected virtual void PlaceFileInQueryData(GraphQueryData queryData, FileUpload file, List<MultipartObjectPathSegment> segments)
+        {
+            var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(typeof(GraphQueryData));
+
+
         }
     }
 }
