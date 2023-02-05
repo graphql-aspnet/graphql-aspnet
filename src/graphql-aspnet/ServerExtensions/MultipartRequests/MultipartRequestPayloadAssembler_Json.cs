@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Text.Json;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
@@ -98,6 +99,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                         throw new InvalidOperationException("Index out of range, map points to an operation not in the provided batch");
 
                     queryData = payload.QueriesToExecute[segments[0].Index.Value];
+                    segments = segments.Skip(1).ToList();
                 }
                 else if (payload.IsBatch)
                 {
@@ -118,7 +120,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <param name="queryData">The query data in which to place the file.</param>
         /// <param name="file">The file to be placed.</param>
         /// <param name="segments">The segments that point into the provided <paramref name="queryData"/>.</param>
-        protected virtual void PlaceFileInQueryData(GraphQueryData queryData, FileUpload file, List<MultipartObjectPathSegment> segments)
+        protected virtual void PlaceFileInQueryData(GraphQueryData queryData, FileUpload file, IEnumerable<MultipartObjectPathSegment> segments)
         {
             var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(typeof(GraphQueryData));
 
