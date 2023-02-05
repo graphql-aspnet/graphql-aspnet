@@ -956,5 +956,32 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task ExternalItem_InjectedIntoContextItemsCollection_MakesItToController()
+        {
+            var server = new TestServerBuilder()
+                 .AddType<ExternalItemCollectionController>()
+                 .Build();
+
+            var context = server.CreateQueryContextBuilder()
+                .AddQueryText("query { itemPassed }")
+                .Build();
+
+            context.Items.Add("test-key", new TwoPropertyObject()
+            {
+                Property2 = 5,
+            });
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""itemPassed"" : 5
+                     }
+                  }";
+
+            var result = await server.RenderResult(context);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }

@@ -37,6 +37,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         private IUserSecurityContext _userSecurityContext;
         private IQueryExecutionMetrics _metrics;
         private IGraphEventLogger _eventLogger;
+        private MetaDataCollection _items;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContextBuilder" /> class.
@@ -49,7 +50,10 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         {
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
             _userSecurityContext = userSecurityContext;
+
+            _items = new MetaDataCollection();
             _mockRequest = new Mock<IQueryExecutionRequest>();
+            _mockRequest.Setup(x => x.Items).Returns(_items);
             _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
         }
 
@@ -142,18 +146,13 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             var startDate = DateTimeOffset.UtcNow;
             _mockRequest.Setup(x => x.StartTimeUTC).Returns(startDate);
 
-            var metaData = new MetaDataCollection();
-
-            // unchangable items about the request
-            var request = new Mock<IQueryExecutionRequest>();
-            request.Setup(x => x.Items).Returns(metaData);
-
             // updateable items about the request
             var context = new QueryExecutionContext(
                 this.QueryRequest,
                 _serviceProvider,
                 new QuerySession(),
                 securityContext: _userSecurityContext,
+                items: this.QueryRequest.Items,
                 metrics: _metrics,
                 logger: _eventLogger);
 
