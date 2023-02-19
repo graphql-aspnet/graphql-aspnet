@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Engine
                 request,
                 serviceProvider,
                 session,
-                items: new MetaDataCollection(),
+                items: request.Items ?? new MetaDataCollection(),
                 securityContext: securityContext,
                 metrics: metricsPackage,
                 logger: _logger);

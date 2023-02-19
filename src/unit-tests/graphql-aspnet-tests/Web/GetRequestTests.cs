@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Tests.Web
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Web.CancelTokenTestData;
+    using GraphQL.AspNet.Tests.Web.WebTestData;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Internal;
     using Microsoft.Extensions.DependencyInjection;
@@ -271,6 +272,61 @@ namespace GraphQL.AspNet.Tests.Web
             var text = reader.ReadToEnd();
 
             Assert.AreEqual(400, httpContext.Response.StatusCode);
+        }
+
+        [Test]
+        public async Task CustomAddedRequestItem_MakesItToController()
+        {
+            var serverBuilder = new TestServerBuilder();
+            serverBuilder.AddGraphController<ExternalItemCollectionController>();
+            serverBuilder.AddTransient<ItemInjectorHttpProcessor>();
+
+            var server = serverBuilder.Build();
+
+            using var scope = server.ServiceProvider.CreateScope();
+            var processor = scope.ServiceProvider.GetRequiredService<ItemInjectorHttpProcessor>();
+
+            var postBodyQuery = "query { itemPassed }";
+
+            // use the query directly as the post body (not json encoded)
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(postBodyQuery));
+            var httpContext = new DefaultHttpContext()
+            {
+                Request =
+                {
+                    Body = stream,
+                    ContentLength = stream.Length,
+                },
+                Response =
+                {
+                    Body = new MemoryStream(),
+                },
+            };
+
+            var request = httpContext.Request as DefaultHttpRequest;
+            request.Method = "POST";
+            request.ContentType = Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER_VALUE;
+            httpContext.RequestServices = scope.ServiceProvider;
+
+            // context will attempt to be deserialized as json and fail
+            // should return status 400
+            await processor.InvokeAsync(httpContext);
+            await httpContext.Response.Body.FlushAsync();
+
+            httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
+            var reader = new StreamReader(httpContext.Response.Body);
+            var result = reader.ReadToEnd();
+
+            Assert.AreEqual(200, httpContext.Response.StatusCode);
+
+            var expectedJson = @"
+            {
+              ""data"": {
+                ""itemPassed"": 3
+              }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
         }
     }
 }
