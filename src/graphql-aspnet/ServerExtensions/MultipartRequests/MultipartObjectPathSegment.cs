@@ -9,10 +9,13 @@
 
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 {
+    using System.Diagnostics;
+
     /// <summary>
     /// A single segment from the array pointed to by an entry in the "map" section of the multi-part
     /// form.
     /// </summary>
+    [DebuggerDisplay("{Raw}")]
     public class MultipartObjectPathSegment
     {
         /// <summary>
@@ -23,9 +26,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         {
             if (int.TryParse(segment, out var index))
                 this.Index = index;
-            else
-                this.PropertyName = segment;
 
+            this.PropertyName = segment;
             this.Raw = segment;
         }
 

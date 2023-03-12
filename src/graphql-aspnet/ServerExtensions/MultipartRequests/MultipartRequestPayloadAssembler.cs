@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <param name="files">The files found on the request.</param>
         /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A Task&lt;MultiPartRequestGraphQLPayload&gt; representing the asynchronous operation.</returns>
-        public virtual async Task<MultiPartRequestGraphQLPayload> AssemblePayload(
+        public virtual Task<MultiPartRequestGraphQLPayload> AssemblePayload(
             string operations,
             string map = null,
             IReadOnlyDictionary<string, FileUpload> files = null,
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             operations = Validation.ThrowIfNullWhiteSpaceOrReturn(operations, nameof(operations));
             map = map?.Trim();
 
-            var doc = JsonDocument.Parse(operations, _options);
+            using var doc = JsonDocument.Parse(operations, _options);
             var isBatch = doc.RootElement.ValueKind == JsonValueKind.Array;
 
             MultiPartRequestGraphQLPayload payload = null;
@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 this.MapFilesToPayload(payload, files, fileMap);
             }
 
-            return payload;
+            return Task.FromResult(payload);
         }
 
         /// <summary>

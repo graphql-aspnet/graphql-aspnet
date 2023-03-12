@@ -19,6 +19,10 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using System.Text.Json;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
+    using Microsoft.AspNetCore.Http.Features;
 
     /// <summary>
     /// An assembler that can take the raw values required by the spec and assembly a valid payload that
@@ -54,7 +58,20 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 var propSegments = new List<MultipartObjectPathSegment>();
                 foreach (var element in prop.Value.EnumerateArray())
                 {
-                    var segment = new MultipartObjectPathSegment(element.GetString());
+                    MultipartObjectPathSegment segment = null;
+                    switch (element.ValueKind)
+                    {
+                        case JsonValueKind.Number:
+                            segment = new MultipartObjectPathSegment(element.GetRawText());
+                            break;
+
+                        case JsonValueKind.String:
+                            segment = new MultipartObjectPathSegment(element.GetString());
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Invalid object-path segment. Expected string or number, got '{element.ValueKind}'");
+                    }
+
                     propSegments.Add(segment);
                 }
 
@@ -90,27 +107,25 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 var file = files[map.Key];
 
                 GraphQueryData queryData = null;
-                if (segments[0].Index.HasValue)
+                var index = 0;
+                if (payload.IsBatch)
                 {
-                    if (!payload.IsBatch)
-                        throw new InvalidOperationException("Single operation provided, map points to a batch");
+                    if (!segments[0].Index.HasValue)
+                        throw new InvalidOperationException("Batch operation provided, map does not point to a member of the batch");
 
-                    if (segments[0].Index.Value > (payload.QueriesToExecute.Count - 1))
+                    if (segments[0].Index.Value < 0 || segments[0].Index.Value >= payload.QueriesToExecute.Count)
                         throw new InvalidOperationException("Index out of range, map points to an operation not in the provided batch");
 
                     queryData = payload.QueriesToExecute[segments[0].Index.Value];
-                    segments = segments.Skip(1).ToList();
-                }
-                else if (payload.IsBatch)
-                {
-                    throw new InvalidOperationException("Batch provided, map points to a single operation");
+                    index = 1;
                 }
                 else
                 {
                     queryData = payload.QueriesToExecute[0];
                 }
 
-                this.PlaceFileInQueryData(queryData, file, segments);
+                var fileVariable = new InputFileUploadVariable(map.Key, file);
+                this.PlaceFileInQueryData(queryData, fileVariable, segments, index);
             }
         }
 
@@ -119,12 +134,92 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// </summary>
         /// <param name="queryData">The query data in which to place the file.</param>
         /// <param name="file">The file to be placed.</param>
-        /// <param name="segments">The segments that point into the provided <paramref name="queryData"/>.</param>
-        protected virtual void PlaceFileInQueryData(GraphQueryData queryData, FileUpload file, IEnumerable<MultipartObjectPathSegment> segments)
+        /// <param name="segments">The segments that point into the provided <paramref name="queryData" />.</param>
+        /// <param name="index">The index within <paramref name="segments"/> to start from.</param>
+        protected virtual void PlaceFileInQueryData(GraphQueryData queryData, InputFileUploadVariable file, IReadOnlyList<MultipartObjectPathSegment> segments, int index)
         {
-            var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(typeof(GraphQueryData));
+            Validation.ThrowIfNull(queryData, nameof(queryData));
+            Validation.ThrowIfNull(segments, nameof(segments));
 
+            // segments st be, at a minimum, ["variables", "Anything"]
+            if (segments.Count < 2)
+                throw new InvalidOperationException("Unexpected path segment");
 
+            var segment = segments[index];
+            if (segment.Index.HasValue)
+                throw new InvalidOperationException("Unexpected Array Indexer");
+
+            if (string.Compare(Constants.Web.QUERYSTRING_VARIABLES_KEY, segment.PropertyName, true) != 0)
+                throw new InvalidOperationException("expected to start with variables");
+
+            if (queryData.Variables == null || queryData.Variables.Count == 0)
+                throw new InvalidOperationException("No variables defined");
+
+            var variableCollection = queryData.Variables;
+            segment = segments[index + 1];
+
+            // variables is an object with named properties (by definition), the first item must
+            // be a declared property within it
+            if (!variableCollection.TryGetVariable(segment.PropertyName, out var variable))
+                throw new InvalidOperationException("unknown variable");
+
+            object parent = variableCollection;
+            for (var i = index + 2; i < segments.Count; i++)
+            {
+                parent = variable;
+                segment = segments[i];
+
+                IInputVariable foundChild = null;
+                if (segment.Index.HasValue && variable is IInputListVariable ilv)
+                {
+                    foundChild = ilv.Items[segment.Index.Value];
+                }
+                else if (variable is IInputFieldSetVariable fsv)
+                {
+                    if (fsv.Fields.ContainsKey(segment.PropertyName))
+                        foundChild = fsv.Fields[segment.PropertyName];
+                }
+
+                if (foundChild == null)
+                    throw new InvalidOperationException("Unknown segment");
+
+                variable = foundChild;
+            }
+
+            // the terminating value MUST be a single value variable (not a list or object)
+            if (!(variable is IInputSingleValueVariable isvv))
+                throw new InvalidOperationException("Invalid Path, final variable does not represent a single value");
+
+            // the terminating value MUST point to null
+            if (isvv.Value != null)
+                throw new InvalidOperationException($"Expected null value but got '{isvv.Value}'");
+
+            // if the owner of the variable is the top level collection
+            // then we need to update the named variable in the collection with the file
+            if (parent is IWritableInputVariableCollection wivc)
+            {
+                wivc.Replace(segment.PropertyName, file);
+                return;
+            }
+
+            // if the owner of the variable is an array then we need to
+            // replace the array index with the file
+            if (parent is IWritableInputListVariable wilv && segment.Index.HasValue)
+            {
+                wilv.Replace(segment.Index.Value, file);
+                return;
+            }
+
+            // if the owner of the variable is a field set (i.e. an object) then we need to
+            // replace the named field with the file
+            if (parent is IWritableInputFieldSetVariable wifsv)
+            {
+                wifsv.Replace(segment.PropertyName, file);
+                return;
+            }
+
+            // don't know what the parent was so we can't update the value within in
+            throw new InvalidOperationException("Unable to write file to variable collection. Collection is not modifiable");
         }
     }
 }
