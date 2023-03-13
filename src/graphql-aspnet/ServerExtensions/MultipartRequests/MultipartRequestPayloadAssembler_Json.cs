@@ -7,22 +7,16 @@
 // License:  MIT
 // *************************************************************
 
-/// <summary>
-/// The MultipartRequests namespace.
-/// </summary>
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using System.Text.Json;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
-    using Microsoft.AspNetCore.Http.Features;
 
     /// <summary>
     /// An assembler that can take the raw values required by the spec and assembly a valid payload that
@@ -32,8 +26,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     [DebuggerDisplay("{Raw}")]
     public partial class MultipartRequestPayloadAssembler
     {
-
-
         /// <summary>
         /// Parses the string on the "map" key in the multipart content form and converts it into a
         /// a list of file map keys and paths in the payload.
@@ -46,14 +38,23 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             var doc = JsonDocument.Parse(map, _options);
 
             if (doc.RootElement.ValueKind != JsonValueKind.Object)
-                throw new InvalidOperationException("Expected Object");
+            {
+                throw new InvalidMultiPartMapException(
+                       $"Expected a valid json object for the multi-part form field '{MultipartRequestConstants.Web.MAP_FORM_KEY}' but received a(n) {doc.RootElement.ValueKind}.");
+            }
 
             foreach (var prop in doc.RootElement.EnumerateObject())
             {
                 var mapKey = prop.Name;
 
                 if (prop.Value.ValueKind != JsonValueKind.Array)
-                    throw new InvalidOperationException("Expected array");
+                {
+                    throw new InvalidMultiPartMapException(
+                        $"Expected an array of path segments for file key '{mapKey}' but instead received a(n) {prop.Value.ValueKind}.",
+                        mapKey,
+                        null,
+                        -1);
+                }
 
                 var propSegments = new List<MultipartObjectPathSegment>();
                 foreach (var element in prop.Value.EnumerateArray())
@@ -68,8 +69,14 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                         case JsonValueKind.String:
                             segment = new MultipartObjectPathSegment(element.GetString());
                             break;
+
                         default:
-                            throw new InvalidOperationException($"Invalid object-path segment. Expected string or number, got '{element.ValueKind}'");
+                            throw new InvalidMultiPartMapException(
+                                $"Unable to parse the object-path for file key '{mapKey}', Expected each element of the array " +
+                                $"to be a string or a number but received a '{element.ValueKind}'.",
+                                mapKey,
+                                propSegments,
+                                -1);
                     }
 
                     propSegments.Add(segment);
@@ -98,11 +105,11 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             foreach (var map in fileMap)
             {
                 if (!files.ContainsKey(map.Key))
-                    throw new InvalidOperationException("File Key not found in provided file set");
+                    throw new InvalidFileKeyException(map.Key);
 
                 var segments = map.Value;
                 if (segments.Count == 0)
-                    throw new InvalidOperationException("Object Path points to nothing");
+                    throw new InvalidMultiPartMapException("The supplied object-path points to nothing", map.Key, segments, -1);
 
                 var file = files[map.Key];
 
@@ -111,10 +118,23 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 if (payload.IsBatch)
                 {
                     if (!segments[0].Index.HasValue)
-                        throw new InvalidOperationException("Batch operation provided, map does not point to a member of the batch");
+                    {
+                        throw new InvalidMultiPartMapException(
+                            "The multi-part form indicated a batch operation, however; the mapped object-path " +
+                            $"for file '{map.Key}' does not point to a member of the batch.",
+                            map.Key,
+                            segments,
+                            0);
+                    }
 
                     if (segments[0].Index.Value < 0 || segments[0].Index.Value >= payload.QueriesToExecute.Count)
-                        throw new InvalidOperationException("Index out of range, map points to an operation not in the provided batch");
+                    {
+                        throw new InvalidMultiPartMapException(
+                          $"Index out of range, map for file '{map.Key}' points to an operation not in the provided batch",
+                          map.Key,
+                          segments,
+                          0);
+                    }
 
                     queryData = payload.QueriesToExecute[segments[0].Index.Value];
                     index = 1;
@@ -142,18 +162,43 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             Validation.ThrowIfNull(segments, nameof(segments));
 
             // segments st be, at a minimum, ["variables", "Anything"]
-            if (segments.Count < 2)
-                throw new InvalidOperationException("Unexpected path segment");
+            if ((segments.Count - index) < 2)
+            {
+                throw new InvalidMultiPartMapException(
+                    $"Unexpected object-path length for the file '{file?.Key}' Expected at least 2 path segments, but received {segments.Count}.",
+                    file?.Key,
+                    segments,
+                    -1);
+            }
 
             var segment = segments[index];
             if (segment.Index.HasValue)
-                throw new InvalidOperationException("Unexpected Array Indexer");
+            {
+                throw new InvalidMultiPartMapException(
+                    $"Unexpected array indexer at position {index} in the object-path for file '{file?.Key}'.",
+                    file?.Key,
+                    segments,
+                    index);
+            }
 
             if (string.Compare(Constants.Web.QUERYSTRING_VARIABLES_KEY, segment.PropertyName, true) != 0)
-                throw new InvalidOperationException("expected to start with variables");
+            {
+                throw new InvalidMultiPartMapException(
+                    $"Expected object-path segment to point to '{Constants.Web.QUERYSTRING_QUERY_KEY}' but got '{segment.PropertyName}'.",
+                    file?.Key,
+                    segments,
+                    index);
+            }
 
             if (queryData.Variables == null || queryData.Variables.Count == 0)
-                throw new InvalidOperationException("No variables defined");
+            {
+                throw new InvalidMultiPartMapException(
+                    $"The variables collection pointed to by the map for file '{file?.Key}' is null or empty. No files " +
+                    $"can be assigned to it.",
+                    file?.Key,
+                    segments,
+                    index);
+            }
 
             var variableCollection = queryData.Variables;
             segment = segments[index + 1];
@@ -161,7 +206,14 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             // variables is an object with named properties (by definition), the first item must
             // be a declared property within it
             if (!variableCollection.TryGetVariable(segment.PropertyName, out var variable))
-                throw new InvalidOperationException("unknown variable");
+            {
+                throw new InvalidMultiPartMapException(
+                    $"Unknown top-level variable. A variable named '{segment.PropertyName}' does not exist " +
+                    $"in the variables collection pointed to by the map for file '{file?.Key}'.",
+                    file?.Key,
+                    segments,
+                    index);
+            }
 
             object parent = variableCollection;
             for (var i = index + 2; i < segments.Count; i++)
@@ -181,45 +233,69 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 }
 
                 if (foundChild == null)
-                    throw new InvalidOperationException("Unknown segment");
+                {
+                    throw new InvalidMultiPartMapException(
+                      $"Unknown object-path segment Path segment '{segment.PropertyName}' in the path for the file '{file?.Key}' " +
+                      $"was not found and could not be created.",
+                      file?.Key,
+                      segments,
+                      i);
+                }
 
                 variable = foundChild;
             }
 
             // the terminating value MUST be a single value variable (not a list or object)
             if (!(variable is IInputSingleValueVariable isvv))
-                throw new InvalidOperationException("Invalid Path, final variable does not represent a single value");
+            {
+                throw new InvalidMultiPartMapException(
+                  $"The variable value pointed to by the path for file '{file?.Key}' does not " +
+                  $"point to a single-valued variable. Unable to allocate the requested file upload scalar.",
+                  file?.Key,
+                  segments,
+                  segments.Count - 1);
+            }
 
-            // the terminating value MUST point to null
+            // the terminating value MUST currently point to nothing
             if (isvv.Value != null)
-                throw new InvalidOperationException($"Expected null value but got '{isvv.Value}'");
+            {
+                throw new InvalidMultiPartMapException(
+                  $"The variable value pointed to by the path for file '{file?.Key}' is not null. " +
+                  $"You must define <null> as the supplied variable value in order for the file upload scalar to be " +
+                  $"correctly applied.",
+                  file?.Key,
+                  segments,
+                  segments.Count - 1);
+            }
 
-            // if the owner of the variable is the top level collection
-            // then we need to update the named variable in the collection with the file
             if (parent is IWritableInputVariableCollection wivc)
             {
+                // if the owner of the variable is the top level collection
+                // then we need to update the named variable in the collection with the file
                 wivc.Replace(segment.PropertyName, file);
-                return;
             }
-
-            // if the owner of the variable is an array then we need to
-            // replace the array index with the file
-            if (parent is IWritableInputListVariable wilv && segment.Index.HasValue)
+            else if (parent is IWritableInputListVariable wilv && segment.Index.HasValue)
             {
+                // if the owner of the variable is an array then we need to
+                // replace the array index with the file
                 wilv.Replace(segment.Index.Value, file);
-                return;
             }
-
-            // if the owner of the variable is a field set (i.e. an object) then we need to
-            // replace the named field with the file
-            if (parent is IWritableInputFieldSetVariable wifsv)
+            else if (parent is IWritableInputFieldSetVariable wifsv)
             {
+                // if the owner of the variable is a field set (i.e. an object) then we need to
+                // replace the named field value with the file
                 wifsv.Replace(segment.PropertyName, file);
-                return;
             }
-
-            // don't know what the parent was so we can't update the value within in
-            throw new InvalidOperationException("Unable to write file to variable collection. Collection is not modifiable");
+            else
+            {
+                // don't know what the parent was (or it wasn't writable) so we can't update the value within in
+                throw new InvalidMultiPartMapException(
+                     $"Unable to insert the file '{file?.Key}' into the variable collection. The variable collection may be read only " +
+                     $"or an unexpected variable type was encountered.",
+                     file?.Key,
+                     segments,
+                     segments.Count - 1);
+            }
         }
     }
 }

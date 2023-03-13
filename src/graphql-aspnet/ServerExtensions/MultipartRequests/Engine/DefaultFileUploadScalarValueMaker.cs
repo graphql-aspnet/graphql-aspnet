@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
     using Microsoft.Extensions.Primitives;
 
     /// <summary>
-    /// A maker that can convert a raw ASP.NET <see cref="IFormFile"/> object into a the <see cref="FileUpload"/>
+    /// A maker that can convert a raw ASP.NET <see cref="IFormFile"/> object into a <see cref="FileUpload"/>
     /// graphql scalar.
     /// </summary>
     public class DefaultFileUploadScalarValueMaker : IFileUploadScalarValueMaker

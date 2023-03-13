@@ -31,7 +31,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             _options = new JsonDocumentOptions()
             {
                 CommentHandling = JsonCommentHandling.Skip,
-                MaxDepth = 3,
                 AllowTrailingCommas = true,
             };
         }

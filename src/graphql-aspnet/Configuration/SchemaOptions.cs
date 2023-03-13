@@ -60,7 +60,6 @@ namespace GraphQL.AspNet.Configuration
             this.ExecutionOptions = new SchemaExecutionConfiguration();
             this.ResponseOptions = new SchemaResponseConfiguration();
             this.QueryHandler = new SchemaQueryHandlerConfiguration();
-
         }
 
         /// <summary>

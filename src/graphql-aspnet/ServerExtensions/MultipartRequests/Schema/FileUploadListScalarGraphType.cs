@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// </summary>
     public class FileUploadListScalarGraphType : ScalarGraphTypeBase
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FileUploadListScalarGraphType"/> class.
         /// </summary>

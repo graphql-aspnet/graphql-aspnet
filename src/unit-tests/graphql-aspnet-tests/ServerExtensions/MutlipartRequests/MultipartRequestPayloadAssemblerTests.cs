@@ -187,7 +187,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         }
 
         [Test]
-        public async Task SingleQuery_SingleFile_ArrayMember_AddedToQueryVariableCorrectly()
+        public async Task SingleQuery_SingleFile_AsArrayMember_AddedToQueryVariableCorrectly()
         {
             var queryText = "query { field1 {field2 field3} }";
             var operations = @"
@@ -222,6 +222,133 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.IsNotNull(element0);
             Assert.IsNotNull(element1);
 
+            Assert.AreEqual(file, element1.Value);
+        }
+
+        [Test]
+        public async Task SingleQuery_SingleFile_AsFieldOnArrayMember_AddedToQueryVariableCorrectly()
+        {
+            var queryText = "query { field1 {field2 field3} }";
+            var operations = @"
+            {
+                ""query""     : """ + queryText + @""",
+                ""variables"" : { ""var1"": [null, { ""var2"": null } ] }
+            }";
+
+            var map = @"{ ""0"": [""variables"", ""var1"", 1, ""var2""]}";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+            var payload = await assembler.AssemblePayload(operations, map, files);
+
+            Assert.IsNotNull(payload);
+            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.IsFalse(payload.IsBatch);
+            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+
+            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            Assert.IsTrue(found1);
+
+            var array = var1 as IInputListVariable;
+            Assert.IsNotNull(array);
+
+            var element0 = array.Items[0] as IInputSingleValueVariable;
+            var element1 = array.Items[1] as IInputFieldSetVariable;
+            Assert.IsNotNull(element0);
+            Assert.IsNotNull(element1);
+
+            Assert.IsTrue(element1.Fields.ContainsKey("var2"));
+            var element2 = element1.Fields["var2"] as InputFileUploadVariable;
+
+            Assert.IsNotNull(element2);
+            Assert.AreEqual(file, element2.Value);
+        }
+
+        [Test]
+        public async Task SingleQuery_SingleFile_DeepMixedPath_AddedToQueryVariableCorrectly()
+        {
+            var queryText = "query { field1 {field2 field3} }";
+            var operations = @"
+            {
+                ""query""     : """ + queryText + @""",
+                ""variables"" : { ""var1"": [null, { ""var2"": {""45"": [null, null, {""var4"": [null] }] } } ] }
+            }";
+
+            var map = @"{ ""0"": [""variables"", ""var1"", 1, ""var2"", 45, 2, ""var4"", 0]}";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+            var payload = await assembler.AssemblePayload(operations, map, files);
+
+            Assert.IsNotNull(payload);
+
+            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            Assert.IsTrue(found1);
+
+            var element = var1 as IInputListVariable;
+            Assert.IsNotNull(element);
+
+            var element0 = element.Items[1] as IInputFieldSetVariable;
+            var element1 = element0.Fields["var2"] as IInputFieldSetVariable;
+            var element2 = element1.Fields["45"] as IInputListVariable;
+            var element3 = element2.Items[2] as IInputFieldSetVariable;
+            var element4 = element3.Fields["var4"] as IInputListVariable;
+            var element5 = element4.Items[0] as InputFileUploadVariable;
+
+            Assert.IsNotNull(element5);
+            Assert.AreEqual(file, element5.Value);
+        }
+
+        [Test]
+        public async Task SingleQuery_MultipleFiles_AsArrayMember_AddedToQueryVariableCorrectly()
+        {
+            var queryText = "query { field1 {field2 field3} }";
+            var operations = @"
+            {
+                ""query""     : """ + queryText + @""",
+                ""variables"" : { ""var1"": [null, null] }
+            }";
+
+            var map = @"{ 
+                ""0"": [""variables"", ""var1"", 1],
+                ""bob"": [""variables"", ""var1"", 0]
+            }";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var fileBob = new FileUpload("bob", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+            files.Add(fileBob.MapKey, fileBob);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+            var payload = await assembler.AssemblePayload(operations, map, files);
+
+            Assert.IsNotNull(payload);
+            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.IsFalse(payload.IsBatch);
+            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+
+            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            Assert.IsTrue(found1);
+
+            var array = var1 as IInputListVariable;
+            Assert.IsNotNull(array);
+
+            var element0 = array.Items[0] as InputFileUploadVariable;
+            var element1 = array.Items[1] as InputFileUploadVariable;
+            Assert.IsNotNull(element0);
+            Assert.IsNotNull(element1);
+
+            Assert.AreEqual(fileBob, element0.Value);
             Assert.AreEqual(file, element1.Value);
         }
 

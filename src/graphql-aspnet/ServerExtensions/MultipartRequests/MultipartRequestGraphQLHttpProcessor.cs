@@ -88,9 +88,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <param name="payload">The query data payload parsed from an <see cref="HttpRequest" />; may be null.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task SubmitQueryAsync(MultiPartRequestGraphQLPayload payload, CancellationToken cancelToken = default)
+        protected virtual Task SubmitQueryAsync(MultiPartRequestGraphQLPayload payload, CancellationToken cancelToken = default)
         {
-
+            return Task.CompletedTask;
         }
 
         /// <summary>

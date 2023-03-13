@@ -9,12 +9,10 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution.Variables
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// A variable defined as a set of child key/value pair.
     /// </summary>
-    public interface IWritableInputFieldSetVariable: IInputFieldSetVariable
+    public interface IWritableInputFieldSetVariable : IInputFieldSetVariable
     {
         /// <summary>
         /// Replaces the the input variable of the specified name with the new given value.

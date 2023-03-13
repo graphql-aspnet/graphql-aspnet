@@ -68,13 +68,6 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage(
     "StyleCop.CSharp.DocumentationRules",
     "SA1600:Elements should be documented",
-    Justification = "Scalar Names are self explaintory",
-    Scope = "Type",
-    Target = "~T:GraphQL.AspNet.ServerExtensions.MultipartRequests.MultipartRequestConstants.ScalarNames")]
-
-[assembly: SuppressMessage(
-    "StyleCop.CSharp.DocumentationRules",
-    "SA1600:Elements should be documented",
     Justification = "Web Keys are self explaintory",
     Scope = "Type",
-    Target = "~T:GraphQL.AspNet.ServerExtensions.MultipartRequests.MultipartRequestConstants.Web")]
+    Target = "~T:GraphQL.AspNet.ServerExtensions.MultipartRequests.MultipartRequestConstants")]

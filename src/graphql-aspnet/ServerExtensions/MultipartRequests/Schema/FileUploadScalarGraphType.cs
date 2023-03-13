@@ -24,7 +24,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         public FileUploadScalarGraphType()
             : base(MultipartRequestConstants.ScalarNames.UPLOAD, typeof(FileUpload))
         {
-
         }
 
         /// <inheritdoc />

@@ -64,7 +64,6 @@ namespace GraphQL.AspNet.Execution.Variables
             return this.GetEnumerator();
         }
 
-
         /// <inheritdoc />
         public IReadOnlyList<IInputVariable> Items => _items;
     }
