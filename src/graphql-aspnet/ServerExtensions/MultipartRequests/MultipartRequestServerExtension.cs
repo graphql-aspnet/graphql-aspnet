@@ -39,8 +39,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// Initializes a new instance of the <see cref="MultipartRequestServerExtension"/> class.
         /// </summary>
         public MultipartRequestServerExtension()
+            : this(true)
         {
-            _registerCustomProcessor = true;
         }
 
         /// <summary>
