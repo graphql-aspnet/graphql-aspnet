@@ -7,10 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
+namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
 
     /// <summary>
     /// A payload containing all the information to execute one or more graphql requests

@@ -7,11 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
+namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema
 {
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
 
     /// <summary>
     /// A custom SCALAR representing a file uploaded to a mutation or query. This scalar conforms to the

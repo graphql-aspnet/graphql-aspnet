@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>

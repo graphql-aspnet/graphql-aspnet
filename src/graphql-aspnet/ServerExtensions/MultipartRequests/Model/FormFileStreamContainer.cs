@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
+namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
 {
     using System.IO;
     using System.Threading.Tasks;

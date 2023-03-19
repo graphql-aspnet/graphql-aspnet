@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
     using System.IO;
     using System.Threading.Tasks;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Primitives;
 

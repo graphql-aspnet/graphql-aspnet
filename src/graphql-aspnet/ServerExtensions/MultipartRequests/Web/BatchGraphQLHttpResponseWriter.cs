@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -33,7 +32,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
         /// writer is supplied to this action result.
         /// </summary>
         public const string NO_WRITER_WITH_DETAIL = "Invalid result. No " + nameof(IQueryResponseWriter) + " was " +
-                                                    "provided so the resultant data could not be serialized.";
+                                                    "provided. The resultant data could not be serialized.";
 
         /// <summary>
         /// When exceptions are NOT exposed, this is the text phrase sent to the client as the complete response when no graphql
@@ -46,7 +45,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
         /// operation result is supplied to this action result.
         /// </summary>
         public const string NO_RESULT_WITH_DETAIL = "Invalid result. The " + nameof(IQueryExecutionResult) + " passed to the " +
-                                                    "the " + nameof(GraphQLHttpResponseWriter) + " was null.";
+                                                    "the " + nameof(BatchGraphQLHttpResponseWriter) + " was null.";
 
         /// <summary>
         /// When exceptions are NOT exposed, this is the text phrase sent to the client as the complete response when no graphql
@@ -74,21 +73,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
             IQueryResponseWriter documentWriter,
             bool exposeMetrics,
             bool exposeExceptions)
+            : this(schema, documentWriter, exposeMetrics, exposeExceptions)
         {
-            Validation.ThrowIfNull(schema, nameof(schema));
             _results = Validation.ThrowIfNullOrReturn(results, nameof(results));
-
-            _documentWriter = documentWriter;
-            _options = new ResponseWriterOptions()
-            {
-                ExposeExceptions = exposeExceptions,
-                ExposeMetrics = exposeMetrics,
-            };
-
-            _writerOptions = new JsonWriterOptions()
-            {
-                Indented = schema.Configuration.ResponseOptions.IndentDocument,
-            };
         }
 
         /// <summary>
@@ -105,14 +92,34 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
             IQueryResponseWriter documentWriter,
             bool exposeMetrics,
             bool exposeExceptions)
+            : this(schema, documentWriter, exposeMetrics, exposeExceptions)
         {
             _singleResult = Validation.ThrowIfNullOrReturn(result, nameof(result));
+        }
 
+        /// <summary>
+        /// Prevents a default instance of the <see cref="BatchGraphQLHttpResponseWriter" /> class from being created.
+        /// </summary>
+        /// <param name="schema">The schema governing the use of this writer.</param>
+        /// <param name="documentWriter">The document writer to perform the serailization.</param>
+        /// <param name="exposeMetrics">if set to <c>true</c> any metrics contained on the result will be exposed and sent to the requestor.</param>
+        /// <param name="exposeExceptions">if set to <c>true</c> exceptions will be writen to the response stream; otherwise false.</param>
+        private BatchGraphQLHttpResponseWriter(
+            ISchema schema,
+            IQueryResponseWriter documentWriter,
+            bool exposeMetrics,
+            bool exposeExceptions)
+        {
             _documentWriter = documentWriter;
             _options = new ResponseWriterOptions()
             {
                 ExposeExceptions = exposeExceptions,
                 ExposeMetrics = exposeMetrics,
+            };
+
+            _writerOptions = new JsonWriterOptions()
+            {
+                Indented = schema.Configuration.ResponseOptions.IndentDocument,
             };
         }
 
@@ -148,9 +155,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
                 return;
             }
 
-            // ****************************
+            // ************************************
             //  Write a Batch inside an array
-            // ****************************
+            // ************************************
             if (_results != null)
             {
                 // generate and control the utf writer so we can append
@@ -179,9 +186,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
                 return;
             }
 
-            // ****************************
+            // ************************************
             //  Write a single non-batched result
-            // ****************************
+            // ************************************
             await _documentWriter.WriteAsync(context.Response.Body, _singleResult, _options, cancelToken: cancelToken);
         }
     }

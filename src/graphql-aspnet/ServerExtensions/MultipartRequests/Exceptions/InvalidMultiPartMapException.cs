@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
 
     /// <summary>
     /// An exception thrown by the Multipart Request Server extension indicating that something unexpected occured
@@ -29,6 +30,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions
             this.SegmentPath = null;
             this.FileMapKey = null;
             this.Segments = null;
+            this.Index = -1;
         }
 
         /// <summary>

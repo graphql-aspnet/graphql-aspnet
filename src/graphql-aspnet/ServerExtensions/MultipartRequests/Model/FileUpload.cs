@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
+namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
 {
     using System.Collections.Generic;
     using System.IO;
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 
             this.ContentType = contentType;
             this.FileName = fileName;
-            this.Headers = headers ?? new Dictionary<string, StringValues>();
+            this.Headers = headers;
         }
 
         /// <summary>

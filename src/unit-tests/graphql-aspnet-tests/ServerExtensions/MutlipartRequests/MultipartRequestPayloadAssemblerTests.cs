@@ -10,10 +10,12 @@
 namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 {
     using System.Collections.Generic;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using Moq;
@@ -184,6 +186,39 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var fileVariable = var1 as InputFileUploadVariable;
             Assert.IsNotNull(fileVariable);
             Assert.AreEqual(file, fileVariable.Value);
+        }
+
+        [Test]
+        public async Task SingleQuery_SingleFile_NoMap_NotAddedToCollection()
+        {
+            var queryText = "query { field1 {field2 field3} }";
+            var operations = @"
+            {
+                ""query""     : """ + queryText + @""",
+                ""variables"" : { ""var1"": null }
+            }";
+
+            string map = null;
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+            var payload = await assembler.AssemblePayload(operations, map, files);
+
+            Assert.IsNotNull(payload);
+            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.IsFalse(payload.IsBatch);
+            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+
+            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            Assert.IsTrue(found1);
+
+            var fileVariable = var1 as IInputSingleValueVariable;
+            Assert.IsNotNull(fileVariable);
+            Assert.IsNull(fileVariable.Value);
         }
 
         [Test]
@@ -541,6 +576,385 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.IsNotNull(element1);
 
             Assert.AreEqual(file, element1.Value);
+        }
+
+        [Test]
+        public void NoQueryKeyOnSingleObject_ThrowsException()
+        {
+            var operations = @"
+            {
+                ""variables"" : { ""var1"": null }
+            }";
+
+            var map = @"{ ""0"": ""variables.var1""}";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
+            {
+                await assembler.AssemblePayload(operations, map, files);
+            });
+        }
+
+        [Test]
+        public void NoQueryKeyOnBatchObject_ThrowsException()
+        {
+            var operations = @"[
+                {
+                    ""query""     : ""query doesnt matter"",
+                    ""variables"" : { ""var1"": [{""var2"": [null, null, null] }, {""var3"": [null, null, null] }] },
+                    ""operation"" : ""bob""
+                },
+                {
+                    ""variables"" : { ""var4"": [[[null, null],[null, null]],[[null, null],[null, null]]] }
+                }
+            ]";
+
+            var map = @"{ ""0"": ""variables.var1""}";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
+            {
+                await assembler.AssemblePayload(operations, map, files);
+            });
+
+            // ensure the error contains the correct failed index
+            Assert.IsTrue(ex.Message.Contains("1"));
+        }
+
+        [Test]
+        public void InvalidJsonForOperationsKey_ThrowsException()
+        {
+            var operations = @"
+                {
+                    ""query""     : ""query doesnt matter"",
+                    ""variables"" : { ""var1"":  },
+                    ""operation"" : ""bob""
+                }";
+
+            var map = @"{ ""0"": ""variables.var1""}";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
+            {
+                await assembler.AssemblePayload(operations, map, files);
+            });
+
+            // ensure the error contains the correct failed index
+            Assert.IsTrue(ex.InnerException is JsonException);
+        }
+
+        [Test]
+        public void InvalidOperationName_SingleQuery_ThrowsException()
+        {
+            var operations = @"
+                {
+                    ""query""     : ""query doesnt matter"",
+                    ""variables"" : { ""var1"": null },
+                    ""operation"" : 45
+                }";
+
+            var map = @"{ ""0"": ""variables.var1""}";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
+            {
+                await assembler.AssemblePayload(operations, map, files);
+            });
+        }
+
+        [Test]
+        public void InvalidOperationName_BatchQuery_ThrowsException()
+        {
+            var operations = @"[
+                {
+                    ""query""     : ""query doesnt matter"",
+                    ""variables"" : { ""var1"": [{""var2"": [null, null, null] }, {""var3"": [null, null, null] }] },
+                    ""operation"" : ""bob""
+                },
+                {
+                    ""query""     : ""query doesnt matter"",
+                    ""variables"" : { ""var4"": [[[null, null],[null, null]],[[null, null],[null, null]]] },
+                    ""operation""     : 45,
+                }
+            ]";
+
+            var map = @"{ ""0"": ""variables.var1""}";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
+            {
+                await assembler.AssemblePayload(operations, map, files);
+            });
+
+            // ensure the error contains the correct failed index
+            Assert.IsTrue(ex.Message.Contains("1"));
+        }
+
+        // map is not an object
+        [TestCase(@"95", -1)]
+
+        // no segments
+        [TestCase(@"{ ""0"": """"}", -1)]
+        [TestCase(@"{ ""0"": []}", -1)]
+        [TestCase(@"{ ""0"": null}", -1)]
+
+        // only 1 segment
+        [TestCase(@"{ ""0"": ""variables""}", -1)]
+        [TestCase(@"{ ""0"": [""variables""]}", -1)]
+
+        // segment is not a string or number
+        [TestCase(@"{ ""0"": [""variables"", true]}", 1)]
+
+        // property doesn't exist
+        [TestCase(@"{ ""0"": ""variables.var2""}", 1)]
+        [TestCase(@"{ ""0"": ""NotVariables.var2""}", 0)]
+        [TestCase(@"{ ""0"": [""variables"", ""var2""]}", 1)]
+        [TestCase(@"{ ""0"": [""NotVariables"", ""var1""]}", 0)]
+
+        // index doesn't exist
+        [TestCase(@"{ ""0"": ""variables.0""}", 1)]
+        [TestCase(@"{ ""0"": [""variables"", ""0""]}", 1)]
+
+        // not a batch
+        [TestCase(@"{ ""0"": ""0.variables.var1""}", 0)]
+        [TestCase(@"{ ""0"": [0, ""variables"", ""var1""]}", 0)]
+        [TestCase(@"{ ""0"": [""0"", ""variables"", ""var1""]}", 0)]
+
+        // not a terminal variable
+        [TestCase(@"{ ""0"": ""variables.var1""}", 1, @"{ ""var1"": {""var2"": null } }")]
+        [TestCase(@"{ ""0"": [""variables"", ""var1""]}", 1, @"{ ""var1"": {""var2"": null } }")]
+
+        // variable value is not provided as null
+        [TestCase(@"{ ""0"": ""variables.var1""}", 1, @"{ ""var1"": 35 }")]
+        [TestCase(@"{ ""0"": [""variables"", ""var1""]}", 1, @"{ ""var1"": 36 }")]
+
+        // file reference doesnt exist
+        [TestCase(@"{ ""notAFile"": ""variables.var1""}", -1)]
+        public void InvalidMapValue_SingleQuery_ThrowsException(string map, int expectedFailedIndex, string customVariablestring = null)
+        {
+            var variables = customVariablestring ?? @"{ ""var1"": null }";
+            var operations = @"
+                {
+                    ""query""     : ""query doesnt matter"",
+                    ""variables"" : " + variables + @"
+                }";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                await assembler.AssemblePayload(operations, map, files);
+            });
+
+            Assert.AreEqual(expectedFailedIndex, ex.Index);
+        }
+
+        // map is not an object
+        [TestCase(@"95", -1)]
+
+        // no segments
+        [TestCase(@"{ ""0"": """"}", -1)]
+        [TestCase(@"{ ""0"": []}", -1)]
+        [TestCase(@"{ ""0"": null}", -1)]
+
+        // only 1 segment
+        [TestCase(@"{ ""0"": ""variables""}", -1)]
+        [TestCase(@"{ ""0"": [""variables""]}", -1)]
+        [TestCase(@"{ ""0"": ""0""}", -1)]
+        [TestCase(@"{ ""0"": 0}", -1)]
+        [TestCase(@"{ ""0"": [""0""]}", -1)]
+        [TestCase(@"{ ""0"": [0]}", -1)]
+
+        // segment is not a string or number
+        [TestCase(@"{ ""0"": [0, ""variables"", true]}", 2)]
+
+        // property doesn't exist
+        [TestCase(@"{ ""0"": ""0.variables.var2""}", 2)]
+        [TestCase(@"{ ""0"": ""0.Notvariables.var1""}", 1)]
+        [TestCase(@"{ ""0"": [""0"", ""variables"", ""var2""]}", 2)]
+        [TestCase(@"{ ""0"": [0, ""variables"", ""var2""]}", 2)]
+
+        // trailing array index doesn't exist
+        [TestCase(@"{ ""0"": ""0.variables.0""}", 2)]
+        [TestCase(@"{ ""0"": ""0.variabl.0""}", 1)]
+        [TestCase(@"{ ""0"": [""0"", ""variables"", ""0""]}", 2)]
+        [TestCase(@"{ ""0"": [0, ""variables"", ""0""]}", 2)]
+
+        // batch index out of range
+        [TestCase(@"{ ""0"": ""32.variables.0""}", 0)]
+        [TestCase(@"{ ""0"": [""32"", ""variables"", ""0""] }", 0)]
+        [TestCase(@"{ ""0"": [32, ""variables"", ""0""] }", 0)]
+
+        // not a terminal variable
+        [TestCase(@"{ ""0"": ""0.variables.var1""}", 2, @"{ ""var1"": {""var2"": null } }")]
+        [TestCase(@"{ ""0"": [0, ""variables"", ""var1""]}", 2, @"{ ""var1"": {""var2"": null } }")]
+
+        // terminal variable value not provided as null
+        [TestCase(@"{ ""0"": ""0.variables.var1""}", 2, @"{ ""var1"": 35 }")]
+        [TestCase(@"{ ""0"": [0, ""variables"", ""var1""]}", 2, @"{ ""var1"": 23 }")]
+
+        // file reference doesnt exist
+        [TestCase(@"{ ""notAFile"": ""0.variables.var1""}", -1)]
+        public void InvalidMapValue_BatchQuery_ThrowsException(string map, int expectedFailedIndex, string customVariablestring = null)
+        {
+            var variables = customVariablestring ?? @"{ ""var1"": null }";
+            var operations = @"[
+                {
+                    ""query""     : ""query doesnt matter"",
+                    ""variables"" : " + variables + @"
+                },
+                {
+                    ""query""     : ""query doesnt matter"",
+                    ""variables"" : { ""var1"": null }
+                }]";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                await assembler.AssemblePayload(operations, map, files);
+            });
+
+            Assert.AreEqual(expectedFailedIndex, ex.Index);
+        }
+
+        [Test]
+        public void NoVariablesCollectionDefinedOnTargetOfMap_ThrowsException()
+        {
+            var queryText = "query { field1 {field2 field3} }";
+            var operations = @"
+            {
+                ""query""     : """ + queryText + @"""
+            }";
+
+            string map = @"{""0"": [""variables"", ""var1""] }";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                var payload = await assembler.AssemblePayload(operations, map, files);
+            });
+        }
+
+        [Test]
+        public void NoVariablesDefinedOnTargetOfMap_ThrowsException()
+        {
+            var queryText = "query { field1 {field2 field3} }";
+            var operations = @"
+            {
+                ""query""     : """ + queryText + @""",
+                ""variables"": {}
+            }";
+
+            string map = @"{""0"": [""variables"", ""var1""] }";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                var payload = await assembler.AssemblePayload(operations, map, files);
+            });
+        }
+
+        [Test]
+        public void MissingVariableInNestedSequence_ThrowsException()
+        {
+            var queryText = "query { field1 {field2 field3} }";
+            var operations = @"
+            {
+                ""query""     : """ + queryText + @""",
+                ""variables"": {""var1"": {""var2"" : {""var3"" : null } } }
+            }";
+
+            string map = @"{""0"": [""variables"", ""var1"", ""var4"", ""var3""] }";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                var payload = await assembler.AssemblePayload(operations, map, files);
+            });
+        }
+
+        [Test]
+        public void InvalidJsonAsMap_ThrowsException()
+        {
+            var queryText = "query { field1 {field2 field3} }";
+            var operations = @"
+            {
+                ""query""     : """ + queryText + @""",
+                ""variables"" : { ""var1"": null }
+            }";
+
+            string map = @"{ ""0"": [""variables"", }";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                var payload = await assembler.AssemblePayload(operations, map, files);
+            });
         }
     }
 }

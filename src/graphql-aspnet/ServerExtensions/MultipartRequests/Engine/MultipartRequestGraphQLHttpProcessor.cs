@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
+namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
 {
     using System;
     using System.Collections.Generic;
@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
     using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Web.Exceptions;
@@ -375,9 +376,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             {
                 return await this.AssemblyMultiPartFormDataAsync().ConfigureAwait(false);
             }
-            catch (InvalidFileKeyException fke)
+            catch (InvalidMultiPartOperationException fe)
             {
-                throw new HttpContextParsingException(errorMessage: fke.Message);
+                throw new HttpContextParsingException(errorMessage: fe.Message);
             }
             catch (InvalidMultiPartMapException mpe)
             {

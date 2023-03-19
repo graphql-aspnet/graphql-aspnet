@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerExtensions
+namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 {
     using System;
     using GraphQL.AspNet.Common;
@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.ServerExtensions
     using GraphQL.AspNet.ServerExtensions.MultipartRequests;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
