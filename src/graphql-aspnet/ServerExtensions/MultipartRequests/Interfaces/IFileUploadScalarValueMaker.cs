@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Primitives;
 
     /// <summary>
     /// An object that that can generate a valid <see cref="FileUpload"/> scalar value

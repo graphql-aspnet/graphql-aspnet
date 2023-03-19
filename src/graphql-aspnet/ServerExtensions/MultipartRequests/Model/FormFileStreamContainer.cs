@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
 
     /// <summary>
     /// An implementation of a file stream container which streams file contents
-    /// directly from the <see cref="IFormFile"/> reference provided by ASP.NET.
+    /// directly from the <see cref="IFormFile"/> reference into a graphql query.
     /// </summary>
     public class FormFileStreamContainer : IFileUploadStreamContainer
     {

@@ -259,7 +259,7 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Registers a server extension for this schema.
+        /// Registers a pre-built server extension for this schema.
         /// </summary>
         /// <typeparam name="TExtensionType">The type of the extension to register.</typeparam>
         /// <param name="extension">The extension instance.</param>

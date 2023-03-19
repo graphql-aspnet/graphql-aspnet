@@ -33,14 +33,14 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         private readonly IFileUploadStreamContainer _streamContainer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileUpload"/> class.
+        /// Initializes a new instance of the <see cref="FileUpload" /> class.
         /// </summary>
         /// <param name="mapKey">The key used to identify where in the supplied operations
         /// this instance should be placed.</param>
-        /// <param name="contentType">The 'Content-Type' header value supplied with the file.</param>
-        /// <param name="fileName">Name of the file that was supplied.</param>
         /// <param name="streamContainer">The stream container providng access to the raw
         /// bits of the file when requested.</param>
+        /// <param name="contentType">The 'Content-Type' header value supplied with the file.</param>
+        /// <param name="fileName">Name of the file that was supplied.</param>
         /// <param name="headers">The headers.</param>
         public FileUpload(
             string mapKey,

@@ -10,11 +10,12 @@
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
 {
     using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
 
     /// <summary>
-    /// A graphql variable that represents an instance of a file uploaded on a query.
+    /// A user-supplied, graphql variable that represents an instance of a file uploaded on a query.
     /// </summary>
-    public class InputFileUploadVariable : InputVariable
+    public class InputFileUploadVariable : InputVariable, IResolvedScalarValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InputFileUploadVariable"/> class.
@@ -28,9 +29,12 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
         }
 
         /// <summary>
-        /// Gets a reference to the value parsed from a request.
+        /// Gets a reference to the file parsed from a request.
         /// </summary>
         /// <value>The file reference.</value>
         public FileUpload Value { get; }
+
+        /// <inheritdoc />
+        public object ResolvedValue => this.Value;
     }
 }

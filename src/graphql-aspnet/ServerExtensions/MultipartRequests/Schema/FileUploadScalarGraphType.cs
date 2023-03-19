@@ -14,7 +14,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
-    /// A custom SCALAR representing a file uploaded to a mutation or query.
+    /// A custom SCALAR representing a file uploaded to a mutation or query. This scalar conforms to the
+    /// requirements of the multi-part request specification:
+    /// <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.
     /// </summary>
     public class FileUploadScalarGraphType : ScalarGraphTypeBase
     {
@@ -29,10 +31,10 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <inheritdoc />
         public override object Serialize(object item)
         {
-            if (item == null)
-                return null;
+            if (item is FileUpload fi)
+                return fi.FileName;
 
-            return $"{((FileUpload)item).FileName}";
+            return null;
         }
 
         /// <inheritdoc />
@@ -56,8 +58,10 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <inheritdoc />
         public override object Resolve(ReadOnlySpan<char> data)
         {
-            throw new NotSupportedException($"The {MultipartRequestConstants.ScalarNames.UPLOAD} scalar does not support direct resolution. It must " +
-                $"be used in conjunction with a variable reference per the specification. See documentation for details.");
+            throw new NotSupportedException(
+                $"The {MultipartRequestConstants.ScalarNames.UPLOAD} scalar does not support direct resolution from " +
+                $"text provided on a query. It must be used in conjunction with a variable reference per the specification. " +
+                $"See documentation for details.");
         }
     }
 }

@@ -411,5 +411,136 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.IsNotNull(var4AsFile);
             Assert.AreEqual(file, var4AsFile.Value);
         }
+
+        [Test]
+        public async Task BatchQuery_MultipleFiles_DeepNesting_AddedToQueryVariableCorrectly()
+        {
+            var queryText0 = "query { field1 {field2 field3} }";
+            var queryText1 = "query { field4 {field5 field6} }";
+            var operations = @"[
+                {
+                    ""query""     : """ + queryText0 + @""",
+                    ""variables"" : { ""var1"": [{""var2"": [null, null, null] }, {""var3"": [null, null, null] }] },
+                    ""operation"" : ""bob""
+                },
+                {
+                    ""query""     : """ + queryText1 + @""",
+                    ""variables"" : { ""var4"": [[[null, null],[null, null]],[[null, null],[null, null]]] }
+                }
+            ]";
+
+            var map = @"{
+                ""var3-1"": [0, ""variables"", ""var1"", 1, ""var3"",""1""],
+                ""var4-1-0-1"": [1, ""variables"", ""var4"", ""1"",0, 1]
+            }";
+
+            var fileVar3 = new FileUpload("var3-1", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var fileVar4 = new FileUpload("var4-1-0-1", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(fileVar3.MapKey, fileVar3);
+            files.Add(fileVar4.MapKey, fileVar4);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+            var payload = await assembler.AssemblePayload(operations, map, files);
+
+            Assert.IsNotNull(payload);
+            Assert.AreEqual(2, payload.QueriesToExecute.Count);
+            Assert.IsTrue(payload.IsBatch);
+
+            var operation0 = payload.QueriesToExecute[0];
+            Assert.AreEqual(queryText0, operation0.Query);
+            Assert.AreEqual("bob", operation0.OperationName);
+            var foundVar1 = operation0.Variables.TryGetVariable("var1", out var var1);
+            Assert.IsTrue(foundVar1);
+            var var1Index0 = (var1 as IInputListVariable).Items[1] as IInputFieldSetVariable;
+            var var3Array = var1Index0.Fields["var3"] as IInputListVariable;
+            var var3_1_File = var3Array.Items[1] as InputFileUploadVariable;
+            Assert.AreEqual(fileVar3, var3_1_File.Value);
+
+            var operation1 = payload.QueriesToExecute[1];
+            Assert.AreEqual(queryText1, operation1.Query);
+            Assert.AreEqual(null, operation1.OperationName);
+
+            var foundVar4 = operation1.Variables.TryGetVariable("var4", out var var4);
+            Assert.IsTrue(foundVar4);
+
+            var var41Array = (var4 as IInputListVariable).Items[1] as IInputListVariable;
+            var var410Array = var41Array.Items[0] as IInputListVariable;
+            var var4_101_file = var410Array.Items[1] as InputFileUploadVariable;
+            Assert.AreEqual(fileVar4, var4_101_file.Value);
+        }
+
+        [Test]
+        public async Task SingleQuery_SingleFile_TopLevelVariable_StringMapPath_AddedToQueryVariableCorrectly()
+        {
+            var queryText = "query { field1 {field2 field3} }";
+            var operations = @"
+            {
+                ""query""     : """ + queryText + @""",
+                ""variables"" : { ""var1"": null }
+            }";
+
+            var map = @"{ ""0"": ""variables.var1""}";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+            var payload = await assembler.AssemblePayload(operations, map, files);
+
+            Assert.IsNotNull(payload);
+            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.IsFalse(payload.IsBatch);
+            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+
+            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            Assert.IsTrue(found1);
+
+            var fileVariable = var1 as InputFileUploadVariable;
+            Assert.IsNotNull(fileVariable);
+            Assert.AreEqual(file, fileVariable.Value);
+        }
+
+        [Test]
+        public async Task SingleQuery_SingleFile_AsArrayMember_StringMapPath_AddedToQueryVariableCorrectly()
+        {
+            var queryText = "query { field1 {field2 field3} }";
+            var operations = @"
+            {
+                ""query""     : """ + queryText + @""",
+                ""variables"" : { ""var1"": [null,null] }
+            }";
+
+            var map = @"{ ""0"": ""variables.var1.1""}";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+            var payload = await assembler.AssemblePayload(operations, map, files);
+
+            Assert.IsNotNull(payload);
+            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.IsFalse(payload.IsBatch);
+            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+
+            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            Assert.IsTrue(found1);
+
+            var arrayVar = var1 as IInputListVariable;
+            Assert.IsNotNull(arrayVar);
+
+            var element0 = arrayVar.Items[0] as IInputSingleValueVariable;
+            var element1 = arrayVar.Items[1] as InputFileUploadVariable;
+            Assert.IsNull(element0.Value);
+
+            Assert.IsNotNull(element1);
+
+            Assert.AreEqual(file, element1.Value);
+        }
     }
 }

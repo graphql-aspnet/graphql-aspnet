@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.ServerExtensions
         /// its own custom http query processor to handle incoming queries.  When <c>false</c>,
         /// no custom processor will be registerd and you must handle query parsing and file mapping
         /// in some other manner.</param>
-        public MultipartRequestServerExtension(bool registerCustomProcessor)
+        public MultipartRequestServerExtension(bool registerCustomProcessor = true)
         {
             _registerCustomProcessor = registerCustomProcessor;
         }
@@ -75,9 +75,8 @@ namespace GraphQL.AspNet.ServerExtensions
                 options.QueryHandler.HttpProcessorType = _expectedProcessorType;
             }
 
-            // register scalars that represent the files
+            // register a scalar that represents the file
             GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(FileUploadScalarGraphType));
-            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(FileUploadListScalarGraphType));
 
             // perform the rest of the DI registrations
             options.ServiceCollection.TryAddSingleton<IFileUploadScalarValueMaker, DefaultFileUploadScalarValueMaker>();

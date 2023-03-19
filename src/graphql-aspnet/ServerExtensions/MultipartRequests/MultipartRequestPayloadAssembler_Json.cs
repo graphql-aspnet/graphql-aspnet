@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Text.Json;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
@@ -24,7 +25,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// </summary>
     /// <remarks>Spec: <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.</remarks>
     [DebuggerDisplay("{Raw}")]
-    public partial class MultipartRequestPayloadAssembler
+    internal partial class MultipartRequestPayloadAssembler
     {
         /// <summary>
         /// Parses the string on the "map" key in the multipart content form and converts it into a
@@ -46,46 +47,88 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             foreach (var prop in doc.RootElement.EnumerateObject())
             {
                 var mapKey = prop.Name;
+                List<MultipartObjectPathSegment> segments = null;
 
-                if (prop.Value.ValueKind != JsonValueKind.Array)
+                switch (prop.Value.ValueKind)
                 {
-                    throw new InvalidMultiPartMapException(
-                        $"Expected an array of path segments for file key '{mapKey}' but instead received a(n) {prop.Value.ValueKind}.",
-                        mapKey,
-                        null,
-                        -1);
+                    case JsonValueKind.Array:
+                        segments = this.BuildSegmentsFromPathArray(mapKey, prop.Value);
+                        break;
+
+                    case JsonValueKind.String:
+                        segments = this.BuildSegmentsFromStringPath(mapKey, prop.Value.GetString());
+                        break;
+
+                    case JsonValueKind.Number:
+                        segments = this.BuildSegmentsFromStringPath(mapKey, prop.Value.GetInt64().ToString());
+                        break;
+
+                    default:
+                        throw new InvalidMultiPartMapException(
+                            $"Expected an array of path segments for file key '{mapKey}' " +
+                            $"but instead received a(n) {prop.Value.ValueKind}.",
+                            mapKey,
+                            null,
+                            -1);
                 }
 
-                var propSegments = new List<MultipartObjectPathSegment>();
-                foreach (var element in prop.Value.EnumerateArray())
-                {
-                    MultipartObjectPathSegment segment = null;
-                    switch (element.ValueKind)
-                    {
-                        case JsonValueKind.Number:
-                            segment = new MultipartObjectPathSegment(element.GetRawText());
-                            break;
-
-                        case JsonValueKind.String:
-                            segment = new MultipartObjectPathSegment(element.GetString());
-                            break;
-
-                        default:
-                            throw new InvalidMultiPartMapException(
-                                $"Unable to parse the object-path for file key '{mapKey}', Expected each element of the array " +
-                                $"to be a string or a number but received a '{element.ValueKind}'.",
-                                mapKey,
-                                propSegments,
-                                -1);
-                    }
-
-                    propSegments.Add(segment);
-                }
-
-                allSegments.Add(new (mapKey, propSegments));
+                allSegments.Add(new (mapKey, segments));
             }
 
             return allSegments;
+        }
+
+        /// <summary>
+        /// For the given key and path string (e.g. "path1.0.path2", builds out the map segments pointed at by the string.
+        /// </summary>
+        /// <param name="mapKey">The map key to build for.</param>
+        /// <param name="mapPath">The map path as a string (e.g. "path1.0.path2.1").</param>
+        /// <returns>List&lt;MultipartObjectPathSegment&gt;.</returns>
+        protected virtual List<MultipartObjectPathSegment> BuildSegmentsFromStringPath(string mapKey, string mapPath)
+        {
+            if (string.IsNullOrWhiteSpace(mapPath))
+                return new List<MultipartObjectPathSegment>();
+
+            var split = mapPath.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            return split.Select(x => new MultipartObjectPathSegment(x)).ToList();
+        }
+
+        /// <summary>
+        /// For the given key and json array, builds out the map segments within the array. Expects that the jsonElement
+        /// array contains only strings or numbers or an exception will be thrown.
+        /// </summary>
+        /// <param name="mapKey">The map key to build for.</param>
+        /// <param name="arrayElement">The array element to parse.</param>
+        /// <returns>List&lt;MultipartObjectPathSegment&gt;.</returns>
+        protected virtual List<MultipartObjectPathSegment> BuildSegmentsFromPathArray(string mapKey, JsonElement arrayElement)
+        {
+            var propSegments = new List<MultipartObjectPathSegment>();
+            foreach (var element in arrayElement.EnumerateArray())
+            {
+                MultipartObjectPathSegment segment = null;
+                switch (element.ValueKind)
+                {
+                    case JsonValueKind.Number:
+                        segment = new MultipartObjectPathSegment(element.GetRawText());
+                        break;
+
+                    case JsonValueKind.String:
+                        segment = new MultipartObjectPathSegment(element.GetString());
+                        break;
+
+                    default:
+                        throw new InvalidMultiPartMapException(
+                            $"Unable to parse the object-path for file key '{mapKey}', Expected each element of the array " +
+                            $"to be a string or a number but received a '{element.ValueKind}'.",
+                            mapKey,
+                            propSegments,
+                            -1);
+                }
+
+                propSegments.Add(segment);
+            }
+
+            return propSegments;
         }
 
         /// <summary>

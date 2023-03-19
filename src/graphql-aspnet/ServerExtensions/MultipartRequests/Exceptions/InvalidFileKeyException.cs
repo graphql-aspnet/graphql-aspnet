@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions
         /// </summary>
         /// <param name="fileMapKey">The file map key that was missing.</param>
         public InvalidFileKeyException(string fileMapKey)
-            : base($"The file map key '{fileMapKey}' was not found in the supplied form")
+            : base($"An expected file key named '{fileMapKey}' was not found in the supplied form.")
         {
         }
     }

@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// can be executed against the runtime.
     /// </summary>
     /// <remarks>Spec: <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.</remarks>
-    public partial class MultipartRequestPayloadAssembler
+    internal partial class MultipartRequestPayloadAssembler
     {
         private static readonly JsonDocumentOptions _options;
 

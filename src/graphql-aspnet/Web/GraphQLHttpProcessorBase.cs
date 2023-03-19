@@ -67,8 +67,29 @@ namespace GraphQL.AspNet.Web
             string message,
             string errorCode = Constants.ErrorCodes.GENERAL_ERROR)
         {
+            return this.ExceptionAsGraphQLResponse(originalRequest, message, errorCode, null);
+        }
+
+        /// <summary>
+        /// Generates a qualified <see cref="IQueryExecutionResult" /> with the given exception and friendly error message
+        /// wrapped as a graphql error allowing it to be processed by the client as a formatted, albeit errored, query response.
+        /// When overridden in a child class this method allows the child to generate a custom <see cref="IQueryExecutionResult" />
+        /// in response to the message.
+        /// </summary>
+        /// <param name="originalRequest">The request to act as the origin of the generated response.</param>
+        /// <param name="message">The error message to wrap.</param>
+        /// <param name="errorCode">The error code to assign to the message.</param>
+        /// <param name="exceptionThrown">An exception that was thrown and should be included in the response. This exception will
+        /// only be exposed if the schema configuration allows it.</param>
+        /// <returns>IActionResult.</returns>
+        protected virtual IQueryExecutionResult ExceptionAsGraphQLResponse(
+            IQueryExecutionRequest originalRequest,
+            string message,
+            string errorCode = Constants.ErrorCodes.GENERAL_ERROR,
+            Exception exceptionThrown = null)
+        {
             var response = new QueryExecutionResult(originalRequest);
-            response.Messages.Add(GraphMessageSeverity.Critical, message, errorCode);
+            response.Messages.Add(GraphMessageSeverity.Critical, message, errorCode, exceptionThrown: exceptionThrown);
             return response;
         }
 

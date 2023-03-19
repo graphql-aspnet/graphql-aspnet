@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using GraphQL.AspNet.Common;
 
     /// <summary>
-    /// A payload containing all the information to execute one or more graphql
+    /// A payload containing all the information to execute one or more graphql requests
     /// through the <see cref="MultipartRequestGraphQLHttpProcessor{TSchema}"/>.
     /// </summary>
     public class MultiPartRequestGraphQLPayload
