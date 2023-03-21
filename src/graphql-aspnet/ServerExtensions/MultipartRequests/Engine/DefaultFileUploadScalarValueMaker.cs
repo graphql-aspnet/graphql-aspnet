@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
             if (aspNetFile == null)
                 return null;
 
-            var streamContainer = await this.CreateStream(aspNetFile);
+            var streamContainer = await this.CreateStreamContainer(aspNetFile);
 
             var file = new FileUpload(
                 aspNetFile.Name,
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
         }
 
         /// <inheritdoc />
-        public Task<FileUpload> CreateFileScalar(string mapKey, byte[] blobData)
+        public virtual Task<FileUpload> CreateFileScalar(string mapKey, byte[] blobData)
         {
             var streamContainer = new ByteArrayStreamContainer(blobData);
 
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
         /// </summary>
         /// <param name="aspNetFile">The ASP.NET file reference.</param>
         /// <returns>Task&lt;IFileUploadStream&gt;.</returns>
-        protected virtual Task<IFileUploadStreamContainer> CreateStream(IFormFile aspNetFile)
+        protected virtual Task<IFileUploadStreamContainer> CreateStreamContainer(IFormFile aspNetFile)
         {
             var stream = new FormFileStreamContainer(aspNetFile);
             return Task.FromResult(stream as IFileUploadStreamContainer);

@@ -65,17 +65,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
         /// <param name="schema">The schema governing the use of this writer.</param>
         /// <param name="results">The collection of graphql result to serialize as a batch.</param>
         /// <param name="documentWriter">The document writer to perform the serailization.</param>
-        /// <param name="exposeMetrics">if set to <c>true</c> any metrics contained on the result will be exposed and sent to the requestor.</param>
-        /// <param name="exposeExceptions">if set to <c>true</c> exceptions will be writen to the response stream; otherwise false.</param>
         public BatchGraphQLHttpResponseWriter(
             ISchema schema,
             IReadOnlyList<IQueryExecutionResult> results,
-            IQueryResponseWriter documentWriter,
-            bool exposeMetrics,
-            bool exposeExceptions)
-            : this(schema, documentWriter, exposeMetrics, exposeExceptions)
+            IQueryResponseWriter documentWriter)
+            : this(schema, documentWriter)
         {
-            _results = Validation.ThrowIfNullOrReturn(results, nameof(results));
+            _results = results;
         }
 
         /// <summary>
@@ -84,17 +80,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
         /// <param name="schema">The schema governing the use of this writer.</param>
         /// <param name="result">The single graphql result to serialize.</param>
         /// <param name="documentWriter">The document writer to perform the serailization.</param>
-        /// <param name="exposeMetrics">if set to <c>true</c> any metrics contained on the result will be exposed and sent to the requestor.</param>
-        /// <param name="exposeExceptions">if set to <c>true</c> exceptions will be writen to the response stream; otherwise false.</param>
         public BatchGraphQLHttpResponseWriter(
             ISchema schema,
             IQueryExecutionResult result,
-            IQueryResponseWriter documentWriter,
-            bool exposeMetrics,
-            bool exposeExceptions)
-            : this(schema, documentWriter, exposeMetrics, exposeExceptions)
+            IQueryResponseWriter documentWriter)
+            : this(schema, documentWriter)
         {
-            _singleResult = Validation.ThrowIfNullOrReturn(result, nameof(result));
+            _singleResult = result;
         }
 
         /// <summary>
@@ -102,19 +94,15 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
         /// </summary>
         /// <param name="schema">The schema governing the use of this writer.</param>
         /// <param name="documentWriter">The document writer to perform the serailization.</param>
-        /// <param name="exposeMetrics">if set to <c>true</c> any metrics contained on the result will be exposed and sent to the requestor.</param>
-        /// <param name="exposeExceptions">if set to <c>true</c> exceptions will be writen to the response stream; otherwise false.</param>
         private BatchGraphQLHttpResponseWriter(
             ISchema schema,
-            IQueryResponseWriter documentWriter,
-            bool exposeMetrics,
-            bool exposeExceptions)
+            IQueryResponseWriter documentWriter)
         {
             _documentWriter = documentWriter;
             _options = new ResponseWriterOptions()
             {
-                ExposeExceptions = exposeExceptions,
-                ExposeMetrics = exposeMetrics,
+                ExposeExceptions = schema.Configuration.ResponseOptions.ExposeExceptions,
+                ExposeMetrics = schema.Configuration.ResponseOptions.ExposeMetrics,
             };
 
             _writerOptions = new JsonWriterOptions()

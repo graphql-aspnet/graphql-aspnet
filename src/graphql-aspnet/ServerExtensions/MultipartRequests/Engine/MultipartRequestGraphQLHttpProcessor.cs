@@ -297,15 +297,11 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
                 ? new BatchGraphQLHttpResponseWriter(
                     this.Schema,
                     results,
-                    _writer,
-                    this.ExposeMetrics,
-                    this.ExposeExceptions)
+                    _writer)
                 : new BatchGraphQLHttpResponseWriter(
                     this.Schema,
                     results[0],
-                    _writer,
-                    this.ExposeMetrics,
-                    this.ExposeExceptions);
+                    _writer);
 
             await localWriter.WriteResultAsync(this.HttpContext, cancelToken).ConfigureAwait(false);
         }

@@ -61,38 +61,38 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
         /// Opens the low level stream containing the file contents.
         /// </summary>
         /// <returns>Task&lt;Stream&gt;.</returns>
-        public async Task<Stream> OpenFileAsync()
+        public virtual async Task<Stream> OpenFileAsync()
         {
             return await _streamContainer.OpenStreamAsync();
         }
 
         /// <summary>
-        /// Gets the `Content-Type` header provided with the file data. May null if no
+        /// Gets or sets the `Content-Type` header provided with the file data. May null if no
         /// content type was specified.
         /// </summary>
         /// <value>The 'Content-Type' header supplied with the file.</value>
-        public string ContentType { get; }
+        public virtual string ContentType { get; protected set; }
 
         /// <summary>
-        /// Gets the key value provided on the request which was used to map this
+        /// Gets or sets the key value provided on the request which was used to map this
         /// file into a variable.
         /// </summary>
         /// <remarks>
         /// Generally speaking this is the '<c>Name</c>' property of the asp.net <see cref="IFormFile"/> object.
         /// </remarks>
         /// <value>The unique identifier of this file on the request.</value>
-        public string MapKey { get; }
+        public virtual string MapKey { get; protected set; }
 
         /// <summary>
-        /// Gets the filename of this file as it was provided on the request.
+        /// Gets or sets the filename of this file as it was provided on the request.
         /// </summary>
         /// <value>The name of the file.</value>
-        public string FileName { get; }
+        public virtual string FileName { get; protected set; }
 
         /// <summary>
-        /// Gets the complete collection of headers that were supplied with this file.
+        /// Gets or sets the complete collection of headers that were supplied with this file.
         /// </summary>
         /// <value>The headers supplied on the request.</value>
-        public IReadOnlyDictionary<string, StringValues> Headers { get; }
+        public virtual IReadOnlyDictionary<string, StringValues> Headers { get; protected set; }
     }
 }
