@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Web
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using Microsoft.AspNetCore.Http;
@@ -21,37 +20,9 @@ namespace GraphQL.AspNet.Web
     /// A helper class that will translate <see cref="IQueryExecutionResult"/> into a properly structured <see cref="HttpResponse"/>
     /// using the provided flags and DI retrieved <see cref="IQueryResponseWriter"/>.
     /// </summary>
-    public class GraphQLHttpResponseWriter
+    public class GraphQLHttpResponseWriter : GraphQLHttpResponseWriterBase
     {
-        /// <summary>
-        /// When exceptions are exposed, this is the text phrase sent to the client as the complete response when no graphql
-        /// writer is supplied to this action result.
-        /// </summary>
-        public const string NO_WRITER_WITH_DETAIL = "Invalid result. No " + nameof(IQueryResponseWriter) + " was " +
-                                                    "provided so the resultant data could not be serialized.";
-
-        /// <summary>
-        /// When exceptions are NOT exposed, this is the text phrase sent to the client as the complete response when no graphql
-        /// writer is supplied to this action result.
-        /// </summary>
-        public const string NO_WRITER_NO_DETAIL = "An error occured processing your graphql query. Contact an administrator.";
-
-        /// <summary>
-        /// When exceptions are exposed, this is the text phrase sent to the client as the complete response when no graphql
-        /// operation result is supplied to this action result.
-        /// </summary>
-        public const string NO_RESULT_WITH_DETAIL = "Invalid result. The " + nameof(IQueryExecutionResult) + " passed to the " +
-                                                    "the " + nameof(GraphQLHttpResponseWriter) + " was null.";
-
-        /// <summary>
-        /// When exceptions are NOT exposed, this is the text phrase sent to the client as the complete response when no graphql
-        /// operation result is supplied to this action result.
-        /// </summary>
-        public const string NO_RESULT_NO_DETAIL = "An error occured processing your graphql query. Contact an administrator.";
-
         private readonly IQueryExecutionResult _result;
-        private readonly IQueryResponseWriter _documentWriter;
-        private readonly ResponseWriterOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLHttpResponseWriter" /> class.
@@ -65,46 +36,33 @@ namespace GraphQL.AspNet.Web
             IQueryResponseWriter documentWriter,
             bool exposeMetrics,
             bool exposeExceptions)
+            : base(documentWriter, exposeMetrics, exposeExceptions)
         {
             _result = result;
-            _documentWriter = documentWriter;
-            _options = new ResponseWriterOptions()
-            {
-                ExposeExceptions = exposeExceptions,
-                ExposeMetrics = exposeMetrics,
-            };
         }
 
-        /// <summary>
-        /// Executes the result operation of the action method asynchronously. This method is called by ASP.NET to process
-        /// the result of an action method.
-        /// </summary>
-        /// <param name="context">The context in which the result is executed. The context information includes
-        /// information about the action that was executed and request information.</param>
-        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the asynchronous execute operation.</returns>
-        public virtual async Task WriteResultAsync(HttpContext context, CancellationToken cancelToken = default)
+        /// <inheritdoc />
+        public override async Task WriteResultAsync(HttpContext context, CancellationToken cancelToken = default)
         {
-            if (_documentWriter == null)
+            var canWrite = this.CanWriteResponse(out var validationError);
+            if (!canWrite)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                if (_options.ExposeExceptions)
-                   await context.Response.WriteAsync(NO_WRITER_WITH_DETAIL, cancelToken).ConfigureAwait(false);
-                else
-                    await context.Response.WriteAsync(NO_WRITER_NO_DETAIL, cancelToken).ConfigureAwait(false);
+                await context.Response.WriteAsync(validationError, cancelToken).ConfigureAwait(false);
+                return;
             }
-            else if (_result == null)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                if (_options.ExposeExceptions)
-                    await context.Response.WriteAsync(NO_RESULT_WITH_DETAIL, cancelToken).ConfigureAwait(false);
-                else
-                    await context.Response.WriteAsync(NO_RESULT_NO_DETAIL, cancelToken).ConfigureAwait(false);
-            }
-            else
-            {
-                await _documentWriter.WriteAsync(context.Response.Body, _result, _options, cancelToken: cancelToken).ConfigureAwait(false);
-            }
+
+            await this.DocumentWriter.WriteAsync(
+                context.Response.Body,
+                _result,
+                this.WriterOptions,
+                cancelToken);
+        }
+
+        /// <inheritdoc />
+        protected override bool HasValidResults()
+        {
+            return _result != null;
         }
     }
 }

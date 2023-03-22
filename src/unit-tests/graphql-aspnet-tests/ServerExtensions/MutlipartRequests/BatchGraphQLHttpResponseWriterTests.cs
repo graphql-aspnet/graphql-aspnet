@@ -40,9 +40,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     Body = new MemoryStream(),
                 },
             };
-            var cancelSource = new CancellationTokenSource();
-
-            httpContext.RequestAborted = cancelSource.Token;
 
             return httpContext;
         }

@@ -19,45 +19,18 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// A GraphQL response writer that can take in a collection of results and render them as a single json array
     /// to a stream.
     /// </summary>
-    public class BatchGraphQLHttpResponseWriter
+    public class BatchGraphQLHttpResponseWriter : GraphQLHttpResponseWriterBase
     {
-        /// <summary>
-        /// When exceptions are exposed, this is the text phrase sent to the client as the complete response when no graphql
-        /// writer is supplied to this action result.
-        /// </summary>
-        public const string NO_WRITER_WITH_DETAIL = "Invalid result. No " + nameof(IQueryResponseWriter) + " was " +
-                                                    "provided. The resultant data could not be serialized.";
-
-        /// <summary>
-        /// When exceptions are NOT exposed, this is the text phrase sent to the client as the complete response when no graphql
-        /// writer is supplied to this action result.
-        /// </summary>
-        public const string NO_WRITER_NO_DETAIL = "An error occured processing your graphql query. Contact an administrator.";
-
-        /// <summary>
-        /// When exceptions are exposed, this is the text phrase sent to the client as the complete response when no graphql
-        /// operation result is supplied to this action result.
-        /// </summary>
-        public const string NO_RESULT_WITH_DETAIL = "Invalid result. The " + nameof(IQueryExecutionResult) + " passed to the " +
-                                                    "the " + nameof(BatchGraphQLHttpResponseWriter) + " was null.";
-
-        /// <summary>
-        /// When exceptions are NOT exposed, this is the text phrase sent to the client as the complete response when no graphql
-        /// operation result is supplied to this action result.
-        /// </summary>
-        public const string NO_RESULT_NO_DETAIL = "An error occured processing your graphql query. Contact an administrator.";
-
         private readonly IReadOnlyList<IQueryExecutionResult> _results;
         private readonly IQueryExecutionResult _singleResult;
-        private readonly IQueryResponseWriter _documentWriter;
-        private readonly ResponseWriterOptions _options;
-        private readonly JsonWriterOptions _writerOptions;
+        private readonly JsonWriterOptions _utfWriterOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BatchGraphQLHttpResponseWriter" /> class.
@@ -97,15 +70,14 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
         private BatchGraphQLHttpResponseWriter(
             ISchema schema,
             IQueryResponseWriter documentWriter)
+            : base(
+                  documentWriter,
+                  schema?.Configuration?.ResponseOptions?.ExposeMetrics ?? false,
+                  schema?.Configuration?.ResponseOptions?.ExposeExceptions ?? false)
         {
-            _documentWriter = documentWriter;
-            _options = new ResponseWriterOptions()
-            {
-                ExposeExceptions = schema.Configuration.ResponseOptions.ExposeExceptions,
-                ExposeMetrics = schema.Configuration.ResponseOptions.ExposeMetrics,
-            };
+            Validation.ThrowIfNull(schema, nameof(schema));
 
-            _writerOptions = new JsonWriterOptions()
+            _utfWriterOptions = new JsonWriterOptions()
             {
                 Indented = schema.Configuration.ResponseOptions.IndentDocument,
             };
@@ -119,27 +91,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
         /// information about the action that was executed and request information.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the asynchronous execute operation.</returns>
-        public virtual async Task WriteResultAsync(HttpContext context, CancellationToken cancelToken = default)
+        public override async Task WriteResultAsync(HttpContext context, CancellationToken cancelToken = default)
         {
-            if (_documentWriter == null)
+            var canWrite = this.CanWriteResponse(out var validationError);
+            if (!canWrite)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                if (_options.ExposeExceptions)
-                    await context.Response.WriteAsync(NO_WRITER_WITH_DETAIL, cancelToken).ConfigureAwait(false);
-                else
-                    await context.Response.WriteAsync(NO_WRITER_NO_DETAIL, cancelToken).ConfigureAwait(false);
-
-                return;
-            }
-
-            if (_results == null && _singleResult == null)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                if (_options.ExposeExceptions)
-                    await context.Response.WriteAsync(NO_RESULT_WITH_DETAIL, cancelToken).ConfigureAwait(false);
-                else
-                    await context.Response.WriteAsync(NO_RESULT_NO_DETAIL, cancelToken).ConfigureAwait(false);
-
+                await context.Response.WriteAsync(validationError, cancelToken).ConfigureAwait(false);
                 return;
             }
 
@@ -153,12 +111,12 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
                 Utf8JsonWriter writer = null;
                 try
                 {
-                    writer = new Utf8JsonWriter(context.Response.Body, _writerOptions);
+                    writer = new Utf8JsonWriter(context.Response.Body, _utfWriterOptions);
 
                     writer.WriteStartArray();
 
                     foreach (var result in _results)
-                        _documentWriter.Write(writer, result, _options);
+                        this.DocumentWriter.Write(writer, result, this.WriterOptions);
 
                     writer.WriteEndArray();
                 }
@@ -177,7 +135,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
             // ************************************
             //  Write a single non-batched result
             // ************************************
-            await _documentWriter.WriteAsync(context.Response.Body, _singleResult, _options, cancelToken: cancelToken);
+            await this.DocumentWriter.WriteAsync(context.Response.Body, _singleResult, this.WriterOptions, cancelToken: cancelToken);
+        }
+
+        /// <inheritdoc />
+        protected override bool HasValidResults()
+        {
+            return _results != null || _singleResult != null;
         }
     }
 }
