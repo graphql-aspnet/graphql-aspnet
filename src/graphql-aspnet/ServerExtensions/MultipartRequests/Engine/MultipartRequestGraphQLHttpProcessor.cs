@@ -448,7 +448,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
                             // treat other unknown form fields as just blobs of data that may be
                             // merged via a map
                             byte[] bytes = Encoding.UTF8.GetBytes(item.Value.ToString());
-                            var file = await _fileUploadScalarMaker.CreateFileScalar(item.Key, bytes);
+                            var file = await _fileUploadScalarMaker.CreateFileScalarAsync(item.Key, bytes);
 
                             this.ValidateAndAppendFileOrThrow(files, file);
                             break;
@@ -460,7 +460,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
                 {
                     foreach (var uploadedFile in this.HttpContext.Request.Form.Files)
                     {
-                        var file = await _fileUploadScalarMaker.CreateFileScalar(uploadedFile);
+                        var file = await _fileUploadScalarMaker.CreateFileScalarAsync(uploadedFile);
                         this.ValidateAndAppendFileOrThrow(files, file);
                     }
                 }

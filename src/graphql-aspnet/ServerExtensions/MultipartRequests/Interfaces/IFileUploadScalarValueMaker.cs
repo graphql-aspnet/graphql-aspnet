@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces
         /// </summary>
         /// <param name="aspNetFile">The ASP.NET file object created by the runtime.</param>
         /// <returns>Task&lt;FileUpload&gt;.</returns>
-        Task<FileUpload> CreateFileScalar(IFormFile aspNetFile);
+        Task<FileUpload> CreateFileScalarAsync(IFormFile aspNetFile);
 
         /// <summary>
         /// Creates a valid instance of the file upload scalar from a key/value blob.
@@ -32,6 +32,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces
         /// <param name="mapKey">The map key provided on the request to identify the blob.</param>
         /// <param name="blobData">A data block to serve as a file.</param>
         /// <returns>Task&lt;FileUpload&gt;.</returns>
-        Task<FileUpload> CreateFileScalar(string mapKey, byte[] blobData);
+        Task<FileUpload> CreateFileScalarAsync(string mapKey, byte[] blobData);
     }
 }

@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
     public class DefaultFileUploadScalarValueMaker : IFileUploadScalarValueMaker
     {
         /// <inheritdoc />
-        public virtual async Task<FileUpload> CreateFileScalar(IFormFile aspNetFile)
+        public virtual async Task<FileUpload> CreateFileScalarAsync(IFormFile aspNetFile)
         {
             if (aspNetFile == null)
                 return null;
@@ -36,14 +36,17 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
                 streamContainer,
                 aspNetFile.ContentType,
                 aspNetFile.FileName,
-                new Dictionary<string, StringValues>(aspNetFile.Headers));
+                aspNetFile.Headers != null
+                    ? new Dictionary<string, StringValues>(aspNetFile.Headers)
+                    : null);
 
             return file;
         }
 
         /// <inheritdoc />
-        public virtual Task<FileUpload> CreateFileScalar(string mapKey, byte[] blobData)
+        public virtual Task<FileUpload> CreateFileScalarAsync(string mapKey, byte[] blobData)
         {
+            blobData = blobData ?? new byte[0];
             var streamContainer = new ByteArrayStreamContainer(blobData);
 
             var file = new FileUpload(
