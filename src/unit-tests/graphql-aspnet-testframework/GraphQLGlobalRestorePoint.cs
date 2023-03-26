@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework
 {
     using System;
     using GraphQL.AspNet;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Schemas;
@@ -36,9 +37,11 @@ namespace GraphQL.AspNet.Tests.Framework
         private readonly int _maxSubConcurrentReceiver;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphQLGlobalRestorePoint"/> class.
+        /// Initializes a new instance of the <see cref="GraphQLGlobalRestorePoint" /> class.
         /// </summary>
-        public GraphQLGlobalRestorePoint()
+        /// <param name="resetAllProviders">if set to <c>true</c> all providers will
+        /// be immediately reset to their defualt implementation until this restore point is disposed.</param>
+        public GraphQLGlobalRestorePoint(bool resetAllProviders = false)
         {
             _templateProvider = GraphQLProviders.TemplateProvider;
             _scalarTypeProvider = GraphQLProviders.ScalarProvider;
@@ -50,6 +53,13 @@ namespace GraphQL.AspNet.Tests.Framework
             _maxSubConcurrentReceiver = GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
 
             SubscriptionEventSchemaMap.ClearCache();
+
+            if (resetAllProviders)
+            {
+                GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
+                GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
+                GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
+            }
         }
 
         /// <summary>

@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             fileIn.Setup(x => x.FileName).Returns("test file.txt");
             fileIn.Setup(x => x.ContentType).Returns("test content type");
             fileIn.Setup(x => x.Name).Returns("test map key");
-            fileIn.Setup(x => x.Headers).Returns(null as IHeaderDictionary);
+            fileIn.Setup(x => x.Headers).Returns(new HeaderDictionary());
 
             var bytes = Encoding.UTF8.GetBytes(data);
 
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.AreEqual("test map key", fileOut.MapKey);
             Assert.AreEqual("test file.txt", fileOut.FileName);
             Assert.AreEqual("test content type", fileOut.ContentType);
-            Assert.IsNull(fileOut.Headers);
+            Assert.AreEqual(0, fileOut.Headers.Count);
         }
 
         [Test]

@@ -42,22 +42,15 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// An error message constant, in english, providing the text to return to the caller when no query data was present.
-        /// </summary>
-        protected const string ERROR_NO_QUERY_PROVIDED = "No query received on the request";
-
-        /// <summary>
         /// An error message constant, in english, providing the text to return to the caller when a 500 error is generated.
         /// </summary>
-        protected const string ERROR_INTERNAL_SERVER_ISSUE = "Unknown internal server error.";
+        public const string ERROR_INTERNAL_SERVER_ISSUE = "Unknown internal server error. See exception for details.";
 
         /// <summary>
         /// An error message constant, in english, providing the text  to return to the caller when no operation could be created
         /// from the supplied data on the request.
         /// </summary>
-        protected const string ERROR_NO_REQUEST_CREATED = "The GraphQL Operation at index {0} is null. Unable to execute the query.";
-
-        private static readonly MultipartRequestPayloadAssembler _assembler = new MultipartRequestPayloadAssembler();
+        public const string ERROR_NO_REQUEST_CREATED = "The GraphQL Operation at index {0} is null. Unable to execute the query.";
 
         private readonly IFileUploadScalarValueMaker _fileUploadScalarMaker;
         private readonly IQueryResponseWriter<TSchema> _writer;
@@ -217,7 +210,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
                 if (request == null)
                 {
                     return this.ErrorMessageAsGraphQLResponse(
-                            request,
+                            null,
                             string.Format(ERROR_NO_REQUEST_CREATED, index));
                 }
 
@@ -265,7 +258,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
 
                     exceptionResult = this.ExceptionAsGraphQLResponse(
                         request,
-                        "An unknown error occured. See exception for details.",
+                        ERROR_INTERNAL_SERVER_ISSUE,
                         exceptionThrown: ex);
                 }
 
@@ -467,7 +460,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
             }
 
             MultiPartRequestGraphQLPayload payload;
-            payload = await _assembler.AssemblePayload(
+            payload = await MultipartRequestPayloadAssembler.Default.AssemblePayload(
                operations,
                fileMap,
                files,

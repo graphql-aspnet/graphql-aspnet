@@ -97,8 +97,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void DeclineProcessor_CustomProcessorIsChanged_NoException()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-            GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
+            using var restorePoint = new GraphQLGlobalRestorePoint(true);
 
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -117,8 +116,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void UseExtension_WithNoProvider_DoesNothing()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-            GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
+            using var restorePoint = new GraphQLGlobalRestorePoint(true);
 
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);

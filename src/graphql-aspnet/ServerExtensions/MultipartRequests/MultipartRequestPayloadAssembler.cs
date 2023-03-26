@@ -29,6 +29,12 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     {
         private static readonly JsonDocumentOptions _options;
 
+        /// <summary>
+        /// Gets a singleton, default instance of the assembler.
+        /// </summary>
+        /// <value>The default instance.</value>
+        public static MultipartRequestPayloadAssembler Default { get; }
+
         static MultipartRequestPayloadAssembler()
         {
             _options = new JsonDocumentOptions()
@@ -36,6 +42,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 CommentHandling = JsonCommentHandling.Skip,
                 AllowTrailingCommas = true,
             };
+
+            Default = new MultipartRequestPayloadAssembler();
         }
 
         /// <summary>

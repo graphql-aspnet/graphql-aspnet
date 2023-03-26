@@ -18,8 +18,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
     using Microsoft.Extensions.Primitives;
 
     /// <summary>
-    /// A maker that can convert a raw ASP.NET <see cref="IFormFile"/> object into a <see cref="FileUpload"/>
-    /// graphql scalar.
+    /// A scalar maker that can convert a raw ASP.NET <see cref="IFormFile"/> or a raw byte array
+    /// object into a <see cref="FileUpload"/> graphql scalar instance.
     /// </summary>
     public class DefaultFileUploadScalarValueMaker : IFileUploadScalarValueMaker
     {
@@ -31,14 +31,22 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
 
             var streamContainer = await this.CreateStreamContainer(aspNetFile);
 
+            Dictionary<string, StringValues> headers = null;
+            string contentType = null;
+            if (aspNetFile.Headers != null)
+            {
+                // stand implementation of `FormFile` reads contenttype from the headers
+                // property, if headers is null, contentType will throw an null ref exeception
+                headers = new Dictionary<string, StringValues>(aspNetFile.Headers);
+                contentType = aspNetFile.ContentType;
+            }
+
             var file = new FileUpload(
                 aspNetFile.Name,
                 streamContainer,
-                aspNetFile.ContentType,
+                contentType,
                 aspNetFile.FileName,
-                aspNetFile.Headers != null
-                    ? new Dictionary<string, StringValues>(aspNetFile.Headers)
-                    : null);
+                headers);
 
             return file;
         }

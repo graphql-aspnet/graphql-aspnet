@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Execution
             this.VariableData = request.VariableData;
 
             this.StartTimeUTC = request.StartTimeUTC;
-            this.Items = request.Items.Clone();
+            this.Items = request.Items?.Clone() ?? new MetaDataCollection();
         }
 
         /// <inheritdoc />
