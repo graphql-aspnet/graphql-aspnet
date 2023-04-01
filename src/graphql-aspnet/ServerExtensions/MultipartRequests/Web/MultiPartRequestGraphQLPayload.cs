@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
 {
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
 
@@ -37,9 +38,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
         /// Initializes a new instance of the <see cref="MultiPartRequestGraphQLPayload"/> class.
         /// </summary>
         /// <param name="queryData">A set of query data items to execute as a batch.</param>
-        public MultiPartRequestGraphQLPayload(List<GraphQueryData> queryData)
+        public MultiPartRequestGraphQLPayload(IEnumerable<GraphQueryData> queryData)
         {
-            Validation.ThrowIfNull(queryData, nameof(queryData));
+            queryData = queryData ?? Enumerable.Empty<GraphQueryData>();
 
             var list = new List<GraphQueryData>(queryData);
 

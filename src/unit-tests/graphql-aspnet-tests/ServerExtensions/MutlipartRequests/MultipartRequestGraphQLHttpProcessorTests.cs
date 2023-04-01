@@ -12,14 +12,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Runtime.Serialization;
     using System.Text;
     using System.Text.Json;
-    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -36,7 +33,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Primitives;
     using Moq;
-    using Newtonsoft.Json.Linq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -80,7 +76,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
                     formFile.Headers = new HeaderDictionary();
                     if (item.ContentType != null)
-                        formFile.Headers.Add("Content-Type",  item.ContentType);
+                        formFile.Headers.Add("Content-Type", item.ContentType);
 
                     fileCollection.Add(formFile);
                 }
