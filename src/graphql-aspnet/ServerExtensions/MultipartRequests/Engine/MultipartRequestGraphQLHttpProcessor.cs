@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
             var requests = new List<IQueryExecutionRequest>();
             var individualQueryTasks = new List<Task<IQueryExecutionResult>>();
             List<IQueryExecutionResult> results = null;
-            if (payload == null || payload.QueriesToExecute.Count == 0)
+            if (payload == null || payload.Count == 0)
             {
                 await this.WriteStatusCodeResponseAsync(
                     HttpStatusCode.BadRequest,
@@ -118,9 +118,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
                 return;
             }
 
-            for (var i = 0; i < payload.QueriesToExecute.Count; i++)
+            for (var i = 0; i < payload.Count; i++)
             {
-                var request = await this.CreateQueryRequestAsync(payload.QueriesToExecute[i], cancelToken);
+                var request = await this.CreateQueryRequestAsync(payload[i], cancelToken);
                 var queryTask = this.SubmitSingleQueryAsync(i, request, cancelToken);
 
                 requests.Add(request);
@@ -372,21 +372,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
             catch (InvalidMultiPartMapException mpe)
             {
                 var message = $"Invalid {MultipartRequestConstants.Web.MAP_FORM_KEY} field. {mpe.Message}";
-                var auxData = new List<string>(3);
-                if (mpe.Index >= 0)
-                    auxData.Add($"Failed Index: {mpe.Index}");
-                if (!string.IsNullOrWhiteSpace(mpe.FileMapKey))
-                    auxData.Add($"Map Key: {mpe.FileMapKey}");
-                if (!string.IsNullOrWhiteSpace(mpe.SegmentPath))
-                    auxData.Add($"Parsed Segments: {mpe.SegmentPath}");
-
-                if (auxData.Count > 0)
-                {
-                    message += $" ({string.Join(",", auxData)})";
-                }
-
-                throw new HttpContextParsingException(
-                    errorMessage: message);
+                throw new HttpContextParsingException(errorMessage: message);
             }
         }
 

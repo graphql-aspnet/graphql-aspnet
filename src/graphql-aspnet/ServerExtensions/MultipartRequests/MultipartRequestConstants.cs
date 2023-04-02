@@ -44,5 +44,10 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             public const string VARIABLE_KEY = "variables";
             public const string OPERATION_KEY = "operation";
         }
+
+        internal class Protected
+        {
+            public const string FILE_MARKER_PREFIX = "~graphql:aspnet:C8BE9950-2124-408F-9502-52840F0088A9";
+        }
     }
 }

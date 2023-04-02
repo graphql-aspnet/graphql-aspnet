@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 {
+    using System;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using Moq;
@@ -30,13 +31,21 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         }
 
         [Test]
-        public void NoFile_NullIsResolved()
+        public void NoFile_ExceptionThrown()
         {
-            var variable = new InputFileUploadVariable("variableKey", null);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var variable = new InputFileUploadVariable("variableKey", value: null);
+            });
+        }
 
-            Assert.AreEqual("variableKey", variable.Name);
-            Assert.IsNull(variable.ResolvedValue);
-            Assert.IsNull(variable.Value);
+        [Test]
+        public void NoMapKey_ExceptionThrown()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var variable = new InputFileUploadVariable("variableKey", mapKey: null);
+            });
         }
     }
 }

@@ -41,10 +41,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
-            Assert.AreEqual(InputVariableCollection.Empty, payload.QueriesToExecute[0].Variables);
+            Assert.AreEqual(queryText, payload[0].Query);
+            Assert.IsNull(payload[0].Variables);
         }
 
         [Test]
@@ -64,13 +64,13 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
-            Assert.AreEqual(2, payload.QueriesToExecute[0].Variables.Count);
+            Assert.AreEqual(queryText, payload[0].Query);
+            Assert.AreEqual(2, payload[0].Variables.Count);
 
-            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
-            var found2 = payload.QueriesToExecute[0].Variables.TryGetVariable("var2", out var var2);
+            var found1 = payload[0].Variables.TryGetVariable("var1", out var var1);
+            var found2 = payload[0].Variables.TryGetVariable("var2", out var var2);
 
             Assert.IsTrue(found1);
             Assert.IsTrue(found2);
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 {
                     ""query""     : """ + queryText1 + @""",
                     ""variables"" : { ""var1"": ""value1"", ""var2"": 3 },
-                    ""operation"" : ""bob""
+                    ""operationName"" : ""bob""
                 },
                 {
                     ""query""     : """ + queryText2 + @""",
@@ -102,10 +102,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(2, payload.QueriesToExecute.Count);
+            Assert.AreEqual(2, payload.Count);
             Assert.IsTrue(payload.IsBatch);
 
-            var operation1 = payload.QueriesToExecute[0];
+            var operation1 = payload[0];
             Assert.AreEqual(queryText1, operation1.Query);
             Assert.AreEqual("bob", operation1.OperationName);
             Assert.AreEqual(2, operation1.Variables.Count);
@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.AreEqual("\"value1\"", ((InputSingleValueVariable)var1).Value);
             Assert.AreEqual("3", ((InputSingleValueVariable)var2).Value);
 
-            var operation2 = payload.QueriesToExecute[1];
+            var operation2 = payload[1];
             Assert.AreEqual(queryText2, operation2.Query);
             Assert.IsNull(operation2.OperationName);
             Assert.AreEqual(2, operation2.Variables.Count);
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var operations = @"
             {
                 ""query""     : """ + queryText + @""",
-                ""operation"" : ""bob"",
+                ""operationName"" : ""bob"",
             }";
 
             string map = null;
@@ -149,11 +149,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
-            Assert.AreEqual(0, payload.QueriesToExecute[0].Variables.Count);
-            Assert.AreEqual("bob", payload.QueriesToExecute[0].OperationName);
+            Assert.AreEqual(queryText, payload[0].Query);
+            Assert.IsNull(payload[0].Variables);
+            Assert.AreEqual("bob", payload[0].OperationName);
         }
 
         [Test]
@@ -177,11 +177,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+            Assert.AreEqual(queryText, payload[0].Query);
 
-            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            var found1 = payload[0].Variables.TryGetVariable("var1", out var var1);
             Assert.IsTrue(found1);
 
             var fileVariable = var1 as InputFileUploadVariable;
@@ -210,11 +210,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+            Assert.AreEqual(queryText, payload[0].Query);
 
-            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            var found1 = payload[0].Variables.TryGetVariable("var1", out var var1);
             Assert.IsTrue(found1);
 
             var fileVariable = var1 as IInputSingleValueVariable;
@@ -243,11 +243,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+            Assert.AreEqual(queryText, payload[0].Query);
 
-            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            var found1 = payload[0].Variables.TryGetVariable("var1", out var var1);
             Assert.IsTrue(found1);
 
             var array = var1 as IInputListVariable;
@@ -282,11 +282,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+            Assert.AreEqual(queryText, payload[0].Query);
 
-            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            var found1 = payload[0].Variables.TryGetVariable("var1", out var var1);
             Assert.IsTrue(found1);
 
             var array = var1 as IInputListVariable;
@@ -326,7 +326,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             Assert.IsNotNull(payload);
 
-            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            var found1 = payload[0].Variables.TryGetVariable("var1", out var var1);
             Assert.IsTrue(found1);
 
             var element = var1 as IInputListVariable;
@@ -369,11 +369,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+            Assert.AreEqual(queryText, payload[0].Query);
 
-            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            var found1 = payload[0].Variables.TryGetVariable("var1", out var var1);
             Assert.IsTrue(found1);
 
             var array = var1 as IInputListVariable;
@@ -397,7 +397,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 {
                     ""query""     : """ + queryText1 + @""",
                     ""variables"" : { ""var1"": ""value1"", ""var2"": 3 },
-                    ""operation"" : ""bob""
+                    ""operationName"" : ""bob""
                 },
                 {
                     ""query""     : """ + queryText2 + @""",
@@ -415,10 +415,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(2, payload.QueriesToExecute.Count);
+            Assert.AreEqual(2, payload.Count);
             Assert.IsTrue(payload.IsBatch);
 
-            var operation1 = payload.QueriesToExecute[0];
+            var operation1 = payload[0];
             Assert.AreEqual(queryText1, operation1.Query);
             Assert.AreEqual("bob", operation1.OperationName);
             Assert.AreEqual(2, operation1.Variables.Count);
@@ -431,7 +431,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.AreEqual("\"value1\"", ((InputSingleValueVariable)var1).Value);
             Assert.AreEqual("3", ((InputSingleValueVariable)var2).Value);
 
-            var operation2 = payload.QueriesToExecute[1];
+            var operation2 = payload[1];
             Assert.AreEqual(queryText2, operation2.Query);
             Assert.IsNull(operation2.OperationName);
             Assert.AreEqual(2, operation2.Variables.Count);
@@ -457,7 +457,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 {
                     ""query""     : """ + queryText0 + @""",
                     ""variables"" : { ""var1"": [{""var2"": [null, null, null] }, {""var3"": [null, null, null] }] },
-                    ""operation"" : ""bob""
+                    ""operationName"" : ""bob""
                 },
                 {
                     ""query""     : """ + queryText1 + @""",
@@ -480,10 +480,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(2, payload.QueriesToExecute.Count);
+            Assert.AreEqual(2, payload.Count);
             Assert.IsTrue(payload.IsBatch);
 
-            var operation0 = payload.QueriesToExecute[0];
+            var operation0 = payload[0];
             Assert.AreEqual(queryText0, operation0.Query);
             Assert.AreEqual("bob", operation0.OperationName);
             var foundVar1 = operation0.Variables.TryGetVariable("var1", out var var1);
@@ -493,7 +493,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var var3_1_File = var3Array.Items[1] as InputFileUploadVariable;
             Assert.AreEqual(fileVar3, var3_1_File.Value);
 
-            var operation1 = payload.QueriesToExecute[1];
+            var operation1 = payload[1];
             Assert.AreEqual(queryText1, operation1.Query);
             Assert.AreEqual(null, operation1.OperationName);
 
@@ -527,11 +527,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+            Assert.AreEqual(queryText, payload[0].Query);
 
-            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            var found1 = payload[0].Variables.TryGetVariable("var1", out var var1);
             Assert.IsTrue(found1);
 
             var fileVariable = var1 as InputFileUploadVariable;
@@ -560,11 +560,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+            Assert.AreEqual(queryText, payload[0].Query);
 
-            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            var found1 = payload[0].Variables.TryGetVariable("var1", out var var1);
             Assert.IsTrue(found1);
 
             var arrayVar = var1 as IInputListVariable;
@@ -577,61 +577,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.IsNotNull(element1);
 
             Assert.AreEqual(file, element1.Value);
-        }
-
-        [Test]
-        public void NoQueryKeyOnSingleObject_ThrowsException()
-        {
-            var operations = @"
-            {
-                ""variables"" : { ""var1"": null }
-            }";
-
-            var map = @"{ ""0"": ""variables.var1""}";
-
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
-
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-
-            Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
-            {
-                await assembler.AssemblePayload(operations, map, files);
-            });
-        }
-
-        [Test]
-        public void NoQueryKeyOnBatchObject_ThrowsException()
-        {
-            var operations = @"[
-                {
-                    ""query""     : ""query doesnt matter"",
-                    ""variables"" : { ""var1"": [{""var2"": [null, null, null] }, {""var3"": [null, null, null] }] },
-                    ""operation"" : ""bob""
-                },
-                {
-                    ""variables"" : { ""var4"": [[[null, null],[null, null]],[[null, null],[null, null]]] }
-                }
-            ]";
-
-            var map = @"{ ""0"": ""variables.var1""}";
-
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
-
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-
-            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
-            {
-                await assembler.AssemblePayload(operations, map, files);
-            });
-
-            // ensure the error contains the correct failed index
-            Assert.IsTrue(ex.Message.Contains("1"));
         }
 
         [Test]
@@ -669,7 +614,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 {
                     ""query""     : ""query doesnt matter"",
                     ""variables"" : { ""var1"": null },
-                    ""operation"" : 45
+                    ""operationName"" : 45
                 }";
 
             var map = @"{ ""0"": ""variables.var1""}";
@@ -694,27 +639,20 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 {
                     ""query""     : ""query doesnt matter"",
                     ""variables"" : { ""var1"": [{""var2"": [null, null, null] }, {""var3"": [null, null, null] }] },
-                    ""operation"" : ""bob""
+                    ""operationName"" : ""bob""
                 },
                 {
                     ""query""     : ""query doesnt matter"",
                     ""variables"" : { ""var4"": [[[null, null],[null, null]],[[null, null],[null, null]]] },
-                    ""operation""     : 45,
+                    ""operationName""     : 45,
                 }
             ]";
-
-            var map = @"{ ""0"": ""variables.var1""}";
-
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
-
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
 
             var assembler = new MultipartRequestPayloadAssembler();
 
             var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
             {
-                await assembler.AssemblePayload(operations, map, files);
+                await assembler.AssemblePayload(operations);
             });
 
             // ensure the error contains the correct failed index
@@ -722,46 +660,31 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         }
 
         // map is not an object
-        [TestCase(@"95", -1)]
+        [TestCase(@"95")]
 
-        // no segments
-        [TestCase(@"{ ""0"": """"}", -1)]
-        [TestCase(@"{ ""0"": []}", -1)]
-        [TestCase(@"{ ""0"": null}", -1)]
+        //// no segments
+        [TestCase(@"{ ""0"": """"}")]
+        [TestCase(@"{ ""0"": []}")]
+        [TestCase(@"{ ""0"": null}")]
 
         // only 1 segment
-        [TestCase(@"{ ""0"": ""variables""}", -1)]
-        [TestCase(@"{ ""0"": [""variables""]}", -1)]
+        [TestCase(@"{ ""0"": ""variables""}")]
+        [TestCase(@"{ ""0"": [""variables""]}")]
 
         // segment is not a string or number
-        [TestCase(@"{ ""0"": [""variables"", true]}", 1)]
+        [TestCase(@"{ ""0"": [""variables"", true]}")]
 
-        // property doesn't exist
-        [TestCase(@"{ ""0"": ""variables.var2""}", 1)]
-        [TestCase(@"{ ""0"": ""NotVariables.var2""}", 0)]
-        [TestCase(@"{ ""0"": [""variables"", ""var2""]}", 1)]
-        [TestCase(@"{ ""0"": [""NotVariables"", ""var1""]}", 0)]
+        //// not a terminal variable
+        [TestCase(@"{ ""0"": ""variables.var1""}", @"{ ""var1"": {""var2"": null } }")]
+        [TestCase(@"{ ""0"": [""variables"", ""var1""]}", @"{ ""var1"": {""var2"": null } }")]
 
-        // index doesn't exist
-        [TestCase(@"{ ""0"": ""variables.0""}", 1)]
-        [TestCase(@"{ ""0"": [""variables"", ""0""]}", 1)]
+        //// variable value is not provided as null
+        [TestCase(@"{ ""0"": ""variables.var1""}", @"{ ""var1"": 35 }")]
+        [TestCase(@"{ ""0"": [""variables"", ""var1""]}", @"{ ""var1"": 36 }")]
 
-        // not a batch
-        [TestCase(@"{ ""0"": ""0.variables.var1""}", 0)]
-        [TestCase(@"{ ""0"": [0, ""variables"", ""var1""]}", 0)]
-        [TestCase(@"{ ""0"": [""0"", ""variables"", ""var1""]}", 0)]
-
-        // not a terminal variable
-        [TestCase(@"{ ""0"": ""variables.var1""}", 1, @"{ ""var1"": {""var2"": null } }")]
-        [TestCase(@"{ ""0"": [""variables"", ""var1""]}", 1, @"{ ""var1"": {""var2"": null } }")]
-
-        // variable value is not provided as null
-        [TestCase(@"{ ""0"": ""variables.var1""}", 1, @"{ ""var1"": 35 }")]
-        [TestCase(@"{ ""0"": [""variables"", ""var1""]}", 1, @"{ ""var1"": 36 }")]
-
-        // file reference doesnt exist
-        [TestCase(@"{ ""notAFile"": ""variables.var1""}", -1)]
-        public void InvalidMapValue_SingleQuery_ThrowsException(string map, int expectedFailedIndex, string customVariablestring = null)
+        //// file reference doesnt exist
+        [TestCase(@"{ ""notAFile"": ""variables.var1""}")]
+        public void InvalidMapValue_SingleQuery_ThrowsException(string map, string customVariablestring = null)
         {
             var variables = customVariablestring ?? @"{ ""var1"": null }";
             var operations = @"
@@ -781,57 +704,38 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             {
                 await assembler.AssemblePayload(operations, map, files);
             });
-
-            Assert.AreEqual(expectedFailedIndex, ex.Index);
         }
 
         // map is not an object
-        [TestCase(@"95", -1)]
+        [TestCase(@"95")]
 
         // no segments
-        [TestCase(@"{ ""0"": """"}", -1)]
-        [TestCase(@"{ ""0"": []}", -1)]
-        [TestCase(@"{ ""0"": null}", -1)]
+        [TestCase(@"{ ""0"": """"}")]
+        [TestCase(@"{ ""0"": []}")]
+        [TestCase(@"{ ""0"": null}")]
 
         // only 1 segment
-        [TestCase(@"{ ""0"": ""variables""}", -1)]
-        [TestCase(@"{ ""0"": [""variables""]}", -1)]
-        [TestCase(@"{ ""0"": ""0""}", -1)]
-        [TestCase(@"{ ""0"": 0}", -1)]
-        [TestCase(@"{ ""0"": [""0""]}", -1)]
-        [TestCase(@"{ ""0"": [0]}", -1)]
+        [TestCase(@"{ ""0"": ""variables""}")]
+        [TestCase(@"{ ""0"": [""variables""]}")]
+        [TestCase(@"{ ""0"": ""0""}")]
+        [TestCase(@"{ ""0"": 0}")]
+        [TestCase(@"{ ""0"": [""0""]}")]
+        [TestCase(@"{ ""0"": [0]}")]
 
         // segment is not a string or number
-        [TestCase(@"{ ""0"": [0, ""variables"", true]}", 2)]
-
-        // property doesn't exist
-        [TestCase(@"{ ""0"": ""0.variables.var2""}", 2)]
-        [TestCase(@"{ ""0"": ""0.Notvariables.var1""}", 1)]
-        [TestCase(@"{ ""0"": [""0"", ""variables"", ""var2""]}", 2)]
-        [TestCase(@"{ ""0"": [0, ""variables"", ""var2""]}", 2)]
-
-        // trailing array index doesn't exist
-        [TestCase(@"{ ""0"": ""0.variables.0""}", 2)]
-        [TestCase(@"{ ""0"": ""0.variabl.0""}", 1)]
-        [TestCase(@"{ ""0"": [""0"", ""variables"", ""0""]}", 2)]
-        [TestCase(@"{ ""0"": [0, ""variables"", ""0""]}", 2)]
-
-        // batch index out of range
-        [TestCase(@"{ ""0"": ""32.variables.0""}", 0)]
-        [TestCase(@"{ ""0"": [""32"", ""variables"", ""0""] }", 0)]
-        [TestCase(@"{ ""0"": [32, ""variables"", ""0""] }", 0)]
+        [TestCase(@"{ ""0"": [0, ""variables"", true]}")]
 
         // not a terminal variable
-        [TestCase(@"{ ""0"": ""0.variables.var1""}", 2, @"{ ""var1"": {""var2"": null } }")]
-        [TestCase(@"{ ""0"": [0, ""variables"", ""var1""]}", 2, @"{ ""var1"": {""var2"": null } }")]
+        [TestCase(@"{ ""0"": ""0.variables.var1""}", @"{ ""var1"": {""var2"": null } }")]
+        [TestCase(@"{ ""0"": [0, ""variables"", ""var1""]}", @"{ ""var1"": {""var2"": null } }")]
 
         // terminal variable value not provided as null
-        [TestCase(@"{ ""0"": ""0.variables.var1""}", 2, @"{ ""var1"": 35 }")]
-        [TestCase(@"{ ""0"": [0, ""variables"", ""var1""]}", 2, @"{ ""var1"": 23 }")]
+        [TestCase(@"{ ""0"": ""0.variables.var1""}", @"{ ""var1"": 35 }")]
+        [TestCase(@"{ ""0"": [0, ""variables"", ""var1""]}", @"{ ""var1"": 23 }")]
 
         // file reference doesnt exist
-        [TestCase(@"{ ""notAFile"": ""0.variables.var1""}", -1)]
-        public void InvalidMapValue_BatchQuery_ThrowsException(string map, int expectedFailedIndex, string customVariablestring = null)
+        [TestCase(@"{ ""notAFile"": ""0.variables.var1""}")]
+        public void InvalidMapValue_BatchQuery_ThrowsException(string map, string customVariablestring = null)
         {
             var variables = customVariablestring ?? @"{ ""var1"": null }";
             var operations = @"[
@@ -855,12 +759,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             {
                 await assembler.AssemblePayload(operations, map, files);
             });
-
-            Assert.AreEqual(expectedFailedIndex, ex.Index);
         }
 
         [Test]
-        public void NoVariablesCollectionDefinedOnTargetOfMap_ThrowsException()
+        public async Task NoVariablesCollectionDefinedOnTargetOfMap_VariablesCollectionIsAdded()
         {
             var queryText = "query { field1 {field2 field3} }";
             var operations = @"
@@ -877,14 +779,27 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var assembler = new MultipartRequestPayloadAssembler();
 
-            Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
-            {
-                var payload = await assembler.AssemblePayload(operations, map, files);
-            });
+            var payload = await assembler.AssemblePayload(operations, map, files);
+            Assert.IsFalse(payload.IsBatch);
+            Assert.AreEqual(1, payload.Count);
+
+            var data = payload[0];
+            Assert.AreEqual(queryText, data.Query);
+            Assert.IsNull(data.OperationName);
+
+            Assert.IsNotNull(data.Variables);
+
+            var found = data.Variables.TryGetVariable("var1", out var var1);
+            Assert.IsTrue(found);
+
+            Assert.IsTrue(var1 is InputFileUploadVariable);
+            var fileUploadVar = var1 as InputFileUploadVariable;
+
+            Assert.AreEqual(file, fileUploadVar.Value);
         }
 
         [Test]
-        public void NoVariablesDefinedOnTargetOfMap_ThrowsException()
+        public async Task NoRootLevelVariableDefinedOnTargetOfMap_VariableIsAdded()
         {
             var queryText = "query { field1 {field2 field3} }";
             var operations = @"
@@ -901,15 +816,28 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             files.Add(file.MapKey, file);
 
             var assembler = new MultipartRequestPayloadAssembler();
+            var payload = await assembler.AssemblePayload(operations, map, files);
 
-            Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
-            {
-                var payload = await assembler.AssemblePayload(operations, map, files);
-            });
+            Assert.IsFalse(payload.IsBatch);
+            Assert.AreEqual(1, payload.Count);
+
+            var data = payload[0];
+            Assert.AreEqual(queryText, data.Query);
+            Assert.IsNull(data.OperationName);
+
+            Assert.IsNotNull(data.Variables);
+
+            var found = data.Variables.TryGetVariable("var1", out var var1);
+            Assert.IsTrue(found);
+
+            Assert.IsTrue(var1 is InputFileUploadVariable);
+            var fileUploadVar = var1 as InputFileUploadVariable;
+
+            Assert.AreEqual(file, fileUploadVar.Value);
         }
 
         [Test]
-        public void MissingVariableInNestedSequence_ThrowsException()
+        public async Task MissingVariableInNestedSequence_VariableIsAdded()
         {
             var queryText = "query { field1 {field2 field3} }";
             var operations = @"
@@ -927,10 +855,12 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var assembler = new MultipartRequestPayloadAssembler();
 
-            Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
-            {
-                var payload = await assembler.AssemblePayload(operations, map, files);
-            });
+            var payload = await assembler.AssemblePayload(operations, map, files);
+
+            var data = payload[0];
+
+            Assert.IsFalse(payload.IsBatch);
+            Assert.AreEqual(1, payload.Count);
         }
 
         [Test]
@@ -959,9 +889,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         }
 
         [TestCase("[\"variables\", \"var1\", 0]", 1, 0)]
-        //[TestCase("[\"variables\", \"var1\", 1]", 2, 1)]
-        //[TestCase("[\"variables\", \"var1\", 3]", 4, 3)]
-        //[TestCase("[\"variables\", \"var1\", 200]", 201, 200)]
+        [TestCase("[\"variables\", \"var1\", 1]", 2, 1)]
+        [TestCase("[\"variables\", \"var1\", 3]", 4, 3)]
+        [TestCase("[\"variables\", \"var1\", 200]", 201, 200)]
 
         [TestCase("\"variables.var1.0\"", 1, 0)]
         public async Task SingleQuery_SingleFile_AsArrayMember_OnEmptyArray_IndexIsAddedQueryVariableCorrectly(
@@ -987,11 +917,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = await assembler.AssemblePayload(operations, map, files);
 
             Assert.IsNotNull(payload);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
+            Assert.AreEqual(1, payload.Count);
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(queryText, payload.QueriesToExecute[0].Query);
+            Assert.AreEqual(queryText, payload[0].Query);
 
-            var found1 = payload.QueriesToExecute[0].Variables.TryGetVariable("var1", out var var1);
+            var found1 = payload[0].Variables.TryGetVariable("var1", out var var1);
             Assert.IsTrue(found1);
 
             var arrayVar = var1 as IInputListVariable;

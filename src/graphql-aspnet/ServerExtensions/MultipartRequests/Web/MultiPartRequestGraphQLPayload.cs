@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
@@ -18,8 +19,10 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
     /// A payload containing all the information to execute one or more graphql requests
     /// through the <see cref="MultipartRequestGraphQLHttpProcessor{TSchema}"/>.
     /// </summary>
-    public class MultiPartRequestGraphQLPayload
+    public class MultiPartRequestGraphQLPayload : IReadOnlyList<GraphQueryData>
     {
+        private readonly List<GraphQueryData> _queries;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiPartRequestGraphQLPayload"/> class.
         /// </summary>
@@ -27,10 +30,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
         public MultiPartRequestGraphQLPayload(GraphQueryData queryData)
         {
             Validation.ThrowIfNull(queryData, nameof(queryData));
-            var list = new List<GraphQueryData>(1);
-            list.Add(queryData);
-
-            this.QueriesToExecute = list;
+            _queries = new List<GraphQueryData>(1);
+            _queries.Add(queryData);
             this.IsBatch = false;
         }
 
@@ -41,25 +42,34 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
         public MultiPartRequestGraphQLPayload(IEnumerable<GraphQueryData> queryData)
         {
             queryData = queryData ?? Enumerable.Empty<GraphQueryData>();
-
-            var list = new List<GraphQueryData>(queryData);
-
-            this.QueriesToExecute = list;
+            _queries = new List<GraphQueryData>(queryData);
             this.IsBatch = true;
         }
 
         /// <summary>
-        /// Gets a collection of queries to execute against the graphql runtime.
-        /// </summary>
-        /// <value>The queries to execute.</value>
-        public virtual IReadOnlyList<GraphQueryData> QueriesToExecute { get; }
-
-        /// <summary>
         /// Gets a value indicating whether this instance is request is executed in batch mode.
-        /// Regardless of the number of <see cref="QueriesToExecute"/> a payload executed in batch mode
-        /// will result in an array of results being returned to the caller, even if it is an array of 0 items.
+        /// Regardless of the number of queries in this payload, when executed in batch mode
+        /// it will result in an array of results being returned to the caller, even if it is an array of 0 items.
         /// </summary>
         /// <value><c>true</c> if this instance is batch; otherwise, <c>false</c>.</value>
         public virtual bool IsBatch { get; }
+
+        /// <inheritdoc />
+        public GraphQueryData this[int index] => _queries[index];
+
+        /// <inheritdoc />
+        public int Count => _queries.Count;
+
+        /// <inheritdoc />
+        public IEnumerator<GraphQueryData> GetEnumerator()
+        {
+            return _queries.GetEnumerator();
+        }
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
     }
 }

@@ -25,8 +25,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = new MultiPartRequestGraphQLPayload(data);
 
             Assert.IsFalse(payload.IsBatch);
-            Assert.AreEqual(1, payload.QueriesToExecute.Count);
-            Assert.AreEqual(data, payload.QueriesToExecute[0]);
+            Assert.AreEqual(1, payload.Count);
+            Assert.AreEqual(data, payload[0]);
         }
 
         [Test]
@@ -40,9 +40,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var payload = new MultiPartRequestGraphQLPayload(list);
 
             Assert.IsTrue(payload.IsBatch);
-            Assert.AreEqual(2, payload.QueriesToExecute.Count);
-            Assert.AreEqual(data1, payload.QueriesToExecute[0]);
-            Assert.AreEqual(data2, payload.QueriesToExecute[1]);
+            Assert.AreEqual(2, payload.Count);
+            Assert.AreEqual(data1, payload[0]);
+            Assert.AreEqual(data2, payload[1]);
         }
     }
 }

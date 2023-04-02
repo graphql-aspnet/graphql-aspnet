@@ -11,11 +11,10 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 {
     using System;
     using System.Collections.Generic;
-    using System.Text.Json;
+    using System.Text.Json.Nodes;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
@@ -27,25 +26,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// <remarks>Spec: <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.</remarks>
     public partial class MultipartRequestPayloadAssembler
     {
-        private static readonly JsonDocumentOptions _options;
-
-        /// <summary>
-        /// Gets a singleton, default instance of the assembler.
-        /// </summary>
-        /// <value>The default instance.</value>
-        public static MultipartRequestPayloadAssembler Default { get; }
-
-        static MultipartRequestPayloadAssembler()
-        {
-            _options = new JsonDocumentOptions()
-            {
-                CommentHandling = JsonCommentHandling.Skip,
-                AllowTrailingCommas = true,
-            };
-
-            Default = new MultipartRequestPayloadAssembler();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MultipartRequestPayloadAssembler"/> class.
         /// </summary>
@@ -70,118 +50,45 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             operations = Validation.ThrowIfNullWhiteSpaceOrReturn(operations, nameof(operations));
             map = map?.Trim();
 
-            JsonDocument doc = null;
+            JsonNode topNode;
 
             try
             {
-                doc = JsonDocument.Parse(operations, _options);
+                topNode = JsonNode.Parse(operations, _nodeOptions, _documentOptions);
             }
             catch (Exception ex)
             {
                 throw new InvalidMultiPartOperationException(
                     $"Unable to parse the '{MultipartRequestConstants.Web.OPERATIONS_FORM_KEY}' form field. The provided value is not a " +
-                    $"valid json document. {ex.Message}",
+                    $"valid json string. See inner exception for details.",
                     ex);
             }
 
-            MultiPartRequestGraphQLPayload payload = null;
-            using (doc)
+            this.InjectMappedFileMarkers(topNode, map);
+
+            MultiPartRequestGraphQLPayload payload;
+
+            if (!topNode.IsArray())
             {
-                var isBatch = doc.RootElement.ValueKind == JsonValueKind.Array;
-
-                if (!isBatch)
+                // single query, No Batch Processing
+                var query = this.ConvertNodeToQueryData(topNode, files: files);
+                payload = new MultiPartRequestGraphQLPayload(query);
+            }
+            else
+            {
+                // multiple queries, Batch Processing
+                var queries = new List<GraphQueryData>();
+                var i = 0;
+                foreach (var node in topNode.AsArray())
                 {
-                    // single query object (not an array of queries in a batch)
-                    var query = this.ConvertElementToQueryData(doc.RootElement);
-                    payload = new MultiPartRequestGraphQLPayload(query);
-                }
-                else
-                {
-                    var queries = new List<GraphQueryData>();
-                    var i = 0;
-                    foreach (var element in doc.RootElement.EnumerateArray())
-                    {
-                        var query = this.ConvertElementToQueryData(element, i++);
-                        queries.Add(query);
-                    }
-
-                    payload = new MultiPartRequestGraphQLPayload(queries);
+                    var query = this.ConvertNodeToQueryData(node, i++, files);
+                    queries.Add(query);
                 }
 
-                if (files != null && files.Count > 0)
-                {
-                    var fileMap = this.CreateMap(map);
-                    this.MapFilesToPayload(payload, files, fileMap);
-                }
+                payload = new MultiPartRequestGraphQLPayload(queries);
             }
 
             return Task.FromResult(payload);
-        }
-
-        /// <summary>
-        /// Converts the node representing a query into an actual untyped query data element
-        /// containing the query text and the passed variables (if any).
-        /// </summary>
-        /// <param name="element">The element to convert.</param>
-        /// <param name="index">The index of the element within a parent array, if any. This index will be populated only if
-        /// the query is a batch query.</param>
-        /// <returns>GraphQueryData.</returns>
-        protected virtual GraphQueryData ConvertElementToQueryData(JsonElement element, int? index = null)
-        {
-            // extract query text
-            var foundQuery = element.TryGetProperty(MultipartRequestConstants.QueryPayloadKeywords.QUERY_KEY, out var queryElement);
-            if (!foundQuery)
-            {
-                if (!index.HasValue)
-                {
-                    throw new InvalidMultiPartOperationException($"A json property named '{MultipartRequestConstants.QueryPayloadKeywords.QUERY_KEY}' " +
-                        $"is required on the object passed as the value of {MultipartRequestConstants.Web.OPERATIONS_FORM_KEY} form field.");
-                }
-                else
-                {
-                    throw new InvalidMultiPartOperationException($"A json property named '{MultipartRequestConstants.QueryPayloadKeywords.QUERY_KEY}' " +
-                        $"is required at index {index.Value} on the array passed as the value of {MultipartRequestConstants.Web.OPERATIONS_FORM_KEY} form field.");
-                }
-            }
-
-            var foundVariables = element.TryGetProperty(MultipartRequestConstants.QueryPayloadKeywords.VARIABLE_KEY, out var variablesElement);
-            var foundOperationName = element.TryGetProperty(MultipartRequestConstants.QueryPayloadKeywords.OPERATION_KEY, out var operationElement);
-
-            var queryText = queryElement.GetString();
-            InputVariableCollection variables = null;
-            if (foundVariables)
-            {
-                variables = InputVariableCollection.FromJsonElement(variablesElement);
-            }
-
-            variables = variables ?? InputVariableCollection.Empty;
-            string operationName = null;
-
-            if (foundOperationName)
-            {
-                if (operationElement.ValueKind != JsonValueKind.String)
-                {
-                    if (!index.HasValue)
-                    {
-                        throw new InvalidMultiPartOperationException($"The property named '{MultipartRequestConstants.QueryPayloadKeywords.OPERATION_KEY}' " +
-                            $"on the object passed as the value of {MultipartRequestConstants.Web.OPERATIONS_FORM_KEY} form field must be a string or null.");
-                    }
-                    else
-                    {
-                        throw new InvalidMultiPartOperationException($"The json property named '{MultipartRequestConstants.QueryPayloadKeywords.QUERY_KEY}' " +
-                            $"at index {index.Value} on the array passed as the value of {MultipartRequestConstants.Web.OPERATIONS_FORM_KEY} form field must be a string or null.");
-                    }
-                }
-
-                operationName = operationElement.GetString();
-            }
-
-            return new GraphQueryData()
-            {
-                Query = queryText,
-                Variables = variables,
-                OperationName = operationName,
-            };
         }
     }
 }
