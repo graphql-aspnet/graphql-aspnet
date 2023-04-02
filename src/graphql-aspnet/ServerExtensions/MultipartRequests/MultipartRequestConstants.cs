@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 
         internal class Protected
         {
-            public const string FILE_MARKER_PREFIX = "~graphql:aspnet:C8BE9950-2124-408F-9502-52840F0088A9";
+            public const string FILE_MARKER_PREFIX = "~graphql:aspnet:MultiPartRequestServerExtension:C8BE9950-2124-408F-9502-52840F0088A9";
         }
     }
 }

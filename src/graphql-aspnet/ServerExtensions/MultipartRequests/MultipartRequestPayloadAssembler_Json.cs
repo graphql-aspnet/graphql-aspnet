@@ -159,8 +159,20 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 {
                     if (kvp.Value.IsArray())
                     {
-                        JsonNodeExtensions.SetJsonNode(operationsNode, kvp.Value.AsArray(), markerValue);
-                        continue;
+                        var arr = kvp.Value.AsArray();
+                        if (arr.Count == 1)
+                        {
+                            if (arr[0].IsValue() && arr[0].AsValue().TryGetValue<string>(out var mapString))
+                            {
+                                JsonNodeExtensions.SetJsonNode(operationsNode, mapString, markerValue);
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            JsonNodeExtensions.SetJsonNode(operationsNode, kvp.Value.AsArray(), markerValue);
+                            continue;
+                        }
                     }
 
                     if (kvp.Value.IsValue())

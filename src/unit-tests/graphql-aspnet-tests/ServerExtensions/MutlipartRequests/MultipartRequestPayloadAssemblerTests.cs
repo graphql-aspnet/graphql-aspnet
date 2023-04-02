@@ -506,8 +506,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.AreEqual(fileVar4, var4_101_file.Value);
         }
 
-        [Test]
-        public async Task SingleQuery_SingleFile_TopLevelVariable_StringMapPath_AddedToQueryVariableCorrectly()
+        [TestCase(@"{ ""0"": ""variables.var1""}")] // string
+        [TestCase(@"{ ""0"": [""variables.var1""] }")] // array with one element is treated like a string
+        [TestCase(@"{ ""0"": [""variables"", ""var1""] }")] // array with multiple elements is treated seperately
+        public async Task SingleQuery_SingleFile_TopLevelVariable_AddedToQueryVariableCorrectly(string mapParts)
         {
             var queryText = "query { field1 {field2 field3} }";
             var operations = @"
@@ -516,7 +518,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 ""variables"" : { ""var1"": null }
             }";
 
-            var map = @"{ ""0"": ""variables.var1""}";
+            var map = mapParts;
 
             var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
 
@@ -944,6 +946,32 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     Assert.IsNull(addedNullElement.Value);
                 }
             }
+        }
+
+        [Test]
+        public void UsingTheReservedFileKey_InAMap_ThrowsException()
+        {
+            var operations = @"
+                {
+                    ""query""     : ""query doesnt matter"",
+                    ""variables"" : { ""var1"": null },
+                    ""operation"" : ""bob""
+                }";
+
+            var key = MultipartRequestConstants.Protected.FILE_MARKER_PREFIX;
+            var map = @"{ """ + key + @"1"": ""variables.var1""}";
+
+            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+
+            var files = new Dictionary<string, FileUpload>();
+            files.Add(file.MapKey, file);
+
+            var assembler = new MultipartRequestPayloadAssembler();
+
+            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                await assembler.AssemblePayload(operations, map, files);
+            });
         }
     }
 }
