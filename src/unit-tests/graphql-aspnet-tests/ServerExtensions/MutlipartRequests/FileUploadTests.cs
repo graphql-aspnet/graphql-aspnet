@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var memStream = new MemoryStream();
 
             var container = new Mock<IFileUploadStreamContainer>();
-            container.Setup(x => x.OpenStreamAsync())
+            container.Setup(x => x.OpenFileStreamAsync())
                 .ReturnsAsync(memStream);
 
             var file = new FileUpload(

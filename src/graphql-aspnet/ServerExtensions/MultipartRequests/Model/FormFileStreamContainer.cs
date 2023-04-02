@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
         }
 
         /// <inheritdoc />
-        public Task<Stream> OpenStreamAsync()
+        public Task<Stream> OpenFileStreamAsync()
         {
             var stream = _file.OpenReadStream();
             return Task.FromResult(stream);

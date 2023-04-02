@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
         }
 
         /// <inheritdoc />
-        public Task<Stream> OpenStreamAsync()
+        public Task<Stream> OpenFileStreamAsync()
         {
             MemoryStream memoryStream = _data != null
                 ? new MemoryStream(_data)

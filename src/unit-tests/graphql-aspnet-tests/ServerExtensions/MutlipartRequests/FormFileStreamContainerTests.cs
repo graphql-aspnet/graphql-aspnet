@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var container = new FormFileStreamContainer(formFile.Object);
 
-            var outputStream = await container.OpenStreamAsync();
+            var outputStream = await container.OpenFileStreamAsync();
 
             Assert.AreEqual(stream, outputStream);
         }

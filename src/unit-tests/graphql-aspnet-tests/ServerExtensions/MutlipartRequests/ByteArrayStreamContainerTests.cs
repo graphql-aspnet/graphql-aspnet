@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var container = new ByteArrayStreamContainer(array);
 
-            using var streamOut = await container.OpenStreamAsync();
+            using var streamOut = await container.OpenFileStreamAsync();
 
             using var reader = new StreamReader(streamOut);
             var dataOut = reader.ReadToEnd();

@@ -22,6 +22,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces
         /// Opens the file stream in a manner appropriate with stream container.
         /// </summary>
         /// <returns>Task&lt;Stream&gt;.</returns>
-        Task<Stream> OpenStreamAsync();
+        Task<Stream> OpenFileStreamAsync();
     }
 }

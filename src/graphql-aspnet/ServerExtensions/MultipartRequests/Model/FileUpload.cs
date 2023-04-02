@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
         /// <returns>Task&lt;Stream&gt;.</returns>
         public virtual async Task<Stream> OpenFileAsync()
         {
-            return await _streamContainer.OpenStreamAsync();
+            return await _streamContainer.OpenFileStreamAsync();
         }
 
         /// <summary>
