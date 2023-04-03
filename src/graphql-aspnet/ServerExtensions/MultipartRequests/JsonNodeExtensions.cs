@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using System.Text.Json.Nodes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
@@ -61,12 +60,12 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <param name="rootNode">The root node to path into.</param>
         /// <param name="queryPath">A dot seperated string indicating the path segments to navigate within <paramref name="rootNode"/>.</param>
         /// <param name="value">The value to place.</param>
-        public static void SetJsonNode(JsonNode rootNode, string queryPath, JsonNode value)
+        public static void SetJsonNode(this JsonNode rootNode, string queryPath, JsonNode value)
         {
             queryPath = Validation.ThrowIfNullWhiteSpaceOrReturn(queryPath, nameof(queryPath));
 
             var segments = queryPath.Split('.', StringSplitOptions.RemoveEmptyEntries);
-            SetJsonNode(rootNode, segments, value);
+            rootNode.SetJsonNode(segments, value);
         }
 
         /// <summary>
@@ -77,7 +76,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <param name="rootNode">The root node to path into.</param>
         /// <param name="queryPath">A json array of the path segments to navigate within <paramref name="rootNode"/>.</param>
         /// <param name="value">The value to place.</param>
-        public static void SetJsonNode(JsonNode rootNode, JsonArray queryPath, JsonNode value)
+        public static void SetJsonNode(this JsonNode rootNode, JsonArray queryPath, JsonNode value)
         {
             Validation.ThrowIfNull(queryPath, nameof(queryPath));
 
@@ -91,6 +90,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                         $"property name. Got '{item.ToJsonString()}' instead.");
                 }
 
+                // each member of the map array must be a property name
+                // or an array index (boolean values arent allowed)
                 var v = item.AsValue();
                 if (v.TryGetValue<string>(out var str))
                 {
@@ -108,7 +109,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 }
             }
 
-            SetJsonNode(rootNode, items, value);
+            rootNode.SetJsonNode(items, value);
         }
 
         /// <summary>
@@ -119,99 +120,114 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <param name="rootNode">The root node to path into.</param>
         /// <param name="querySegments">The query path to place the value at.</param>
         /// <param name="value">The value to place.</param>
-        public static void SetJsonNode(JsonNode rootNode, IReadOnlyList<string> querySegments, JsonNode value)
+        public static void SetJsonNode(this JsonNode rootNode, IReadOnlyList<string> querySegments, JsonNode value)
         {
+            Validation.ThrowIfNull(rootNode, nameof(rootNode));
             Validation.ThrowIfNull(querySegments, nameof(querySegments));
+
+            if (rootNode.IsValue())
+            {
+                throw new JsonNodeException(
+                    $"The supplied root node represents a single value but was expected to be " +
+                    $"an object or an array.");
+            }
+
             if (querySegments.Count < 1)
                 throw new JsonNodeException($"At least one segment is required on {nameof(querySegments)}.");
 
             var currentNode = rootNode;
             for (int i = 0; i < querySegments.Count - 1; i++)
             {
-                var segment = querySegments[i];
-                int? arrIndex = null;
-                JsonNode nextNode = null;
-
-                if (int.TryParse(segment, out var index) && currentNode.IsArray())
-                    arrIndex = index;
-
-                if (arrIndex.HasValue)
-                {
-                    var arr = currentNode.AsArray();
-                    while (arr.Count <= arrIndex.Value)
-                        arr.Add(null);
-
-                    nextNode = arr[arrIndex.Value];
-                }
-                else if (currentNode.IsObject())
-                {
-                    nextNode = currentNode.AsObject()[segment];
-                }
-                else if (currentNode.IsValue())
-                {
-                    throw new JsonNodeException(
-                        $"Expected an object or array to search for segment '{segment}' (index: {i}) but instead received " +
-                        $"a single value");
-                }
+                JsonNode nextNode = currentNode.FindSubNodeOrThrow(querySegments[i]);
 
                 if (nextNode == null)
                 {
                     // Create a new object or array node if the next segment is not found
                     var nextPieceIsArrayElement = querySegments[i + 1].All(char.IsDigit);
-
                     nextNode = nextPieceIsArrayElement ? new JsonArray() : new JsonObject();
-                    if (arrIndex.HasValue)
-                    {
-                        var arr = currentNode.AsArray();
-                        arr[arrIndex.Value] = nextNode;
-                    }
-                    else if (currentNode.IsObject())
-                    {
-                        currentNode[segment] = nextNode;
-                    }
+
+                    currentNode.SetNodeValue(querySegments[i], nextNode);
                 }
 
                 currentNode = nextNode;
             }
 
-            int? finalIndex = null;
-            var finalSegment = querySegments[querySegments.Count - 1];
-            if (int.TryParse(finalSegment, out var parsedFinalIndex) && currentNode.IsArray())
-                finalIndex = parsedFinalIndex;
+            var nodeAtFinalLocation = currentNode.FindSubNodeOrThrow(querySegments[querySegments.Count - 1]);
+            if (nodeAtFinalLocation != null)
+            {
+                throw new JsonNodeException(
+                       $"The location indicated by the query path already contains a value, " +
+                       $"it cannot be replaced.");
+            }
 
-            // Set the value of the final segment to the specified value
-            if (finalIndex.HasValue)
+            var wasSet = currentNode.SetNodeValue(querySegments[querySegments.Count - 1], value);
+            if (!wasSet)
+            {
+                throw new JsonNodeException(
+                       $"The location indicated by the query path does not represent a valid location in the " +
+                       $"existing json document where a value can be set.");
+            }
+        }
+
+        private static bool SetNodeValue(this JsonNode currentNode, string propertyNameOrIndex, JsonNode subNode)
+        {
+            Validation.ThrowIfNull(currentNode, nameof(currentNode));
+            if (currentNode.IsValue())
+            {
+                throw new JsonNodeException(
+                    $"Expected an object or array in which to set a value for segment '{propertyNameOrIndex}' but instead received " +
+                    $"a single value");
+            }
+
+            int? arrIndex = null;
+            if (int.TryParse(propertyNameOrIndex, out var index) && currentNode.IsArray())
+                arrIndex = index;
+
+            if (arrIndex.HasValue)
             {
                 var arr = currentNode.AsArray();
-
-                while (arr.Count <= finalIndex.Value)
-                    arr.Add(null);
-
-                if (arr[finalIndex.Value] != null)
-                {
-                    throw new JsonNodeException(
-                       $"The location indicated by the query path already contains a value, it cannot be replaced.");
-                }
-
-                arr[finalIndex.Value] = value;
-                return;
+                arr[arrIndex.Value] = subNode;
+                return true;
             }
 
             if (currentNode.IsObject())
             {
-                if (currentNode[finalSegment] != null)
-                {
-                    throw new JsonNodeException(
-                       $"The location indicated by the query path already contains a value, it cannot be replaced.");
-                }
-
-                currentNode[finalSegment] = value;
-                return;
+                currentNode[propertyNameOrIndex] = subNode;
+                return true;
             }
 
-            throw new JsonNodeException(
-                       $"Expected an object or array to assign the final value but instead received " +
-                       $"a single value");
+            return false;
+        }
+
+        private static JsonNode FindSubNodeOrThrow(this JsonNode currentNode, string propertyNameOrIndex)
+        {
+            Validation.ThrowIfNull(currentNode, nameof(currentNode));
+            if (currentNode.IsValue())
+            {
+                throw new JsonNodeException(
+                    $"Expected an object or array to search for segment '{propertyNameOrIndex}' but instead received " +
+                    $"a single value");
+            }
+
+            int? arrIndex = null;
+            if (int.TryParse(propertyNameOrIndex, out var index) && currentNode.IsArray())
+                arrIndex = index;
+
+            if (arrIndex.HasValue)
+            {
+                var arr = currentNode.AsArray();
+                while (arr.Count <= arrIndex.Value)
+                    arr.Add(null);
+
+                return arr[arrIndex.Value];
+            }
+
+            if (currentNode.IsObject())
+            {
+                return currentNode.AsObject()[propertyNameOrIndex];
+            }
+
+            return null;
         }
     }
 }

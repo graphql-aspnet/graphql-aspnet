@@ -164,13 +164,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                         {
                             if (arr[0].IsValue() && arr[0].AsValue().TryGetValue<string>(out var mapString))
                             {
-                                JsonNodeExtensions.SetJsonNode(operationsNode, mapString, markerValue);
+                                operationsNode.SetJsonNode(mapString, markerValue);
                                 continue;
                             }
                         }
                         else
                         {
-                            JsonNodeExtensions.SetJsonNode(operationsNode, kvp.Value.AsArray(), markerValue);
+                            operationsNode.SetJsonNode(kvp.Value.AsArray(), markerValue);
                             continue;
                         }
                     }
@@ -179,7 +179,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                     {
                         if (kvp.Value.AsValue().TryGetValue<string>(out var mapString))
                         {
-                            JsonNodeExtensions.SetJsonNode(operationsNode, mapString, markerValue);
+                            operationsNode.SetJsonNode(mapString, markerValue);
                             continue;
                         }
                     }
