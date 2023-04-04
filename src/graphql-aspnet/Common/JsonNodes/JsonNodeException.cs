@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions
+namespace GraphQL.AspNet.Common.Extensions
 {
     using System;
     using System.Text.Json.Nodes;

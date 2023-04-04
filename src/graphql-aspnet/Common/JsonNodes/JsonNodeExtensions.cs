@@ -7,14 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
+namespace GraphQL.AspNet.Common.Extensions
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json.Nodes;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
 
     /// <summary>
     /// Helper methods for use when parsing json nodes on the multipart request
@@ -60,25 +59,44 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <param name="rootNode">The root node to path into.</param>
         /// <param name="queryPath">A dot seperated string indicating the path segments to navigate within <paramref name="rootNode"/>.</param>
         /// <param name="value">The value to place.</param>
-        public static void SetJsonNode(this JsonNode rootNode, string queryPath, JsonNode value)
+        /// <param name="splitDotSeperatedString">if set to <c>true</c>, when the provide dstring contains a dot seperated
+        /// <paramref name="queryPath"/> is provided it is split into seperate elements using the dot as a delimiter.</param>
+        public static void SetChildNodeValue(this JsonNode rootNode, string queryPath, JsonNode value, bool splitDotSeperatedString = true)
         {
             queryPath = Validation.ThrowIfNullWhiteSpaceOrReturn(queryPath, nameof(queryPath));
 
-            var segments = queryPath.Split('.', StringSplitOptions.RemoveEmptyEntries);
-            rootNode.SetJsonNode(segments, value);
+            string[] segments;
+            if (splitDotSeperatedString)
+                segments = queryPath.Split('.', StringSplitOptions.RemoveEmptyEntries);
+            else
+                segments = new string[] { queryPath };
+
+            rootNode.SetChildNodeValue(segments, value);
         }
 
         /// <summary>
-        /// Using a algorithm similar to `object-path` places the provided <paramref name="value"/> into the node tree
-        /// indicated by <paramref name="rootNode"/> assuming the query location represents a currently
+        /// Using a algorithm similar to `object-path` places the provided <paramref name="value" /> into the node tree
+        /// indicated by <paramref name="rootNode" /> assuming the query location represents a currently
         /// null or non-existant value. An exception is thrown is a non-null value already sits at that location.
         /// </summary>
         /// <param name="rootNode">The root node to path into.</param>
-        /// <param name="queryPath">A json array of the path segments to navigate within <paramref name="rootNode"/>.</param>
+        /// <param name="queryPath">A json array of the path segments to navigate within <paramref name="rootNode" />.</param>
         /// <param name="value">The value to place.</param>
-        public static void SetJsonNode(this JsonNode rootNode, JsonArray queryPath, JsonNode value)
+        /// <param name="splitSingleStringElement">if set to <c>true</c>, when an array of one element is provided,
+        /// and that element is a string, its treated as if it were passed in solitary and not as an array. This means if
+        /// said string contains a dot delimited string that string is parsed and split a second time.</param>
+        public static void SetChildNodeValue(this JsonNode rootNode, JsonArray queryPath, JsonNode value, bool splitSingleStringElement = true)
         {
             Validation.ThrowIfNull(queryPath, nameof(queryPath));
+
+            if (queryPath.Count == 1 && splitSingleStringElement)
+            {
+                if (queryPath[0].IsValue() && queryPath[0].AsValue().TryGetValue<string>(out var singleItem))
+                {
+                    rootNode.SetChildNodeValue(singleItem, value, true);
+                    return;
+                }
+            }
 
             var items = new List<string>(queryPath.Count);
             foreach (var item in queryPath)
@@ -109,7 +127,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 }
             }
 
-            rootNode.SetJsonNode(items, value);
+            rootNode.SetChildNodeValue(items, value);
         }
 
         /// <summary>
@@ -120,7 +138,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <param name="rootNode">The root node to path into.</param>
         /// <param name="querySegments">The query path to place the value at.</param>
         /// <param name="value">The value to place.</param>
-        public static void SetJsonNode(this JsonNode rootNode, IReadOnlyList<string> querySegments, JsonNode value)
+        public static void SetChildNodeValue(this JsonNode rootNode, IReadOnlyList<string> querySegments, JsonNode value)
         {
             Validation.ThrowIfNull(rootNode, nameof(rootNode));
             Validation.ThrowIfNull(querySegments, nameof(querySegments));
@@ -146,7 +164,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                     var nextPieceIsArrayElement = querySegments[i + 1].All(char.IsDigit);
                     nextNode = nextPieceIsArrayElement ? new JsonArray() : new JsonObject();
 
-                    currentNode.SetNodeValue(querySegments[i], nextNode);
+                    currentNode.AddSubNode(querySegments[i], nextNode);
                 }
 
                 currentNode = nextNode;
@@ -160,19 +178,20 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                        $"it cannot be replaced.");
             }
 
-            var wasSet = currentNode.SetNodeValue(querySegments[querySegments.Count - 1], value);
-            if (!wasSet)
-            {
-                throw new JsonNodeException(
-                       $"The location indicated by the query path does not represent a valid location in the " +
-                       $"existing json document where a value can be set.");
-            }
+            currentNode.AddSubNode(querySegments[querySegments.Count - 1], value);
         }
 
-        private static bool SetNodeValue(this JsonNode currentNode, string propertyNameOrIndex, JsonNode subNode)
+        /// <summary>
+        /// Adds the sub node as a child of the provided node. Will properly nest the subnode at the appropriate index
+        /// or property name based on the supplied node type.
+        /// </summary>
+        /// <param name="rootNode">The node to apppend to.</param>
+        /// <param name="propertyNameOrIndex">Index of the property name or.</param>
+        /// <param name="subNode">The sub node to append.</param>
+        public static void AddSubNode(this JsonNode rootNode, string propertyNameOrIndex, JsonNode subNode)
         {
-            Validation.ThrowIfNull(currentNode, nameof(currentNode));
-            if (currentNode.IsValue())
+            Validation.ThrowIfNull(rootNode, nameof(rootNode));
+            if (rootNode.IsValue())
             {
                 throw new JsonNodeException(
                     $"Expected an object or array in which to set a value for segment '{propertyNameOrIndex}' but instead received " +
@@ -180,23 +199,25 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             }
 
             int? arrIndex = null;
-            if (int.TryParse(propertyNameOrIndex, out var index) && currentNode.IsArray())
+            if (int.TryParse(propertyNameOrIndex, out var index) && rootNode.IsArray())
                 arrIndex = index;
 
             if (arrIndex.HasValue)
             {
-                var arr = currentNode.AsArray();
+                var arr = rootNode.AsArray();
                 arr[arrIndex.Value] = subNode;
-                return true;
+                return;
             }
 
-            if (currentNode.IsObject())
+            if (rootNode.IsObject())
             {
-                currentNode[propertyNameOrIndex] = subNode;
-                return true;
+                rootNode[propertyNameOrIndex] = subNode;
+                return;
             }
 
-            return false;
+            throw new JsonNodeException(
+                $"An attempt to set a value at location '{propertyNameOrIndex}' failed. This is usually due to " +
+                $"trying to set an explicit property against a declared array.");
         }
 
         private static JsonNode FindSubNodeOrThrow(this JsonNode currentNode, string propertyNameOrIndex)

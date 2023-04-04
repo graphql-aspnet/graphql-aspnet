@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using System.Collections.Generic;
     using System.Text.Json;
     using System.Text.Json.Nodes;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model.Json;
@@ -160,26 +161,15 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                     if (kvp.Value.IsArray())
                     {
                         var arr = kvp.Value.AsArray();
-                        if (arr.Count == 1)
-                        {
-                            if (arr[0].IsValue() && arr[0].AsValue().TryGetValue<string>(out var mapString))
-                            {
-                                operationsNode.SetJsonNode(mapString, markerValue);
-                                continue;
-                            }
-                        }
-                        else
-                        {
-                            operationsNode.SetJsonNode(kvp.Value.AsArray(), markerValue);
-                            continue;
-                        }
+                        operationsNode.SetChildNodeValue(kvp.Value.AsArray(), markerValue);
+                        continue;
                     }
 
                     if (kvp.Value.IsValue())
                     {
                         if (kvp.Value.AsValue().TryGetValue<string>(out var mapString))
                         {
-                            operationsNode.SetJsonNode(mapString, markerValue);
+                            operationsNode.SetChildNodeValue(mapString, markerValue);
                             continue;
                         }
                     }
