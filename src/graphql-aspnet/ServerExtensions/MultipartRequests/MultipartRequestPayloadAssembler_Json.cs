@@ -29,12 +29,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         private static readonly JsonNodeOptions _nodeOptions;
         private static readonly JsonSerializerOptions _serializerOptions;
 
-        /// <summary>
-        /// Gets a singleton, default instance of the assembler.
-        /// </summary>
-        /// <value>The default instance.</value>
-        public static MultipartRequestPayloadAssembler Default { get; }
-
         static MultipartRequestPayloadAssembler()
         {
             _documentOptions = new JsonDocumentOptions()
@@ -57,8 +51,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 
             _serializerOptions.Converters.Add(new FileMappedIInputVariableCollectionConverter());
             _serializerOptions.Converters.Add(new FileMappedInputVariableCollectionConverter());
-
-            Default = new MultipartRequestPayloadAssembler();
         }
 
         /// <summary>

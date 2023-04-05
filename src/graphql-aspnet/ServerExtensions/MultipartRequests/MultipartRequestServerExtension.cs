@@ -12,11 +12,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Web;
-    using GraphQL.AspNet.ServerExtensions.MultipartRequests;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema;
@@ -31,34 +33,48 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// <remarks>See: <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" /> for specification details and a list of compatiable clients.</remarks>
     public class MultipartRequestServerExtension : IGraphQLServerExtension
     {
-        private readonly bool _registerCustomProcessor;
+        private readonly Action<MultipartRequestConfiguration> _configAction;
+
         private Type _expectedProcessorType;
+        private MultipartRequestConfiguration _config;
         private Type _schemaType;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MultipartRequestServerExtension"/> class.
+        /// Initializes a new instance of the <see cref="MultipartRequestServerExtension" /> class.
         /// </summary>
         public MultipartRequestServerExtension()
-            : this(true)
+            : this(null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MultipartRequestServerExtension"/> class.
+        /// Initializes a new instance of the <see cref="MultipartRequestServerExtension" /> class.
         /// </summary>
-        /// <param name="registerCustomProcessor">If set to <c>true</c> the extension will register
-        /// its own custom http query processor to handle incoming queries.  When <c>false</c>,
-        /// no custom processor will be registerd and you must handle query parsing and file mapping
-        /// in some other manner.</param>
-        public MultipartRequestServerExtension(bool registerCustomProcessor = true)
+        /// <param name="configureAction">An action that, when executed, will configure an object
+        /// containing all the different options this extension supports.</param>
+        public MultipartRequestServerExtension(Action<MultipartRequestConfiguration> configureAction = null)
         {
-            _registerCustomProcessor = registerCustomProcessor;
+            _configAction = configureAction;
         }
 
         /// <inheritdoc />
-        public void Configure(SchemaOptions options)
+        public virtual void Configure(SchemaOptions options)
         {
-            if (_registerCustomProcessor)
+            _schemaType = options.SchemaType;
+            var configType = typeof(MultipartRequestConfiguration<>).MakeGenericType(_schemaType);
+            _config = InstanceFactory.CreateInstance(configType) as MultipartRequestConfiguration;
+
+            if (_config == null)
+            {
+                throw new SchemaConfigurationException(
+                    $"Unable to create a configuration object for the {nameof(MultipartRequestServerExtension)} " +
+                    $"(Target Schema: {options.SchemaType.Name}");
+            }
+
+            if (_configAction != null)
+                _configAction(_config);
+
+            if (_config.RegisterMultipartRequestHttpProcessor)
             {
                 if (options.QueryHandler.HttpProcessorType != null)
                 {
@@ -70,8 +86,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                         $"cannot be registered for the '{options.SchemaType.FriendlyName()}' schema.");
                 }
 
-                _schemaType = options.SchemaType;
-
                 _expectedProcessorType = typeof(MultipartRequestGraphQLHttpProcessor<>).MakeGenericType(_schemaType);
                 options.QueryHandler.HttpProcessorType = _expectedProcessorType;
             }
@@ -79,17 +93,21 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             // register a scalar that represents the file
             GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(FileUploadScalarGraphType));
 
+            // register the config options for the processor
+            var serviceType = typeof(IMultipartRequestConfiguration<>).MakeGenericType(options.SchemaType);
+            options.ServiceCollection.TryAdd(new ServiceDescriptor(serviceType, _config));
+
             // perform the rest of the DI registrations
             options.ServiceCollection.TryAddSingleton<IFileUploadScalarValueMaker, DefaultFileUploadScalarValueMaker>();
         }
 
         /// <inheritdoc />
-        public void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null)
+        public virtual void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null)
         {
             if (serviceProvider == null)
                 return;
 
-            if (_registerCustomProcessor)
+            if (_config.RequireMultipartRequestHttpProcessor)
             {
                 // the developer or another extension could have changed out the registered processor type.
                 // Validate that the registered processor for this schema is the expected one

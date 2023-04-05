@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         }
 
         [Test]
-        public void DefaultUsage_CustomProcessorIsChanged_ThrowsExceptionOnUsage()
+        public void DefaultUsage_CustomProcessorIsChangedToSomethingNotCompatiable_ThrowsExceptionOnUsage()
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
             GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
@@ -95,14 +95,18 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         }
 
         [Test]
-        public void DeclineProcessor_CustomProcessorIsChanged_NoException()
+        public void DeclineDefaultProcessor_CustomProcessorIsSetManually_NoException()
         {
             using var restorePoint = new GraphQLGlobalRestorePoint(true);
 
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);
 
-            var extension = new MultipartRequestServerExtension(false);
+            var extension = new MultipartRequestServerExtension((o) =>
+            {
+                o.RegisterMultipartRequestHttpProcessor = false;
+                o.RequireMultipartRequestHttpProcessor = false;
+            });
 
             options.RegisterExtension(extension);
             options.QueryHandler.HttpProcessorType = typeof(DefaultGraphQLHttpProcessor<GraphSchema>);
@@ -121,7 +125,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);
 
-            var extension = new MultipartRequestServerExtension(false);
+            var extension = new MultipartRequestServerExtension((o) =>
+            {
+                o.RegisterMultipartRequestHttpProcessor = false;
+                o.RequireMultipartRequestHttpProcessor = false;
+            });
 
             options.RegisterExtension(extension);
 

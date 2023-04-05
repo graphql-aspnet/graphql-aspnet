@@ -31,6 +31,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
     using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// A custom http query processor that supports processing http requests conforming to the
@@ -54,6 +55,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
 
         private readonly IFileUploadScalarValueMaker _fileUploadScalarMaker;
         private readonly IQueryResponseWriter<TSchema> _writer;
+        private readonly IMultipartRequestConfiguration<TSchema> _configuration;
         private IUserSecurityContext _securityContext;
 
         /// <summary>
@@ -65,17 +67,21 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
         /// for the given <typeparamref name="TSchema" />.</param>
         /// <param name="fileUploadMaker">A custom maker registered by the server extension
         /// to build file upload scalars directly from a multi-part form.</param>
+        /// <param name="configuration">The configuration instance created to serve the extension
+        /// for a target schema.</param>
         /// <param name="logger">A logger instance where this object can write and record log entries.</param>
         public MultipartRequestGraphQLHttpProcessor(
             TSchema schema,
             IGraphQLRuntime<TSchema> runtime,
             IQueryResponseWriter<TSchema> writer,
             IFileUploadScalarValueMaker fileUploadMaker,
+            IMultipartRequestConfiguration<TSchema> configuration,
             IGraphEventLogger logger = null)
             : base(schema, runtime, logger)
         {
             _fileUploadScalarMaker = Validation.ThrowIfNullOrReturn(fileUploadMaker, nameof(fileUploadMaker));
             _writer = Validation.ThrowIfNullOrReturn(writer, nameof(writer));
+            _configuration = Validation.ThrowIfNullOrReturn(configuration, nameof(configuration));
         }
 
         /// <inheritdoc />
@@ -446,7 +452,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
             }
 
             MultiPartRequestGraphQLPayload payload;
-            payload = await MultipartRequestPayloadAssembler.Default.AssemblePayload(
+
+            var assembler = new MultipartRequestPayloadAssembler(_configuration);
+            payload = await assembler.AssemblePayload(
                operations,
                fileMap,
                files,

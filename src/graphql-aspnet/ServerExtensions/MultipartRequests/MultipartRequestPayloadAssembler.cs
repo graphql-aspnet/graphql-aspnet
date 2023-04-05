@@ -16,7 +16,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
 
@@ -27,11 +29,16 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// <remarks>Spec: <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.</remarks>
     public partial class MultipartRequestPayloadAssembler
     {
+        private readonly IMultipartRequestConfiguration _config;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="MultipartRequestPayloadAssembler"/> class.
+        /// Initializes a new instance of the <see cref="MultipartRequestPayloadAssembler" /> class.
         /// </summary>
-        public MultipartRequestPayloadAssembler()
+        /// <param name="configuration">A configuration object to determine how the assembler
+        /// will assembly a payload from its constituent parts.</param>
+        public MultipartRequestPayloadAssembler(IMultipartRequestConfiguration configuration = null)
         {
+            _config = configuration ?? new MultipartRequestConfiguration();
         }
 
         /// <summary>

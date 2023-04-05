@@ -52,9 +52,9 @@ namespace GraphQL.AspNet.Common.Extensions
         }
 
         /// <summary>
-        /// Using a algorithm similar to `object-path` places the provided <paramref name="value"/> into the node tree
-        /// indicated by <paramref name="rootNode"/> assuming the query location represents a currently
-        /// null or non-existant value. An exception is thrown is a non-null value already sits at that location.
+        /// Using a algorithm similar to javascript's `object-path` package this method places the provided <paramref name="value"/> into the node tree
+        /// indicated by <paramref name="rootNode"/> assuming the pathed location represents a currently
+        /// null or non-existant value. An exception is thrown if a non-null value already sits at that location.
         /// </summary>
         /// <param name="rootNode">The root node to path into.</param>
         /// <param name="queryPath">A dot seperated string indicating the path segments to navigate within <paramref name="rootNode"/>.</param>
@@ -75,9 +75,9 @@ namespace GraphQL.AspNet.Common.Extensions
         }
 
         /// <summary>
-        /// Using a algorithm similar to `object-path` places the provided <paramref name="value" /> into the node tree
-        /// indicated by <paramref name="rootNode" /> assuming the query location represents a currently
-        /// null or non-existant value. An exception is thrown is a non-null value already sits at that location.
+        /// Using a algorithm similar to javascript's `object-path` package this method places the provided <paramref name="value"/> into the node tree
+        /// indicated by <paramref name="rootNode"/> assuming the pathed location represents a currently
+        /// null or non-existant value. An exception is thrown if a non-null value already sits at that location.
         /// </summary>
         /// <param name="rootNode">The root node to path into.</param>
         /// <param name="queryPath">A json array of the path segments to navigate within <paramref name="rootNode" />.</param>
@@ -131,13 +131,13 @@ namespace GraphQL.AspNet.Common.Extensions
         }
 
         /// <summary>
-        /// Using a algorithm similar to `object-path` this method places the provided <paramref name="value"/> into the node tree
+        /// Using a algorithm similar to javascript's `object-path` package this method places the provided <paramref name="value"/> into the node tree
         /// indicated by <paramref name="rootNode"/> assuming the pathed location represents a currently
         /// null or non-existant value. An exception is thrown if a non-null value already sits at that location.
         /// </summary>
         /// <param name="rootNode">The root node to path into.</param>
         /// <param name="querySegments">The query path to place the value at.</param>
-        /// <param name="value">The value to place.</param>
+        /// <param name="value">The value to place, can be null.</param>
         public static void SetChildNodeValue(this JsonNode rootNode, IReadOnlyList<string> querySegments, JsonNode value)
         {
             Validation.ThrowIfNull(rootNode, nameof(rootNode));
