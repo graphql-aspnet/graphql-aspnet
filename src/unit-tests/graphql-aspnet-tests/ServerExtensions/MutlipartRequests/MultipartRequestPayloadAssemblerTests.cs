@@ -10,21 +10,90 @@
 namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 {
     using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
     using System.Xml.Linq;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Http.Internal;
+    using Microsoft.Extensions.Primitives;
     using Moq;
     using NUnit.Framework;
 
     [TestFixture]
     public class MultipartRequestPayloadAssemblerTests
     {
+        private MultiPartHttpFormPayloadParser CreateTestObject(
+                string operationsField,
+                string mapField,
+                IMultipartRequestConfiguration config = null,
+                (string FieldName, string FieldValue)[] additionalFields = null,
+                (string FieldName, string FileName, string ContentType, string FileContents)[] files = null,
+                string httpMethod = "POST",
+                string contentType = "multipart/form-data")
+        {
+            var httpContext = new DefaultHttpContext();
+
+            var fileCollection = new FormFileCollection();
+            var fieldCollection = new Dictionary<string, StringValues>();
+
+            if (operationsField != null)
+                fieldCollection.Add(MultipartRequestConstants.Web.OPERATIONS_FORM_KEY, operationsField);
+
+            if (mapField != null)
+                fieldCollection.Add(MultipartRequestConstants.Web.MAP_FORM_KEY, mapField);
+
+            if (additionalFields != null)
+            {
+                foreach (var kvp in additionalFields)
+                    fieldCollection.Add(kvp.FieldName, kvp.FieldValue);
+            }
+
+            if (files != null)
+            {
+                foreach (var item in files)
+                {
+                    byte[] fileBytes = null;
+                    if (item.FileContents != null)
+                        fileBytes = Encoding.UTF8.GetBytes(item.FileContents);
+
+                    var formFile = new FormFile(
+                            fileBytes != null
+                                ? new MemoryStream(fileBytes)
+                                : Stream.Null,
+                            0,
+                            fileBytes?.Length ?? 0,
+                            item.FieldName,
+                            item.FileName);
+
+                    formFile.Headers = new HeaderDictionary();
+                    if (item.ContentType != null)
+                        formFile.Headers.Add("Content-Type", item.ContentType);
+
+                    fileCollection.Add(formFile);
+                }
+            }
+
+            var form = new FormCollection(fieldCollection, fileCollection);
+            httpContext.Request.ContentType = contentType;
+            httpContext.Request.Method = httpMethod;
+            httpContext.Request.Form = form;
+            httpContext.Response.Body = new MemoryStream();
+
+            return new MultiPartHttpFormPayloadParser(
+                httpContext,
+                new DefaultFileUploadScalarValueMaker(),
+                config);
+        }
+
         [Test]
         public async Task NoVariablesSingleQuery_NoFiles_ReturnsQueryInPayload()
         {
@@ -35,10 +104,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             }";
 
             string map = null;
-            var files = new Dictionary<string, FileUpload>();
 
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map);
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -58,10 +126,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             }";
 
             string map = null;
-            var files = new Dictionary<string, FileUpload>();
 
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map);
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -96,10 +163,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             ]";
 
             string map = null;
-            var files = new Dictionary<string, FileUpload>();
 
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map);
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(2, payload.Count);
@@ -143,10 +209,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             }";
 
             string map = null;
-            var files = new Dictionary<string, FileUpload>();
 
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map);
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -168,13 +233,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var map = @"{ ""0"": [""variables"", ""var1""]}";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -186,7 +248,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var fileVariable = var1 as InputFileUploadVariable;
             Assert.IsNotNull(fileVariable);
-            Assert.AreEqual(file, fileVariable.Value);
+            Assert.AreEqual("myFile.txt", fileVariable.Value.FileName);
         }
 
         [Test]
@@ -201,13 +263,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             string map = null;
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -234,13 +293,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var map = @"{ ""0"": [""variables"", ""var1"", 1]}";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -258,7 +314,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.IsNotNull(element0);
             Assert.IsNotNull(element1);
 
-            Assert.AreEqual(file, element1.Value);
+            Assert.AreEqual("myFile.txt", element1.Value.FileName);
         }
 
         [Test]
@@ -273,13 +329,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var map = @"{ ""0"": [""variables"", ""var1"", 1, ""var2""]}";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -301,7 +354,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var element2 = element1.Fields["var2"] as InputFileUploadVariable;
 
             Assert.IsNotNull(element2);
-            Assert.AreEqual(file, element2.Value);
+            Assert.AreEqual("myFile.txt", element2.Value.FileName);
         }
 
         [Test]
@@ -316,13 +369,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var map = @"{ ""0"": [""variables"", ""var1"", 1, ""var2"", 45, 2, ""var4"", 0]}";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
 
@@ -340,7 +390,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var element5 = element4.Items[0] as InputFileUploadVariable;
 
             Assert.IsNotNull(element5);
-            Assert.AreEqual(file, element5.Value);
+            Assert.AreEqual("myFile.txt", element5.Value.FileName);
         }
 
         [Test]
@@ -358,15 +408,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 ""bob"": [""variables"", ""var1"", 0]
             }";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
-            var fileBob = new FileUpload("bob", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
-
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-            files.Add(fileBob.MapKey, fileBob);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var file = ("0", "myFile.txt", "text/plain", "testData");
+            var fileBob = ("bob", "bobFile.txt", "text/plain", "testDataBob");
+            var parser = this.CreateTestObject(operations, map, files: new[] { file, fileBob });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -384,8 +429,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.IsNotNull(element0);
             Assert.IsNotNull(element1);
 
-            Assert.AreEqual(fileBob, element0.Value);
-            Assert.AreEqual(file, element1.Value);
+            Assert.AreEqual("bobFile.txt", element0.Value.FileName);
+            Assert.AreEqual("myFile.txt", element1.Value.FileName);
         }
 
         [Test]
@@ -407,12 +452,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var map = @"{ ""0"": [1, ""variables"", ""var4""]}";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(2, payload.Count);
@@ -445,7 +488,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var var4AsFile = var4 as InputFileUploadVariable;
             Assert.IsNotNull(var4AsFile);
-            Assert.AreEqual(file, var4AsFile.Value);
+            Assert.AreEqual("myFile.txt", var4AsFile.Value.FileName);
         }
 
         [Test]
@@ -470,14 +513,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 ""var4-1-0-1"": [1, ""variables"", ""var4"", ""1"",0, 1]
             }";
 
-            var fileVar3 = new FileUpload("var3-1", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
-            var fileVar4 = new FileUpload("var4-1-0-1", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(fileVar3.MapKey, fileVar3);
-            files.Add(fileVar4.MapKey, fileVar4);
+            var fileVar3 = ("var3-1", "var3-1.txt", "text/plain", "testData");
+            var fileVar4 = ("var4-1-0-1", "var4-1-0-1.txt", "text/plain", "testData");
 
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { fileVar4, fileVar3 });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(2, payload.Count);
@@ -491,7 +531,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var var1Index0 = (var1 as IInputListVariable).Items[1] as IInputFieldSetVariable;
             var var3Array = var1Index0.Fields["var3"] as IInputListVariable;
             var var3_1_File = var3Array.Items[1] as InputFileUploadVariable;
-            Assert.AreEqual(fileVar3, var3_1_File.Value);
+            Assert.AreEqual("var3-1.txt", var3_1_File.Value.FileName);
 
             var operation1 = payload[1];
             Assert.AreEqual(queryText1, operation1.Query);
@@ -503,7 +543,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var var41Array = (var4 as IInputListVariable).Items[1] as IInputListVariable;
             var var410Array = var41Array.Items[0] as IInputListVariable;
             var var4_101_file = var410Array.Items[1] as InputFileUploadVariable;
-            Assert.AreEqual(fileVar4, var4_101_file.Value);
+            Assert.AreEqual("var4-1-0-1.txt", var4_101_file.Value.FileName);
         }
 
         [TestCase(@"{ ""0"": ""variables.var1""}")] // string
@@ -520,13 +560,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var map = mapParts;
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -538,7 +575,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var fileVariable = var1 as InputFileUploadVariable;
             Assert.IsNotNull(fileVariable);
-            Assert.AreEqual(file, fileVariable.Value);
+            Assert.AreEqual("myFile.txt", fileVariable.Value.FileName);
         }
 
         [Test]
@@ -553,13 +590,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var map = @"{ ""0"": ""variables.var1.1""}";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -578,7 +612,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             Assert.IsNotNull(element1);
 
-            Assert.AreEqual(file, element1.Value);
+            Assert.AreEqual("myFile.txt", element1.Value.FileName);
         }
 
         [Test]
@@ -593,24 +627,18 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var map = @"{ ""0"": ""variables.var1""}";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
 
-            var assembler = new MultipartRequestPayloadAssembler();
-
-            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
-            {
-                await assembler.AssemblePayload(operations, map, files);
-            });
+            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(parser.ParseAsync);
 
             // ensure the error contains the correct failed index
             Assert.IsTrue(ex.InnerException is JsonException);
         }
 
         [Test]
-        public void InvalidOperationName_SingleQuery_ThrowsException()
+        public void   InvalidOperationName_SingleQuery_ThrowsException()
         {
             var operations = @"
                 {
@@ -621,17 +649,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var map = @"{ ""0"": ""variables.var1""}";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
 
-            var assembler = new MultipartRequestPayloadAssembler();
-
-            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
-            {
-                await assembler.AssemblePayload(operations, map, files);
-            });
+            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(parser.ParseAsync);
         }
 
         [Test]
@@ -650,12 +672,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 }
             ]";
 
-            var assembler = new MultipartRequestPayloadAssembler();
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
-            {
-                await assembler.AssemblePayload(operations);
-            });
+            var parser = this.CreateTestObject(operations, null, files: new[] { file });
+
+            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(parser.ParseAsync);
 
             // ensure the error contains the correct failed index
             Assert.IsTrue(ex.Message.Contains("1"));
@@ -695,17 +716,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     ""variables"" : " + variables + @"
                 }";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
 
-            var assembler = new MultipartRequestPayloadAssembler();
-
-            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
-            {
-                await assembler.AssemblePayload(operations, map, files);
-            });
+            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(parser.ParseAsync);
         }
 
         // map is not an object
@@ -750,17 +765,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     ""variables"" : { ""var1"": null }
                 }]";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-
-            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
-            {
-                await assembler.AssemblePayload(operations, map, files);
-            });
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(parser.ParseAsync);
         }
 
         [Test]
@@ -774,14 +782,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             string map = @"{""0"": [""variables"", ""var1""] }";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
-            var assembler = new MultipartRequestPayloadAssembler();
-
-            var payload = await assembler.AssemblePayload(operations, map, files);
             Assert.IsFalse(payload.IsBatch);
             Assert.AreEqual(1, payload.Count);
 
@@ -797,7 +802,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.IsTrue(var1 is InputFileUploadVariable);
             var fileUploadVar = var1 as InputFileUploadVariable;
 
-            Assert.AreEqual(file, fileUploadVar.Value);
+            Assert.AreEqual("myFile.txt", fileUploadVar.Value.FileName);
         }
 
         [Test]
@@ -812,13 +817,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             string map = @"{""0"": [""variables"", ""var1""] }";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             Assert.IsFalse(payload.IsBatch);
             Assert.AreEqual(1, payload.Count);
@@ -835,7 +837,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.IsTrue(var1 is InputFileUploadVariable);
             var fileUploadVar = var1 as InputFileUploadVariable;
 
-            Assert.AreEqual(file, fileUploadVar.Value);
+            Assert.AreEqual("myFile.txt", fileUploadVar.Value.FileName);
         }
 
         [Test]
@@ -850,14 +852,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             string map = @"{""0"": [""variables"", ""var1"", ""var4"", ""var3""] }";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             var data = payload[0];
 
@@ -877,17 +875,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             string map = @"{ ""0"": [""variables"", }";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
 
-            var assembler = new MultipartRequestPayloadAssembler();
-
-            Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
-            {
-                var payload = await assembler.AssemblePayload(operations, map, files);
-            });
+            Assert.ThrowsAsync<InvalidMultiPartMapException>(parser.ParseAsync);
         }
 
         [TestCase("[\"variables\", \"var1\", 0]", 1, 0)]
@@ -910,13 +902,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var map = @"{ ""0"": " + mapText + @" }";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
-
-            var assembler = new MultipartRequestPayloadAssembler();
-            var payload = await assembler.AssemblePayload(operations, map, files);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync();
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -937,7 +926,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 {
                     var fileElement = arrayVar.Items[i] as InputFileUploadVariable;
                     Assert.IsNotNull(fileElement);
-                    Assert.AreEqual(file, fileElement.Value);
+                    Assert.AreEqual("myFile.txt", fileElement.Value.FileName);
                 }
                 else
                 {
@@ -961,17 +950,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var key = MultipartRequestConstants.Protected.FILE_MARKER_PREFIX;
             var map = @"{ """ + key + @"1"": ""variables.var1""}";
 
-            var file = new FileUpload("0", new Mock<IFileUploadStreamContainer>().Object, "text/plain", "myFile.txt");
+            var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var files = new Dictionary<string, FileUpload>();
-            files.Add(file.MapKey, file);
+            var parser = this.CreateTestObject(operations, map, files: new[] { file });
 
-            var assembler = new MultipartRequestPayloadAssembler();
-
-            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
-            {
-                await assembler.AssemblePayload(operations, map, files);
-            });
+            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(parser.ParseAsync);
         }
     }
 }

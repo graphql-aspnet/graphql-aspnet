@@ -10,13 +10,15 @@
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 {
     using System;
+    using System.Net.Http;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// Helper methods for configuring the multipart request extension.
     /// </summary>
-    public static class MultipartRequestSchemaOptionsExtension
+    public static class MultipartRequestExtensions
     {
         /// <summary>
         /// Adds the Multipart Request Server extension to this schema with all default options.
@@ -40,6 +42,19 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             var extension = new MultipartRequestServerExtension(configureAction);
             schemaOptions.RegisterExtension(extension);
             return schemaOptions;
+        }
+
+        /// <summary>
+        /// Determines whether this context represents a valid multi-part form submited via a POST request.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns><c>true</c> if the context is a vlaid multi-part form; otherwise, <c>false</c>.</returns>
+        public static bool IsMultipartFormRequest(this HttpContext context)
+        {
+            return context != null
+                && context.Response != null
+                && string.Equals(context.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase)
+                && context.Request.HasFormContentType;
         }
     }
 }

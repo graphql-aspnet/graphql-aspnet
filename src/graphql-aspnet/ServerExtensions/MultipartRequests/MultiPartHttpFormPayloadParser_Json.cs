@@ -23,13 +23,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// can be executed against the runtime.
     /// </summary>
     /// <remarks>Spec: <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.</remarks>
-    public partial class MultipartRequestPayloadAssembler
+    public partial class MultiPartHttpFormPayloadParser
     {
         private static readonly JsonDocumentOptions _documentOptions;
         private static readonly JsonNodeOptions _nodeOptions;
         private static readonly JsonSerializerOptions _serializerOptions;
 
-        static MultipartRequestPayloadAssembler()
+        static MultiPartHttpFormPayloadParser()
         {
             _documentOptions = new JsonDocumentOptions()
             {

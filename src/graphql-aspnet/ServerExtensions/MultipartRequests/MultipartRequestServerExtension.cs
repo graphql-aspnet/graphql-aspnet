@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                         $"a custom {nameof(options.QueryHandler.HttpProcessorType)} to add support for " +
                         $"batch operations and file upload processing. A custom {nameof(options.QueryHandler.HttpProcessorType)} " +
                         $"named {options.QueryHandler.HttpProcessorType.FriendlyName()} has already been defined. This extension " +
-                        $"cannot be registered for the '{options.SchemaType.FriendlyName()}' schema.");
+                        $"cannot be registered for the '{_schemaType.FriendlyName()}' schema.");
                 }
 
                 _expectedProcessorType = typeof(MultipartRequestGraphQLHttpProcessor<>).MakeGenericType(_schemaType);

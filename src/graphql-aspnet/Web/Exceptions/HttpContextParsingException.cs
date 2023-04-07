@@ -27,7 +27,22 @@ namespace GraphQL.AspNet.Web.Exceptions
         /// <param name="errorMessage">An end user friendly error message to include. This message will be
         /// written directly to the http response.</param>
         public HttpContextParsingException(HttpStatusCode statusCode = HttpStatusCode.BadRequest, string errorMessage = "")
-            : base(errorMessage)
+            : this(statusCode, errorMessage, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpContextParsingException" /> class.
+        /// </summary>
+        /// <param name="statusCode">The status code taht should be set, indicating the reason for failure.</param>
+        /// <param name="errorMessage">An end user friendly error message to include. This message will be
+        /// written directly to the http response.</param>
+        /// <param name="innerException">An exception which caused this exception to be thrown.</param>
+        public HttpContextParsingException(
+            HttpStatusCode statusCode,
+            string errorMessage,
+            Exception innerException = null)
+            : base(errorMessage, innerException)
         {
             this.StatusCode = statusCode;
         }

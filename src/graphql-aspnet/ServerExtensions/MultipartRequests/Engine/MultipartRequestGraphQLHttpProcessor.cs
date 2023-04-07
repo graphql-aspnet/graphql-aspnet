@@ -356,10 +356,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
         /// graphql runtime or <c>null</c>.</returns>
         protected virtual async Task<MultiPartRequestGraphQLPayload> ParseHttpContextAsync()
         {
-            var isPostRequest = string.Equals(this.HttpContext.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase);
-            var isMultiPartForm = isPostRequest && this.HttpContext.Request.HasFormContentType;
-
-            if (!isMultiPartForm)
+            if (!this.HttpContext.IsMultipartFormRequest())
             {
                 // backwards compatability to handle a "non-multi-part-form" request
                 var dataGenerator = new GraphQLHttpPayloadParser(this.HttpContext);
@@ -367,130 +364,12 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
                 return new MultiPartRequestGraphQLPayload(queryData);
             }
 
-            try
-            {
-                return await this.AssemblyMultiPartFormDataAsync().ConfigureAwait(false);
-            }
-            catch (InvalidMultiPartOperationException fe)
-            {
-                throw new HttpContextParsingException(errorMessage: fe.Message);
-            }
-            catch (InvalidMultiPartMapException mpe)
-            {
-                var message = $"Invalid {MultipartRequestConstants.Web.MAP_FORM_KEY} field. {mpe.Message}";
-                throw new HttpContextParsingException(errorMessage: message);
-            }
-        }
+            var multiPartDataGenerator = new MultiPartHttpFormPayloadParser(
+                this.HttpContext,
+                _fileUploadScalarMaker,
+                _configuration);
 
-        /// <summary>
-        /// A method that can inspect a form on the <see cref="HttpContext"/> and extracts constituent parts in a
-        /// manner consistant with the grapql-multipart spec. <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.
-        /// </summary>
-        /// <remarks>
-        /// Throw an <see cref="HttpContextParsingException"/> to stop execution and quickly write
-        /// an error back to the requestor.
-        /// </remarks>
-        /// <returns>System.ValueTuple&lt;System.String, System.String, List&lt;FileUpload&gt;&gt;.</returns>
-        protected virtual async Task<MultiPartRequestGraphQLPayload> AssemblyMultiPartFormDataAsync()
-        {
-            string operations = null;
-            string fileMap = null;
-            var files = new Dictionary<string, FileUpload>();
-
-            // check the blobs of the form extracting the required keys
-            // and storing any other keys as potential data blobs referenced as "files"
-            // by any queries
-            if (this.HttpContext.Request.Form != null)
-            {
-                foreach (var item in this.HttpContext.Request.Form)
-                {
-                    switch (item.Key)
-                    {
-                        case MultipartRequestConstants.Web.OPERATIONS_FORM_KEY:
-                            if (operations != null)
-                            {
-                                throw new HttpContextParsingException(
-                                    errorMessage: $"The '{MultipartRequestConstants.Web.OPERATIONS_FORM_KEY}' form field is defined " +
-                                    $"more than once on the request. It must be unique.");
-                            }
-
-                            operations = item.Value.ToString();
-                            break;
-
-                        case MultipartRequestConstants.Web.MAP_FORM_KEY:
-                            if (fileMap != null)
-                            {
-                                throw new HttpContextParsingException(
-                                    errorMessage: $"The '{MultipartRequestConstants.Web.MAP_FORM_KEY}' form field is defined " +
-                                    $"more than once on the request. It must be unique.");
-                            }
-
-                            fileMap = item.Value.ToString();
-                            break;
-
-                        default:
-
-                            // treat other unknown form fields as just blobs of data that may be
-                            // merged via a map
-                            byte[] bytes = Encoding.UTF8.GetBytes(item.Value.ToString());
-                            var file = await _fileUploadScalarMaker.CreateFileScalarAsync(item.Key, bytes);
-
-                            this.ValidateAndAppendFileOrThrow(files, file);
-                            break;
-                    }
-                }
-
-                // also extract any files actually uploaded
-                if (this.HttpContext.Request.Form.Files != null)
-                {
-                    foreach (var uploadedFile in this.HttpContext.Request.Form.Files)
-                    {
-                        var file = await _fileUploadScalarMaker.CreateFileScalarAsync(uploadedFile);
-                        this.ValidateAndAppendFileOrThrow(files, file);
-                    }
-                }
-            }
-
-            MultiPartRequestGraphQLPayload payload;
-
-            var assembler = new MultipartRequestPayloadAssembler(_configuration);
-            payload = await assembler.AssemblePayload(
-               operations,
-               fileMap,
-               files,
-               this.HttpContext.RequestAborted)
-               .ConfigureAwait(false);
-
-            return payload;
-        }
-
-        /// <summary>
-        /// Validates an assembled file reference for internal consistancy and add it to the
-        /// collection of parsed files on the request. An exception should be thrown
-        /// if the file is not correctly added.
-        /// </summary>
-        /// <param name="fileList">The file list to append the new file to.</param>
-        /// <param name="newFile">The file to inspect.</param>
-        protected virtual void ValidateAndAppendFileOrThrow(Dictionary<string, FileUpload> fileList, FileUpload newFile)
-        {
-            Validation.ThrowIfNull(fileList, nameof(fileList));
-            if (newFile == null || string.IsNullOrWhiteSpace(newFile.MapKey))
-            {
-                throw new HttpContextParsingException(
-                    HttpStatusCode.BadRequest,
-                    $"A file or form field was encountered that contains no name. All form fields must " +
-                    $"be uniquely named.");
-            }
-
-            if (fileList.ContainsKey(newFile.MapKey))
-            {
-                throw new HttpContextParsingException(
-                    HttpStatusCode.BadRequest,
-                    $"A file or form field '{newFile.MapKey}' was already parsed. All form fields and file references must " +
-                    $"be uniquely named.");
-            }
-
-            fileList.Add(newFile.MapKey, newFile);
+            return await multiPartDataGenerator.ParseAsync();
         }
 
         /// <inheritdoc />
