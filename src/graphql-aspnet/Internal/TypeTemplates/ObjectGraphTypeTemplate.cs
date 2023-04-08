@@ -10,7 +10,10 @@
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
+    using System.Reflection;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -27,6 +30,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public ObjectGraphTypeTemplate(Type objectType)
             : base(objectType)
         {
+        }
+
+        /// <inheritdoc />
+        protected override IEnumerable<MemberInfo> GatherPossibleTemplateMembers()
+        {
+            return this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+              .Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
+              .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance));
         }
 
         /// <inheritdoc />
