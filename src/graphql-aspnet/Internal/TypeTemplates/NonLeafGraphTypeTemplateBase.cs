@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // ------------------------------------
             var parsedItems = new List<IGraphFieldTemplate>();
 
-            var templateMembers = this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+            var templateMembers = this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
                 .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance));
 

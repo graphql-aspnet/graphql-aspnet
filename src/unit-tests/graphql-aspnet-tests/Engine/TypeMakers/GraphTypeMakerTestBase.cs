@@ -20,7 +20,10 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 
     public abstract class GraphTypeMakerTestBase
     {
-        protected GraphTypeCreationResult MakeGraphType(Type type, TypeKind kind, TemplateDeclarationRequirements? requirements = null)
+        protected GraphTypeCreationResult MakeGraphType(
+            Type type,
+            TypeKind kind,
+            TemplateDeclarationRequirements? requirements = null)
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
             if (requirements.HasValue)
