@@ -9,19 +9,27 @@
 
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration
 {
+    using System;
+
     /// <summary>
     /// A set of modes indicating how the multipart request extension will handle values passed on
     /// the 'map' field.
     /// </summary>
+    [Flags]
     public enum MultipartRequestMapHandlingMode
     {
+        /// <summary>
+        /// When declared alone, allows for no extended options.
+        /// </summary>
         None = 0,
 
         /// <summary>
         /// When enabled, indicates that the map field will allow a dot-pathed string for a query path as opposed to
         /// requiring an array of items.
         /// <para>
-        /// <c> "variables.var1" =>  ["variables", "var1"]</c>
+        /// When Enabled: <c> "variables.var1" =>  ["variables", "var1"]</c>
+        /// <br/>
+        /// When Disabled:<c> "variables.var" =>  ~400: Bad Request~</c>
         /// </para>
         /// <para>
         /// When not enabled, non-array based paths will be rejected.</para>
@@ -32,7 +40,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration
         /// When enabled, indicates that the map field will treat single element arrays as a dot pathed string
         /// rather than as a reference to a single property.
         /// <para>
-        /// <c>["variables.var1"]  =>  ["variables", "var1"]</c>
+        /// When Enabled: <c>["variables.var1"]  =>  ["variables", "var1"]</c>
+        /// <br/>
+        /// When Disabled: <c>["variables.var1"]  =>  ["variables.var1"]</c>
         /// </para>
         /// </summary>
         SplitDotDelimitedSingleElementArrays = 2,

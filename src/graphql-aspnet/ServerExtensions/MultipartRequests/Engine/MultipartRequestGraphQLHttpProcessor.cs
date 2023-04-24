@@ -12,8 +12,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
     using System;
     using System.Collections.Generic;
     using System.Net;
-    using System.Net.Http;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -24,14 +22,11 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
-    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
     using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// A custom http query processor that supports processing http requests conforming to the
@@ -55,7 +50,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
 
         private readonly IFileUploadScalarValueMaker _fileUploadScalarMaker;
         private readonly IQueryResponseWriter<TSchema> _writer;
-        private readonly IMultipartRequestConfiguration<TSchema> _configuration;
+        private readonly IMultipartRequestConfiguration<TSchema> _mpConfig;
         private IUserSecurityContext _securityContext;
 
         /// <summary>
@@ -67,7 +62,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
         /// for the given <typeparamref name="TSchema" />.</param>
         /// <param name="fileUploadMaker">A custom maker registered by the server extension
         /// to build file upload scalars directly from a multi-part form.</param>
-        /// <param name="configuration">The configuration instance created to serve the extension
+        /// <param name="multipartConfig">The configuration instance created to serve the extension
         /// for a target schema.</param>
         /// <param name="logger">A logger instance where this object can write and record log entries.</param>
         public MultipartRequestGraphQLHttpProcessor(
@@ -75,13 +70,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
             IGraphQLRuntime<TSchema> runtime,
             IQueryResponseWriter<TSchema> writer,
             IFileUploadScalarValueMaker fileUploadMaker,
-            IMultipartRequestConfiguration<TSchema> configuration,
+            IMultipartRequestConfiguration<TSchema> multipartConfig,
             IGraphEventLogger logger = null)
             : base(schema, runtime, logger)
         {
             _fileUploadScalarMaker = Validation.ThrowIfNullOrReturn(fileUploadMaker, nameof(fileUploadMaker));
             _writer = Validation.ThrowIfNullOrReturn(writer, nameof(writer));
-            _configuration = Validation.ThrowIfNullOrReturn(configuration, nameof(configuration));
+            _mpConfig = Validation.ThrowIfNullOrReturn(multipartConfig, nameof(multipartConfig));
         }
 
         /// <inheritdoc />
@@ -115,6 +110,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
             var requests = new List<IQueryExecutionRequest>();
             var individualQueryTasks = new List<Task<IQueryExecutionResult>>();
             List<IQueryExecutionResult> results = null;
+
             if (payload == null || payload.Count == 0)
             {
                 await this.WriteStatusCodeResponseAsync(
@@ -124,6 +120,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
                 return;
             }
 
+            // Fire off all items in the batch so they can start processing.
             for (var i = 0; i < payload.Count; i++)
             {
                 var request = await this.CreateQueryRequestAsync(payload[i], cancelToken);
@@ -136,6 +133,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
             // complete all tasks
             await Task.WhenAll(individualQueryTasks);
 
+            // gather results in the order they queries were submitted for processing
             results = new List<IQueryExecutionResult>(individualQueryTasks.Count);
             for (var i = 0; i < individualQueryTasks.Count; i++)
             {
@@ -147,6 +145,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
                 results.Add(result);
             }
 
+            // write teh batch response to the requestor
             await this.WriteQueryResponseAsync(
                 results,
                 payload.IsBatch,
@@ -361,15 +360,18 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
                 // backwards compatability to handle a "non-multi-part-form" request
                 var dataGenerator = new GraphQLHttpPayloadParser(this.HttpContext);
                 var queryData = await dataGenerator.ParseAsync();
+
                 return new MultiPartRequestGraphQLPayload(queryData);
             }
+            else
+            {
+                var multiPartDataGenerator = new MultiPartHttpFormPayloadParser(
+                    this.HttpContext,
+                    _fileUploadScalarMaker,
+                    _mpConfig);
 
-            var multiPartDataGenerator = new MultiPartHttpFormPayloadParser(
-                this.HttpContext,
-                _fileUploadScalarMaker,
-                _configuration);
-
-            return await multiPartDataGenerator.ParseAsync();
+                return await multiPartDataGenerator.ParseAsync();
+            }
         }
 
         /// <inheritdoc />

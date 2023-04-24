@@ -25,54 +25,28 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration
         {
             this.RequestMode = MultipartRequestMode.All;
             this.MaxFileCount = null;
+            this.MaxBlobCount = null;
             this.MapMode = MultipartRequestMapHandlingMode.Default;
             this.RegisterMultipartRequestHttpProcessor = true;
             this.RequireMultipartRequestHttpProcessor = true;
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating which options of the multipart request specification are enabled.
-        /// </summary>
-        /// <remarks>
-        /// (Default: All Options).
-        /// </remarks>
-        /// <value>The request mode configured for this schema.</value>
+        /// <inheritdoc />
         public MultipartRequestMode RequestMode { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value that, when set, indicates the maximum number of files and blobs that can be included
-        /// on a single POST request. When not set, an unlimited number of files per request is allowed.
-        /// </summary>
-        /// <remarks>
-        /// (Default: Unlimited).
-        /// </remarks>
-        /// <value>The maximum file count.</value>
+        /// <inheritdoc />
         public int? MaxFileCount { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value that indicates how the extension will handle values passed on the map variable.
-        /// </summary>
-        /// <value>The maximum object path depth.</value>
+        /// <inheritdoc />
+        public int? MaxBlobCount { get; set; }
+
+        /// <inheritdoc />
         public MultipartRequestMapHandlingMode MapMode { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the extension should register the default instance of the http
-        /// processor that can parse multi-part form requests is required. Set this value to false if you want to extend
-        /// the default functionality of the http processor.
-        /// </summary>
-        /// <remarks>
-        /// (Default: <c>true</c>).</remarks>
-        /// <value><c>true</c> if the default multi-part request http processor is required; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool RegisterMultipartRequestHttpProcessor { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the custom http processor that can parse multi-part form requests is required.
-        /// When <c>true</c>, at runtime, if the configured processor for this schema does not inherit
-        /// from <see cref="MultipartRequestGraphQLHttpProcessor{TSchema}" /> an exception will be thrown.
-        /// </summary>
-        /// <remarks>
-        /// (Default: <c>true</c>).</remarks>
-        /// <value><c>true</c> if the default multi-part request http processor is required; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool RequireMultipartRequestHttpProcessor { get; set; }
     }
 }

@@ -11,12 +11,16 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 {
     using System;
     using System.Collections.Generic;
+    using System.Net.Http.Json;
     using System.Text.Json;
     using System.Text.Json.Nodes;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Steps;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model.Json;
+    using GraphQL.AspNet.Web.Exceptions;
 
     /// <summary>
     /// An assembler that can take the raw values required by the spec and assembly a valid payload that
@@ -70,7 +74,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 throw new InvalidMultiPartOperationException(
                     $"The value provided for the form key {MultipartRequestConstants.Web.OPERATIONS_FORM_KEY} " +
                     (index.HasValue ? $"at index {index.Value} " : string.Empty) +
-                    "was not a valid json object. It cannot be converted into a query");
+                    "was not a valid json object. It cannot be converted into a query.");
             }
 
             GraphQueryData data;
@@ -143,6 +147,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             {
                 var fileMapKey = kvp.Key;
 
+                // should be nearly impossible but check just in case someone has browsed the source code
+                // and is performing shenanigans
                 if (fileMapKey.Contains(MultipartRequestConstants.Protected.FILE_MARKER_PREFIX, StringComparison.OrdinalIgnoreCase))
                     throw new InvalidMultiPartMapException("Map keys cannot contain the global file marker delimiter key.");
 
@@ -153,18 +159,41 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                     if (kvp.Value.IsArray())
                     {
                         var arr = kvp.Value.AsArray();
+
+                        if (arr.Count == 1 && _config.MapMode.ShouldSplitSingleElementArrays())
+                        {
+                            // if the only element is not a string, it can't be split
+                            // just skip and let normal array behavior take over
+                            if (arr[0].AsValue().TryGetValue<string>(out var mapString))
+                            {
+                                operationsNode.SetChildNodeValue(mapString, markerValue);
+                                continue;
+                            }
+                        }
+
                         operationsNode.SetChildNodeValue(kvp.Value.AsArray(), markerValue);
                         continue;
                     }
 
                     if (kvp.Value.IsValue())
                     {
+                        if (!_config.MapMode.AllowsStringPathValues())
+                        {
+                            throw new HttpContextParsingException(
+                                errorMessage: $"Invalid map value for key '{fileMapKey}'. This schema does not allow string " +
+                                "based mapped values. Only array based values can be used.");
+                        }
+
                         if (kvp.Value.AsValue().TryGetValue<string>(out var mapString))
                         {
                             operationsNode.SetChildNodeValue(mapString, markerValue);
                             continue;
                         }
                     }
+                }
+                catch (HttpContextParsingException)
+                {
+                    throw;
                 }
                 catch (Exception ex)
                 {

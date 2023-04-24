@@ -25,6 +25,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Primitives;
 
     /// <summary>
     /// An assembler that can take the raw values required by the spec and assembly a valid payload that
@@ -33,18 +34,20 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// <remarks>Spec: <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.</remarks>
     public partial class MultiPartHttpFormPayloadParser
     {
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+        protected record PendingBlob(string MapKey, StringValues Data);
+#pragma warning restore SA1313 // Parameter names should begin with lower-case letter
+
         private readonly HttpContext _context;
         private readonly IFileUploadScalarValueMaker _fileUploadScalarMaker;
         private readonly IMultipartRequestConfiguration _config;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MultiPartHttpFormPayloadParser" /> class.
+        /// Initializes a new instance of the <see cref="MultiPartHttpFormPayloadParser"/> class.
         /// </summary>
-        /// <param name="context">The context to be parsed.</param>
-        /// <param name="fileUploadScalarMaker">A maker that can create individual file upload scalars usable
-        /// by the graphql engine.</param>
-        /// <param name="configuration">A configuration object to determine how the assembler
-        /// will assembly a payload from its constituent parts.</param>
+        /// <param name="context">The context.</param>
+        /// <param name="fileUploadScalarMaker">The file upload scalar maker.</param>
+        /// <param name="configuration">The configuration.</param>
         public MultiPartHttpFormPayloadParser(
             HttpContext context,
             IFileUploadScalarValueMaker fileUploadScalarMaker,
@@ -71,7 +74,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         {
             string operations = null;
             string fileMap = null;
-            var files = new Dictionary<string, FileUpload>();
+            Dictionary<string, FileUpload> files = null;
+
+            var pendingBlobs = new List<PendingBlob>();
 
             // check the blobs of the form extracting the required keys
             // and storing any other keys as potential data blobs referenced as "files"
@@ -105,65 +110,125 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                             break;
 
                         default:
-
-                            // treat other unknown form fields as just blobs of data that may be
-                            // merged via a map
-                            byte[] bytes = Encoding.UTF8.GetBytes(item.Value.ToString());
-                            var file = await _fileUploadScalarMaker.CreateFileScalarAsync(item.Key, bytes);
-
-                            this.ValidateAndAppendFileOrThrow(files, file);
+                            // store a reference to any incoming blobs but don't parse them just yet
+                            // we need to ensure configuration maximums aren't exceeded
+                            pendingBlobs.Add(new (item.Key, item.Value));
                             break;
                     }
                 }
 
-                // also extract any files actually uploaded
-                if (_context.Request.Form.Files != null)
-                {
-                    foreach (var uploadedFile in _context.Request.Form.Files)
-                    {
-                        var file = await _fileUploadScalarMaker.CreateFileScalarAsync(uploadedFile);
-                        this.ValidateAndAppendFileOrThrow(files, file);
-                    }
-                }
+                this.ValidateFileDataOrThrow(pendingBlobs, _context.Request.Form.Files);
+                files = await this.CreateFilesCollection(pendingBlobs, _context.Request.Form.Files);
             }
 
             var payload = await this.AssemblePayload(
                operations,
                fileMap,
                files,
-               _context.RequestAborted)
-               .ConfigureAwait(false);
+               _context.RequestAborted).ConfigureAwait(false);
 
             return payload;
         }
 
         /// <summary>
-        /// Validates an assembled file reference for internal consistancy and add it to the
-        /// collection of parsed files on the request. An exception should be thrown
-        /// if the file is not correctly added.
+        /// Validates the two collections of pending files meet the requirements of this schema before attempting to
+        /// process and assemble the files. If this method does not throw an exception the file sets are valid.
         /// </summary>
-        /// <param name="fileList">The file list to append the new file to.</param>
-        /// <param name="newFile">The file to inspect.</param>
-        protected virtual void ValidateAndAppendFileOrThrow(Dictionary<string, FileUpload> fileList, FileUpload newFile)
+        /// <param name="blobs">The blobs that will be converted to <see cref="FileUpload"/> objects.</param>
+        /// <param name="files">The aspnet files that will be converted to <see cref="FileUpload"/> objects.</param>
+        protected virtual void ValidateFileDataOrThrow(
+            IReadOnlyList<PendingBlob> blobs,
+            IReadOnlyList<IFormFile> files)
         {
-            Validation.ThrowIfNull(fileList, nameof(fileList));
-            if (newFile == null || string.IsNullOrWhiteSpace(newFile.MapKey))
+            // are files present and are they allowed ?
+            var hasBlobs = blobs != null && blobs.Count > 0;
+            var hasFiles = files != null && files.Count > 0;
+
+            if ((hasBlobs || hasFiles) && !_config.RequestMode.IsFileUploadEnabled())
             {
                 throw new HttpContextParsingException(
-                    HttpStatusCode.BadRequest,
-                    $"A file or form field was encountered that contains no name. All form fields must " +
-                    $"be uniquely named.");
+               errorMessage: $"Unable to process the request. The target schema does not allow file uploads. Ensure " +
+               $"no files or unexpected form fields are attached to the request and try again.");
             }
 
-            if (fileList.ContainsKey(newFile.MapKey))
+            // are we within the limits of each type of file ?
+            var blobsExceeded = hasBlobs && _config.MaxBlobCount.HasValue && blobs.Count > _config.MaxBlobCount;
+            var filesExceeded = hasFiles && _config.MaxFileCount.HasValue && files.Count > _config.MaxFileCount;
+
+            if (blobsExceeded || filesExceeded)
             {
                 throw new HttpContextParsingException(
-                    HttpStatusCode.BadRequest,
-                    $"A file or form field '{newFile.MapKey}' was already parsed. All form fields and file references must " +
-                    $"be uniquely named.");
+                errorMessage: $"Maxium allowed files exceeeded. {blobs.Count} of {_config.MaxBlobCount} allowed blobs submitted and" +
+                $"{files.Count} of {_config.MaxFileCount} allowed files were submitted.");
+            }
+        }
+
+        /// <summary>
+        /// Attempts to create a fully formed collection of <see cref="FileUpload"/> from the blobs and
+        /// form files encountered on the primary request.
+        /// </summary>
+        /// <param name="pendingBlobs">The pending blobs read from the post body.</param>
+        /// <param name="files">The files pulled from the request.</param>
+        /// <returns>Dictionary&lt;System.String, FileUpload&gt;.</returns>
+        protected virtual async Task<Dictionary<string, FileUpload>> CreateFilesCollection(
+            IReadOnlyList<PendingBlob> pendingBlobs,
+            IFormFileCollection files)
+        {
+            // send all files off to the maker for processing
+            // this can be instant, but for large files it may take a while and can be done asyncronously
+            var fileTasks = new List<Task<FileUpload>>((pendingBlobs?.Count ?? 0) + (files?.Count ?? 0));
+            if (pendingBlobs != null)
+            {
+                foreach (var blob in pendingBlobs)
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(blob.Data.ToString());
+                    var task = _fileUploadScalarMaker.CreateFileScalarAsync(blob.MapKey, bytes);
+                    fileTasks.Add(task);
+                }
             }
 
-            fileList.Add(newFile.MapKey, newFile);
+            if (files != null)
+            {
+                foreach (var fileData in files)
+                {
+                    var task = _fileUploadScalarMaker.CreateFileScalarAsync(fileData);
+                    fileTasks.Add(task);
+                }
+            }
+
+            if (fileTasks.Count == 0)
+                return null;
+
+            await Task.WhenAll(fileTasks);
+
+            // fill out the result object with all the indexed files
+            var filesOut = new Dictionary<string, FileUpload>();
+            foreach (var task in fileTasks)
+            {
+                if (task.IsFaulted)
+                    await task;
+
+                var newFile = task.Result;
+                if (newFile == null || string.IsNullOrWhiteSpace(newFile.MapKey))
+                {
+                    throw new HttpContextParsingException(
+                        HttpStatusCode.BadRequest,
+                        $"A file or form field blob was encountered that contains no name. All values must " +
+                        $"be uniquely named.");
+                }
+
+                if (filesOut.ContainsKey(newFile.MapKey))
+                {
+                    throw new HttpContextParsingException(
+                        HttpStatusCode.BadRequest,
+                        $"A file or form field '{newFile.MapKey}' was already parsed. All values must " +
+                        $"be uniquely named.");
+                }
+
+                filesOut.Add(newFile.MapKey, newFile);
+            }
+
+            return filesOut;
         }
 
         /// <summary>
@@ -197,10 +262,16 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                     ex);
             }
 
+            if (topNode.IsArray() && !_config.RequestMode.IsBatchProcessingEnabled())
+            {
+                throw new InvalidMultiPartOperationException(
+                  $"Unable to parse the '{MultipartRequestConstants.Web.OPERATIONS_FORM_KEY}' form field. The target schema does not allow " +
+                  $"batch operations.");
+            }
+
             this.InjectMappedFileMarkers(topNode, map);
 
             MultiPartRequestGraphQLPayload payload;
-
             if (!topNode.IsArray())
             {
                 // single query, No Batch Processing

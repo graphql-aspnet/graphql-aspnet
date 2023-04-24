@@ -38,6 +38,16 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces
         public int? MaxFileCount { get; }
 
         /// <summary>
+        /// Gets a value that, when set, indicates the maximum number of blobs (i.e. unspecified form fields)
+        /// that can be included on a single POST request. When not set, an unlimited number of blobs per request is allowed.
+        /// </summary>
+        /// <remarks>
+        /// (Default: Unlimited).
+        /// </remarks>
+        /// <value>The maximum blob count.</value>
+        public int? MaxBlobCount { get; }
+
+        /// <summary>
         /// Gets a value that indicates how the extension will handle values passed on the map variable.
         /// </summary>
         /// <value>The maximum object path depth.</value>

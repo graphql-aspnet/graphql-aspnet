@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Primitives;
 
@@ -67,7 +68,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
         }
 
         /// <summary>
-        /// Gets or sets the `Content-Type` header provided with the file data. May null if no
+        /// Gets or sets the `Content-Type` header provided with the file data. Can be null if no
         /// content type was specified.
         /// </summary>
         /// <value>The 'Content-Type' header supplied with the file.</value>
