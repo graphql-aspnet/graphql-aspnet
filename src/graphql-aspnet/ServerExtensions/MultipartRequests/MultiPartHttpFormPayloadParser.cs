@@ -158,7 +158,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             if (blobsExceeded || filesExceeded)
             {
                 throw new HttpContextParsingException(
-                errorMessage: $"Maxium allowed files exceeeded. {blobs.Count} of {_config.MaxBlobCount} allowed blobs submitted and" +
+                errorMessage: $"Maximum allowed files exceeeded. {blobs.Count} of {_config.MaxBlobCount} allowed blobs submitted and" +
                 $"{files.Count} of {_config.MaxFileCount} allowed files were submitted.");
             }
         }

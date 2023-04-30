@@ -160,13 +160,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                     {
                         var arr = kvp.Value.AsArray();
 
-                        if (arr.Count == 1 && _config.MapMode.ShouldSplitSingleElementArrays())
+                        if (arr.Count == 1)
                         {
-                            // if the only element is not a string, it can't be split
+                            // if the only element is not a string, it can't be split regardless
                             // just skip and let normal array behavior take over
                             if (arr[0].AsValue().TryGetValue<string>(out var mapString))
                             {
-                                operationsNode.SetChildNodeValue(mapString, markerValue);
+                                operationsNode.SetChildNodeValue(mapString, markerValue, _config.MapMode.ShouldSplitSingleElementArrays());
                                 continue;
                             }
                         }
@@ -181,7 +181,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                         {
                             throw new HttpContextParsingException(
                                 errorMessage: $"Invalid map value for key '{fileMapKey}'. This schema does not allow string " +
-                                "based mapped values. Only array based values can be used.");
+                                "based map values. Only array based values can be used.");
                         }
 
                         if (kvp.Value.AsValue().TryGetValue<string>(out var mapString))

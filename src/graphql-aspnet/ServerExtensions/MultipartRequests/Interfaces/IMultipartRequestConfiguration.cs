@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces
         /// <remarks>
         /// (Default: All Options).
         /// </remarks>
-        /// <value>The request mode configured for this schema.</value>
+        /// <value>A binary flag enumeration containing all the set request mode flags.</value>
         public MultipartRequestMode RequestMode { get; }
 
         /// <summary>
@@ -32,9 +32,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces
         /// on a single POST request. When not set, an unlimited number of files per request is allowed.
         /// </summary>
         /// <remarks>
-        /// (Default: Unlimited).
+        /// (Default: not set, unlimited).
         /// </remarks>
-        /// <value>The maximum file count.</value>
+        /// <value>The maximum number of files the extension can process on a single request.</value>
         public int? MaxFileCount { get; }
 
         /// <summary>
@@ -42,15 +42,15 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces
         /// that can be included on a single POST request. When not set, an unlimited number of blobs per request is allowed.
         /// </summary>
         /// <remarks>
-        /// (Default: Unlimited).
+        /// (Default: not set, unlimited).
         /// </remarks>
-        /// <value>The maximum blob count.</value>
+        /// <value>The maximum number of blobs (form fields) the extension will treat as uploaded files.</value>
         public int? MaxBlobCount { get; }
 
         /// <summary>
         /// Gets a value that indicates how the extension will handle values passed on the map variable.
         /// </summary>
-        /// <value>The maximum object path depth.</value>
+        /// <value>A binary flag enumeration containing all the set handling flags.</value>
         public MultipartRequestMapHandlingMode MapMode { get; }
 
         /// <summary>

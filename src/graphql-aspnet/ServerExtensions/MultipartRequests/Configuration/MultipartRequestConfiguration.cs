@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration
         /// </summary>
         public MultipartRequestConfiguration()
         {
-            this.RequestMode = MultipartRequestMode.All;
+            this.RequestMode = MultipartRequestMode.Default;
             this.MaxFileCount = null;
             this.MaxBlobCount = null;
             this.MapMode = MultipartRequestMapHandlingMode.Default;

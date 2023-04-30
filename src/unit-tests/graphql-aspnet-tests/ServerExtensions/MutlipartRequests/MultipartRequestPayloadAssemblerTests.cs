@@ -638,7 +638,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         }
 
         [Test]
-        public void   InvalidOperationName_SingleQuery_ThrowsException()
+        public void InvalidOperationName_SingleQuery_ThrowsException()
         {
             var operations = @"
                 {

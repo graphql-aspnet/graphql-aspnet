@@ -20,6 +20,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration
         None = 0,
         FileUploads = 1,
         BatchQueries = 2,
-        All = FileUploads | BatchQueries,
+        Default = FileUploads | BatchQueries,
     }
 }
