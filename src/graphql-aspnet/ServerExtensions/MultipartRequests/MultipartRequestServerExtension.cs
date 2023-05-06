@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine.TypeMakers;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema;
     using Microsoft.AspNetCore.Builder;
@@ -93,9 +94,14 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             // register a scalar that represents the file
             GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(FileUploadScalarGraphType));
 
-            // register the config options for the processor
-            var serviceType = typeof(IMultipartRequestConfiguration<>).MakeGenericType(options.SchemaType);
-            options.ServiceCollection.TryAdd(new ServiceDescriptor(serviceType, _config));
+            // register the config options for the schema
+            var configurationServiceType = typeof(IMultipartRequestConfiguration<>).MakeGenericType(options.SchemaType);
+            options.ServiceCollection.TryAdd(new ServiceDescriptor(configurationServiceType, _config));
+
+            // register the http context parser for the schema
+            var payloadParserServiceType = typeof(IMultiPartHttpFormPayloadParser<>).MakeGenericType(options.SchemaType);
+            var payloadParserImplementationType = typeof(MultiPartHttpFormPayloadParser<>).MakeGenericType(options.SchemaType);
+            options.ServiceCollection.TryAdd(new ServiceDescriptor(payloadParserServiceType, payloadParserImplementationType, ServiceLifetime.Transient));
 
             // perform the rest of the DI registrations
             options.ServiceCollection.TryAddSingleton<IFileUploadScalarValueMaker, DefaultFileUploadScalarValueMaker>();

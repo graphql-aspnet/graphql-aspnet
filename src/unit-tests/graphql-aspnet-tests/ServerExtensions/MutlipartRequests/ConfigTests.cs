@@ -14,11 +14,13 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using System.Text;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
-    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine.TypeMakers;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
+    using GraphQL.AspNet.Tests.Execution.TestData.DirectiveProcessorTypeSystemLocationTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
@@ -30,10 +32,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     [TestFixture]
     public class ConfigTests
     {
-        private MultiPartHttpFormPayloadParser CreateTestObject(
+        private (MultiPartHttpFormPayloadParser<GraphSchema>, HttpContext) CreateTestObject(
              string operationsField,
              string mapField,
-             IMultipartRequestConfiguration config = null,
+             IMultipartRequestConfiguration<GraphSchema> config = null,
              (string FieldName, string FieldValue)[] additionalFields = null,
              (string FieldName, string FileName, string ContentType, string FileContents)[] files = null,
              string httpMethod = "POST",
@@ -87,10 +89,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             httpContext.Request.Form = form;
             httpContext.Response.Body = new MemoryStream();
 
-            return new MultiPartHttpFormPayloadParser(
-                httpContext,
-                new DefaultFileUploadScalarValueMaker(),
-                config);
+            return (
+                    new MultiPartHttpFormPayloadParser<GraphSchema>(
+                        new DefaultFileUploadScalarValueMaker(),
+                        config),
+                    httpContext);
         }
 
         [TestCase(MultipartRequestMapHandlingMode.Default, "\"variables.var1\"",  false)]
@@ -106,7 +109,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     ""operationName"" : ""bob""
                 }";
 
-            var config = new Mock<IMultipartRequestConfiguration>();
+            var config = new Mock<IMultipartRequestConfiguration<GraphSchema>>();
             config.Setup(x => x.RequestMode).Returns(MultipartRequestMode.Default);
             config.Setup(x => x.MapMode).Returns(mode);
 
@@ -114,7 +117,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(
+            var (parser, context) = this.CreateTestObject(
                 operations,
                 map,
                 config.Object,
@@ -124,14 +127,14 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             {
                 var ex = Assert.ThrowsAsync<HttpContextParsingException>(async () =>
                 {
-                    await parser.ParseAsync();
+                    await parser.ParseAsync(context);
                 });
 
                 Assert.IsTrue(ex.Message.Contains("This schema does not allow string based map values"));
             }
             else
             {
-                var payload = await parser.ParseAsync();
+                var payload = await parser.ParseAsync(context);
                 Assert.IsNotNull(payload);
             }
         }
@@ -149,7 +152,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     ""operationName"" : ""bob""
                 }";
 
-            var config = new Mock<IMultipartRequestConfiguration>();
+            var config = new Mock<IMultipartRequestConfiguration<GraphSchema>>();
             config.Setup(x => x.RequestMode).Returns(MultipartRequestMode.Default);
             config.Setup(x => x.MapMode).Returns(mode);
 
@@ -157,7 +160,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(
+            var (parser, context) = this.CreateTestObject(
                 operations,
                 map,
                 config.Object,
@@ -167,7 +170,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             {
                 var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
                 {
-                    await parser.ParseAsync();
+                    await parser.ParseAsync(context);
                 });
 
                 Assert.AreEqual(typeof(JsonNodeException), ex.InnerException.GetType());
@@ -175,7 +178,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             }
             else
             {
-                var payload = await parser.ParseAsync();
+                var payload = await parser.ParseAsync(context);
                 Assert.IsNotNull(payload);
             }
         }
@@ -193,7 +196,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     ""operationName"" : ""bob""
                 }";
 
-            var config = new Mock<IMultipartRequestConfiguration>();
+            var config = new Mock<IMultipartRequestConfiguration<GraphSchema>>();
             config.Setup(x => x.RequestMode).Returns(MultipartRequestMode.Default);
             config.Setup(x => x.MapMode).Returns(MultipartRequestMapHandlingMode.Default);
             config.Setup(x => x.MaxFileCount).Returns(maxAllowedFiles);
@@ -207,7 +210,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var file = ("0", "myFile.txt", "text/plain", "testData");
             var file1 = ("1", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(
+            var (parser, context) = this.CreateTestObject(
                 operations,
                 map,
                 config.Object,
@@ -217,14 +220,14 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             {
                 var ex = Assert.ThrowsAsync<HttpContextParsingException>(async () =>
                 {
-                    await parser.ParseAsync();
+                    await parser.ParseAsync(context);
                 });
 
                 Assert.IsTrue(ex.Message.Contains("Maximum allowed files"));
             }
             else
             {
-                var payload = await parser.ParseAsync();
+                var payload = await parser.ParseAsync(context);
                 Assert.IsNotNull(payload);
             }
         }
@@ -242,7 +245,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     ""operationName"" : ""bob""
                 }";
 
-            var config = new Mock<IMultipartRequestConfiguration>();
+            var config = new Mock<IMultipartRequestConfiguration<GraphSchema>>();
             config.Setup(x => x.RequestMode).Returns(MultipartRequestMode.Default);
             config.Setup(x => x.MapMode).Returns(MultipartRequestMapHandlingMode.Default);
             config.Setup(x => x.MaxFileCount).Returns(1900);
@@ -256,7 +259,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var blob = ("0", "testData");
             var blob1 = ("1",  "testData");
 
-            var parser = this.CreateTestObject(
+            var (parser, context) = this.CreateTestObject(
                 operations,
                 map,
                 config.Object,
@@ -266,14 +269,14 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             {
                 var ex = Assert.ThrowsAsync<HttpContextParsingException>(async () =>
                 {
-                    await parser.ParseAsync();
+                    await parser.ParseAsync(context);
                 });
 
                 Assert.IsTrue(ex.Message.Contains("Maximum allowed files"));
             }
             else
             {
-                var payload = await parser.ParseAsync();
+                var payload = await parser.ParseAsync(context);
                 Assert.IsNotNull(payload);
             }
         }

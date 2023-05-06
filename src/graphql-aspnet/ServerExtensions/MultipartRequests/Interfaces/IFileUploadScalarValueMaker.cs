@@ -20,14 +20,14 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces
     public interface IFileUploadScalarValueMaker
     {
         /// <summary>
-        /// Creates a valid instance of the file upload scalar.
+        /// Creates an instance of the file upload scalar from an asp.net file.
         /// </summary>
         /// <param name="aspNetFile">The ASP.NET file object created by the runtime.</param>
         /// <returns>Task&lt;FileUpload&gt;.</returns>
         Task<FileUpload> CreateFileScalarAsync(IFormFile aspNetFile);
 
         /// <summary>
-        /// Creates a valid instance of the file upload scalar from a key/value blob.
+        /// Creates an instance of the file upload scalar from a key/value blob.
         /// </summary>
         /// <param name="mapKey">The map key provided on the request to identify the blob.</param>
         /// <param name="blobData">A data block to serve as a file.</param>

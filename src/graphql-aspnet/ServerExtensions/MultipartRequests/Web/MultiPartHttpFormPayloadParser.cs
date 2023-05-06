@@ -18,11 +18,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
+    using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Primitives;
@@ -31,47 +33,47 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// An assembler that can take the raw values required by the spec and assembly a valid payload that
     /// can be executed against the runtime.
     /// </summary>
+    /// <typeparam name="TSchema">The type of the schema this parser is configured for.</typeparam>
     /// <remarks>Spec: <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.</remarks>
-    public partial class MultiPartHttpFormPayloadParser
+    public partial class MultiPartHttpFormPayloadParser<TSchema> : IMultiPartHttpFormPayloadParser<TSchema>
+        where TSchema : class, ISchema
     {
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
         protected record PendingBlob(string MapKey, StringValues Data);
 #pragma warning restore SA1313 // Parameter names should begin with lower-case letter
 
-        private readonly HttpContext _context;
         private readonly IFileUploadScalarValueMaker _fileUploadScalarMaker;
         private readonly IMultipartRequestConfiguration _config;
+        private HttpContext _context;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MultiPartHttpFormPayloadParser"/> class.
+        /// Initializes a new instance of the <see cref="MultiPartHttpFormPayloadParser{TSchema}"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
         /// <param name="fileUploadScalarMaker">The file upload scalar maker.</param>
         /// <param name="configuration">The configuration.</param>
         public MultiPartHttpFormPayloadParser(
-            HttpContext context,
             IFileUploadScalarValueMaker fileUploadScalarMaker,
-            IMultipartRequestConfiguration configuration = null)
+            IMultipartRequestConfiguration<TSchema> configuration = null)
         {
-            _context = Validation.ThrowIfNullOrReturn(context, nameof(context));
             _fileUploadScalarMaker = Validation.ThrowIfNullOrReturn(fileUploadScalarMaker, nameof(fileUploadScalarMaker));
-            _config = configuration ?? new MultipartRequestConfiguration();
-
-            if (!_context.IsMultipartFormRequest())
-            {
-                throw new HttpContextParsingException(
-                    HttpStatusCode.BadRequest,
-                    "Invalid request, expected a multi-part form submission.");
-            }
+            _config = configuration as IMultipartRequestConfiguration ?? new MultipartRequestConfiguration();
         }
 
-        /// <summary>
-        /// Parses the contained http context and attempts to build out an appropriate payload
-        /// that can be submitted to the graphql engine.
-        /// </summary>
-        /// <returns>&lt;MultiPartRequestGraphQLPayload&gt;</returns>
-        public virtual async Task<MultiPartRequestGraphQLPayload> ParseAsync()
+        /// <inheritdoc />
+        public virtual async Task<MultiPartRequestGraphQLPayload> ParseAsync(HttpContext context)
         {
+            _context = Validation.ThrowIfNullOrReturn(context, nameof(context));
+
+            // backwards compatiability
+            // if the context is not a multi-part form request
+            // fallback to regular graphql parsing logic
+            if (!context.IsMultipartFormRequest())
+            {
+                var dataGenerator = new GraphQLHttpPayloadParser(_context);
+                var queryData = await dataGenerator.ParseAsync();
+                return new MultiPartRequestGraphQLPayload(queryData);
+            }
+
             string operations = null;
             string fileMap = null;
             Dictionary<string, FileUpload> files = null;
@@ -131,10 +133,11 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         }
 
         /// <summary>
-        /// Validates the two collections of pending files meet the requirements of this schema before attempting to
-        /// process and assemble the files. If this method does not throw an exception the file sets are valid.
+        /// Validates that the two collections of pending files meet the requirements of this schema before attempting to
+        /// process and assemble the files. If this method does not throw an exception the file have passed configuration
+        /// constraints.
         /// </summary>
-        /// <param name="blobs">The blobs that will be converted to <see cref="FileUpload"/> objects.</param>
+        /// <param name="blobs">The blobs (e.g. form fields) that will be converted to <see cref="FileUpload"/> objects.</param>
         /// <param name="files">The aspnet files that will be converted to <see cref="FileUpload"/> objects.</param>
         protected virtual void ValidateFileDataOrThrow(
             IReadOnlyList<PendingBlob> blobs,
@@ -164,7 +167,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         }
 
         /// <summary>
-        /// Attempts to create a fully formed collection of <see cref="FileUpload"/> from the blobs and
+        /// Attempts to create a single, fully-formed collection of <see cref="FileUpload"/> scalar objects from the blobs and
         /// form files encountered on the primary request.
         /// </summary>
         /// <param name="pendingBlobs">The pending blobs read from the post body.</param>
@@ -172,10 +175,11 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <returns>Dictionary&lt;System.String, FileUpload&gt;.</returns>
         protected virtual async Task<Dictionary<string, FileUpload>> CreateFilesCollection(
             IReadOnlyList<PendingBlob> pendingBlobs,
-            IFormFileCollection files)
+            IReadOnlyList<IFormFile> files)
         {
-            // send all files off to the maker for processing
-            // this can be instant, but for large files it may take a while and can be done asyncronously
+            // send all files and blobs off to the maker for processing
+            // this will usually be instantanious, but for large files it may take a while
+            // and can be done asyncronously
             var fileTasks = new List<Task<FileUpload>>((pendingBlobs?.Count ?? 0) + (files?.Count ?? 0));
             if (pendingBlobs != null)
             {
@@ -234,25 +238,25 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <summary>
         /// Assembles a valid query payload from the constituent parts defined by the specification.
         /// </summary>
-        /// <param name="operations">The json object representing operation(s) provided on the request.</param>
-        /// <param name="map">A map to connect files to appropriate variables in the operations collection.</param>
+        /// <param name="operationJson">The json object representing operation(s) provided on the request.</param>
+        /// <param name="mapJson">A map to connect files to appropriate variables in the operations collection.</param>
         /// <param name="files">The files found on the request.</param>
         /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A Task&lt;MultiPartRequestGraphQLPayload&gt; representing the asynchronous operation.</returns>
         protected virtual Task<MultiPartRequestGraphQLPayload> AssemblePayload(
-            string operations,
-            string map = null,
+            string operationJson,
+            string mapJson = null,
             IReadOnlyDictionary<string, FileUpload> files = null,
             CancellationToken cancellationToken = default)
         {
-            operations = Validation.ThrowIfNullWhiteSpaceOrReturn(operations, nameof(operations));
-            map = map?.Trim();
+            operationJson = Validation.ThrowIfNullWhiteSpaceOrReturn(operationJson, nameof(operationJson));
+            mapJson = mapJson?.Trim();
 
             JsonNode topNode;
 
             try
             {
-                topNode = JsonNode.Parse(operations, _nodeOptions, _documentOptions);
+                topNode = JsonNode.Parse(operationJson, _nodeOptions, _documentOptions);
             }
             catch (Exception ex)
             {
@@ -269,18 +273,18 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                   $"batch operations.");
             }
 
-            this.InjectMappedFileMarkers(topNode, map);
+            this.InjectMappedFileMarkers(topNode, mapJson);
 
             MultiPartRequestGraphQLPayload payload;
             if (!topNode.IsArray())
             {
-                // single query, No Batch Processing
+                // single query; No Batch Processing
                 var query = this.ConvertNodeToQueryData(topNode, files: files);
                 payload = new MultiPartRequestGraphQLPayload(query);
             }
             else
             {
-                // multiple queries, Batch Processing
+                // multiple queries; Batch Processing
                 var queries = new List<GraphQueryData>();
                 var i = 0;
                 foreach (var node in topNode.AsArray())

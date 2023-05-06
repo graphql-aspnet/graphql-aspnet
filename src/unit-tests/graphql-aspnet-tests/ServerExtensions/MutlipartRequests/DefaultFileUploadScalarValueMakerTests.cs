@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine.TypeMakers;
     using Microsoft.AspNetCore.Http;
     using Moq;
     using NUnit.Framework;

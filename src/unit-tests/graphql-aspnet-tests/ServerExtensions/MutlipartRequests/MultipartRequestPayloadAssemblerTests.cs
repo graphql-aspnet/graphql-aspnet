@@ -17,8 +17,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using System.Xml.Linq;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests;
-    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine.TypeMakers;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
@@ -31,10 +32,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     [TestFixture]
     public class MultipartRequestPayloadAssemblerTests
     {
-        private MultiPartHttpFormPayloadParser CreateTestObject(
+        private (MultiPartHttpFormPayloadParser<GraphSchema>, HttpContext) CreateTestObject(
                 string operationsField,
                 string mapField,
-                IMultipartRequestConfiguration config = null,
+                IMultipartRequestConfiguration<GraphSchema> config = null,
                 (string FieldName, string FieldValue)[] additionalFields = null,
                 (string FieldName, string FileName, string ContentType, string FileContents)[] files = null,
                 string httpMethod = "POST",
@@ -88,10 +89,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             httpContext.Request.Form = form;
             httpContext.Response.Body = new MemoryStream();
 
-            return new MultiPartHttpFormPayloadParser(
-                httpContext,
-                new DefaultFileUploadScalarValueMaker(),
-                config);
+            return (
+                    new MultiPartHttpFormPayloadParser<GraphSchema>(
+                        new DefaultFileUploadScalarValueMaker(),
+                        config),
+                    httpContext);
         }
 
         [Test]
@@ -105,8 +107,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             string map = null;
 
-            var parser = this.CreateTestObject(operations, map);
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map);
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -127,8 +129,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             string map = null;
 
-            var parser = this.CreateTestObject(operations, map);
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map);
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -164,8 +166,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             string map = null;
 
-            var parser = this.CreateTestObject(operations, map);
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map);
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(2, payload.Count);
@@ -210,8 +212,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             string map = null;
 
-            var parser = this.CreateTestObject(operations, map);
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map);
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -235,8 +237,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -265,8 +267,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -295,8 +297,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -331,8 +333,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -371,8 +373,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
 
@@ -410,8 +412,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
             var fileBob = ("bob", "bobFile.txt", "text/plain", "testDataBob");
-            var parser = this.CreateTestObject(operations, map, files: new[] { file, fileBob });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file, fileBob });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -454,8 +456,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(2, payload.Count);
@@ -516,8 +518,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var fileVar3 = ("var3-1", "var3-1.txt", "text/plain", "testData");
             var fileVar4 = ("var4-1-0-1", "var4-1-0-1.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { fileVar4, fileVar3 });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { fileVar4, fileVar3 });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(2, payload.Count);
@@ -562,8 +564,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -592,8 +594,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -629,9 +631,12 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
 
-            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(parser.ParseAsync);
+            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
+            {
+                await parser.ParseAsync(context);
+            });
 
             // ensure the error contains the correct failed index
             Assert.IsTrue(ex.InnerException is JsonException);
@@ -651,9 +656,12 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
 
-            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(parser.ParseAsync);
+            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
+            {
+                await parser.ParseAsync(context);
+            });
         }
 
         [Test]
@@ -674,9 +682,12 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, null, files: new[] { file });
+            var (parser, context) = this.CreateTestObject(operations, null, files: new[] { file });
 
-            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(parser.ParseAsync);
+            var ex = Assert.ThrowsAsync<InvalidMultiPartOperationException>(async () =>
+            {
+                await parser.ParseAsync(context);
+            });
 
             // ensure the error contains the correct failed index
             Assert.IsTrue(ex.Message.Contains("1"));
@@ -718,9 +729,12 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
 
-            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(parser.ParseAsync);
+            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                await parser.ParseAsync(context);
+            });
         }
 
         // map is not an object
@@ -767,8 +781,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(parser.ParseAsync);
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                await parser.ParseAsync(context);
+            });
         }
 
         [Test]
@@ -784,8 +801,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsFalse(payload.IsBatch);
             Assert.AreEqual(1, payload.Count);
@@ -819,8 +836,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsFalse(payload.IsBatch);
             Assert.AreEqual(1, payload.Count);
@@ -854,8 +871,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             var data = payload[0];
 
@@ -877,9 +894,12 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
 
-            Assert.ThrowsAsync<InvalidMultiPartMapException>(parser.ParseAsync);
+            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                await parser.ParseAsync(context);
+            });
         }
 
         [TestCase("[\"variables\", \"var1\", 0]", 1, 0)]
@@ -904,8 +924,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
-            var payload = await parser.ParseAsync();
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
+            var payload = await parser.ParseAsync(context);
 
             Assert.IsNotNull(payload);
             Assert.AreEqual(1, payload.Count);
@@ -952,9 +972,12 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var file = ("0", "myFile.txt", "text/plain", "testData");
 
-            var parser = this.CreateTestObject(operations, map, files: new[] { file });
+            var (parser, context) = this.CreateTestObject(operations, map, files: new[] { file });
 
-            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(parser.ParseAsync);
+            var ex = Assert.ThrowsAsync<InvalidMultiPartMapException>(async () =>
+            {
+                await parser.ParseAsync(context);
+            });
         }
     }
 }

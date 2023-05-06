@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputValueSteps;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -48,9 +49,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
         /// </summary>
         public const string ERROR_NO_REQUEST_CREATED = "The GraphQL Operation at index {0} is null. Unable to execute the query.";
 
-        private readonly IFileUploadScalarValueMaker _fileUploadScalarMaker;
+        private readonly object _contextLocker = new object();
+        private readonly IMultiPartHttpFormPayloadParser<TSchema> _parser;
         private readonly IQueryResponseWriter<TSchema> _writer;
-        private readonly IMultipartRequestConfiguration<TSchema> _mpConfig;
         private IUserSecurityContext _securityContext;
 
         /// <summary>
@@ -60,23 +61,19 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
         /// <param name="runtime">The primary runtime instance in which GraphQL requests are processed for <typeparamref name="TSchema" />.</param>
         /// <param name="writer">The result writer capable of converting a <see cref="T:GraphQL.AspNet.Interfaces.Execution.IQueryExecutionResult" /> into a serialized payload
         /// for the given <typeparamref name="TSchema" />.</param>
-        /// <param name="fileUploadMaker">A custom maker registered by the server extension
-        /// to build file upload scalars directly from a multi-part form.</param>
-        /// <param name="multipartConfig">The configuration instance created to serve the extension
-        /// for a target schema.</param>
+        /// <param name="parser">The http context parser that will split the httpcontext
+        /// according to the multi-part-request specification.</param>
         /// <param name="logger">A logger instance where this object can write and record log entries.</param>
         public MultipartRequestGraphQLHttpProcessor(
             TSchema schema,
             IGraphQLRuntime<TSchema> runtime,
             IQueryResponseWriter<TSchema> writer,
-            IFileUploadScalarValueMaker fileUploadMaker,
-            IMultipartRequestConfiguration<TSchema> multipartConfig,
+            IMultiPartHttpFormPayloadParser<TSchema> parser,
             IGraphEventLogger logger = null)
             : base(schema, runtime, logger)
         {
-            _fileUploadScalarMaker = Validation.ThrowIfNullOrReturn(fileUploadMaker, nameof(fileUploadMaker));
+            _parser = Validation.ThrowIfNullOrReturn(parser, nameof(parser));
             _writer = Validation.ThrowIfNullOrReturn(writer, nameof(writer));
-            _mpConfig = Validation.ThrowIfNullOrReturn(multipartConfig, nameof(multipartConfig));
         }
 
         /// <inheritdoc />
@@ -355,23 +352,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
         /// graphql runtime or <c>null</c>.</returns>
         protected virtual async Task<MultiPartRequestGraphQLPayload> ParseHttpContextAsync()
         {
-            if (!this.HttpContext.IsMultipartFormRequest())
-            {
-                // backwards compatability to handle a "non-multi-part-form" request
-                var dataGenerator = new GraphQLHttpPayloadParser(this.HttpContext);
-                var queryData = await dataGenerator.ParseAsync();
-
-                return new MultiPartRequestGraphQLPayload(queryData);
-            }
-            else
-            {
-                var multiPartDataGenerator = new MultiPartHttpFormPayloadParser(
-                    this.HttpContext,
-                    _fileUploadScalarMaker,
-                    _mpConfig);
-
-                return await multiPartDataGenerator.ParseAsync();
-            }
+            return await _parser.ParseAsync(this.HttpContext);
         }
 
         /// <inheritdoc />
@@ -380,7 +361,13 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
             // ensure only one security context exists and is used
             // for all batch query members.
             if (_securityContext == null)
-                _securityContext = base.CreateUserSecurityContext();
+            {
+                lock (_contextLocker)
+                {
+                    if (_securityContext == null)
+                        _securityContext = base.CreateUserSecurityContext();
+                }
+            }
 
             return _securityContext;
         }

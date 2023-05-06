@@ -22,8 +22,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine.TypeMakers;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema;
     using GraphQL.AspNet.Tests.Framework;
@@ -105,8 +107,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 server.Schema,
                 runtime ?? server.ServiceProvider.GetService<IGraphQLRuntime<GraphSchema>>(),
                 server.ServiceProvider.GetService<IQueryResponseWriter<GraphSchema>>(),
-                server.ServiceProvider.GetService<IFileUploadScalarValueMaker>(),
-                new MultipartRequestConfiguration<GraphSchema>(),
+                new MultiPartHttpFormPayloadParser<GraphSchema>(
+                    server.ServiceProvider.GetService<IFileUploadScalarValueMaker>(),
+                    new MultipartRequestConfiguration<GraphSchema>()),
                 server.ServiceProvider.GetService<IGraphEventLogger>());
 
             var scope = server.ServiceProvider.CreateScope();

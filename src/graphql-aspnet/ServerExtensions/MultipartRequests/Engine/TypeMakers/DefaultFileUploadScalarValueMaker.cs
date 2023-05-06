@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine
+namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine.TypeMakers
 {
     using System.Collections.Generic;
     using System.IO;

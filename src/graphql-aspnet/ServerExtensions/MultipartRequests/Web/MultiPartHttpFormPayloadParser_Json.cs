@@ -27,12 +27,15 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// can be executed against the runtime.
     /// </summary>
     /// <remarks>Spec: <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.</remarks>
-    public partial class MultiPartHttpFormPayloadParser
+    public partial class MultiPartHttpFormPayloadParser<TSchema>
     {
         private static readonly JsonDocumentOptions _documentOptions;
         private static readonly JsonNodeOptions _nodeOptions;
         private static readonly JsonSerializerOptions _serializerOptions;
 
+        /// <summary>
+        /// Initializes static members of the <see cref="MultiPartHttpFormPayloadParser{TSchema}"/> class.
+        /// </summary>
         static MultiPartHttpFormPayloadParser()
         {
             _documentOptions = new JsonDocumentOptions()
@@ -64,8 +67,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <param name="node">The node to convert.</param>
         /// <param name="index">The index of the element within a parent array, if any. This index will be populated only if
         /// the query is a batch query.</param>
-        /// <param name="files">A collection of parsed files used to inject file references
-        /// into the input variables on the created query data objects.</param>
+        /// <param name="files">A collection of parsed files found on the parent request, used to inject file references
+        /// into the input variables on the created query data object.</param>
         /// <returns>GraphQueryData.</returns>
         protected virtual GraphQueryData ConvertNodeToQueryData(JsonNode node, int? index = null, IReadOnlyDictionary<string, FileUpload> files = null)
         {
@@ -119,7 +122,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <param name="map">The map recieved on the request indicating where files will be injected.</param>
         protected virtual void InjectMappedFileMarkers(JsonNode operationsNode, string map)
         {
-            if (map == null || operationsNode == null)
+            if (operationsNode == null || map == null)
                 return;
 
             JsonNode mapNode;
@@ -132,7 +135,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             {
                 throw new InvalidMultiPartMapException(
                   $"Unable to parse the '{MultipartRequestConstants.Web.MAP_FORM_KEY}' form field. The provided value is not a " +
-                  $"valid json string. {ex.Message}",
+                  $"valid json string. See inner exception for details.",
                   ex);
             }
 
@@ -150,7 +153,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                 // should be nearly impossible but check just in case someone has browsed the source code
                 // and is performing shenanigans
                 if (fileMapKey.Contains(MultipartRequestConstants.Protected.FILE_MARKER_PREFIX, StringComparison.OrdinalIgnoreCase))
-                    throw new InvalidMultiPartMapException("Map keys cannot contain the global file marker delimiter key.");
+                    throw new InvalidMultiPartMapException("Map keys cannot contain the global file marker delimiter.");
 
                 var markerValue = JsonValue.Create($"{MultipartRequestConstants.Protected.FILE_MARKER_PREFIX}{fileMapKey}");
 
@@ -163,6 +166,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                         if (arr.Count == 1)
                         {
                             // if the only element is not a string, it can't be split regardless
+                            // of allowed configurations for the schema
                             // just skip and let normal array behavior take over
                             if (arr[0].AsValue().TryGetValue<string>(out var mapString))
                             {
@@ -203,6 +207,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                         $"object. See inner exception for details.", ex);
                 }
 
+                // value was an object or a single value that was not a string.
+                // Not allowed per the spec or the additional configuration setup
                 throw new InvalidMultiPartMapException(
                     $"Invalid value for map key '{fileMapKey}'. Expected a dot delimited string or " +
                     $"an array of path values.");
