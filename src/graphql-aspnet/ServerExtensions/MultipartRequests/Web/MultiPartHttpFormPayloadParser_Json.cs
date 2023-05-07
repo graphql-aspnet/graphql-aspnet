@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
+namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
 {
     using System;
     using System.Collections.Generic;
@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using System.Text.Json;
     using System.Text.Json.Nodes;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Steps;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;

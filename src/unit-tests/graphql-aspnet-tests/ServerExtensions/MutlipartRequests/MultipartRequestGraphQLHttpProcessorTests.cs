@@ -28,6 +28,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine.TypeMakers;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests.TestData;

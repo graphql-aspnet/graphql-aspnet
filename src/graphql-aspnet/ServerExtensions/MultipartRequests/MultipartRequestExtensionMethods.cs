@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     /// <summary>
     /// Helper methods for configuring the multipart request extension.
     /// </summary>
-    public static class MultipartRequestExtensions
+    public static class MultipartRequestExtensionMethods
     {
         /// <summary>
         /// Adds the Multipart Request Server extension to this schema with all default options.

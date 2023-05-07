@@ -17,12 +17,12 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
     using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Web;
-    using GraphQL.AspNet.Schemas.TypeSystem.Introspection;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine.TypeMakers;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema;
+    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
