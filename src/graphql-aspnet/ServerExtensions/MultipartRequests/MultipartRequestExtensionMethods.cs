@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <returns>SchemaOptions.</returns>
         public static SchemaOptions AddMultipartRequestSupport(this SchemaOptions schemaOptions)
         {
-            return AddMultipartRequestSupport(schemaOptions, (o) => { });
+            return AddMultipartRequestSupport(schemaOptions, null);
         }
 
         /// <summary>
@@ -39,6 +39,9 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <returns>SchemaOptions.</returns>
         public static SchemaOptions AddMultipartRequestSupport(this SchemaOptions schemaOptions, Action<MultipartRequestConfiguration> configureAction)
         {
+            if (configureAction == null)
+                configureAction = (o) => { };
+
             var extension = new MultipartRequestServerExtension(configureAction);
             schemaOptions.RegisterExtension(extension);
             return schemaOptions;
@@ -51,8 +54,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
         /// <returns><c>true</c> if the context is a vlaid multi-part form; otherwise, <c>false</c>.</returns>
         public static bool IsMultipartFormRequest(this HttpContext context)
         {
-            return context != null
-                && context.Response != null
+            return context?.Response != null
                 && string.Equals(context.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase)
                 && context.Request.HasFormContentType;
         }
