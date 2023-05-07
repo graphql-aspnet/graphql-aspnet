@@ -397,5 +397,29 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(1, template.FieldTemplates.Count);
             Assert.AreEqual(nameof(ObjectWithDeconstructor.Property1), template.FieldTemplates.First().Value.Name);
         }
+
+        [Test]
+        public void Parse_ExplicitInheritedMethodBasedField_IsSeenAsAGraphField()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectThatInheritsExplicitMethodField));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count);
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectThatInheritsExplicitMethodField.FieldOnObject)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectWithExplicitMethodField.FieldOnBaseObject)));
+        }
+
+        [Test]
+        public void Parse_NonExplicitMethodBasedField_IsSeenAsTemplatefield()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectThatInheritsNonExplicitMethodField));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count);
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectThatInheritsNonExplicitMethodField.FieldOnObject)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectWithNonExplicitMethodField.FieldOnBaseObject)));
+        }
     }
 }

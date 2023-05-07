@@ -220,5 +220,64 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 12, "object directive" }, appliedDirective.ArgumentValues);
         }
+
+        [Test]
+        public void CreateGraphType_AsObject_WhenMethodOnBaseObjectIsNotExplicitlyDeclared_WhenExplicitDeclarationisRequired_IsNotIncluded()
+        {
+            var result = this.MakeGraphType(
+                typeof(ObjectWithInheritedUndeclaredMethodField),
+                TypeKind.OBJECT,
+                TemplateDeclarationRequirements.Method);
+
+            var objectType = result.GraphType as IObjectGraphType;
+
+            // inherited, undeclared method field should not be counted
+            Assert.IsNotNull(objectType);
+
+            // property field + __typename
+            Assert.AreEqual(2, objectType.Fields.Count);
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(ObjectWithInheritedUndeclaredMethodField.FieldOnClass), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
+        }
+
+        [Test]
+        public void CreateGraphType_AsObject_WhenMethodOnBaseObjectIsNotExplicitlyDeclared_WhenExplicitDeclarationIsNotRequired_IsIncluded()
+        {
+            var result = this.MakeGraphType(
+                typeof(ObjectWithInheritedUndeclaredMethodField),
+                TypeKind.OBJECT,
+                TemplateDeclarationRequirements.None);
+
+            var objectType = result.GraphType as IObjectGraphType;
+
+            // inherited, undeclared method field should be counted
+            Assert.IsNotNull(objectType);
+
+            // property field + base field + __typename
+            Assert.AreEqual(3, objectType.Fields.Count);
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(ObjectWithInheritedUndeclaredMethodField.FieldOnClass), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(ObjectWithUndeclaredMethodField.FieldOnBaseObject), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
+        }
+
+        [Test]
+        public void CreateGraphType_AsObject_WhenMethodOnBaseObjectIsExplicitlyDeclared_IsIncluded()
+        {
+            var result = this.MakeGraphType(
+                typeof(ObjectWithInheritedDeclaredMethodField),
+                TypeKind.OBJECT,
+                TemplateDeclarationRequirements.None);
+
+            var objectType = result.GraphType as IObjectGraphType;
+
+            // inherited and declared method field should not be counted
+            Assert.IsNotNull(objectType);
+
+            // property field + base field + __typename
+            Assert.AreEqual(3, objectType.Fields.Count);
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(ObjectWithInheritedDeclaredMethodField.FieldOnClass), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(ObjectWithUndeclaredMethodField.FieldOnBaseObject), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
+        }
     }
 }

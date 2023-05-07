@@ -9,6 +9,7 @@
 namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System.Linq;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -70,6 +71,65 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.AreEqual(2, Enumerable.Count<string>(interfaceType.InterfaceNames));
             Assert.IsTrue(Enumerable.Any<string>(interfaceType.InterfaceNames, x => x == "ITestInterface1"));
             Assert.IsTrue(Enumerable.Any<string>(interfaceType.InterfaceNames, x => x == "ITestInterface2"));
+        }
+
+        [Test]
+        public void CreateGraphType_WhenMethodOnBaseInterfaceIsNotExplicitlyDeclared_WhenExplicitDeclarationIsRequired_IsNotIncluded()
+        {
+            var result = this.MakeGraphType(
+                typeof(InterfaceThatInheritsUndeclaredMethodField),
+                TypeKind.INTERFACE,
+                TemplateDeclarationRequirements.Method);
+
+            var objectType = result.GraphType as IInterfaceGraphType;
+
+            // inherited, undeclared method field should not be counted
+            Assert.IsNotNull(objectType);
+
+            // property field + __typename
+            Assert.AreEqual(2, objectType.Fields.Count);
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsUndeclaredMethodField.PropFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
+        }
+
+        [Test]
+        public void CreateGraphType_AsObject_WhenMethodOnBaseInterfaceIsNotExplicitlyDeclared_WhenExplicitDeclarationIsNotRequired_IsNotIncluded()
+        {
+            var result = this.MakeGraphType(
+                typeof(InterfaceThatInheritsUndeclaredMethodField),
+                TypeKind.INTERFACE,
+                TemplateDeclarationRequirements.None);
+
+            var objectType = result.GraphType as IInterfaceGraphType;
+
+            // inherited, undeclared method field should be counted
+            Assert.IsNotNull(objectType);
+
+            // property field + base field + __typename
+            Assert.AreEqual(3, objectType.Fields.Count);
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsUndeclaredMethodField.MethodFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsUndeclaredMethodField.PropFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
+        }
+
+        [Test]
+        public void CreateGraphType_WhenMethodOnBaseInterfaceIsExplicitlyDeclared_IsNotIncluded()
+        {
+            var result = this.MakeGraphType(
+                typeof(InterfaceThatInheritsDeclaredMethodField),
+                TypeKind.INTERFACE,
+                TemplateDeclarationRequirements.None);
+
+            var objectType = result.GraphType as IInterfaceGraphType;
+
+            // inherited and declared method field should not be counted
+            Assert.IsNotNull(objectType);
+
+            // property field + base field + __typename
+            Assert.AreEqual(3, objectType.Fields.Count);
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsDeclaredMethodField.MethodFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsDeclaredMethodField.PropFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
         }
     }
 }

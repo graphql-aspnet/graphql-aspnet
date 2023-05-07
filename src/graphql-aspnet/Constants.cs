@@ -108,8 +108,12 @@ namespace GraphQL.AspNet
         /// <value>The known ignored field names.</value>
         public static ISet<string> IgnoredFieldNames { get; } = new HashSet<string>()
         {
+            // object declared methods that might be exposed
+            // also methods internally declared by structs that might be exposed
             "Deconstruct",
-            "ToString",
+            nameof(object.ToString),
+            nameof(object.GetHashCode),
+            nameof(object.GetType),
         };
 
         /// <summary>
