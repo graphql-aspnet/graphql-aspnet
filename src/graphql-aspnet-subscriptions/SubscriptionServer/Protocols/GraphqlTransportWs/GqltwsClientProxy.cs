@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Variables.Json;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -54,6 +55,9 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
             _deserializerOptions.PropertyNameCaseInsensitive = true;
             _deserializerOptions.AllowTrailingCommas = true;
             _deserializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+
+            _deserializerOptions.Converters.Add(new IInputVariableCollectionConverter());
+            _deserializerOptions.Converters.Add(new InputVariableCollectionConverter());
         }
 
         private readonly bool _enableMetrics;
@@ -99,9 +103,8 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
         /// <returns>Task.</returns>
         private async Task ResponseToUnknownMessageAsync(GqltwsMessage lastMessage)
         {
-            var error = "The last message recieved was unknown or could not be processed " +
-                        $"by this server. This connection is configured to use the {GqltwsConstants.PROTOCOL_NAME} " +
-                        $"message schema. (messageType: '{lastMessage.Type}')";
+            var error = $"The last message recieved could not be processed (Protocol: {GqltwsConstants.PROTOCOL_NAME}) " +
+                        $"(MessageType: '{lastMessage.Type}').";
 
             await this.CloseConnectionAsync(
                 (ConnectionCloseStatus)GqltwsConstants.CustomCloseEventIds.InvalidMessageType,

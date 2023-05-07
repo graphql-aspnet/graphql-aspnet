@@ -169,8 +169,7 @@ namespace GraphQL.AspNet.Engine
                          clientConnection,
                          (int)ConnectionCloseStatus.ProtocolError,
                          (int)HttpStatusCode.BadRequest,
-                         $"The requested messaging protocol(s) '{uspe.Protocol}' are not supported " +
-                         "by the target schema.")
+                         $"The requested messaging protocol(s) '{uspe.Protocol}' are not supported.")
                  .ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -181,8 +180,7 @@ namespace GraphQL.AspNet.Engine
                         clientConnection,
                         (int)ConnectionCloseStatus.InternalServerError,
                         (int)HttpStatusCode.InternalServerError,
-                        "An unexpected error occured attempting to configure the web socket " +
-                        "connection. Check the server event logs for further details.")
+                        "An unexpected error occured attempting to configure the web socket.")
                 .ConfigureAwait(false);
             }
             finally
