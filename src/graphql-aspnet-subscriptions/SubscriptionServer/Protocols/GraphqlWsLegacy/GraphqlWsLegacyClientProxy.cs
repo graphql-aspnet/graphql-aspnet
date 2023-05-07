@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Variables.Json;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -52,6 +53,9 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
             _deserializeOptions.PropertyNameCaseInsensitive = true;
             _deserializeOptions.AllowTrailingCommas = true;
             _deserializeOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+
+            _deserializeOptions.Converters.Add(new IInputVariableCollectionConverter());
+            _deserializeOptions.Converters.Add(new InputVariableCollectionConverter());
         }
 
         private readonly bool _enableMetrics;
