@@ -10,7 +10,10 @@
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
+    using System.Reflection;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
@@ -35,6 +38,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $"The type '{interfaceType.FriendlyName()}' is not an interface and cannot be parsed as an interface graph type.",
                     interfaceType);
             }
+        }
+
+        /// <inheritdoc />
+        protected override IEnumerable<MemberInfo> GatherPossibleTemplateMembers()
+        {
+            return this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+              .Where(x => !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
+              .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance));
         }
 
         /// <inheritdoc />

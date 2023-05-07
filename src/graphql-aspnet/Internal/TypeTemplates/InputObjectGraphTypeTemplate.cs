@@ -118,8 +118,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             var parsedItems = new List<IInputGraphFieldTemplate>();
 
             var propMembers = this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(x => !x.IsSpecialName
-                    && x.GetSetMethod() != null && x.GetGetMethod() != null);
+                .Where(x => !x.IsSpecialName && x.GetSetMethod() != null && x.GetGetMethod() != null);
 
             foreach (var propInfo in propMembers)
             {

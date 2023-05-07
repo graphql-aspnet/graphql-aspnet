@@ -106,9 +106,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // ------------------------------------
             var parsedItems = new List<IGraphFieldTemplate>();
 
-            var templateMembers = this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                .Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
-                .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance));
+            var templateMembers = this.GatherPossibleTemplateMembers();
 
             foreach (var member in templateMembers)
             {
@@ -157,6 +155,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 _interfaces.Add(iface);
             }
         }
+
+        /// <summary>
+        /// Extract the possible template members of <see cref="SchemaItemTemplateBase.ObjectType"/>
+        /// that might be includable in this template.
+        /// </summary>
+        /// <returns>IEnumerable&lt;MemberInfo&gt;.</returns>
+        protected abstract IEnumerable<MemberInfo> GatherPossibleTemplateMembers();
 
         /// <summary>
         /// Creates the member template from the given info. If overriden in a child class methods <see cref="CreatePropertyFieldTemplate"/> and

@@ -46,11 +46,15 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             };
         }
 
-        /// <summary>
-        /// When overridden in a child class, this metyhod builds the route that will be assigned to this method
-        /// using the implementation rules of the concrete type.
-        /// </summary>
-        /// <returns>SchemaItemPath.</returns>
+        /// <inheritdoc />
+        protected override IEnumerable<MemberInfo> GatherPossibleTemplateMembers()
+        {
+            return this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+              .Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
+              .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance));
+        }
+
+        /// <inheritdoc />
         protected override SchemaItemPath GenerateFieldPath()
         {
             var skipControllerLevelField = this.ObjectType.SingleAttributeOrDefault<GraphRootAttribute>();
@@ -77,11 +81,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return new SchemaItemPath(template);
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc />
         public override void ValidateOrThrow()
         {
             // cant use type naming on controllers (they arent real types and arent included directly in the object graph)
@@ -106,13 +106,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             base.ValidateOrThrow();
         }
 
-        /// <summary>
-        /// Determines whether the given container could be used as a graph field either because it is
-        /// explictly declared as such or that it conformed to the required parameters of being
-        /// a field.
-        /// </summary>
-        /// <param name="memberInfo">The member information to check.</param>
-        /// <returns><c>true</c> if the info represents a possible graph field; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         protected override bool CouldBeGraphField(MemberInfo memberInfo)
         {
             if (memberInfo == null || memberInfo is PropertyInfo)
@@ -125,12 +119,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return memberInfo.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>() != null;
         }
 
-        /// <summary>
-        /// When overridden in a child, allows the class to create custom template that inherit from <see cref="MethodGraphFieldTemplateBase" />
-        /// to provide additional functionality or garuntee a certian type structure for all methods on this object template.
-        /// </summary>
-        /// <param name="methodInfo">The method information.</param>
-        /// <returns>IGraphFieldTemplate.</returns>
+        /// <inheritdoc />
         protected override IGraphFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
         {
             if (methodInfo == null)
@@ -142,12 +131,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 return new ControllerActionGraphFieldTemplate(this, methodInfo);
         }
 
-        /// <summary>
-        /// When overridden in a child, allows the class to create custom templates to provide additional functionality or
-        /// guarantee a certian type structure for all properties on this object template.
-        /// </summary>
-        /// <param name="prop">The property information.</param>
-        /// <returns>IGraphFieldTemplate.</returns>
+        /// <inheritdoc />
         protected override IGraphFieldTemplate CreatePropertyFieldTemplate(PropertyInfo prop)
         {
             // safety check to ensure properites on controllers can never be parsed as fields
@@ -174,10 +158,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public IEnumerable<IGraphFieldTemplate> Extensions =>
             this.FieldTemplates.Values.OfType<GraphTypeExtensionFieldTemplate>();
 
-        /// <summary>
-        /// Gets the kind of graph type that can be made from this template.
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public override TypeKind Kind => TypeKind.NONE;
     }
 }
