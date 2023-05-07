@@ -17,12 +17,13 @@ namespace GraphQL.AspNet.Web
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Execution.Variables.Json;
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// An implementation of the business rules that extract the data received on an
-    /// <see cref="Microsoft.AspNetCore.Http.HttpContext"/> to create a <see cref="GraphQueryData" />
+    /// <see cref="Microsoft.AspNetCore.Http.HttpContext"/> to create a single <see cref="GraphQueryData" />
     /// object used by the graphql runtime.
     /// </summary>
     public class GraphQLHttpPayloadParser
@@ -58,6 +59,8 @@ namespace GraphQL.AspNet.Web
             _options.PropertyNameCaseInsensitive = true;
             _options.AllowTrailingCommas = true;
             _options.ReadCommentHandling = JsonCommentHandling.Skip;
+            _options.Converters.Add(new IInputVariableCollectionConverter());
+            _options.Converters.Add(new InputVariableCollectionConverter());
         }
 
         /// <summary>

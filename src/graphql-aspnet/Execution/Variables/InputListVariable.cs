@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Variables
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -19,7 +20,7 @@ namespace GraphQL.AspNet.Execution.Variables
     /// A variable that represents a set/list of items supplied as a collection or an array by the user.
     /// </summary>
     [DebuggerDisplay("InputList: {Name}, Count = {Items.Count}")]
-    internal class InputListVariable : InputVariable, IInputListVariable, IResolvableList
+    internal class InputListVariable : InputVariable, IInputListVariable, IWritableInputListVariable, IResolvableList
     {
         private readonly List<IInputVariable> _items;
 
@@ -31,6 +32,15 @@ namespace GraphQL.AspNet.Execution.Variables
             : base(name)
         {
             _items = new List<IInputVariable>();
+        }
+
+        /// <inheritdoc />
+        public void Replace(int index, IInputVariable newValue)
+        {
+            if (index < 0 || _items.Count <= index)
+                throw new IndexOutOfRangeException($"Invalid index ({index}). New variable value cannot be set.");
+
+            _items[index] = newValue;
         }
 
         /// <summary>

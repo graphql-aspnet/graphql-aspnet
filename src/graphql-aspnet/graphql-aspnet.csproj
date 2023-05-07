@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="ServerExtensions/MultipartRequests/**/*.*" />
+    <Content Include="Common/JsonNodes/**/*.*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <Compile Remove="ServerExtensions/MultipartRequests/**/*.*" />
+    <Compile Remove="Common/JsonNodes/**/*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.1.1" />
@@ -29,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\Execution\QueryPlans\DocumentParts\Common\" />
+    <Folder Include="Common\Exceptions\" />
   </ItemGroup>
+
 </Project>

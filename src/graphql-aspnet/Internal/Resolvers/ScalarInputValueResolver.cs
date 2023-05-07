@@ -9,12 +9,9 @@
 
 namespace GraphQL.AspNet.Internal.Resolvers
 {
-    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -47,6 +44,9 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
             if (resolvableItem is IResolvableValue resolvableValue)
                 return _scalarResolver.Resolve(resolvableValue.ResolvableValue);
+
+            if (resolvableItem is IResolvedScalarValue resolvedScalar)
+                return resolvedScalar.ResolvedValue;
 
             throw new UnresolvedValueException("Unresolvable scalar data value.");
         }

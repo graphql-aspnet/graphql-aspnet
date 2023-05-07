@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Execution.Variables
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Text.Json.Serialization;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Variables.Json;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
 
@@ -22,7 +23,7 @@ namespace GraphQL.AspNet.Execution.Variables
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
     [JsonConverter(typeof(InputVariableCollectionConverter))]
-    public partial class InputVariableCollection : IInputVariableCollection
+    public partial class InputVariableCollection : IInputVariableCollection, IWritableInputVariableCollection
     {
         private readonly Dictionary<string, IInputVariable> _variableSet;
 
@@ -58,41 +59,37 @@ namespace GraphQL.AspNet.Execution.Variables
             _variableSet.Add(variable.Name, variable);
         }
 
-        /// <summary>
-        /// Gets the value associated with the specified key.
-        /// </summary>
-        /// <param name="name">The name of the value to get.</param>
-        /// <param name="variable">When this method returns, contains the value associated with the specified key,
-        /// if the key is found; otherwise, the default value for the type of the value parameter.
-        /// This parameter is passed uninitialized.</param>
-        /// <returns>true if the instnace contains an element with the specified key; otherwise, false.</returns>
+        /// <inheritdoc />
         public bool TryGetVariable(string name, out IInputVariable variable)
         {
             return _variableSet.TryGetValue(name, out variable);
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
+        public void Replace(string variableName, IInputVariable newValue)
+        {
+            Validation.ThrowIfNull(variableName, nameof(variableName));
+            Validation.ThrowIfNull(newValue, nameof(newValue));
+
+            if (!_variableSet.ContainsKey(variableName))
+                throw new KeyNotFoundException(variableName);
+
+            _variableSet[variableName] = newValue;
+        }
+
+        /// <inheritdoc />
         public IEnumerator<KeyValuePair<string, IInputVariable>> GetEnumerator()
         {
             return _variableSet.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
 
-        /// <summary>
-        /// Gets the number of variables stored in this collection.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc />
         public int Count => _variableSet.Count;
     }
 }

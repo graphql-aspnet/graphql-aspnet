@@ -11,15 +11,18 @@ namespace GraphQL.AspNet.Execution.Variables
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Xml.Linq;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
+    using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
 
     /// <summary>
     /// A variable defined as a set of child key/value pairs
     /// (such as those destined to populate an INPUT_OBJECT).
     /// </summary>
     [DebuggerDisplay("InputFieldSet: {Name} (Count = {Fields.Count})")]
-    internal class InputFieldSetVariable : InputVariable, IInputFieldSetVariable, IResolvableFieldSet
+    internal class InputFieldSetVariable : InputVariable, IInputFieldSetVariable, IWritableInputFieldSetVariable, IResolvableFieldSet
     {
         private readonly Dictionary<string, IInputVariable> _fields;
 
@@ -54,6 +57,18 @@ namespace GraphQL.AspNet.Execution.Variables
                 field = item;
 
             return found;
+        }
+
+        /// <inheritdoc />
+        public void Replace(string fieldName, IInputVariable newValue)
+        {
+            Validation.ThrowIfNull(fieldName, nameof(fieldName));
+            Validation.ThrowIfNull(newValue, nameof(newValue));
+
+            if (!_fields.ContainsKey(fieldName))
+                throw new KeyNotFoundException(fieldName);
+
+            _fields[fieldName] = newValue;
         }
 
         /// <inheritdoc />

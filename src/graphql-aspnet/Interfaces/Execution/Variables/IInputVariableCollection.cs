@@ -20,13 +20,13 @@ namespace GraphQL.AspNet.Interfaces.Execution.Variables
         /// <summary>
         /// Gets the value associated with the specified key.
         /// </summary>
-        /// <param name="name">The name of the value to get.</param>
-        /// <param name="variable"> When this method returns, contains the value associated with the specified key,
+        /// <param name="variableName">The name of the value to get.</param>
+        /// <param name="newValue"> When this method returns, contains the value associated with the specified key,
         /// if the key is found; otherwise, the default value for the type of the value parameter.
         /// This parameter is passed uninitialized.
         /// </param>
         /// <returns> true if the instnace contains an element with the specified key; otherwise, false.</returns>
-        bool TryGetVariable(string name, out IInputVariable variable);
+        bool TryGetVariable(string variableName, out IInputVariable newValue);
 
         /// <summary>
         /// Gets the number of variables stored in this collection.

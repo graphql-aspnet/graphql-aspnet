@@ -19,7 +19,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage(
     "StyleCop.CSharp.DocumentationRules",
     "SA1600:Elements should be documented",
-    Justification = "Error codes are self explaintory",
+    Justification = "Scalar Names are self explaintory",
     Scope = "Type",
     Target = "~T:GraphQL.AspNet.Constants.ScalarNames")]
 
@@ -64,3 +64,10 @@ using System.Diagnostics.CodeAnalysis;
     Justification = "Query Language Constants are self explanatory",
     Scope = "type",
     Target = "~T:GraphQL.AspNet.Constants.QueryLanguage")]
+
+[assembly: SuppressMessage(
+    "StyleCop.CSharp.DocumentationRules",
+    "SA1600:Elements should be documented",
+    Justification = "Web Keys are self explaintory",
+    Scope = "Type",
+    Target = "~T:GraphQL.AspNet.ServerExtensions.MultipartRequests.MultipartRequestConstants")]

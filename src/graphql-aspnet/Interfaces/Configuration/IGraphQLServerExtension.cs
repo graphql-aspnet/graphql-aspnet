@@ -14,25 +14,40 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using Microsoft.AspNetCore.Builder;
 
     /// <summary>
-    /// An interface that can be used to configure extensions to a schema.
+    /// <para>
+    /// An interface that can be used to configure custom extensions to a schema. An extension can be almost
+    /// anthing that customizes the runtime for the target schema.
+    /// </para>
+    /// <para>
+    /// For example, graphql subscriptions are implemented as a server extension.
+    /// </para>
     /// </summary>
     public interface IGraphQLServerExtension
     {
         /// <summary>
-        /// This method is called by the parent options just before it is added to the extensions
-        /// collection. Use this method to do any sort of configuration, final default settings etc.
-        /// This method represents the last opportunity for the extention options to modify its own required
+        /// <para>
+        /// This method is called by the schema configuration just before it is added to the extensions
+        /// collection. Use this method to do any sort of internal configuration, default settings,
+        /// additional DI container registrations etc.
+        /// </para>
+        /// <para>
+        /// This method represents the last opportunity for this extension to modify its own required
         /// service collection before being incorporated with the DI container.
+        /// </para>
         /// </summary>
-        /// <param name="options">The parent options which owns this extension.</param>
+        /// <param name="options">The schema options collection to which this extension
+        /// is being registered.</param>
         void Configure(SchemaOptions options);
 
         /// <summary>
-        /// Invokes this instance to perform any final setup requirements as part of
+        /// Instructs this extension to perform any final setup requirements as part of
         /// its configuration during startup.
         /// </summary>
-        /// <param name="app">The application builder, no middleware will be registered if not supplied.</param>
-        /// <param name="serviceProvider">The service provider to use. </param>
+        /// <param name="app">The application builder to register against. May be <c>null</c> in some rare instances
+        /// where the middleware pipeline is not being setup. Usually during some unit testing edge cases.</param>
+        /// <param name="serviceProvider">The configured service provider completed during setup. In
+        /// most instances, this will be the <see cref="IApplicationBuilder.ApplicationServices"/> instances
+        /// from <paramref name="app"/>.</param>
         void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null);
     }
 }

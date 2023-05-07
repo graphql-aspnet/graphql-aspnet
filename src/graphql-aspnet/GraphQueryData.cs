@@ -62,7 +62,6 @@ namespace GraphQL.AspNet
         /// Gets or sets the variables being supplied on the request, if any.
         /// </summary>
         /// <value>The variables provided on the request.</value>
-        [JsonConverter(typeof(IInputVariableCollectionConverter))]
         public IInputVariableCollection Variables { get; set; }
     }
 }
