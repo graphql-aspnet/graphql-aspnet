@@ -66,8 +66,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             var configType = typeof(MultipartRequestConfiguration<>).MakeGenericType(_schemaType);
             _config = InstanceFactory.CreateInstance(configType) as MultipartRequestConfiguration;
 
-            _expectedProcessorType = typeof(MultipartRequestGraphQLHttpProcessor<>).MakeGenericType(_schemaType);
-
             if (_config == null)
             {
                 throw new SchemaConfigurationException(
@@ -77,6 +75,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
 
             if (_configAction != null)
                 _configAction(_config);
+
+            _expectedProcessorType = typeof(MultipartRequestGraphQLHttpProcessor<>).MakeGenericType(_schemaType);
 
             if (_config.RegisterMultipartRequestHttpProcessor)
             {
