@@ -25,7 +25,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Internal;
     using Microsoft.Extensions.Primitives;
     using Moq;
     using NUnit.Framework;

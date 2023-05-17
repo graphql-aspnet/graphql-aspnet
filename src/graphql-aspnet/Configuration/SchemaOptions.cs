@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration.Exceptions;
+    using GraphQL.AspNet.Configuration.MinimalApi;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
@@ -345,6 +346,11 @@ namespace GraphQL.AspNet.Configuration
                 else
                     this.ServiceCollection.TryAdd(descriptor);
             }
+        }
+
+        internal void AddFieldTemplate(IGraphQLFieldBuilder fieldTemplate)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

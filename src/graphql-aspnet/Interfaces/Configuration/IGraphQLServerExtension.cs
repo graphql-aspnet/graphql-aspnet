@@ -40,9 +40,12 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         void Configure(SchemaOptions options);
 
         /// <summary>
-        /// Instructs this extension to perform any final setup requirements as part of
-        /// its configuration during startup.
+        /// Instructs this extension to perform any final setup requirements before the server starts.
         /// </summary>
+        /// <remarks>
+        /// When this method is called, construction of the DI container is complete and all schemas
+        /// and types have been created and registered.
+        /// </remarks>
         /// <param name="app">The application builder to register against. May be <c>null</c> in some rare instances
         /// where the middleware pipeline is not being setup. Usually during some unit testing edge cases.</param>
         /// <param name="serviceProvider">The configured service provider completed during setup. In

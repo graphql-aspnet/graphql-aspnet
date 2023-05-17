@@ -33,7 +33,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests.TestData;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Primitives;
     using Moq;
