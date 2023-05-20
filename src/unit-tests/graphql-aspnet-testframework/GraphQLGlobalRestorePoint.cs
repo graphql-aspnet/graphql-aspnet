@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -49,11 +48,6 @@ namespace GraphQL.AspNet.Tests.Framework
 
             _controllerServiceLifetime = GraphQLServerSettings.ControllerServiceLifeTime;
 
-            _maxSubConnectedClient = GraphQLSubscriptionServerSettings.MaxConnectedClientCount;
-            _maxSubConcurrentReceiver = GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
-
-            SubscriptionEventSchemaMap.ClearCache();
-
             if (resetAllProviders)
             {
                 GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
@@ -83,9 +77,6 @@ namespace GraphQL.AspNet.Tests.Framework
                 GraphQLProviders.GraphTypeMakerProvider = _makerProvider;
 
                 GraphQLServerSettings.ControllerServiceLifeTime = _controllerServiceLifetime;
-
-                GraphQLSubscriptionServerSettings.MaxConnectedClientCount = _maxSubConnectedClient;
-                GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = _maxSubConcurrentReceiver;
             }
         }
     }
