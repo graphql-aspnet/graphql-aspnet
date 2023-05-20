@@ -22,7 +22,6 @@ namespace GraphQL.AspNet.Tests.Web
     using GraphQL.AspNet.Tests.Web.CancelTokenTestData;
     using GraphQL.AspNet.Tests.Web.WebTestData;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
@@ -91,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Web
                 RequestServices = scope.ServiceProvider,
             };
 
-            var request = httpContext.Request as DefaultHttpRequest;
+            var request = httpContext.Request;
             request.Method = "GET";
             request.QueryString = new QueryString(queryText);
 
@@ -160,7 +159,7 @@ namespace GraphQL.AspNet.Tests.Web
                 },
             };
 
-            var request = httpContext.Request as DefaultHttpRequest;
+            var request = httpContext.Request;
             request.Method = "POST";
             httpContext.RequestServices = scope.ServiceProvider;
 
@@ -213,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Web
                 },
             };
 
-            var request = httpContext.Request as DefaultHttpRequest;
+            var request = httpContext.Request;
             request.Method = "POST";
             request.ContentType = Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER_VALUE;
             httpContext.RequestServices = scope.ServiceProvider;
@@ -258,7 +257,7 @@ namespace GraphQL.AspNet.Tests.Web
                 },
             };
 
-            var request = httpContext.Request as DefaultHttpRequest;
+            var request = httpContext.Request;
             request.Method = "POST";
             httpContext.RequestServices = scope.ServiceProvider;
 
@@ -303,7 +302,7 @@ namespace GraphQL.AspNet.Tests.Web
                 },
             };
 
-            var request = httpContext.Request as DefaultHttpRequest;
+            var request = httpContext.Request;
             request.Method = "POST";
             request.ContentType = Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER_VALUE;
             httpContext.RequestServices = scope.ServiceProvider;
