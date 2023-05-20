@@ -9,7 +9,13 @@
 
 namespace GraphQL.AspNet.Configuration
 {
+    using System;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Configuration.MinimalApi;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Schema;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Builder;
 
     /// <summary>
     /// Extension methods for configuring specifical aspects of a field group generated via
@@ -17,9 +23,5 @@ namespace GraphQL.AspNet.Configuration
     /// </summary>
     public static class GraphQLFieldGroupBuilderExtensions
     {
-        public static IGraphQLFieldBuilder RequireAuthorization(this IGraphQLFieldBuilder template)
-        {
-            return template;
-        }
     }
 }

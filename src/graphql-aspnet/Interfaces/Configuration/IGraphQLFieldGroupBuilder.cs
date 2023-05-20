@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Configuration
 {
+    using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Configuration;
 
@@ -18,7 +19,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     /// underneath it. Also, all properties and settings, such as authorization requirements, for the "group", are carried
     /// into any fields generated.
     /// </summary>
-    public interface IGraphQLFieldGroupBuilder : IReadOnlyDictionary<string, object>
+    public interface IGraphQLFieldGroupBuilder : IDictionary<string, object>
     {
         // **********************
         // Implementation note (05/23) - Kevin
@@ -42,5 +43,12 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// </summary>
         /// <value>The schema options on which this field is being defined.</value>
         SchemaOptions Options { get; }
+
+        /// <summary>
+        /// Gets a list of attributes that have been applied to this builder. This mimics
+        /// the collection of applied attributes to a controller method.
+        /// </summary>
+        /// <value>The collection of applied attributes.</value>
+        IList<Attribute> Attributes { get; }
     }
 }

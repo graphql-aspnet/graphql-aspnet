@@ -19,9 +19,6 @@ namespace GraphQL.AspNet.Configuration.MinimalApi
     /// </summary>
     internal class GraphQLFieldGroupBuilder : BaseGraphQLFieldBuilder, IGraphQLFieldGroupBuilder
     {
-        private IGraphQLFieldGroupBuilder _parent;
-        private string _partialTemplate;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLFieldGroupBuilder"/> class.
         /// </summary>
