@@ -32,8 +32,6 @@ namespace GraphQL.AspNet.Tests.Framework
         private readonly IScalarGraphTypeProvider _scalarTypeProvider;
         private readonly IGraphTypeMakerProvider _makerProvider;
         private readonly ServiceLifetime _controllerServiceLifetime;
-        private readonly int? _maxSubConnectedClient;
-        private readonly int _maxSubConcurrentReceiver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLGlobalRestorePoint" /> class.

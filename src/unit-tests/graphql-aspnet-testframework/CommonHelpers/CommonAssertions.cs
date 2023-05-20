@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
     using System.Collections.Generic;
     using System.Text.Json;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing;
-    using NUnit.Framework;
 
     /// <summary>
     /// Test helper methods to assert various claims about items.
@@ -48,7 +47,10 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
         /// <param name="actualOutput">The actual output.</param>
         public static void AreEqualNestedLists(IList<object> expectedOutput, IList<object> actualOutput)
         {
-            Assert.AreEqual(expectedOutput.Count, actualOutput.Count);
+            GraphQLTestFrameworkProviders
+                .Assertions
+                .AssertEquality(expectedOutput.Count, actualOutput.Count);
+
             for (var i = 0; i < expectedOutput.Count; i++)
             {
                 var expected = expectedOutput[i];
@@ -61,7 +63,9 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
                 }
                 else
                 {
-                    Assert.AreEqual(expected, actual);
+                    GraphQLTestFrameworkProviders
+                        .Assertions
+                        .AssertEquality(expected, actual);
                 }
             }
         }
@@ -74,18 +78,35 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
         /// <param name="actualOutput">The actual output.</param>
         public static void AreEqualObjects(object expectedOutput, object actualOutput)
         {
-            if (expectedOutput == null || actualOutput == null)
+            if (expectedOutput == null && actualOutput == null)
+                return;
+
+            if (expectedOutput == null && actualOutput != null)
             {
-                Assert.IsNull(expectedOutput);
-                Assert.IsNull(actualOutput);
+                GraphQLTestFrameworkProviders
+                    .Assertions
+                    .AssertFailure($"{nameof(actualOutput)} was not null but was expected to be.");
+                return;
+            }
+
+            if (expectedOutput != null && actualOutput == null)
+            {
+                GraphQLTestFrameworkProviders
+                    .Assertions
+                    .AssertFailure($"{nameof(actualOutput)} was null but was expected not to be.");
                 return;
             }
 
             var type = expectedOutput.GetType();
-            Assert.AreEqual(type, actualOutput.GetType());
+            GraphQLTestFrameworkProviders
+                    .Assertions
+                    .AssertEquality(type, actualOutput.GetType());
+
             if (type.IsValueType || type == typeof(string))
             {
-                Assert.AreEqual(expectedOutput, actualOutput);
+                GraphQLTestFrameworkProviders
+                    .Assertions
+                    .AssertEquality(expectedOutput, actualOutput);
                 return;
             }
 
@@ -97,8 +118,12 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
 
                 if (expectedValue == null || actualValue == null)
                 {
-                    Assert.IsNull(expectedValue);
-                    Assert.IsNull(actualValue);
+                    GraphQLTestFrameworkProviders
+                        .Assertions
+                        .AssertNull(expectedValue);
+                    GraphQLTestFrameworkProviders
+                        .Assertions
+                        .AssertNull(actualValue);
                     continue;
                 }
 
@@ -108,7 +133,9 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
                 }
                 else
                 {
-                    Assert.AreEqual(expectedValue, actualValue);
+                    GraphQLTestFrameworkProviders
+                        .Assertions
+                        .AssertEquality(expectedValue, actualValue);
                 }
             }
         }

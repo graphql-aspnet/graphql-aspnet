@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Tests
         [Test]
         public void ServiceCollection_VerifyDefaultInjectedObjects()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             var serviceCollection = new ServiceCollection();
             GraphQLProviders.TemplateProvider = null;
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Tests
         public void UseExtension_RegistersMiddlewareComponent()
         {
             var logger = new Mock<IGraphEventLogger>();
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IGraphEventLogger>(logger.Object);
@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Tests
         [Test]
         public void GeneralPropertyCheck()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             var serviceCollection = new ServiceCollection();
             GraphQLProviders.TemplateProvider = null;

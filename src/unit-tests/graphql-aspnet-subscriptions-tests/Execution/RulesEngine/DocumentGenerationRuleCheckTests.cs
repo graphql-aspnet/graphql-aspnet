@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
         [TestCaseSource(nameof(TestQueries))]
         public void ExecuteRule_EnsureCorrectErrorIsGenerated(string expectedRuleError, string queryText)
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             var server = new TestServerBuilder()
                 .AddType<PeopleMoverController>()

@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
 {
     using System.Text.Json;
-    using NUnit.Framework;
 
     /// <summary>
     /// A set of helper method for comparing json data.
@@ -57,7 +56,11 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
             }
 
             if (assertOnFailure)
-                Assert.Fail(message ?? $"Object type mismatch. Expected {expected} but got '{actual}'");
+            {
+                GraphQLTestFrameworkProviders
+                        .Assertions
+                        .AssertFailure(message ?? $"Object type mismatch. Expected {expected} but got '{actual}'");
+            }
 
             return false;
         }
@@ -71,7 +74,10 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
                 {
                     var evalue = expectedValue.GetRawText() ?? "<null>";
                     var avalue = actualValue.GetRawText() ?? "<null>";
-                    Assert.Fail(message ?? $"Expected Value '{evalue}' but got '{avalue}' at location {location}");
+
+                    GraphQLTestFrameworkProviders
+                        .Assertions
+                        .AssertFailure(message ?? $"Expected Value '{evalue}' but got '{avalue}' at location {location}");
                 }
             }
 
@@ -86,7 +92,11 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
                 if (!actual.TryGetProperty(prop.Name, out var actualElement))
                 {
                     if (assertOnFailure)
-                        Assert.Fail(message ?? $"Actual object does not contain a key '{prop.Name}' and was expected to. (Location: '{location}')");
+                    {
+                        GraphQLTestFrameworkProviders
+                            .Assertions
+                            .AssertFailure(message ?? $"Actual object does not contain a key '{prop.Name}' and was expected to. (Location: '{location}')");
+                    }
 
                     return false;
                 }
@@ -103,7 +113,12 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
                     if (!expected.TryGetProperty(prop.Name, out var expectedElement))
                     {
                         if (assertOnFailure)
-                            Assert.Fail(message ?? $"Actual object contains an extra property '{prop.Name}' and was not expected to. (Location: '{location}')");
+                        {
+                            GraphQLTestFrameworkProviders
+                                .Assertions
+                                .AssertFailure(message ?? $"Actual object contains an extra property '{prop.Name}' and was not expected to. (Location: '{location}')");
+                        }
+
                         return false;
                     }
 
@@ -123,7 +138,12 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
             if (expected.GetArrayLength() != actualLength)
             {
                 if (assertOnFailure)
-                    Assert.Fail(message ?? $"Expected {expectedLength} elements but received {actualLength} (Location: {location}).");
+                {
+                    GraphQLTestFrameworkProviders
+                        .Assertions
+                        .AssertFailure(message ?? $"Expected {expectedLength} elements but received {actualLength} (Location: {location}).");
+                }
+
                 return false;
             }
 
@@ -143,7 +163,11 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
                 if (!matchFound)
                 {
                     if (assertOnFailure)
-                        Assert.Fail(message ?? $"Expected array element {expectedElement.ToString().Trim()} but no element was found in the actual array (Location: {location}[{i}])");
+                    {
+                        GraphQLTestFrameworkProviders
+                            .Assertions
+                            .AssertFailure(message ?? $"Expected array element {expectedElement.ToString().Trim()} but no element was found in the actual array (Location: {location}[{i}])");
+                    }
 
                     return false;
                 }

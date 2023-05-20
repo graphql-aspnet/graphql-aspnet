@@ -31,12 +31,12 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <CodeAnalysisRuleSet>..\styles.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\styles.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\build\graphql-aspnet-key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\..\build\graphql-aspnet-key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' AND '$(Configuration)' == 'Release'">
@@ -44,15 +44,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="..\stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\build\icon.png" Pack="true" PackagePath="\" />
-    <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)\stylecop.json" />
+    <None Include="$(MSBuildThisFileDirectory)\..\build\icon.png" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
 
   <!-- All Packages -->

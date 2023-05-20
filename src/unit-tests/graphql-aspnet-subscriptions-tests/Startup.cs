@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Tests
         [OneTimeSetUp]
         public void Setup()
         {
-            GraphQLProviders.TemplateProvider.CacheTemplates = false;
             GraphQLTestFrameworkProviders.Assertions = new NUnitTestAssertionHandler();
         }
     }
