@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using GraphQL.AspNet.Security;
     using Moq;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
 
     /// <summary>
     /// A subclassed <see cref="GraphFieldExecutionContext"/> allowing for inline mocked replacements
@@ -39,7 +40,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         private readonly Mock<IGraphFieldInvocationContext> _mockInvocationContext;
         private readonly Mock<IFieldDocumentPart> _mockFieldDocumentPart;
         private readonly IGraphMessageCollection _messageCollection;
-        private readonly InputArgumentCollection _arguments = new InputArgumentCollection();
+        private readonly IInputArgumentCollection _arguments;
 
         private IUserSecurityContext _securityContext;
 
@@ -62,6 +63,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _graphField = Validation.ThrowIfNullOrReturn(graphField, nameof(graphField));
             _securityContext = Validation.ThrowIfNullOrReturn(userSecurityContext, nameof(userSecurityContext));
             _messageCollection = new GraphMessageCollection();
+            _arguments = InputArgumentCollectionFactory.Create();
 
             this.ServiceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
 
@@ -203,7 +205,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             return new GraphFieldExecutionContext(
                 this.CreateFakeParentMiddlewareContext(),
                 this.FieldRequest,
-                new ResolvedVariableCollection());
+                ResolvedVariableCollectionFactory.Create());
         }
 
         /// <summary>

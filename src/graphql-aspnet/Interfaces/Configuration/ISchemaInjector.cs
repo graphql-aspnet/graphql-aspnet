@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.Startup
+namespace GraphQL.AspNet.Interfaces.Configuration
 {
     using System;
     using Microsoft.AspNetCore.Builder;
@@ -16,8 +16,13 @@ namespace GraphQL.AspNet.Configuration.Startup
     /// An interface used by the injector to expose its useschema method across
     /// multiple generic types.
     /// </summary>
-    internal interface ISchemaInjector
+    public interface ISchemaInjector
     {
+        /// <summary>
+        /// Configures the services and settings for the schema using the supplied configuration function.
+        /// </summary>
+        void ConfigureServices();
+
         /// <summary>
         /// Performs a final setup and initial cache build for the schema in the app domain.
         /// </summary>

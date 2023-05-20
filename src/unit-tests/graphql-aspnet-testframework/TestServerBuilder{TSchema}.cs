@@ -158,7 +158,7 @@ namespace GraphQL.AspNet.Tests.Framework
             };
 
             // inject staged graph types
-            var injector = new GraphQLSchemaInjector<TSchema>(this.SchemaOptions, _configureOptions);
+            var injector = GraphQLSchemaInjectorFactory.Create<TSchema>(this.SchemaOptions, _configureOptions);
             injector.ConfigureServices();
 
             foreach (var action in _schemaBuilderAdditions)

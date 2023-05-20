@@ -243,7 +243,7 @@ namespace GraphQL.AspNet.Tests.Framework
             if (field == null)
                 Assert.Fail($"The target graph type '{graphType.Name}' does not contain a field named '{fieldName}'.");
 
-            arguments = arguments ?? new InputArgumentCollection();
+            arguments = arguments ?? InputArgumentCollectionFactory.Create();
             var messages = new GraphMessageCollection();
             var metaData = new MetaDataCollection();
 
@@ -297,7 +297,7 @@ namespace GraphQL.AspNet.Tests.Framework
             return new GraphFieldExecutionContext(
                 parentContext.Object,
                 graphFieldRequest.Object,
-                new ResolvedVariableCollection());
+                ResolvedVariableCollectionFactory.Create());
         }
 
         /// <summary>
@@ -409,7 +409,7 @@ namespace GraphQL.AspNet.Tests.Framework
             var queryRequest = new Mock<IQueryExecutionRequest>();
             var directiveRequest = new Mock<IGraphDirectiveRequest>();
             var invocationContext = new Mock<IDirectiveInvocationContext>();
-            var argCollection = new InputArgumentCollection();
+            var argCollection = InputArgumentCollectionFactory.Create();
 
             directiveRequest.Setup(x => x.DirectivePhase).Returns(phase);
             directiveRequest.Setup(x => x.InvocationContext).Returns(invocationContext.Object);
