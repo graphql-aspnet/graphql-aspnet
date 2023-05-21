@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="ServerExtensions/MultipartRequests/**/*.*" />
     <Content Include="Common/JsonNodes/**/*.*" />
   </ItemGroup>

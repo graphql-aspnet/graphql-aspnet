@@ -13,10 +13,10 @@ namespace GraphQL.AspNet.Configuration
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// A collection of <see cref="SchemaOptions"/> with additiona, schema specific
+    /// A collection of <see cref="SchemaOptions"/> with additional, schema specific
     /// settings used during setup.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema these options are for.</typeparam>
+    /// <typeparam name="TSchema">The type of the schema these options are targeting.</typeparam>
     public class SchemaOptions<TSchema> : SchemaOptions
         where TSchema : class, ISchema
     {

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
     /// <summary>
     /// A builder used to configure how logging will be injected into a created <see cref="TestServer{TSchema}"/>.
     /// </summary>
-    public class TestLoggingBuilder : IGraphTestFrameworkComponent
+    public class TestLoggingBuilder : IGraphQLTestFrameworkComponent
     {
         private readonly List<ILoggerProvider> _customProviders;
         private LogLevel _minLevel;
@@ -33,10 +33,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
             _enableLogging = true;
         }
 
-        /// <summary>
-        /// Injects the component configured by this builder with a service collection instance.
-        /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
+        /// <inheritdoc />
         public void Inject(IServiceCollection serviceCollection)
         {
             if (_enableLogging)

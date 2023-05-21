@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var template = TemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.RetrieveObject));
+            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.RetrieveObject));
 
             var sourceObject = new TwoPropertyObject()
             {

@@ -30,7 +30,6 @@ namespace GraphQL.AspNet.Tests.Framework
     public partial class TestServerBuilder<TSchema> : ITestServerBuilder<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly List<IGraphTestFrameworkComponent> _testComponents;
         private readonly TestOptions _initialSetup;
 
         // colleciton of types added to this server external to the AddGraphQL call.
@@ -38,28 +37,57 @@ namespace GraphQL.AspNet.Tests.Framework
 
         private readonly List<Action<ISchemaBuilder<TSchema>>> _schemaBuilderAdditions;
 
-        private Action<SchemaOptions> _configureOptions;
+        private Action<SchemaOptions> _startupConfigureOptionsAction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestServerBuilder{TSchema}" /> class.
         /// </summary>
-        /// <param name="initialSetup">A set of flags for common preconfigured settings for the test server.</param>
-        public TestServerBuilder(TestOptions initialSetup = TestOptions.None)
+        /// <param name="initialSetup">
+        /// A set of bitwise flags to denote for commonly used, preconfigured
+        /// settings for the test server.
+        /// </param>
+        /// <param name="serviceCollection">
+        /// A customized service collection to use in this server. When <c>null</c>,
+        /// a new service collection instance will be automatically created.
+        /// </param>
+        /// <param name="authenticationBuilder">
+        /// A customized authentication builder. When <c>null</c>,
+        /// a new, default instance will be automatically created.
+        /// </param>
+        /// <param name="authorizationBuilder">
+        /// A customized authorization builder.  When <c>null</c>,
+        /// a new, default instance will be automatically created.
+        /// </param>
+        /// <param name="securityContextBuilder">
+        /// A customized user security context builder.  When <c>null</c>,
+        /// a new, default instance will be automatically created.
+        /// </param>
+        /// <param name="loggingBuilder">
+        /// A customed logging builder. When <c>null</c>,
+        /// a new, default instance will be automatically created.
+        /// </param>
+        public TestServerBuilder(
+            TestOptions initialSetup = TestOptions.None,
+            IServiceCollection serviceCollection = null,
+            TestAuthenticationBuilder authenticationBuilder = null,
+            TestAuthorizationBuilder authorizationBuilder = null,
+            TestUserSecurityContextBuilder securityContextBuilder = null,
+            TestLoggingBuilder loggingBuilder = null)
         {
-            _testComponents = new List<IGraphTestFrameworkComponent>();
             _schemaBuilderAdditions = new List<Action<ISchemaBuilder<TSchema>>>();
             _initialSetup = initialSetup;
 
-            this.Authentication = new TestAuthenticationBuilder();
-            this.Authorization = new TestAuthorizationBuilder();
-            this.UserContext = new TestUserSecurityContextBuilder(this);
-            this.Logging = new TestLoggingBuilder();
+            this.Authentication = authenticationBuilder ?? new TestAuthenticationBuilder();
+            this.Authorization = authorizationBuilder ?? new TestAuthorizationBuilder();
+            this.UserContext = securityContextBuilder ?? new TestUserSecurityContextBuilder(this);
+            this.Logging = loggingBuilder ?? new TestLoggingBuilder();
 
+            this.TestComponents = new List<IGraphQLTestFrameworkComponent>();
             this.AddTestComponent(this.Authorization);
             this.AddTestComponent(this.UserContext);
             this.AddTestComponent(this.Logging);
 
-            var serviceCollection = new ServiceCollection();
+            serviceCollection = serviceCollection ?? new ServiceCollection();
             this.SchemaOptions = new SchemaOptions<TSchema>(serviceCollection);
         }
 
@@ -69,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// this method.
         /// </summary>
         /// <param name="options">The options.</param>
-        private void PerformInitialConfiguration(SchemaOptions options)
+        protected virtual void PerformInitialConfiguration(SchemaOptions options)
         {
             options.AutoRegisterLocalEntities = false;
 
@@ -91,27 +119,27 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddTestComponent(IGraphTestFrameworkComponent component)
+        public ITestServerBuilder<TSchema> AddTestComponent(IGraphQLTestFrameworkComponent component)
         {
-            _testComponents.Add(component);
+            this.TestComponents.Add(component);
             return this;
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddType<TType>(TypeKind? typeKind = null)
+        public virtual ITestServerBuilder<TSchema> AddType<TType>(TypeKind? typeKind = null)
         {
             return this.AddType(typeof(TType), typeKind);
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddType(Type type, TypeKind? typeKind = null)
+        public virtual ITestServerBuilder<TSchema> AddType(Type type, TypeKind? typeKind = null)
         {
             _additionalTypes.Add((type, typeKind));
             return this;
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddGraphController<TController>()
+        public virtual ITestServerBuilder<TSchema> AddGraphController<TController>()
             where TController : GraphController
         {
             this.AddType(typeof(TController));
@@ -119,7 +147,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddDirective<TDirective>()
+        public virtual ITestServerBuilder<TSchema> AddDirective<TDirective>()
             where TDirective : GraphDirective
         {
             this.AddType(typeof(TDirective));
@@ -127,43 +155,48 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddGraphQL(Action<SchemaOptions> configureOptions)
+        public virtual ITestServerBuilder<TSchema> AddGraphQL(Action<SchemaOptions> configureOptions)
         {
-            _configureOptions = configureOptions;
+            _startupConfigureOptionsAction = configureOptions;
             return this;
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddSchemaBuilderAction(Action<ISchemaBuilder<TSchema>> action)
+        public virtual ITestServerBuilder<TSchema> AddSchemaBuilderAction(Action<ISchemaBuilder<TSchema>> action)
         {
             _schemaBuilderAdditions.Add(action);
             return this;
         }
 
         /// <inheritdoc />
-        public TestServer<TSchema> Build()
+        public virtual TestServer<TSchema> Build()
         {
             // register all test components
-            foreach (var component in _testComponents)
+            foreach (var component in this.TestComponents)
                 component.Inject(this.SchemaOptions.ServiceCollection);
 
-            var userProvidedConfigOptions = _configureOptions;
-            _configureOptions = (options) =>
+            // create a master configuration method that performs the initial
+            // setup requested during construction
+            // along with a user provided configuration if provided
+            Action<SchemaOptions> masterConfigMethod = (options) =>
             {
                 this.PerformInitialConfiguration(options);
                 foreach (var addType in _additionalTypes)
                     options.AddType(addType.Type, addType.TypeKind);
 
-                userProvidedConfigOptions?.Invoke(options);
+                _startupConfigureOptionsAction?.Invoke(options);
             };
 
-            // inject staged graph types
-            var injector = GraphQLSchemaInjectorFactory.Create<TSchema>(this.SchemaOptions, _configureOptions);
+            // perform a schema injection to setup all the registered
+            // graph types for the schema
+            var injector = GraphQLSchemaInjectorFactory.Create(this.SchemaOptions, masterConfigMethod);
             injector.ConfigureServices();
 
+            // execute any additional explicit actions for the generated schema builder
             foreach (var action in _schemaBuilderAdditions)
                 action.Invoke(injector.SchemaBuilder);
 
+            // finalize the test user instance and the service provider used at runtime
             var userSecurityContext = this.UserContext.CreateSecurityContext();
             var serviceProvider = this.SchemaOptions.ServiceCollection.BuildServiceProvider();
 
@@ -185,5 +218,11 @@ namespace GraphQL.AspNet.Tests.Framework
 
         /// <inheritdoc />
         public TestLoggingBuilder Logging { get; }
+
+        /// <summary>
+        /// Gets a list of test components currently registered to this instance.
+        /// </summary>
+        /// <value>The registered test components.</value>
+        protected IList<IGraphQLTestFrameworkComponent> TestComponents { get; }
     }
 }

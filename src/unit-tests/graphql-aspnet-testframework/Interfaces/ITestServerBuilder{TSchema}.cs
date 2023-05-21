@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         /// </summary>
         /// <param name="component">The component.</param>
         /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
-        ITestServerBuilder<TSchema> AddTestComponent(IGraphTestFrameworkComponent component);
+        ITestServerBuilder<TSchema> AddTestComponent(IGraphQLTestFrameworkComponent component);
 
         /// <summary>
         /// Helpful overload for direct access to inject a graph type into the server.

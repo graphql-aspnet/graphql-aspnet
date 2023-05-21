@@ -8,6 +8,9 @@
     <PackageDescription>A package to support subscriptions for GraphQL ASP.NET. Provides the required functionality to setup a websocket connection and perform graphql subscriptions over web sockets.</PackageDescription>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
+  </ItemGroup>
 
   <!-- all packages -->
   <ItemGroup>

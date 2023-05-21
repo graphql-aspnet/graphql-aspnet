@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
     /// <summary>
     /// A builder for generating a <see cref="ClaimsPrincipal" /> from a set of claims and roles.
     /// </summary>
-    public class TestUserSecurityContextBuilder : IGraphTestFrameworkComponent
+    public class TestUserSecurityContextBuilder : IGraphQLTestFrameworkComponent
     {
         /// <summary>
         /// The scheme under which the user is authenticated if no scheme
@@ -44,17 +44,14 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
             _userClaims = new List<Claim>();
         }
 
-        /// <summary>
-        /// Registers the component configured by this builder with a service collection.
-        /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
+        /// <inheritdoc />
         public void Inject(IServiceCollection serviceCollection)
         {
             // nothing to inject for the user account that is created
         }
 
         /// <summary>
-        /// Authenticates the user with the default username, on the "default scheme", but assigns no roles or other claims.
+        /// Configures the user to be constructed in an authenticated state.
         /// </summary>
         /// <param name="username">The username to assign to the user.</param>
         /// <param name="authScheme">The authentication scheme under which the user should be authenticated.</param>
@@ -76,8 +73,8 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         }
 
         /// <summary>
-        /// Adds an authorized claim of the given type and value to the user account. The user is automatically authenticated
-        /// when the claim is added.
+        /// Adds an authorized claim of the given type and value to the user account.
+        /// The user is automatically set to be authenticated when the claim is added.
         /// </summary>
         /// <param name="claimType">The claim type.</param>
         /// <param name="claimValue">The claim value.</param>
@@ -89,8 +86,8 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         }
 
         /// <summary>
-        /// Adds a single, authorized role to the user account. The user is automatically authenticated
-        /// when the role is added.
+        /// Adds a single, authorized role to the user account.
+        /// The user is automatically authenticated when the role is added.
         /// </summary>
         /// <param name="roleName">Name of the role to add.</param>
         /// <returns>TestAuthorizationBuilder.</returns>
@@ -106,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// <returns>ClaimsPrincipal.</returns>
         public IUserSecurityContext CreateSecurityContext()
         {
-            var context = new TestUserSecurityContext(_parentServerBuilder?.Authentication?.DefaultAuthScheme);
+            var context = new TestUserSecurityContext(_parentServerBuilder?.Authentication?.DefaultAuthenticationScheme);
             context.Setup(_authScheme, _userClaims, _userRoles);
             return context;
         }

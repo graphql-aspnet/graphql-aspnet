@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// is authenticated under. If null, the user will be set as "not authenticated".</param>
         /// <param name="claims">The claims to add the the principal.</param>
         /// <param name="roles">The roles to add to the principal.</param>
-        public void Setup(string authSchemeUsed, IEnumerable<Claim> claims, IEnumerable<string> roles)
+        public virtual void Setup(string authSchemeUsed, IEnumerable<Claim> claims, IEnumerable<string> roles)
         {
             _schemeAuthedWith = authSchemeUsed;
             var isAuthenticated = authSchemeUsed != null;
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public Task<IAuthenticationResult> AuthenticateAsync(string scheme, CancellationToken token = default)
+        public virtual Task<IAuthenticationResult> AuthenticateAsync(string scheme, CancellationToken token = default)
         {
             var schemeToCheckAgainst = scheme ?? _defaultAuthScheme;
 
@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public Task<IAuthenticationResult> AuthenticateAsync(CancellationToken token = default)
+        public virtual Task<IAuthenticationResult> AuthenticateAsync(CancellationToken token = default)
         {
             return this.AuthenticateAsync(null, token);
         }

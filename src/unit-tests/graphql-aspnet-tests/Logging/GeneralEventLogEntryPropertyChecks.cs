@@ -399,7 +399,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddType<LogTestController>()
                                          .Build();
-            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
+            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
@@ -423,7 +423,7 @@ namespace GraphQL.AspNet.Tests.Logging
                                          .AddType<LogTestController>()
                                          .Build();
 
-            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
+            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
@@ -449,7 +449,7 @@ namespace GraphQL.AspNet.Tests.Logging
                                          .AddType<LogTestController>()
                                          .Build();
 
-            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
+            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
@@ -482,7 +482,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
+            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
             var fieldRequest = package.FieldRequest;
 
             var result = new object();

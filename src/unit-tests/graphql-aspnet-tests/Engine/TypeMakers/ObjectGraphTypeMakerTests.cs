@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             // ensure no stack overflows occur by attempting to create types of types
             // from self references
             // config says properties DO require declaration, override on type says it does not
-            var template = TemplateHelper.CreateGraphTypeTemplate<SelfReferencingObject>(TypeKind.OBJECT) as IObjectGraphTypeTemplate;
+            var template = GraphQLTemplateHelper.CreateGraphTypeTemplate<SelfReferencingObject>(TypeKind.OBJECT) as IObjectGraphTypeTemplate;
             var result = this.MakeGraphType(typeof(SelfReferencingObject), TypeKind.OBJECT);
 
             var inputType = result.GraphType as IObjectGraphType;
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Interface_CreateGraphType_ParsesCorrectly()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames).Build();
-            var template = TemplateHelper.CreateGraphTypeTemplate<TypeCreationItem>();
+            var template = GraphQLTemplateHelper.CreateGraphTypeTemplate<TypeCreationItem>();
             var typeMaker = new DefaultGraphTypeMakerProvider();
 
             var objectGraphType = typeMaker.CreateTypeMaker(server.Schema, TypeKind.OBJECT).CreateGraphType(typeof(TypeCreationItem)).GraphType as IObjectGraphType;
@@ -196,7 +196,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         {
             // ensure no stack overflows occur by attempting to create types of types
             // from self references
-            var template = TemplateHelper.CreateObjectTemplate<SelfReferencingObject>();
+            var template = GraphQLTemplateHelper.CreateObjectTemplate<SelfReferencingObject>();
             var objectGraphType = this.MakeGraphType(typeof(SelfReferencingObject), TypeKind.OBJECT).GraphType as IObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);

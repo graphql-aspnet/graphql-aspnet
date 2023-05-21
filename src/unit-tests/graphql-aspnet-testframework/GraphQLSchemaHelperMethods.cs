@@ -17,13 +17,14 @@ namespace GraphQL.AspNet.Tests.Framework
     /// <summary>
     /// Methods for quickly configuring schema related things during testing.
     /// </summary>
-    public static class SchemaHelperMethods
+    public static class GraphQLSchemaHelperMethods
     {
         /// <summary>
-        /// Alters the declaration options of the schema to ensure no fields or types are altered
-        /// or have their names changed from the casing declared in the source code.
+        /// Alters the declaration options of the target schema to ensure no fields or
+        /// types are altered or have their names changed from the casing declared
+        /// in the source code.
         /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <param name="schema">The schema to configure.</param>
         public static void SetNoAlterationConfiguration(this ISchema schema)
         {
             var declarationOptions = new SchemaDeclarationConfiguration();
@@ -37,15 +38,6 @@ namespace GraphQL.AspNet.Tests.Framework
                 schema.Configuration.QueryCacheOptions);
 
             schema.Configuration.Merge(config);
-        }
-
-        /// <summary>
-        /// Sets the schema configuration to allow the processing of subscriptions in test mode.
-        /// </summary>
-        /// <param name="schema">The schema to append to.</param>
-        public static void SetSubscriptionAllowances(this ISchema schema)
-        {
-            schema.Configuration.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);
         }
     }
 }

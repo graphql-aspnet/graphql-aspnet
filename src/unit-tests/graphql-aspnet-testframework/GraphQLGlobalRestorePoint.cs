@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Initializes a new instance of the <see cref="GraphQLGlobalRestorePoint" /> class.
         /// </summary>
         /// <param name="resetAllProviders">if set to <c>true</c> all providers will
-        /// be immediately reset to their defualt implementation until this restore point is disposed.</param>
+        /// be immediately reset to their default implementation until this restore point is disposed.</param>
         public GraphQLGlobalRestorePoint(bool resetAllProviders = false)
         {
             _templateProvider = GraphQLProviders.TemplateProvider;

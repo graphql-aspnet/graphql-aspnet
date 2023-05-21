@@ -16,42 +16,41 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
     /// <summary>
     /// Builds an authentication chain for a single user and policy setup.
     /// </summary>
-    public class TestAuthenticationBuilder : IGraphTestFrameworkComponent
+    public class TestAuthenticationBuilder : IGraphQLTestFrameworkComponent
     {
         /// <summary>
         /// The default name of the authentication schema used to "authenticate" a generated <see cref="ClaimsPrincipal"/>.
         /// </summary>
         public const string DEFAULT_AUTH_SCHEMA = "graphql.default.scheme";
 
-        private string _defaultAuthScheme;
+        private string _defaultAuthenticationScheme;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAuthenticationBuilder" /> class.
         /// </summary>
         public TestAuthenticationBuilder()
         {
-            _defaultAuthScheme = DEFAULT_AUTH_SCHEMA;
+            _defaultAuthenticationScheme = DEFAULT_AUTH_SCHEMA;
         }
 
-        /// <summary>
-        /// Injects the component configured by this builder with a service collection instance.
-        /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
+        /// <inheritdoc />
         public void Inject(IServiceCollection serviceCollection)
         {
+            // nothing to inject for this builder
         }
 
         /// <summary>
-        /// Sets the default authenticatio scheme to use when authenticating accounts.
+        /// Sets the default authentication scheme to use when authenticating accounts.
         /// This method is synonymous with supplying a default scheme
         /// when registering authentication via the <c>AddAuthentication(schemeName)</c>
         /// at startup.
         /// </summary>
-        /// <param name="scheme">The scheme to use.</param>
+        /// <param name="scheme">The scheme to simulate as the 'default configured scheme"
+        /// for the server instance.</param>
         /// <returns>TestAuthorizationBuilder.</returns>
-        public TestAuthenticationBuilder SetDefaultAuthScheme(string scheme)
+        public TestAuthenticationBuilder SetDefaultAuthenticationScheme(string scheme)
         {
-            _defaultAuthScheme = scheme;
+            _defaultAuthenticationScheme = scheme;
             return this;
         }
 
@@ -60,6 +59,6 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// to use when authenticating users.
         /// </summary>
         /// <value>The default authentication scheme.</value>
-        public string DefaultAuthScheme => _defaultAuthScheme;
+        public string DefaultAuthenticationScheme => _defaultAuthenticationScheme;
     }
 }

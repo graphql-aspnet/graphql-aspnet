@@ -16,16 +16,23 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
     public interface IGraphQLTestAssertionHandler
     {
         /// <summary>
-        /// Called when a test has outright failed. Testing should halt upon completion of this
-        /// method.
+        /// Called when a test has outright failed.
+        /// <remarks>
+        /// The test being executed should halt in a failure state upon completion of this method.
+        /// Allowing this method to return without halting will produce an indeterminate state.
+        /// </remarks>
         /// </summary>
         /// <param name="message">The message indicating what failed.</param>
         void AssertFailure(string message);
 
         /// <summary>
-        /// Asserts the equality of two objects. The testing should halt in a failure state
-        /// if the two objects are not concidered equal.
+        /// Asserts the equality of two objects.
         /// </summary>
+        /// <remarks>
+        /// The test being executed should halt in a failure state if the two objects
+        /// are not concidered equal. Allowing this method to return without halting will
+        /// produce an indeterminate state.
+        /// </remarks>
         /// <param name="expectedObject">The object to compare against.</param>
         /// <param name="actualObject">The actual object to test.</param>
         /// <param name="failureMessage">An optional message to supply to the
@@ -33,9 +40,13 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         void AssertEquality(object expectedObject, object actualObject, string failureMessage = null);
 
         /// <summary>
-        /// Asserts that the target object is null. Testing should halt in a failure
-        /// state of the provided object is not null.
+        /// Asserts that the target object is null.
         /// </summary>
+        /// <remarks>
+        /// The test being executed should halt in a failure state
+        /// if the provided object is not null. Allowing this method to return without
+        /// halting will produce an indeterminate state.
+        /// </remarks>
         /// <param name="actualObject">The actual object.</param>
         /// <param name="failureMessage">An optional message to supply to the
         /// target unit testing framework in the event the object is not null.</param>

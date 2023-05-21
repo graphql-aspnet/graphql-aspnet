@@ -19,20 +19,20 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
     /// <summary>
     /// Builds an authorization chain for a single user and policy setup.
     /// </summary>
-    public class TestAuthorizationBuilder : IGraphTestFrameworkComponent
+    public class TestAuthorizationBuilder : IGraphQLTestFrameworkComponent
     {
         /// <summary>
-        /// The claim type identifying a username for a generated <see cref="ClaimsPrincipal"/>.
+        /// The default claim type identifying a username for a generated <see cref="ClaimsPrincipal"/>.
         /// </summary>
         public const string USERNAME_CLAIM_TYPE = "GraphQLTestServer.NameClaim";
 
         /// <summary>
-        /// The claim type for roles issued to a generated <see cref="ClaimsPrincipal"/>.
+        /// The default claim type for roles issued to a generated <see cref="ClaimsPrincipal"/>.
         /// </summary>
         public const string ROLE_CLAIM_TYPE = "GraphQLTestServer.RoleClaim";
 
         /// <summary>
-        /// The name of the authentication schema used to "authenticate" a generated <see cref="ClaimsPrincipal"/>.
+        /// The default name of the authentication schema used to "authenticate" a generated <see cref="ClaimsPrincipal"/>.
         /// </summary>
         public const string AUTH_SCHEMA = "GraphQLTestServer.AuthSchema";
 
@@ -55,10 +55,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
                 .RequireAuthenticatedUser();
         }
 
-        /// <summary>
-        /// Injects the component configured by this builder with a service collection instance.
-        /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
+        /// <inheritdoc />
         public void Inject(IServiceCollection serviceCollection)
         {
             if (_includeAuthProvider)

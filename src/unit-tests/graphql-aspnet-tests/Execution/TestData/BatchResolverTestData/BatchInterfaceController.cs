@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.BatchResolverTestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Interfaces;
 
     [GraphRoute("batch")]
     public class BatchInterfaceController : GraphController
@@ -35,12 +36,12 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.BatchResolverTestData
         }
 
         [PossibleTypes(typeof(TwoPropertyObject))]
-        [Query("fetchData", typeof(IEnumerable<ITwoPropertyObject>))]
+        [Query("fetchData", typeof(IEnumerable<ISinglePropertyObject>))]
         public IGraphActionResult PrimaryDataFetch()
         {
             this.AddCounter(nameof(this.PrimaryDataFetch));
 
-            var list = new List<ITwoPropertyObject>();
+            var list = new List<ISinglePropertyObject>();
             list.Add(new TwoPropertyObject()
             {
                 Property1 = "object0",
@@ -60,8 +61,8 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.BatchResolverTestData
             return this.Ok(list);
         }
 
-        [BatchTypeExtension(typeof(ITwoPropertyObject), "kids", typeof(IEnumerable<ChildTestObject>))]
-        public IGraphActionResult FetchChildren(IEnumerable<ITwoPropertyObject> sourceData)
+        [BatchTypeExtension(typeof(ISinglePropertyObject), "kids", typeof(IEnumerable<ChildTestObject>))]
+        public IGraphActionResult FetchChildren(IEnumerable<ISinglePropertyObject> sourceData)
         {
             this.AddCounter(nameof(this.FetchChildren));
 
@@ -87,8 +88,8 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.BatchResolverTestData
                 .Complete();
         }
 
-        [BatchTypeExtension(typeof(ITwoPropertyObject), "sybling", typeof(SyblingTestObject))]
-        public IGraphActionResult FetchSibling(IEnumerable<ITwoPropertyObject> sourceData)
+        [BatchTypeExtension(typeof(ISinglePropertyObject), "sybling", typeof(SyblingTestObject))]
+        public IGraphActionResult FetchSibling(IEnumerable<ISinglePropertyObject> sourceData)
         {
             this.AddCounter(nameof(this.FetchSibling));
 

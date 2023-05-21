@@ -22,10 +22,10 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
         /// Converts the actual object into a json string and compares it to the expected string.
         /// Expected json string is normalized to eliminate variations due to whitespace and non-printable characters.
         /// </summary>
-        /// <param name="expectedJson">The expected json.</param>
-        /// <param name="actualJson">The actual data from the test.</param>
-        /// <param name="messsage">The messsage to show when asserting a failure.</param>
-        public static void AreEqualJsonStrings(string expectedJson, string actualJson, string messsage = null)
+        /// <param name="expectedJson">The expected json string.</param>
+        /// <param name="actualJson">The actual json string generated in the test.</param>
+        /// <param name="failureMessage">The error messsage to show when asserting a failure.</param>
+        public static void AreEqualJsonStrings(string expectedJson, string actualJson, string failureMessage = null)
         {
             var options = new JsonDocumentOptions()
             {
@@ -36,20 +36,46 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
             var expectedJsonObject = JsonDocument.Parse(expectedJson, options).RootElement;
             var actualJsonObject = JsonDocument.Parse(actualJson, options).RootElement;
 
-            JsonComparer.AreEqualJson(expectedJsonObject, actualJsonObject, messsage);
+            var result = JsonComparer.AreEqualJsonElements(expectedJsonObject, actualJsonObject);
+            if (result.ElementsAreEqual)
+                return;
+
+            GraphQLTestFrameworkProviders
+                .Assertions
+                .AssertFailure(failureMessage ?? result.ErrorMessage);
         }
 
         /// <summary>
-        /// Asserts that the provided lists are the same. Walks internal lists to insure that "Lists of Lists"
-        /// are also equal.
+        /// Asserts that the provided lists are the same. Performs a deep check
+        /// to insure that "Lists of Lists" are also equal.
         /// </summary>
-        /// <param name="expectedOutput">The expected output.</param>
-        /// <param name="actualOutput">The actual output.</param>
-        public static void AreEqualNestedLists(IList<object> expectedOutput, IList<object> actualOutput)
+        /// <param name="expectedOutput">The expected list of data.</param>
+        /// <param name="actualOutput">The actual output from a test.</param>
+        /// <param name="failureMessage">The error messsage to show when asserting a failure.</param>
+        public static void AreEqualNestedLists(IList<object> expectedOutput, IList<object> actualOutput, string failureMessage = null)
         {
+            if (expectedOutput is null && actualOutput is null)
+                return;
+
+            if (expectedOutput == null && actualOutput != null)
+            {
+                GraphQLTestFrameworkProviders
+                    .Assertions
+                    .AssertFailure(failureMessage ?? $"{nameof(actualOutput)} was not null but was expected to be.");
+                return;
+            }
+
+            if (expectedOutput != null && actualOutput == null)
+            {
+                GraphQLTestFrameworkProviders
+                    .Assertions
+                    .AssertFailure(failureMessage ?? $"{nameof(actualOutput)} was null but was expected not to be.");
+                return;
+            }
+
             GraphQLTestFrameworkProviders
                 .Assertions
-                .AssertEquality(expectedOutput.Count, actualOutput.Count);
+                .AssertEquality(expectedOutput.Count, actualOutput.Count, failureMessage);
 
             for (var i = 0; i < expectedOutput.Count; i++)
             {
@@ -59,83 +85,84 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
                 if (expected is IList<object> expectedChildArray
                     && actual is IList<object> actualChildArray)
                 {
-                    AreEqualNestedLists(expectedChildArray, actualChildArray);
+                    AreEqualNestedLists(expectedChildArray, actualChildArray, failureMessage);
                 }
                 else
                 {
                     GraphQLTestFrameworkProviders
                         .Assertions
-                        .AssertEquality(expected, actual);
+                        .AssertEquality(expected, actual, failureMessage);
                 }
             }
         }
 
         /// <summary>
-        /// Analyzes the objects (and properties if they exist) to do a deep comparison and ensure
+        /// Analyzes the objects and properties, if they exist, to do a deep comparison and ensure
         /// that the objects are as equivialant as possible.
         /// </summary>
-        /// <param name="expectedOutput">The expected output.</param>
-        /// <param name="actualOutput">The actual output.</param>
-        public static void AreEqualObjects(object expectedOutput, object actualOutput)
+        /// <param name="expectedObject">The expected output object.</param>
+        /// <param name="actualObject">The actual output object generated in a test.</param>
+        /// <param name="failureMessage">The error messsage to show when asserting a failure.</param>
+        public static void AreEqualObjects(object expectedObject, object actualObject, string failureMessage = null)
         {
-            if (expectedOutput == null && actualOutput == null)
+            if (expectedObject == null && actualObject == null)
                 return;
 
-            if (expectedOutput == null && actualOutput != null)
+            if (expectedObject == null && actualObject != null)
             {
                 GraphQLTestFrameworkProviders
                     .Assertions
-                    .AssertFailure($"{nameof(actualOutput)} was not null but was expected to be.");
+                    .AssertFailure(failureMessage ?? $"{nameof(actualObject)} was not null but was expected to be.");
                 return;
             }
 
-            if (expectedOutput != null && actualOutput == null)
+            if (expectedObject != null && actualObject == null)
             {
                 GraphQLTestFrameworkProviders
                     .Assertions
-                    .AssertFailure($"{nameof(actualOutput)} was null but was expected not to be.");
+                    .AssertFailure(failureMessage ?? $"{nameof(actualObject)} was null but was expected not to be.");
                 return;
             }
 
-            var type = expectedOutput.GetType();
+            var type = expectedObject.GetType();
             GraphQLTestFrameworkProviders
                     .Assertions
-                    .AssertEquality(type, actualOutput.GetType());
+                    .AssertEquality(type, actualObject.GetType(), failureMessage);
 
             if (type.IsValueType || type == typeof(string))
             {
                 GraphQLTestFrameworkProviders
                     .Assertions
-                    .AssertEquality(expectedOutput, actualOutput);
+                    .AssertEquality(expectedObject, actualObject, failureMessage);
                 return;
             }
 
-            var props = expectedOutput.GetType().GetProperties();
+            var props = expectedObject.GetType().GetProperties();
             foreach (var prop in props)
             {
-                var expectedValue = prop.GetValue(expectedOutput);
-                var actualValue = prop.GetValue(actualOutput);
+                var expectedValue = prop.GetValue(expectedObject);
+                var actualValue = prop.GetValue(actualObject);
 
                 if (expectedValue == null || actualValue == null)
                 {
                     GraphQLTestFrameworkProviders
                         .Assertions
-                        .AssertNull(expectedValue);
+                        .AssertNull(expectedValue, failureMessage);
                     GraphQLTestFrameworkProviders
                         .Assertions
-                        .AssertNull(actualValue);
+                        .AssertNull(actualValue, failureMessage);
                     continue;
                 }
 
                 if (prop.PropertyType.IsClass && prop.PropertyType != typeof(string))
                 {
-                    AreEqualObjects(expectedValue, actualOutput);
+                    AreEqualObjects(expectedValue, actualObject, failureMessage);
                 }
                 else
                 {
                     GraphQLTestFrameworkProviders
                         .Assertions
-                        .AssertEquality(expectedValue, actualValue);
+                        .AssertEquality(expectedValue, actualValue, failureMessage);
                 }
             }
         }

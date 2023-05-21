@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// server was built or null will be returned.
         /// </summary>
         /// <returns>GraphQueryController&lt;TSchema&gt;.</returns>
-        public IGraphQLHttpProcessor<TSchema> CreateHttpQueryProcessor()
+        public virtual IGraphQLHttpProcessor<TSchema> CreateHttpQueryProcessor()
         {
             var httpProcessor = this.ServiceProvider.GetService<IGraphQLHttpProcessor<TSchema>>();
             if (httpProcessor == null)
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <param name="requestData">The request data.</param>
         /// <returns>HttpContext.</returns>
-        public HttpContext CreateHttpContext(GraphQueryData requestData = null)
+        public virtual HttpContext CreateHttpContext(GraphQueryData requestData = null)
         {
             var requestStream = new MemoryStream();
             var responseStream = new MemoryStream();
@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <param name="queryText">The query text to generate a document for.</param>
         /// <returns>IGraphQueryDocument.</returns>
-        public IQueryDocument CreateDocument(string queryText)
+        public virtual IQueryDocument CreateDocument(string queryText)
         {
             var text = ReadOnlySpan<char>.Empty;
             if (queryText != null)
@@ -151,7 +151,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="operationName">Name of the operation in the query text to formalize
         /// into the plan.</param>
         /// <returns>Task&lt;IGraphQueryPlan&gt;.</returns>
-        public Task<IQueryExecutionPlan> CreateQueryPlan(string queryText, string operationName = null)
+        public virtual Task<IQueryExecutionPlan> CreateQueryPlan(string queryText, string operationName = null)
         {
             var documentGenerator = this.ServiceProvider.GetService<IQueryDocumentGenerator<TSchema>>();
             var planGenerator = this.ServiceProvider.GetService<IQueryExecutionPlanGenerator<TSchema>>();
@@ -175,7 +175,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="concreteType">The concrete type to convert.</param>
         /// <param name="kind">The kind of graph type to make, if any.</param>
         /// <returns>GraphTypeCreationResult.</returns>
-        public GraphTypeCreationResult CreateGraphType(Type concreteType, TypeKind kind)
+        public virtual GraphTypeCreationResult CreateGraphType(Type concreteType, TypeKind kind)
         {
             var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(this.Schema, kind);
             return maker.CreateGraphType(concreteType);
@@ -189,10 +189,10 @@ namespace GraphQL.AspNet.Tests.Framework
         /// action.</typeparam>
         /// <param name="actionName">Name of the action/field in the controller, as it exists in the schema.</param>
         /// <returns>FieldContextBuilder.</returns>
-        public FieldContextBuilder CreateGraphTypeFieldContextBuilder<TController>(string actionName)
+        public virtual FieldContextBuilder CreateGraphTypeFieldContextBuilder<TController>(string actionName)
             where TController : GraphController
         {
-            var template = TemplateHelper.CreateFieldTemplate<TController>(actionName);
+            var template = GraphQLTemplateHelper.CreateFieldTemplate<TController>(actionName);
             var fieldMaker = new GraphFieldMaker(this.Schema);
             var fieldResult = fieldMaker.CreateField(template);
 
@@ -217,7 +217,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="arguments">The collection of arguments that need to be supplied
         /// to the field to properly resolve it.</param>
         /// <returns>FieldContextBuilder.</returns>
-        public GraphFieldExecutionContext CreateFieldExecutionContext<TType>(
+        public virtual GraphFieldExecutionContext CreateFieldExecutionContext<TType>(
             string fieldName,
             object sourceData,
             IInputArgumentCollection arguments = null)
@@ -322,7 +322,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// generic <see cref="object" /> will be used if not supplied.</param>
         /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
         /// <returns>FieldContextBuilder.</returns>
-        public FieldContextBuilder CreateGraphTypeFieldContextBuilder<TType>(string fieldName, object sourceData, TypeKind? typeKind = null)
+        public virtual FieldContextBuilder CreateGraphTypeFieldContextBuilder<TType>(string fieldName, object sourceData, TypeKind? typeKind = null)
         {
             IGraphType graphType = this.Schema.KnownTypes.FindGraphType(typeof(TType));
 
@@ -380,9 +380,9 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="fieldName">Name of the field.</param>
         /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
         /// <returns>IGraphMethod.</returns>
-        public IGraphFieldResolverMethod CreateInvokableReference<TObjectType>(string fieldName, TypeKind? typeKind = null)
+        public virtual IGraphFieldResolverMethod CreateInvokableReference<TObjectType>(string fieldName, TypeKind? typeKind = null)
         {
-            var template = TemplateHelper.CreateGraphTypeTemplate<TObjectType>(typeKind);
+            var template = GraphQLTemplateHelper.CreateGraphTypeTemplate<TObjectType>(typeKind);
             var fieldContainer = template as IGraphTypeFieldTemplateContainer;
             if (fieldContainer == null)
             {
@@ -426,7 +426,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="origin">The origin in a source document, if any.</param>
         /// <param name="arguments">The arguments to pass to the directive, if any.</param>
         /// <returns>GraphDirectiveExecutionContext.</returns>
-        public GraphDirectiveExecutionContext CreateDirectiveExecutionContext<TDirective>(
+        public virtual GraphDirectiveExecutionContext CreateDirectiveExecutionContext<TDirective>(
             DirectiveLocation location,
             object directiveTarget,
             DirectiveInvocationPhase phase = DirectiveInvocationPhase.SchemaGeneration,
@@ -486,7 +486,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// and then submitted to the top level query execution pipeline.
         /// </summary>
         /// <returns>QueryContextBuilder.</returns>
-        public QueryContextBuilder CreateQueryContextBuilder()
+        public virtual QueryContextBuilder CreateQueryContextBuilder()
         {
             return new QueryContextBuilder(this.ServiceProvider, _userSecurityContext);
         }
@@ -498,7 +498,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="builder">The builder from which to generate the required query cotnext.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task<IQueryExecutionResult> ExecuteQuery(QueryContextBuilder builder, CancellationToken cancelToken = default)
+        public virtual async Task<IQueryExecutionResult> ExecuteQuery(QueryContextBuilder builder, CancellationToken cancelToken = default)
         {
             var context = builder.Build();
             await this.ExecuteQuery(context, cancelToken).ConfigureAwait(false);
@@ -511,7 +511,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="context">The context.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task ExecuteQuery(QueryExecutionContext context, CancellationToken cancelToken = default)
+        public virtual async Task ExecuteQuery(QueryExecutionContext context, CancellationToken cancelToken = default)
         {
             var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, QueryExecutionContext>>();
 
@@ -527,7 +527,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="context">The context.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
-        public async Task ExecuteField(GraphFieldExecutionContext context, CancellationToken cancelToken = default)
+        public virtual async Task ExecuteField(GraphFieldExecutionContext context, CancellationToken cancelToken = default)
         {
             var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphFieldExecutionContext>>();
 
@@ -542,7 +542,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="builder">The builder.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task<string> RenderResult(QueryContextBuilder builder, CancellationToken cancelToken = default)
+        public virtual async Task<string> RenderResult(QueryContextBuilder builder, CancellationToken cancelToken = default)
         {
             var result = await this.ExecuteQuery(builder, cancelToken).ConfigureAwait(false);
             return await this.RenderResult(result).ConfigureAwait(false);
@@ -554,7 +554,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="context">The query context to render out to a json string.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task<string> RenderResult(QueryExecutionContext context, CancellationToken cancelToken = default)
+        public virtual async Task<string> RenderResult(QueryExecutionContext context, CancellationToken cancelToken = default)
         {
             await this.ExecuteQuery(context, cancelToken).ConfigureAwait(false);
             return await this.RenderResult(context.Result).ConfigureAwait(false);
@@ -565,7 +565,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <param name="result">The result of a previously completed operation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        private async Task<string> RenderResult(IQueryExecutionResult result)
+        protected virtual async Task<string> RenderResult(IQueryExecutionResult result)
         {
             var options = new ResponseWriterOptions()
             {
@@ -591,7 +591,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="context">The context.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        public async Task ExecuteFieldAuthorization(SchemaItemSecurityChallengeContext context, CancellationToken cancelToken = default)
+        public virtual async Task ExecuteFieldAuthorization(SchemaItemSecurityChallengeContext context, CancellationToken cancelToken = default)
         {
             var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, SchemaItemSecurityChallengeContext>>();
             await pipeline.InvokeAsync(context, cancelToken).ConfigureAwait(false);

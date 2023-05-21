@@ -10,15 +10,16 @@
     <RootNamespace>GraphQL.AspNet.Tests.Framework</RootNamespace>
     <AssemblyName>GraphQL.AspNet.TestFramework</AssemblyName>
     <Title>GraphQL ASP.NET Test Framework</Title>
-    <PackageDescription>
-      A support library for quickly mocking a schema and server instance
-      to perform unit tests.
-    </PackageDescription>
+    <PackageDescription>A support library for quickly generating a schema and server instance to use during unit testing.</PackageDescription>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Moq" Version="4.18.3" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <None Remove="\README.md" Pack="false" />
+    <None Include="nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.18.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -46,7 +46,6 @@
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)\stylecop.json" />
     <None Include="$(MSBuildThisFileDirectory)\..\build\icon.png" Pack="true" PackagePath="\" />
-    <None Include="$(MSBuildThisFileDirectory)\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
 
   <!-- All Packages -->

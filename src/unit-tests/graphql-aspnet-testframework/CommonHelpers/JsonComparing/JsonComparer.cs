@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
 {
+    using System;
     using System.Text.Json;
 
     /// <summary>
@@ -20,6 +21,11 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
         /// A value that, if set as the value of a json property for the expected json, that json property will pass field value matching
         /// validation regardless of its value or null state.
         /// </summary>
+        /// <remarks>
+        /// This is useful for json validation where dates might be present as
+        /// strings allowing you to bypass the exact date/time value. Especially helpful
+        /// for error state checks.
+        /// </remarks>
         public const string ANY_FIELD_VALUE = "<anyValue>";
 
         /// <summary>
@@ -33,118 +39,107 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
         /// <returns><c>true</c> if the json data  is equal, <c>false</c> otherwise.</returns>
         public static bool AreEqualJson(JsonElement expected, JsonElement actual, string message = null, string location = "<top>", bool assertOnFailure = true)
         {
-            if (expected.ValueKind == JsonValueKind.Object
-                && actual.ValueKind == JsonValueKind.Object)
-            {
-                return AreEqualJObject(expected, actual, location, assertOnFailure, message);
-            }
-
-            if (expected.ValueKind == JsonValueKind.Array
-                && actual.ValueKind == JsonValueKind.Array)
-            {
-                return AreEqualJArray(expected, actual, location, assertOnFailure, message);
-            }
-
-            if (expected.GetRawText() == "\"" + ANY_FIELD_VALUE + "\"")
-            {
+            var result = AreEqualJsonElements(expected, actual, location);
+            if (result.ElementsAreEqual)
                 return true;
-            }
-
-            if (expected.ValueKind == actual.ValueKind)
-            {
-                return AreEqualJValue(expected, actual, location, assertOnFailure, message);
-            }
 
             if (assertOnFailure)
             {
-                GraphQLTestFrameworkProviders
-                        .Assertions
-                        .AssertFailure(message ?? $"Object type mismatch. Expected {expected} but got '{actual}'");
+                GraphQLTestFrameworkProviders.Assertions.AssertFailure(
+                    message
+                    ?? result.ErrorMessage
+                    ?? $"Json Elements are not equal at location '{result.Location}' but were expected to be");
             }
 
             return false;
         }
 
-        private static bool AreEqualJValue(JsonElement expectedValue, JsonElement actualValue, string location, bool assertOnFailure, string message = null)
+        /// <summary>
+        /// Deteremines if two <see cref="JsonElement" /> are identical or not.
+        /// </summary>
+        /// <param name="expected">The expected data to match against.</param>
+        /// <param name="actual">The actual data to check.</param>
+        /// <param name="location">The location where the parser is currently checking.</param>
+        /// <returns><c>true</c> if the json data  is equal, <c>false</c> otherwise.</returns>
+        public static JsonComparrisonResult AreEqualJsonElements(JsonElement expected, JsonElement actual, string location = "<top>")
+        {
+            if (expected.ValueKind == JsonValueKind.Object
+                && actual.ValueKind == JsonValueKind.Object)
+                return AreEqualJObject(expected, actual, location);
+
+            if (expected.ValueKind == JsonValueKind.Array
+                && actual.ValueKind == JsonValueKind.Array)
+                return AreEqualJArray(expected, actual, location);
+
+            if (expected.GetRawText() == "\"" + ANY_FIELD_VALUE + "\"")
+                return JsonComparrisonResult.ElementsEqual;
+
+            if (expected.ValueKind == actual.ValueKind)
+                return AreEqualJValue(expected, actual, location);
+
+            return JsonComparrisonResult.Failed($"Object type mismatch. Expected {expected} but got '{actual}'");
+        }
+
+        private static JsonComparrisonResult AreEqualJValue(JsonElement expectedValue, JsonElement actualValue, string location)
         {
             var isEqual = expectedValue.GetRawText() == actualValue.GetRawText() || expectedValue.GetRawText() == "\"" + ANY_FIELD_VALUE + "\"";
             if (!isEqual)
             {
-                if (assertOnFailure)
-                {
-                    var evalue = expectedValue.GetRawText() ?? "<null>";
-                    var avalue = actualValue.GetRawText() ?? "<null>";
+                var evalue = expectedValue.GetRawText() ?? "<null>";
+                var avalue = actualValue.GetRawText() ?? "<null>";
 
-                    GraphQLTestFrameworkProviders
-                        .Assertions
-                        .AssertFailure(message ?? $"Expected Value '{evalue}' but got '{avalue}' at location {location}");
-                }
+                return JsonComparrisonResult.Failed(
+                    $"Expected Value '{evalue}' but got '{avalue}' at location {location}");
             }
 
-            return isEqual;
+            return JsonComparrisonResult.ElementsEqual;
         }
 
-        private static bool AreEqualJObject(JsonElement expected, JsonElement actual, string location = "", bool assertOnFailure = true, string message = null)
+        private static JsonComparrisonResult AreEqualJObject(JsonElement expected, JsonElement actual, string location = "")
         {
-            var isEqual = true;
+            JsonComparrisonResult result = null;
             foreach (var prop in expected.EnumerateObject())
             {
                 if (!actual.TryGetProperty(prop.Name, out var actualElement))
                 {
-                    if (assertOnFailure)
-                    {
-                        GraphQLTestFrameworkProviders
-                            .Assertions
-                            .AssertFailure(message ?? $"Actual object does not contain a key '{prop.Name}' and was expected to. (Location: '{location}')");
-                    }
-
-                    return false;
+                    return JsonComparrisonResult.Failed(
+                        $"Actual object does not contain a key '{prop.Name}' " +
+                        $"and was expected to. (Location: '{location}')");
                 }
 
-                isEqual = AreEqualJson(prop.Value, actualElement, message, $"{location}.{prop.Name}", assertOnFailure);
-                if (!isEqual)
+                result = AreEqualJsonElements(prop.Value, actualElement, $"{location}.{prop.Name}");
+                if (!result.ElementsAreEqual)
                     break;
             }
 
-            if (isEqual)
+            if (result == null || result.ElementsAreEqual)
             {
                 foreach (var prop in actual.EnumerateObject())
                 {
                     if (!expected.TryGetProperty(prop.Name, out var expectedElement))
                     {
-                        if (assertOnFailure)
-                        {
-                            GraphQLTestFrameworkProviders
-                                .Assertions
-                                .AssertFailure(message ?? $"Actual object contains an extra property '{prop.Name}' and was not expected to. (Location: '{location}')");
-                        }
-
-                        return false;
+                        return JsonComparrisonResult.Failed(
+                            $"Actual object contains an extra property '{prop.Name}' " +
+                            $"and was not expected to. (Location: '{location}')");
                     }
 
-                    isEqual = AreEqualJson(expectedElement, prop.Value, message, $"{location}.{prop.Name}", assertOnFailure);
-                    if (!isEqual)
+                    result = AreEqualJsonElements(expectedElement, prop.Value, $"{location}.{prop.Name}");
+                    if (!result.ElementsAreEqual)
                         break;
                 }
             }
 
-            return isEqual;
+            return result ?? JsonComparrisonResult.ElementsEqual;
         }
 
-        private static bool AreEqualJArray(JsonElement expected, JsonElement actual, string location = "", bool assertOnFailure = true, string message = null)
+        private static JsonComparrisonResult AreEqualJArray(JsonElement expected, JsonElement actual, string location = "")
         {
             var expectedLength = expected.GetArrayLength();
             var actualLength = actual.GetArrayLength();
             if (expected.GetArrayLength() != actualLength)
             {
-                if (assertOnFailure)
-                {
-                    GraphQLTestFrameworkProviders
-                        .Assertions
-                        .AssertFailure(message ?? $"Expected {expectedLength} elements but received {actualLength} (Location: {location}).");
-                }
-
-                return false;
+                return JsonComparrisonResult.Failed(
+                    $"Expected {expectedLength} elements but received {actualLength} (Location: {location}).");
             }
 
             var i = 0;
@@ -153,7 +148,8 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
                 bool matchFound = false;
                 foreach (var actualElement in actual.EnumerateArray())
                 {
-                    if (AreEqualJson(expectedElement, actualElement, message, $"{location}[{i}]", false))
+                    var result = AreEqualJsonElements(expectedElement, actualElement, $"{location}[{i}]");
+                    if (result.ElementsAreEqual)
                     {
                         matchFound = true;
                         break;
@@ -162,20 +158,15 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
 
                 if (!matchFound)
                 {
-                    if (assertOnFailure)
-                    {
-                        GraphQLTestFrameworkProviders
-                            .Assertions
-                            .AssertFailure(message ?? $"Expected array element {expectedElement.ToString().Trim()} but no element was found in the actual array (Location: {location}[{i}])");
-                    }
-
-                    return false;
+                    return JsonComparrisonResult.Failed(
+                        $"Expected array element {expectedElement.ToString().Trim()} but no element was " +
+                        $"found in the actual array (Location: {location}[{i}])");
                 }
 
                 i++;
             }
 
-            return true;
+            return JsonComparrisonResult.ElementsEqual;
         }
     }
 }

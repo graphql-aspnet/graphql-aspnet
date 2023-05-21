@@ -6,7 +6,8 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
+
+namespace GraphQL.AspNet.Tests.Framework.Interfaces
 {
     using GraphQL.AspNet.Attributes;
 
@@ -14,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
     /// An interface for testing that describes an object with a string property.
     /// </summary>
     [GraphType("TwoPropertyInterface")]
-    public interface ITwoPropertyObject
+    public interface ISinglePropertyObject
     {
         /// <summary>
         /// Gets the value.

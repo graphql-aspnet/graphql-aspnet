@@ -13,7 +13,8 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// A builder that can generate a test server for graphql.
+    /// A base interface describing parameters common to all schema specific
+    /// test server builders.
     /// </summary>
     public interface ITestServerBuilder : IServiceCollection
     {
@@ -21,25 +22,25 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         /// Gets the authentication builder used to configure authentication
         /// parameters known the to test server.
         /// </summary>
-        /// <value>The authorization.</value>
+        /// <value>TestAuthenticationBuilder.</value>
         public TestAuthenticationBuilder Authentication { get; }
 
         /// <summary>
         /// Gets the authorization builder used to configure the roles and policys known the to test server.
         /// </summary>
-        /// <value>The authorization.</value>
+        /// <value>TestAuthorizationBuilder.</value>
         public TestAuthorizationBuilder Authorization { get; }
 
         /// <summary>
         /// Gets the builder to configure the creation of a mocked <see cref="IUserSecurityContext"/>.
         /// </summary>
-        /// <value>The user.</value>
+        /// <value>TestUserSecurityContextBuilder.</value>
         public TestUserSecurityContextBuilder UserContext { get; }
 
         /// <summary>
         /// Gets the builder to configure the setup of the logging framework.
         /// </summary>
-        /// <value>The logging.</value>
+        /// <value>TestLoggingBuilder.</value>
         public TestLoggingBuilder Logging { get; }
     }
 }

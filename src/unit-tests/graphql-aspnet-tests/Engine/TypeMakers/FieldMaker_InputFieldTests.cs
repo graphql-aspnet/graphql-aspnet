@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_NotRequiredValueTypePropertyCheck()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<InputTestObject>();
 
             var fieldTemplate = template
                 .FieldTemplates
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_RequiredValueTypePropertyCheck()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<InputTestObject>();
 
             var fieldTemplate = template
                 .FieldTemplates
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_NotRequiredReferenceTypePropertyCheck()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<InputTestObject>();
 
             var fieldTemplate = template
                 .FieldTemplates
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_RequiredReferenceTypePropertyCheck()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<InputTestObject>();
 
             var fieldTemplate = template
                 .FieldTemplates
@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_RequiredNonNullableReferenceTypePropertyCheck()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<InputTestObject>();
 
             var fieldTemplate = template
                 .FieldTemplates
@@ -153,7 +153,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_RequiredGraphIdPropertyCheck()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<InputTestObject>();
 
             var fieldTemplate = template
                 .FieldTemplates
@@ -178,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_NotRequiredGraphIdPropertyCheck()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<InputTestObject>();
 
             var fieldTemplate = template
                 .FieldTemplates
@@ -202,7 +202,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_NotRequiredNullableGraphIdPropertyCheck()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<InputTestObject>();
 
             var fieldTemplate = template
                 .FieldTemplates
