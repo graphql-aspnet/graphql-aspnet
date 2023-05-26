@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
         private (MockClientConnection, GraphqlWsLegacyClientProxy<GraphSchema>, Mock<ISubscriptionEventRouter>) CreateConnection()
         {
             var server = new TestServerBuilder()
-                .AddGraphController<GraphqlWsLegacySubscriptionController>()
+                .AddController<GraphqlWsLegacySubscriptionController>()
                 .AddSubscriptionServer((options) =>
                 {
                     options.ConnectionKeepAliveInterval = TimeSpan.FromMinutes(15);

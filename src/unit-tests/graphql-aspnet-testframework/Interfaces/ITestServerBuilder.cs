@@ -8,6 +8,8 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Framework.Interfaces
 {
+    using System.Threading.Tasks;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Tests.Framework.ServerBuilders;
     using Microsoft.Extensions.DependencyInjection;
@@ -23,24 +25,24 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         /// parameters known the to test server.
         /// </summary>
         /// <value>TestAuthenticationBuilder.</value>
-        public TestAuthenticationBuilder Authentication { get; }
+        ITestAuthenticationBuilder Authentication { get; }
 
         /// <summary>
         /// Gets the authorization builder used to configure the roles and policys known the to test server.
         /// </summary>
         /// <value>TestAuthorizationBuilder.</value>
-        public TestAuthorizationBuilder Authorization { get; }
+        ITestAuthorizationBuilder Authorization { get; }
 
         /// <summary>
         /// Gets the builder to configure the creation of a mocked <see cref="IUserSecurityContext"/>.
         /// </summary>
         /// <value>TestUserSecurityContextBuilder.</value>
-        public TestUserSecurityContextBuilder UserContext { get; }
+        ITestUserSecurityContextBuilder UserContext { get; }
 
         /// <summary>
         /// Gets the builder to configure the setup of the logging framework.
         /// </summary>
         /// <value>TestLoggingBuilder.</value>
-        public TestLoggingBuilder Logging { get; }
+        ITestLoggingBuilder Logging { get; }
     }
 }

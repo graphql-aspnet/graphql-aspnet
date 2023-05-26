@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -17,14 +18,16 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
     /// <summary>
     /// A builder used to configure how logging will be injected into a created <see cref="TestServer{TSchema}"/>.
     /// </summary>
-    public class TestLoggingBuilder : IGraphQLTestFrameworkComponent
+    /// <typeparam name="TSchema">The type of the schema this component is targeting.</typeparam>
+    public class TestLoggingBuilder<TSchema> : IGraphQLTestFrameworkComponent<TSchema>, ITestLoggingBuilder
+        where TSchema : class, ISchema
     {
         private readonly List<ILoggerProvider> _customProviders;
         private LogLevel _minLevel;
         private bool _enableLogging;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestLoggingBuilder"/> class.
+        /// Initializes a new instance of the <see cref="TestLoggingBuilder{TSchema}"/> class.
         /// </summary>
         public TestLoggingBuilder()
         {
@@ -34,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         }
 
         /// <inheritdoc />
-        public void Inject(IServiceCollection serviceCollection)
+        public virtual void Inject(IServiceCollection serviceCollection)
         {
             if (_enableLogging)
             {
@@ -48,35 +51,22 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
             }
         }
 
-        /// <summary>
-        /// Adds a logger provider that will be injected as part of the logging settings when this
-        /// component is registered to a service collection.
-        /// </summary>
-        /// <param name="provider">The provider.</param>
-        /// <returns>TestLoggingBuilder.</returns>
-        public TestLoggingBuilder AddLoggerProvider(ILoggerProvider provider)
+        /// <inheritdoc />
+        public virtual ITestLoggingBuilder AddLoggerProvider(ILoggerProvider provider)
         {
             _customProviders.Add(provider);
             return this;
         }
 
-        /// <summary>
-        /// Sets the global minimum level of any log message for it to be "logged".
-        /// </summary>
-        /// <param name="logLevel">The log level to value.</param>
-        /// <returns>TestLoggingBuilder.</returns>
-        public TestLoggingBuilder SetMinimumLogLevel(LogLevel logLevel)
+        /// <inheritdoc />
+        public virtual ITestLoggingBuilder SetMinimumLogLevel(LogLevel logLevel)
         {
             _minLevel = logLevel;
             return this;
         }
 
-        /// <summary>
-        /// Disables all logging services. It will not be injected into the service collection
-        /// when the test server starts.
-        /// </summary>
-        /// <returns>TestLoggingBuilder.</returns>
-        public TestLoggingBuilder DisableLogging()
+        /// <inheritdoc />
+        public virtual ITestLoggingBuilder DisableLogging()
         {
             _enableLogging = false;
             return this;

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using Microsoft.Extensions.DependencyInjection;
@@ -19,21 +20,17 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
     /// <summary>
     /// A builder for generating a <see cref="ClaimsPrincipal" /> from a set of claims and roles.
     /// </summary>
-    public class TestUserSecurityContextBuilder : IGraphQLTestFrameworkComponent
+    /// <typeparam name="TSchema">The type of the schema this component is targeting.</typeparam>
+    public class TestUserSecurityContextBuilder<TSchema> : IGraphQLTestFrameworkComponent<TSchema>, ITestUserSecurityContextBuilder
+        where TSchema : class, ISchema
     {
-        /// <summary>
-        /// The scheme under which the user is authenticated if no scheme
-        /// is supplied.
-        /// </summary>
-        public const string DEFAULT_SCHEME = TestAuthenticationBuilder.DEFAULT_AUTH_SCHEMA;
-
         private readonly List<string> _userRoles;
         private readonly List<Claim> _userClaims;
         private readonly ITestServerBuilder _parentServerBuilder;
         private string _authScheme;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestUserSecurityContextBuilder"/> class.
+        /// Initializes a new instance of the <see cref="TestUserSecurityContextBuilder{TSchema}"/> class.
         /// </summary>
         /// <param name="serverBuilder">The server builder.</param>
         public TestUserSecurityContextBuilder(ITestServerBuilder serverBuilder)
@@ -50,14 +47,8 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
             // nothing to inject for the user account that is created
         }
 
-        /// <summary>
-        /// Configures the user to be constructed in an authenticated state.
-        /// </summary>
-        /// <param name="username">The username to assign to the user.</param>
-        /// <param name="authScheme">The authentication scheme under which the user should be authenticated.</param>
-        /// <param name="usernameClaimType">The name of the claim that will hold the username on the <see cref="ClaimsPrincipal"/>.</param>
-        /// <returns>TestUserAccountBuilder.</returns>
-        public TestUserSecurityContextBuilder Authenticate(string username = "john-doe", string authScheme = DEFAULT_SCHEME, string usernameClaimType = TestAuthorizationBuilder.USERNAME_CLAIM_TYPE)
+        /// <inheritdoc />
+        public ITestUserSecurityContextBuilder Authenticate(string username = "john-doe", string authScheme = TestFrameworkConstants.DEFAULT_AUTH_SCHEME, string usernameClaimType = TestFrameworkConstants.USERNAME_CLAIM_TYPE)
         {
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentException(nameof(username));
@@ -72,35 +63,21 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
             return this.AddUserClaim(usernameClaimType, username);
         }
 
-        /// <summary>
-        /// Adds an authorized claim of the given type and value to the user account.
-        /// The user is automatically set to be authenticated when the claim is added.
-        /// </summary>
-        /// <param name="claimType">The claim type.</param>
-        /// <param name="claimValue">The claim value.</param>
-        /// <returns>TestAuthorizationBuilder.</returns>
-        public TestUserSecurityContextBuilder AddUserClaim(string claimType, string claimValue)
+        /// <inheritdoc />
+        public ITestUserSecurityContextBuilder AddUserClaim(string claimType, string claimValue)
         {
             _userClaims.Add(new Claim(claimType, claimValue));
             return this;
         }
 
-        /// <summary>
-        /// Adds a single, authorized role to the user account.
-        /// The user is automatically authenticated when the role is added.
-        /// </summary>
-        /// <param name="roleName">Name of the role to add.</param>
-        /// <returns>TestAuthorizationBuilder.</returns>
-        public TestUserSecurityContextBuilder AddUserRole(string roleName)
+        /// <inheritdoc />
+        public ITestUserSecurityContextBuilder AddUserRole(string roleName)
         {
             _userRoles.Add(roleName);
             return this;
         }
 
-        /// <summary>
-        /// Creates a new user account with the user settings defined in this builder.
-        /// </summary>
-        /// <returns>ClaimsPrincipal.</returns>
+        /// <inheritdoc />
         public IUserSecurityContext CreateSecurityContext()
         {
             var context = new TestUserSecurityContext(_parentServerBuilder?.Authentication?.DefaultAuthenticationScheme);

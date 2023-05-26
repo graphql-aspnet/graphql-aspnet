@@ -62,16 +62,16 @@ namespace GraphQL.AspNet.Tests.Framework
                 var claimsToAdd = new List<Claim>();
                 claimsToAdd.AddRange(claims);
                 foreach (var role in roles)
-                    claimsToAdd.Add(new Claim(TestAuthorizationBuilder.ROLE_CLAIM_TYPE, role));
+                    claimsToAdd.Add(new Claim(TestFrameworkConstants.ROLE_CLAIM_TYPE, role));
 
                 ClaimsIdentity identity;
                 if (isAuthenticated)
                 {
                     identity = new ClaimsIdentity(
                         claimsToAdd,
-                        TestAuthorizationBuilder.AUTH_SCHEMA,
-                        TestAuthorizationBuilder.USERNAME_CLAIM_TYPE,
-                        TestAuthorizationBuilder.ROLE_CLAIM_TYPE);
+                        TestFrameworkConstants.DEFAULT_AUTH_SCHEME,
+                        TestFrameworkConstants.USERNAME_CLAIM_TYPE,
+                        TestFrameworkConstants.ROLE_CLAIM_TYPE);
                 }
                 else
                 {
