@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// A framework component used to determine how logging will support will be
+    /// A framework component used to determine how logging support will be
     /// added to the test server.
     /// </summary>
     public interface ITestLoggingBuilder : IGraphQLTestFrameworkComponent

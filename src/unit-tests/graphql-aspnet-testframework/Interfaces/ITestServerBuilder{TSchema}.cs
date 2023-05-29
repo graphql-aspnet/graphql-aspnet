@@ -46,7 +46,6 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
             where TController : GraphController;
 
         /// <inheritdoc cref="SchemaOptions.AddController{TController}(ServiceLifetime?)" />
-        [Obsolete("Use AddController instead.")]
         ITestServerBuilder<TSchema> AddGraphController<TController>(ServiceLifetime? customLifetime = null)
             where TController : GraphController;
 

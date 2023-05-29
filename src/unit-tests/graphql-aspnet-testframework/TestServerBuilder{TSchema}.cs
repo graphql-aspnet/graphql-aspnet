@@ -143,8 +143,8 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Adds the complete type definition that will be parsed and put into the schema.
         /// </summary>
         /// <param name="type">The .NET object type being added.</param>
-        /// <param name="typeKind">A specific GraphQL typekind, if needed.</param>
-        /// <param name="customLifetime">A custom registration lifetime (ignored for standard graph types).</param>
+        /// <param name="typeKind">A specific GraphQL typekind, if needed (ignored for types determined to be controllers or directives).</param>
+        /// <param name="customLifetime">A custom registration lifetime (ignored for types deteremined to be a standard graph type).</param>
         /// <returns>ITestServerBuilder&lt;TSchema&gt;.</returns>
         protected ITestServerBuilder<TSchema> AddType(Type type, TypeKind? typeKind = null, ServiceLifetime? customLifetime = null)
         {
@@ -153,7 +153,6 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc cref="ITestServerBuilder{TSchema}.AddController{TController}(ServiceLifetime?)" />
-        [Obsolete($"Use AddController() instead.")]
         public virtual ITestServerBuilder<TSchema> AddGraphController<TController>(ServiceLifetime? customLifetime = null)
             where TController : GraphController
         {
@@ -215,11 +214,11 @@ namespace GraphQL.AspNet.Tests.Framework
             };
 
             // perform a schema injection to setup all the registered
-            // graph types for the schema
+            // graph types for the schema in the DI container
             var injector = GraphQLSchemaInjectorFactory.Create(this.SchemaOptions, masterConfigMethod);
             injector.ConfigureServices();
 
-            // allow the typed services to do their thing with the
+            // allow the typed test components to do their thing with the
             // schema builder
             foreach (var component in this.TestComponents.Where(x => x is IGraphQLTestFrameworkComponent<TSchema>))
                 ((IGraphQLTestFrameworkComponent<TSchema>)component).Configure(injector.SchemaBuilder);
@@ -252,7 +251,8 @@ namespace GraphQL.AspNet.Tests.Framework
         public ITestLoggingBuilder Logging { get; protected set; }
 
         /// <summary>
-        /// Gets a list of test components currently registered to this instance.
+        /// Gets a list of test components currently registered to this builder instance. These
+        /// components will be used to construct a server instance.
         /// </summary>
         /// <value>The registered test components.</value>
         protected IList<IGraphQLTestFrameworkComponent> TestComponents { get; }

@@ -9,7 +9,7 @@ GraphQL ASP.NET is a fully featured graphql library that utilizes a controller/a
 
 ```csharp 
 // Excute a simple Test against a controller method
-public async Task WhenGivenTwoNumbers_ControllerReturnsTheSum()
+public async Task WhenGivenTwoNumbers_TheSumIsReturned()
 {
     // **Arrange**
     var expectedOutput = @"{ 
@@ -20,7 +20,7 @@ public async Task WhenGivenTwoNumbers_ControllerReturnsTheSum()
 
     // generate a 'server' of a schema with one controller
     var server = new TestServerBuilder()
-                    .AddController<CalculatorGraphController>()
+                    .AddController<CalculatorController>()
                     .Build();
 
     // build a request to send to the server
@@ -36,9 +36,10 @@ public async Task WhenGivenTwoNumbers_ControllerReturnsTheSum()
 ```
 
 ### Supported Features
-* Setup specific authentication and authorization scenarios to test security
-* Mock and inject any dependencies for your controllers  
-* Interrogate the `IQueryExecutionResult` object for specific messages, metrics or thrown exceptions.
+* Setup specific authentication and authorization scenarios to test security.
+* Mock and inject any dependencies for your controllers.
+* Interrogate the `IQueryExecutionResult` object for specific data, messages, metrics or thrown exceptions.
+* Render the resultant json document that would be sent to the requestor.
 
 Read the [documentation](https://graphql-aspnet.github.io/docs/development/unit-testing) for full details
 

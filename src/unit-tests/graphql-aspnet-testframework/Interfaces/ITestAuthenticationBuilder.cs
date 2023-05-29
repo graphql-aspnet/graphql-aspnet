@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
 {
     /// <summary>
     /// A test server component that can configure authentication scheme related
-    /// parameters for the new server.
+    /// parameters for the test server.
     /// </summary>
     public interface ITestAuthenticationBuilder : IGraphQLTestFrameworkComponent
     {

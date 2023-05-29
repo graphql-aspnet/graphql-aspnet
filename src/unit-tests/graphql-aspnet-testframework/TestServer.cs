@@ -420,8 +420,8 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Creates an execution context to invoke a directive execution pipeleine.
         /// </summary>
         /// <typeparam name="TDirective">The type of the directive to invoke.</typeparam>
-        /// <param name="location">The target location of the invocation.</param>
-        /// <param name="directiveTarget">The target object of hte invocation.</param>
+        /// <param name="location">The target location from where the directive is being called.</param>
+        /// <param name="directiveTarget">The target object of the invocation.</param>
         /// <param name="phase">The phase of invocation.</param>
         /// <param name="origin">The origin in a source document, if any.</param>
         /// <param name="arguments">The arguments to pass to the directive, if any.</param>

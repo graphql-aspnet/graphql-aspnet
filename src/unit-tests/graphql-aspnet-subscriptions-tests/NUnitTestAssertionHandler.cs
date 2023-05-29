@@ -15,15 +15,15 @@ namespace GraphQL.AspNet.Tests
     public class NUnitTestAssertionHandler : IGraphQLTestAssertionHandler
     {
         /// <inheritdoc />
-        public void AssertEquality(object expectedObject, object actualObject, string failureMessage = null)
-        {
-            Assert.AreEqual(expectedObject, actualObject, failureMessage);
-        }
-
-        /// <inheritdoc />
         public void AssertFailure(string message)
         {
             Assert.Fail(message);
+        }
+
+        /// <inheritdoc />
+        public void AssertEquality(object expectedObject, object actualObject, string failureMessage = null)
+        {
+            Assert.AreEqual(expectedObject, actualObject, failureMessage);
         }
 
         /// <inheritdoc />
