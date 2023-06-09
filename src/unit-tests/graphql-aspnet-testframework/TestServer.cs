@@ -226,33 +226,25 @@ namespace GraphQL.AspNet.Tests.Framework
 
             if (graphType == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"Unable to locate a registered graph type that matched the supplied source data (Type: {typeof(TType).FriendlyName()})");
+                throw new InvalidOperationException($"Unable to locate a registered graph type that matched the supplied source data (Type: {typeof(TType).FriendlyName()})");
             }
 
             var typedGraphType = graphType as ITypedSchemaItem;
             if (typedGraphType == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"The target graph type '{graphType.Name}' is not a strongly typed graph type and cannot be invoked via this builder.");
+                throw new InvalidOperationException($"The target graph type '{graphType.Name}' is not a strongly typed graph type and cannot be invoked via this builder.");
             }
 
             var container = graphType as IGraphFieldContainer;
             if (container == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"The target graph type '{graphType.Name}' is not a field container. No field context builder can be created.");
+                throw new InvalidOperationException($"The target graph type '{graphType.Name}' is not a field container. No field context builder can be created.");
             }
 
             var field = container.Fields.FindField(fieldName);
             if (field == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"The target graph type '{graphType.Name}' does not contain a field named '{fieldName}'.");
+                throw new InvalidOperationException($"The target graph type '{graphType.Name}' does not contain a field named '{fieldName}'.");
             }
 
             arguments = arguments ?? InputArgumentCollectionFactory.Create();
@@ -328,33 +320,25 @@ namespace GraphQL.AspNet.Tests.Framework
 
             if (graphType == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"Unable to locate a registered graph type that matched the supplied source data (Type: {typeof(TType).FriendlyName()})");
+                throw new InvalidOperationException($"Unable to locate a registered graph type that matched the supplied source data (Type: {typeof(TType).FriendlyName()})");
             }
 
             var typedGraphType = graphType as ITypedSchemaItem;
             if (typedGraphType == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"The target graph type '{graphType.Name}' is not a strongly typed graph type and cannot be invoked via this builder.");
+                throw new InvalidOperationException($"The target graph type '{graphType.Name}' is not a strongly typed graph type and cannot be invoked via this builder.");
             }
 
             var container = graphType as IGraphFieldContainer;
             if (container == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"The target graph type '{graphType.Name}' is not a field container. No field context builder can be created.");
+                throw new InvalidOperationException($"The target graph type '{graphType.Name}' is not a field container. No field context builder can be created.");
             }
 
             var field = container.Fields.FindField(fieldName);
             if (field == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"The target graph type '{graphType.Name}' does not contain a field named '{fieldName}'.");
+                throw new InvalidOperationException($"The target graph type '{graphType.Name}' does not contain a field named '{fieldName}'.");
             }
 
             var graphMethod = this.CreateInvokableReference<TType>(fieldName, typeKind);
@@ -386,9 +370,7 @@ namespace GraphQL.AspNet.Tests.Framework
             var fieldContainer = template as IGraphTypeFieldTemplateContainer;
             if (fieldContainer == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"The provided type '{typeof(TObjectType).FriendlyName()}' is not " +
+                throw new InvalidOperationException($"The provided type '{typeof(TObjectType).FriendlyName()}' is not " +
                                    $"a field container, no invokable method references can be created from it.");
             }
 
@@ -398,19 +380,13 @@ namespace GraphQL.AspNet.Tests.Framework
 
             if (fieldTemplate == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"The provided type '{typeof(TObjectType).FriendlyName()}' does not " +
-                                   $"contain a field named '{fieldName}'.");
+                throw new InvalidOperationException($"The provided type '{typeof(TObjectType).FriendlyName()}' does not " + $"contain a field named '{fieldName}'.");
             }
 
             var method = fieldTemplate as IGraphFieldResolverMethod;
             if (method == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure($"The field named '{fieldName}' on the provided type '{typeof(TObjectType).FriendlyName()}' " +
-                                   $"does not represent an invokable {typeof(IGraphFieldResolverMethod)}. Operation cannot proceed.");
+                throw new InvalidOperationException($"The field named '{fieldName}' on the provided type '{typeof(TObjectType).FriendlyName()}' " + $"does not represent an invokable {typeof(IGraphFieldResolverMethod)}. Operation cannot proceed.");
             }
 
             return method;

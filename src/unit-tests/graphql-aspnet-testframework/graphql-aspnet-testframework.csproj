@@ -2,14 +2,11 @@
   <Import Project="..\..\library-common.props" />
 
   <PropertyGroup>
-    <PackageId>GraphQL.AspNet.TestFramework</PackageId>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <TargetFrameworks>net7.0;net6.0;</TargetFrameworks>
     <RootNamespace>GraphQL.AspNet.Tests.Framework</RootNamespace>
     <AssemblyName>GraphQL.AspNet.TestFramework</AssemblyName>
     <Title>GraphQL ASP.NET Test Framework</Title>
+    <PackageId>GraphQL.AspNet.TestFramework</PackageId>
     <PackageDescription>A support library for quickly generating a schema and server instance to use during unit testing.</PackageDescription>
   </PropertyGroup>
 

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
 {
     using System;
     using System.Text.Json;
+    using NUnit.Framework;
 
     /// <summary>
     /// A set of helper method for comparing json data.
@@ -45,7 +46,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
 
             if (assertOnFailure)
             {
-                GraphQLTestFrameworkProviders.Assertions.AssertFailure(
+                Assert.Fail(
                     message
                     ?? result.ErrorMessage
                     ?? $"Json Elements are not equal at location '{result.Location}' but were expected to be");

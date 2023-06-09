@@ -12,6 +12,8 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
     using System.Collections.Generic;
     using System.Text.Json;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing;
+    using NUnit;
+    using NUnit.Framework;
 
     /// <summary>
     /// Test helper methods to assert various claims about items.
@@ -40,9 +42,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
             if (result.ElementsAreEqual)
                 return;
 
-            GraphQLTestFrameworkProviders
-                .Assertions
-                .AssertFailure(failureMessage ?? result.ErrorMessage);
+            Assert.Fail(failureMessage ?? result.ErrorMessage);
         }
 
         /// <summary>
@@ -59,23 +59,17 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
 
             if (expectedOutput == null && actualOutput != null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure(failureMessage ?? $"{nameof(actualOutput)} was not null but was expected to be.");
+                Assert.Fail(failureMessage ?? $"{nameof(actualOutput)} was not null but was expected to be.");
                 return;
             }
 
             if (expectedOutput != null && actualOutput == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure(failureMessage ?? $"{nameof(actualOutput)} was null but was expected not to be.");
+                Assert.Fail(failureMessage ?? $"{nameof(actualOutput)} was null but was expected not to be.");
                 return;
             }
 
-            GraphQLTestFrameworkProviders
-                .Assertions
-                .AssertEquality(expectedOutput.Count, actualOutput.Count, failureMessage);
+            Assert.AreEqual(expectedOutput.Count, actualOutput.Count, failureMessage);
 
             for (var i = 0; i < expectedOutput.Count; i++)
             {
@@ -89,9 +83,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
                 }
                 else
                 {
-                    GraphQLTestFrameworkProviders
-                        .Assertions
-                        .AssertEquality(expected, actual, failureMessage);
+                    Assert.AreEqual(expected, actual, failureMessage);
                 }
             }
         }
@@ -110,30 +102,22 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
 
             if (expectedObject == null && actualObject != null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure(failureMessage ?? $"{nameof(actualObject)} was not null but was expected to be.");
+                Assert.Fail(failureMessage ?? $"{nameof(actualObject)} was not null but was expected to be.");
                 return;
             }
 
             if (expectedObject != null && actualObject == null)
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertFailure(failureMessage ?? $"{nameof(actualObject)} was null but was expected not to be.");
+                Assert.Fail(failureMessage ?? $"{nameof(actualObject)} was null but was expected not to be.");
                 return;
             }
 
             var type = expectedObject.GetType();
-            GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertEquality(type, actualObject.GetType(), failureMessage);
+            Assert.AreEqual(type, actualObject.GetType(), failureMessage);
 
             if (type.IsValueType || type == typeof(string))
             {
-                GraphQLTestFrameworkProviders
-                    .Assertions
-                    .AssertEquality(expectedObject, actualObject, failureMessage);
+                Assert.AreEqual(expectedObject, actualObject, failureMessage);
                 return;
             }
 
@@ -145,12 +129,8 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
 
                 if (expectedValue == null || actualValue == null)
                 {
-                    GraphQLTestFrameworkProviders
-                        .Assertions
-                        .AssertNull(expectedValue, failureMessage);
-                    GraphQLTestFrameworkProviders
-                        .Assertions
-                        .AssertNull(actualValue, failureMessage);
+                    Assert.IsNull(expectedValue, failureMessage);
+                    Assert.IsNull(actualValue, failureMessage);
                     continue;
                 }
 
@@ -160,9 +140,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
                 }
                 else
                 {
-                    GraphQLTestFrameworkProviders
-                        .Assertions
-                        .AssertEquality(expectedValue, actualValue, failureMessage);
+                    Assert.AreEqual(expectedValue, actualValue, failureMessage);
                 }
             }
         }

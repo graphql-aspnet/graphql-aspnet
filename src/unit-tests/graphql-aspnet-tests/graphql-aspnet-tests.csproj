@@ -29,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\graphql-aspnet\graphql-aspnet.csproj" />
     <ProjectReference Include="..\graphql-aspnet-testframework\graphql-aspnet-testframework.csproj" />
+    <ProjectReference Include="..\graphql-aspnet-tests-common\graphql-aspnet-tests-common.csproj" />
     <ProjectReference Include="..\graphql-aspnet-tests-thirdpartydll\graphql-aspnet-tests-thirdpartydll.csproj" />
   </ItemGroup>
 

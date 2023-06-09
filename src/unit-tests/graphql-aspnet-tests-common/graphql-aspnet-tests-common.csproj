@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net7.0;net6.0;</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;RCS1021;IDE0060;IDE0052;IDE0044;IDE0059;IDE0052;IDE0017;IDE0039;TCS1089;RCS1090;RCS1118;SA1601;RCS1163</NoWarn>
-    <RootNamespace>GraphQL.AspNet.Tests</RootNamespace>
-    <AssemblyName>graphql-aspnet-subscriptions-tests</AssemblyName>
+    <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;RCS1021;IDE0060;IDE0052;IDE0044;IDE0059;IDE0052;IDE0017;IDE0039;RCS1090;RCS1118;SA1601;RCS1163</NoWarn>
+    <RootNamespace>GraphQL.AspNet.Tests.Common</RootNamespace>
+    <AssemblyName>graphql-aspnet-tests-common</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
@@ -28,13 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\graphql-aspnet\graphql-aspnet.csproj" />
-	<ProjectReference Include="..\..\graphql-aspnet-subscriptions\graphql-aspnet-subscriptions.csproj" />
     <ProjectReference Include="..\graphql-aspnet-testframework\graphql-aspnet-testframework.csproj" />
-    <ProjectReference Include="..\graphql-aspnet-tests-common\graphql-aspnet-tests-common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="SubscriptionServer\ClientSubscriptionTestData\" />
   </ItemGroup>
 
 </Project>

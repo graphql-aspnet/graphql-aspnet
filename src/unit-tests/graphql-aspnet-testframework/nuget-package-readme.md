@@ -1,8 +1,8 @@
 ## GraphQL ASP.NET Test Framework
 
-### > [General Documentation](https://graphql-aspnet.github.io)
+### [General Documentation](https://graphql-aspnet.github.io)
 
-### > [Test Framework Documentation](https://graphql-aspnet.github.io/docs/development/unit-testing)
+### [Test Framework Documentation](https://graphql-aspnet.github.io/docs/development/unit-testing)
 
 GraphQL ASP.NET is a fully featured graphql library that utilizes a controller/action programming model similar to ASP.NET. This library is a 1st party test framework to allow you quickly spin up a test server and test your controller methods in an isolated manner. 
 
