@@ -19,31 +19,31 @@ namespace GraphQL.AspNet.Tests.Framework
     public partial class TestServerBuilder<TSchema>
     {
         /// <inheritdoc />
-        public int IndexOf(ServiceDescriptor item)
+        public virtual int IndexOf(ServiceDescriptor item)
         {
             return this.SchemaOptions.ServiceCollection.IndexOf(item);
         }
 
         /// <inheritdoc />
-        public void Insert(int index, ServiceDescriptor item)
+        public virtual void Insert(int index, ServiceDescriptor item)
         {
             this.SchemaOptions.ServiceCollection.Insert(index, item);
         }
 
         /// <inheritdoc />
-        public void RemoveAt(int index)
+        public virtual void RemoveAt(int index)
         {
             this.SchemaOptions.ServiceCollection.RemoveAt(index);
         }
 
         /// <inheritdoc />
-        public void Add(ServiceDescriptor item)
+        public virtual void Add(ServiceDescriptor item)
         {
             this.SchemaOptions.ServiceCollection.Add(item);
         }
 
         /// <inheritdoc />
-        public void Clear()
+        public virtual void Clear()
         {
             this.SchemaOptions.ServiceCollection.Clear();
         }
@@ -55,19 +55,19 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public void CopyTo(ServiceDescriptor[] array, int arrayIndex)
+        public virtual void CopyTo(ServiceDescriptor[] array, int arrayIndex)
         {
             this.SchemaOptions.ServiceCollection.CopyTo(array, arrayIndex);
         }
 
         /// <inheritdoc />
-        public bool Remove(ServiceDescriptor item)
+        public virtual bool Remove(ServiceDescriptor item)
         {
             return this.SchemaOptions.ServiceCollection.Remove(item);
         }
 
         /// <inheritdoc />
-        public IEnumerator<ServiceDescriptor> GetEnumerator()
+        public virtual IEnumerator<ServiceDescriptor> GetEnumerator()
         {
             return this.SchemaOptions.ServiceCollection.GetEnumerator();
         }

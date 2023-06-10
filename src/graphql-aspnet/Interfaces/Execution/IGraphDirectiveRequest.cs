@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using GraphQL.AspNet.Directives;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
@@ -36,7 +37,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 
         /// <summary>
         /// Gets or sets the target object this directive is being executed for. This is
-        /// usually the result of a field resolution during execution or a <see cref="ISchemaItem"/>
+        /// usually a <see cref="IDocumentPart"/> during execution or a <see cref="ISchemaItem"/>
         /// during schema generation and setup.
         /// </summary>
         /// <value>The directive target.</value>

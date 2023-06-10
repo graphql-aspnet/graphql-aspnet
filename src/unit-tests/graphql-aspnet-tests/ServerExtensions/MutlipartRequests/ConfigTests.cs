@@ -21,11 +21,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
-    using GraphQL.AspNet.Tests.Execution.TestData.DirectiveProcessorTypeSystemLocationTestData;
-    using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Internal;
     using Microsoft.Extensions.Primitives;
     using Moq;
     using NUnit.Framework;
@@ -97,7 +94,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     httpContext);
         }
 
-        [TestCase(MultipartRequestMapHandlingMode.Default, "\"variables.var1\"",  false)]
+        [TestCase(MultipartRequestMapHandlingMode.Default, "\"variables.var1\"", false)]
         [TestCase(MultipartRequestMapHandlingMode.None, "\"variables.var1\"", true)]
         [TestCase(MultipartRequestMapHandlingMode.AllowStringPaths, "\"variables.var1\"", false)]
         [TestCase(MultipartRequestMapHandlingMode.None, @"[ ""variables"", ""var1"" ]", false)]
@@ -258,7 +255,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             }";
 
             var blob = ("0", "testData");
-            var blob1 = ("1",  "testData");
+            var blob1 = ("1", "testData");
 
             var (parser, context) = this.CreateTestObject(
                 operations,

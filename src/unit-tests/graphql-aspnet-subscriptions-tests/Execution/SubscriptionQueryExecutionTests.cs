@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var template = TemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.RetrieveObject));
+            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.RetrieveObject));
 
             var sourceObject = new TwoPropertyObject()
             {
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var template = TemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.SkipEventMethod));
+            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.SkipEventMethod));
 
             var sourceObject = new TwoPropertyObject()
             {
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var template = TemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.SkipEventAndCompleteMethod));
+            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.SkipEventAndCompleteMethod));
 
             var sourceObject = new TwoPropertyObject()
             {
@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var template = TemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.CompleteMethod));
+            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.CompleteMethod));
 
             var sourceObject = new TwoPropertyObject()
             {

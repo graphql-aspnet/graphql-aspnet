@@ -8,12 +8,15 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Framework.Interfaces
 {
+    using System.Threading.Tasks;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Tests.Framework.ServerBuilders;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// A builder that can generate a test server for graphql.
+    /// A base interface describing parameters common to all schema specific
+    /// test server builders.
     /// </summary>
     public interface ITestServerBuilder : IServiceCollection
     {
@@ -21,25 +24,25 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         /// Gets the authentication builder used to configure authentication
         /// parameters known the to test server.
         /// </summary>
-        /// <value>The authorization.</value>
-        public TestAuthenticationBuilder Authentication { get; }
+        /// <value>TestAuthenticationBuilder.</value>
+        ITestAuthenticationBuilder Authentication { get; }
 
         /// <summary>
         /// Gets the authorization builder used to configure the roles and policys known the to test server.
         /// </summary>
-        /// <value>The authorization.</value>
-        public TestAuthorizationBuilder Authorization { get; }
+        /// <value>TestAuthorizationBuilder.</value>
+        ITestAuthorizationBuilder Authorization { get; }
 
         /// <summary>
         /// Gets the builder to configure the creation of a mocked <see cref="IUserSecurityContext"/>.
         /// </summary>
-        /// <value>The user.</value>
-        public TestUserSecurityContextBuilder UserContext { get; }
+        /// <value>TestUserSecurityContextBuilder.</value>
+        ITestUserSecurityContextBuilder UserContext { get; }
 
         /// <summary>
         /// Gets the builder to configure the setup of the logging framework.
         /// </summary>
-        /// <value>The logging.</value>
-        public TestLoggingBuilder Logging { get; }
+        /// <value>TestLoggingBuilder.</value>
+        ITestLoggingBuilder Logging { get; }
     }
 }

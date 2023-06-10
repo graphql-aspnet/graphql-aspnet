@@ -47,6 +47,15 @@ namespace GraphQL.AspNet.Execution.Variables
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ResolvedVariableCollection" /> class.
+        /// </summary>
+        /// <param name="capacity">The initial capacity of the collection.</param>
+        public ResolvedVariableCollection(int capacity)
+        {
+            _variables = new Dictionary<string, IResolvedVariable>(capacity);
+        }
+
+        /// <summary>
         /// Adds the variable to the collection.
         /// </summary>
         /// <param name="variable">The variable.</param>

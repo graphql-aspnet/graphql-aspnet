@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         [Test]
         public void InputObject_CreateGraphType_OnlyPropertiesAreRead()
         {
-            var template = TemplateHelper.CreateInputObjectTemplate<TypeCreationItem>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<TypeCreationItem>();
 
             var result = this.MakeGraphType(typeof(TypeCreationItem), TypeKind.INPUT_OBJECT);
             var objectGraphType = result.GraphType as IInputObjectGraphType;
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         [Test]
         public void InputObject_CreateGraphType_DefaultFieldValuesAreParsed()
         {
-            var template = TemplateHelper.CreateInputObjectTemplate<TypeCreationItem>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<TypeCreationItem>();
 
             var result = this.MakeGraphType(typeof(InputTestObjectWithDefaultFieldValues), TypeKind.INPUT_OBJECT);
             var objectGraphType = result.GraphType as IInputObjectGraphType;
@@ -182,7 +182,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             // ensure no stack overflows occur by attempting to create types of types
             // from self references
             // config says properties DO require declaration, override on type says it does not
-            var template = TemplateHelper.CreateInputObjectTemplate<SelfReferencingObject>();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<SelfReferencingObject>();
             var result = this.MakeGraphType(typeof(SelfReferencingObject), TypeKind.INPUT_OBJECT);
 
             var inputType = result.GraphType as IInputObjectGraphType;

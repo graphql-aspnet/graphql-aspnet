@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                 .Build()
                 .Schema;
 
-            var template = TemplateHelper.CreateEnumTemplate<EnumWithDescriptionOnValues>();
+            var template = GraphQLTemplateHelper.CreateEnumTemplate<EnumWithDescriptionOnValues>();
 
             var maker = new EnumGraphTypeMaker(schema);
             var graphType = maker.CreateGraphType(typeof(EnumWithDescriptionOnValues)).GraphType as IEnumGraphType;

@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var manager = new GraphSchemaManager(schema);
             manager.EnsureGraphType<SimpleMethodController>();
 
-            var action = TemplateHelper.CreateFieldTemplate<SimpleMethodController>(nameof(SimpleMethodController.TestActionMethod));
+            var action = GraphQLTemplateHelper.CreateFieldTemplate<SimpleMethodController>(nameof(SimpleMethodController.TestActionMethod));
 
             // query root exists, mutation does not (nothing was added to it)
             Assert.IsTrue(schema.Operations.ContainsKey(GraphOperationType.Query));

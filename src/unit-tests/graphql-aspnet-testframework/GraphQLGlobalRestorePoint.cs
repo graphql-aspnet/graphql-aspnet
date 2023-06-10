@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -33,14 +32,12 @@ namespace GraphQL.AspNet.Tests.Framework
         private readonly IScalarGraphTypeProvider _scalarTypeProvider;
         private readonly IGraphTypeMakerProvider _makerProvider;
         private readonly ServiceLifetime _controllerServiceLifetime;
-        private readonly int? _maxSubConnectedClient;
-        private readonly int _maxSubConcurrentReceiver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLGlobalRestorePoint" /> class.
         /// </summary>
         /// <param name="resetAllProviders">if set to <c>true</c> all providers will
-        /// be immediately reset to their defualt implementation until this restore point is disposed.</param>
+        /// be immediately reset to their default implementation until this restore point is disposed.</param>
         public GraphQLGlobalRestorePoint(bool resetAllProviders = false)
         {
             _templateProvider = GraphQLProviders.TemplateProvider;
@@ -48,11 +45,6 @@ namespace GraphQL.AspNet.Tests.Framework
             _makerProvider = GraphQLProviders.GraphTypeMakerProvider;
 
             _controllerServiceLifetime = GraphQLServerSettings.ControllerServiceLifeTime;
-
-            _maxSubConnectedClient = GraphQLSubscriptionServerSettings.MaxConnectedClientCount;
-            _maxSubConcurrentReceiver = GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
-
-            SubscriptionEventSchemaMap.ClearCache();
 
             if (resetAllProviders)
             {
@@ -83,9 +75,6 @@ namespace GraphQL.AspNet.Tests.Framework
                 GraphQLProviders.GraphTypeMakerProvider = _makerProvider;
 
                 GraphQLServerSettings.ControllerServiceLifeTime = _controllerServiceLifetime;
-
-                GraphQLSubscriptionServerSettings.MaxConnectedClientCount = _maxSubConnectedClient;
-                GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = _maxSubConcurrentReceiver;
             }
         }
     }

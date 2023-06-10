@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void CreateGraphType_PropertyCheck()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateInterfaceTemplate<ISimpleInterface>();
+            var template = GraphQLTemplateHelper.CreateInterfaceTemplate<ISimpleInterface>();
             var typeMaker = new DefaultGraphTypeMakerProvider();
 
             var graphType = typeMaker.CreateTypeMaker(server.Schema, TypeKind.INTERFACE)

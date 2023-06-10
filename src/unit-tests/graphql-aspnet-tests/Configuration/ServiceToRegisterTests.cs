@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.Tests.Configuration
 {
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
@@ -34,12 +35,12 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void PropertyCheck()
         {
             var result = new ServiceToRegister(
-                typeof(ITwoPropertyObject),
+                typeof(ISinglePropertyObject),
                 typeof(TwoPropertyObject),
                 ServiceLifetime.Scoped,
                 true);
 
-            Assert.AreEqual(typeof(ITwoPropertyObject), result.ServiceType);
+            Assert.AreEqual(typeof(ISinglePropertyObject), result.ServiceType);
             Assert.AreEqual(typeof(TwoPropertyObject), result.ImplementationType);
             Assert.AreEqual(ServiceLifetime.Scoped, result.ServiceLifeTime);
             Assert.IsTrue(result.Required);

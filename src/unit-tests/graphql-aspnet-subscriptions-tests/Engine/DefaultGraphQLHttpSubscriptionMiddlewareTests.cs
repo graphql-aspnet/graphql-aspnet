@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.SubscriptionServer.Exceptions;
+    using GraphQL.AspNet.Tests.Engine.TestData;
     using GraphQL.AspNet.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
     using Moq;
@@ -31,23 +32,6 @@ namespace GraphQL.AspNet.Tests.Engine
     [TestFixture]
     public class DefaultGraphQLHttpSubscriptionMiddlewareTests
     {
-        public class FakeWebSocketManager : WebSocketManager
-        {
-            public override bool IsWebSocketRequest => true;
-
-            public override IList<string> WebSocketRequestedProtocols => new List<string>();
-
-            public override Task<WebSocket> AcceptWebSocketAsync(string subProtocol)
-            {
-                return Task.FromResult(new FakeWebSocket(WebSocketState.Open) as WebSocket);
-            }
-        }
-
-        public class FakeWebSocketHttpContext : DefaultHttpContext
-        {
-            public override WebSocketManager WebSockets => new FakeWebSocketManager();
-        }
-
         [Test]
         public async Task NonSocketRequest_AgainstListeningRoute_IsSkipped()
         {

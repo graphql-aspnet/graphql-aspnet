@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Interfaces;
 
     public class MethodClass
     {
@@ -152,7 +153,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
         }
 
         [GraphField]
-        public Task<TwoPropertyObject> InterfaceAsInputParam(ITwoPropertyObject data)
+        public Task<TwoPropertyObject> InterfaceAsInputParam(ISinglePropertyObject data)
         {
             return Task.FromResult(new TwoPropertyObject());
         }

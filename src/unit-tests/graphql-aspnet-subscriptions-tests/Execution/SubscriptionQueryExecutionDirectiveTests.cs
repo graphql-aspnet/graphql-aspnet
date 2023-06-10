@@ -24,12 +24,12 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ExecutionOfAQueryPlan_WithValidDefaultObject_forSubscription_YieldsResult()
         {
             var server = new TestServerBuilder()
-                        .AddGraphController<SubQueryController>()
+                        .AddController<SubQueryController>()
                         .AddDirective<ToLowerDirective>()
                         .AddSubscriptionServer()
                         .Build();
 
-            var template = TemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.RetrieveObject));
+            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.RetrieveObject));
 
             var sourceObject = new TwoPropertyObject()
             {

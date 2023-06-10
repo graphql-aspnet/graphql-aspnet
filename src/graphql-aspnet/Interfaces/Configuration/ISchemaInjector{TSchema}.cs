@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.Startup
+namespace GraphQL.AspNet.Interfaces.Configuration
 {
     using GraphQL.AspNet.Interfaces.Schema;
 
@@ -16,8 +16,13 @@ namespace GraphQL.AspNet.Configuration.Startup
     /// multiple generic types.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema.</typeparam>
-    internal interface ISchemaInjector<TSchema> : ISchemaInjector
+    public interface ISchemaInjector<TSchema> : ISchemaInjector
            where TSchema : class, ISchema
     {
+        /// <summary>
+        /// Gets the pipeline builder for the schema being tracked by this instance.
+        /// </summary>
+        /// <value>The pipeline builder.</value>
+        ISchemaBuilder<TSchema> SchemaBuilder { get; }
     }
 }

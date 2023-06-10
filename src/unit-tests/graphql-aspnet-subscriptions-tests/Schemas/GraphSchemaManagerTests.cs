@@ -25,12 +25,12 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void AddSingleSubscriptionAction_AllDefaults_EnsureFieldStructure()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             GraphQLProviders.TemplateProvider = new SubscriptionEnabledTypeTemplateProvider();
             var schema = new GraphSchema() as ISchema;
             schema.SetNoAlterationConfiguration();
-            schema.SetSubscriptionAllowances();
+            schema.Configuration.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);
 
             var manager = new GraphSchemaManager(schema);
             manager.EnsureGraphType<SimpleMethodController>();
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var type = schema.KnownTypes.FindGraphType(topField) as IObjectGraphType;
 
-            var action = TemplateHelper.CreateFieldTemplate<SimpleMethodController>(nameof(SimpleMethodController.TestActionMethod));
+            var action = GraphQLTemplateHelper.CreateFieldTemplate<SimpleMethodController>(nameof(SimpleMethodController.TestActionMethod));
 
             // ensure the action was put into the field collection of the controller operation
             Assert.IsTrue(type.Fields.ContainsKey(action.Route.Name));
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void AddASubscriptionAction_WithoutUpdatingTheConfiguration_ThrowsDeclarationException()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             GraphQLProviders.TemplateProvider = new SubscriptionEnabledTypeTemplateProvider();
             var schema = new GraphSchema() as ISchema;

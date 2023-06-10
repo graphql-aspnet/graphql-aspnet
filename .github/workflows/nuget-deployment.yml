@@ -18,6 +18,7 @@ env:
   SLN_PATH: ./src/graphql-aspnet.sln  
   PRIMARY_LIB_PATH: ./src/graphql-aspnet/graphql-aspnet.csproj
   SUBSCRIPTIONS_LIB_PATH: ./src/graphql-aspnet-subscriptions/graphql-aspnet-subscriptions.csproj
+  TEST_FRAMEWORK_LIB_PATH: ./src/unit-tests/graphql-aspnet-testframework/graphql-aspnet-testframework.csproj
   BUILD_CONFIG: Release
   OUTPUT_DIR: ./output
   NUGET_KEY: ${{secrets.NUGET_KEY}}
@@ -64,12 +65,14 @@ jobs:
         run: | 
           ./build/pre-package-checks.ps1 -csProjFile "${{env.PRIMARY_LIB_PATH}}"       -versionNumber ${{inputs.version-number}} -versionSuffix "${{inputs.version-suffix}}" 
           ./build/pre-package-checks.ps1 -csProjFile "${{env.SUBSCRIPTIONS_LIB_PATH}}" -versionNumber ${{inputs.version-number}} -versionSuffix "${{inputs.version-suffix}}"
+          ./build/pre-package-checks.ps1 -csProjFile "${{env.TEST_FRAMEWORK_LIB_PATH}}" -versionNumber ${{inputs.version-number}} -versionSuffix "${{inputs.version-suffix}}"
         shell: pwsh
 
       - name: Package Libraries
         run: |
           dotnet pack "${{env.PRIMARY_LIB_PATH}}"       --configuration ${{env.BUILD_CONFIG}} --no-restore --include-symbols --output ${{env.OUTPUT_DIR}} /p:VersionPrefix=${{inputs.version-number}} /p:VersionSuffix="${{inputs.version-suffix}}"
           dotnet pack "${{env.SUBSCRIPTIONS_LIB_PATH}}" --configuration ${{env.BUILD_CONFIG}} --no-restore --include-symbols --output ${{env.OUTPUT_DIR}} /p:VersionPrefix=${{inputs.version-number}} /p:VersionSuffix="${{inputs.version-suffix}}"
+          dotnet pack "${{env.TEST_FRAMEWORK_LIB_PATH}}" --configuration ${{env.BUILD_CONFIG}} --no-restore --include-symbols --output ${{env.OUTPUT_DIR}} /p:VersionPrefix=${{inputs.version-number}} /p:VersionSuffix="${{inputs.version-suffix}}"
 
       # ---------------------------------------        
       # Save Artifacts for later debugging
@@ -87,6 +90,7 @@ jobs:
         run: |
           ./build/post-package-checks.ps1 -csProjFile "${{env.PRIMARY_LIB_PATH}}"       -versionNumber ${{inputs.version-number}} -versionSuffix "${{inputs.version-suffix}}"  -outputDirectory ${{env.OUTPUT_DIR}}
           ./build/post-package-checks.ps1 -csProjFile "${{env.SUBSCRIPTIONS_LIB_PATH}}" -versionNumber ${{inputs.version-number}} -versionSuffix "${{inputs.version-suffix}}"  -outputDirectory ${{env.OUTPUT_DIR}}
+          ./build/post-package-checks.ps1 -csProjFile "${{env.TEST_FRAMEWORK_LIB_PATH}}" -versionNumber ${{inputs.version-number}} -versionSuffix "${{inputs.version-suffix}}"  -outputDirectory ${{env.OUTPUT_DIR}}
         shell: pwsh
 
       # ---------------------------------------        

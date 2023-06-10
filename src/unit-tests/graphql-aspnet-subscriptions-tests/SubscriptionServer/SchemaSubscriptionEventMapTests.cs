@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void MapOfFieldWithNoEventName_RendersOneItem()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
             SubscriptionEventSchemaMap.ClearCache();
 
             var schema = new TestServerBuilder<EventMapSchema>()
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void RetrieveFieldPathByName_YieldsCorrectPath()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
             SubscriptionEventSchemaMap.ClearCache();
 
             var schema = new TestServerBuilder<EventMapSchema>()
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void DuplicateEventName_ThrowsExceptionOnBuild()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
             SubscriptionEventSchemaMap.ClearCache();
             var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
             {

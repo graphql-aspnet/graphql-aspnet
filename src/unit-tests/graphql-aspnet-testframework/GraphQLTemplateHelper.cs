@@ -21,12 +21,12 @@ namespace GraphQL.AspNet.Tests.Framework
     /// <summary>
     /// This class assists in making template instances not connected to the primary provider.
     /// </summary>
-    public static class TemplateHelper
+    public static class GraphQLTemplateHelper
     {
         /// <summary>
-        /// Generates a controller template.
+        /// Generates a controller schema template for the given <see cref="Type"/>.
         /// </summary>
-        /// <typeparam name="TController">The type of the controller to include.</typeparam>
+        /// <typeparam name="TController">The type of the controller to templatize.</typeparam>
         /// <returns>IGraphControllerTemplate.</returns>
         public static IGraphControllerTemplate CreateControllerTemplate<TController>()
              where TController : GraphController
@@ -36,17 +36,17 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Generates a a field template for a single controller action method. This method will not attempt to
-        /// templatize the entire referenced controller, only the single method. Can be handy for testing error conditions
+        /// Generates a schema template for a single field from a controller action method. This method will not attempt to
+        /// templatize the entire referenced controller, only the specified method. Can be handy for testing error conditions
         /// without generating a lot controllers each with different errored methods. Mostly for internal library template testing use.
         /// </summary>
         /// <typeparam name="TController">The type of the controller.</typeparam>
-        /// <param name="methodName">Name of the method.</param>
+        /// <param name="methodName">Name of the action method on the target <typeparamref name="TController"/>.</param>
         /// <returns>IGraphControllerTemplate.</returns>
         public static IGraphFieldTemplate CreateActionMethodTemplate<TController>(string methodName)
              where TController : GraphController
         {
-            var template = new MockGraphControllerTemplate<TController>(methodName);
+            var template = new SingleMethodGraphControllerTemplate<TController>(methodName);
             template.Parse();
             template.ValidateOrThrow();
             return template.FieldTemplates.FirstOrDefault(x => x.Value.InternalName.Equals(methodName, StringComparison.OrdinalIgnoreCase)).Value;
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Generates a template for a give type and kind combination.
+        /// Generates a schema template for a give type and kind combination.
         /// </summary>
         /// <typeparam name="TType">The graph type to template.</typeparam>
         /// <param name="kind">The kind.</param>
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Creates a template of the given type in its "OBJECT" graph type representation.
+        /// Creates a schema template of the given type in its "OBJECT" graph type representation.
         /// </summary>
         /// <typeparam name="TObject">The type to create a template of.</typeparam>
         /// <returns>IObjectGraphTypeTemplate.</returns>
@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Creates a template of the given type in its "INPUT_OBJECT" graph type representation.
+        /// Creates a schema template of the given type in its "INPUT_OBJECT" graph type representation.
         /// </summary>
         /// <typeparam name="TObject">The type to create a template of.</typeparam>
         /// <returns>IInputObjectGraphTypeTemplate.</returns>
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Creates a template of the given enum value.
+        /// Creates a schema template of the given enum value.
         /// </summary>
         /// <typeparam name="TEnum">The enum to template.</typeparam>
         /// <returns>IEnumGraphTypeTemplate.</returns>
@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Creates a template of the given interface.
+        /// Creates a schema template of the given interface.
         /// </summary>
         /// <typeparam name="TInterface">The interface to template.</typeparam>
         /// <returns>IInterfaceGraphTypeTemplate.</returns>
@@ -134,7 +134,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Creates a template of the given directive.
+        /// Creates a schema template of the given directive.
         /// </summary>
         /// <typeparam name="TDirective">The type of the directive to template.</typeparam>
         /// <returns>IGraphDirectiveTemplate.</returns>

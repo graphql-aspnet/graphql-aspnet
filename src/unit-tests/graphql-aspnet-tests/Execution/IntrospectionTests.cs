@@ -273,7 +273,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 .AddType<IntrospectableEnum>()
                 .Build();
 
-            var template = TemplateHelper.CreateEnumTemplate<IntrospectableEnum>();
+            var template = GraphQLTemplateHelper.CreateEnumTemplate<IntrospectableEnum>();
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
@@ -316,7 +316,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 .AddType<IntrospectableObject>()
                 .Build();
 
-            var template = TemplateHelper.CreateObjectTemplate<IntrospectableObject>();
+            var template = GraphQLTemplateHelper.CreateObjectTemplate<IntrospectableObject>();
 
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();

@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
     using System.Text.Json;
 
     /// <summary>
-    /// Deserialization helpers for converting json data.
+    /// Deserialization helpers for working with json data in a testing scenario.
     /// </summary>
     public static class Utf8JsonReaderExtensions
     {

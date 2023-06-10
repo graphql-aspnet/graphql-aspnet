@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var schema = new GraphSchema();
             schema.SetNoAlterationConfiguration();
 
-            var action = TemplateHelper.CreateActionMethodTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
+            var action = GraphQLTemplateHelper.CreateActionMethodTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
             var unionResult = new UnionGraphTypeMaker(schema).CreateUnionFromProxy(action.UnionProxy);
             var union = unionResult.GraphType as IUnionGraphType;
 

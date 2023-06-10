@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         [Test]
         public void ActionTemplate_CreateGraphField_WithUnion_UsesUnionNameAsGraphTypeName()
         {
-            var action = TemplateHelper.CreateActionMethodTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
+            var action = GraphQLTemplateHelper.CreateActionMethodTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
             var field = this.MakeGraphField(action);
 
             Assert.IsNotNull(field);
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         [Test]
         public void ActionTemplate_RetrieveRequiredTypes_WithUnion_ReturnsUnionTypes_NotMethodReturnType()
         {
-            var action = TemplateHelper.CreateActionMethodTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
+            var action = GraphQLTemplateHelper.CreateActionMethodTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
             var field = this.MakeGraphField(action);
 
             var dependentTypes = action.RetrieveRequiredTypes()?.ToList();
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_PolicyOnController_IsInheritedByField()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateControllerTemplate<SecuredController>();
+            var template = GraphQLTemplateHelper.CreateControllerTemplate<SecuredController>();
 
             // method declares no polciies
             // controller declares 1
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_PolicyOnController_AndOnMethod_IsInheritedByField_InCorrectOrder()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateControllerTemplate<SecuredController>();
+            var template = GraphQLTemplateHelper.CreateControllerTemplate<SecuredController>();
 
             // controller declares 1 policy
             // method declares 1 policy
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         public void Parse_MethodWithNullableEnum_ParsesCorrectly()
         {
             var server = new TestServerBuilder().Build();
-            var template = TemplateHelper.CreateControllerTemplate<NullableEnumController>();
+            var template = GraphQLTemplateHelper.CreateControllerTemplate<NullableEnumController>();
 
             Assert.AreEqual(1, template.FieldTemplates.Count);
 

@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="..\library-common.props" />
+  <Import Project="..\library-common.props" />
 
   <PropertyGroup>
     <AssemblyName>GraphQL.AspNet</AssemblyName>
@@ -9,37 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="ServerExtensions/MultipartRequests/**/*.*" />
     <Content Include="Common/JsonNodes/**/*.*" />
   </ItemGroup>
 
+  <!-- netstandard 2.0 -->
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <Compile Remove="ServerExtensions/MultipartRequests/**/*.*" />
     <Compile Remove="Common/JsonNodes/**/*.*" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
-    <PackageReference Include="System.Collections.Immutable" Version="1.6.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Caching" Version="4.6.0" />
-    <PackageReference Include="System.Text.Json" Version="4.6.0" />
-
-    <!-- Transitive package increments to account for MS reported vulnerabilities -->
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.2" />
-    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Common\Exceptions\" />
-  </ItemGroup>
-
 </Project>
