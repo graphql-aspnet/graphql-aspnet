@@ -76,6 +76,8 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             if (_configAction != null)
                 _configAction(_config);
 
+            _expectedProcessorType = typeof(MultipartRequestGraphQLHttpProcessor<>).MakeGenericType(_schemaType);
+
             if (_config.RegisterMultipartRequestHttpProcessor)
             {
                 if (options.QueryHandler.HttpProcessorType != null)
@@ -88,7 +90,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
                         $"cannot be registered for the '{_schemaType.FriendlyName()}' schema.");
                 }
 
-                _expectedProcessorType = typeof(MultipartRequestGraphQLHttpProcessor<>).MakeGenericType(_schemaType);
                 options.QueryHandler.HttpProcessorType = _expectedProcessorType;
             }
 
