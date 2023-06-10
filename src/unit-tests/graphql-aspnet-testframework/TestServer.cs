@@ -182,7 +182,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Creates a mocked context for the execution of an action on a target controller. This
+        /// Creates a builder that will generate a field execution context for an action on a target controller. This
         /// context can be submitted against the field execution pipeline to generate a result.
         /// </summary>
         /// <typeparam name="TController">The type of the controller that owns the
@@ -208,7 +208,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Creates a fully resolved field context that can be processed by the test server.
+        /// Creates a low level field execution context that can be processed by the test server.
         /// </summary>
         /// <typeparam name="TType">The concrete type representing the graph type in the schema.</typeparam>
         /// <param name="fieldName">Name of the field, on the type, as it exists in the schema.</param>
