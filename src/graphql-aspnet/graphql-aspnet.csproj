@@ -12,10 +12,6 @@
     <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="ServerExtensions/MultipartRequests/**/*.*" />
-    <Content Include="Common/JsonNodes/**/*.*" />
-  </ItemGroup>
 
   <!-- netstandard 2.0 -->
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
