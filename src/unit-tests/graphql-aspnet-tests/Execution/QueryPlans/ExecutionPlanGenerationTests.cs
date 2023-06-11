@@ -21,6 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Interfaces;
     using NUnit.Framework;
 
     [TestFixture]
@@ -435,7 +436,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var server = new TestServerBuilder()
                 .AddType<SimplePlanGenerationController>()
-                .AddType<ITwoPropertyObject>()
+                .AddType<ISinglePropertyObject>()
                 .Build();
 
             // unionQuery returns a union graphtype of (TwoPropObject | TwoPropObjectV2)

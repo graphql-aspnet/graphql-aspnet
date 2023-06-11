@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Tests.Schemas.GraphTypeCollectionTestData;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Framework.Interfaces;
 
     [TestFixture]
     public class SchemaTypeCollectionTests
@@ -363,9 +364,9 @@ namespace GraphQL.AspNet.Tests.Schemas
             var server = new TestServerBuilder().Build();
             var collection = new SchemaTypeCollection();
 
-            var interfaceType = this.MakeGraphType(typeof(ITwoPropertyObject), TypeKind.INTERFACE);
+            var interfaceType = this.MakeGraphType(typeof(ISinglePropertyObject), TypeKind.INTERFACE);
 
-            collection.EnsureGraphType(interfaceType, typeof(ITwoPropertyObject));
+            collection.EnsureGraphType(interfaceType, typeof(ISinglePropertyObject));
 
             // TwoPropertyObject implements ITwoPropertyObject
             // but is not part of the schema
@@ -383,10 +384,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             var server = new TestServerBuilder().Build();
             var collection = new SchemaTypeCollection();
 
-            var interfaceType = this.MakeGraphType(typeof(ITwoPropertyObject), TypeKind.INTERFACE);
+            var interfaceType = this.MakeGraphType(typeof(ISinglePropertyObject), TypeKind.INTERFACE);
             var objectType = this.MakeGraphType(typeof(TwoPropertyObject), TypeKind.OBJECT);
 
-            collection.EnsureGraphType(interfaceType, typeof(ITwoPropertyObject));
+            collection.EnsureGraphType(interfaceType, typeof(ISinglePropertyObject));
             collection.EnsureGraphType(objectType, typeof(TwoPropertyObject));
 
             // TwoPropertyObject implements ITwoPropertyObject

@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         public async Task ClientSubscription_FromQueryData_GeneralPropertyCheck()
         {
             var testServer = new TestServerBuilder()
-                .AddGraphController<ClientSubscriptionTestController>()
+                .AddController<ClientSubscriptionTestController>()
                 .AddSubscriptionServer()
                 .Build();
 

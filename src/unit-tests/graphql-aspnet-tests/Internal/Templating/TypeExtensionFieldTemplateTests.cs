@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData;
     using Moq;
     using NUnit.Framework;
@@ -146,7 +147,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual("InterfaceTypeExtensionDescription", template.Description);
             Assert.AreEqual(SchemaItemCollections.Types, template.Route.RootCollection);
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
-            Assert.AreEqual(typeof(ITwoPropertyObject), template.SourceObjectType);
+            Assert.AreEqual(typeof(ISinglePropertyObject), template.SourceObjectType);
             Assert.AreEqual($"[type]/TwoPropertyInterface/Property3", template.Route.Path);
             Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.InterfaceTypeExtension)}", template.InternalFullName);
             Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
@@ -172,7 +173,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             Assert.AreEqual("InterfaceBatchExtensionDescription", template.Description);
             Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
-            Assert.AreEqual(typeof(ITwoPropertyObject), template.SourceObjectType);
+            Assert.AreEqual(typeof(ISinglePropertyObject), template.SourceObjectType);
             Assert.AreEqual("path0", ((IGraphFieldResolverMethod)template).Parent.Name);
             Assert.AreEqual(methodInfo, template.Method);
             Assert.AreEqual(typeof(int), template.ObjectType);

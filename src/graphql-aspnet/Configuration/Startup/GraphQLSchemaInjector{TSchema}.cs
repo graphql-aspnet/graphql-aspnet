@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Configuration.Startup
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -83,9 +82,7 @@ namespace GraphQL.AspNet.Configuration.Startup
             Validation.ThrowIfNull(options.ServiceCollection, $"{nameof(SchemaOptions)}.{nameof(SchemaOptions.ServiceCollection)}");
         }
 
-        /// <summary>
-        /// Configures the services and settings for the schema using the supplied configuration function.
-        /// </summary>
+        /// <inheritdoc />
         public void ConfigureServices()
         {
             // create the builder to guide the rest of the setup operations
@@ -269,10 +266,7 @@ namespace GraphQL.AspNet.Configuration.Startup
             }
         }
 
-        /// <summary>
-        /// Gets the pipeline builder for the schema being tracked by this instance.
-        /// </summary>
-        /// <value>The pipeline builder.</value>
+        /// <inheritdoc />
         public ISchemaBuilder<TSchema> SchemaBuilder => _schemaBuilder;
     }
 }

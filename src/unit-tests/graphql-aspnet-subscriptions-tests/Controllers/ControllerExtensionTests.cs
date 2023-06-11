@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void PublishSubEvent_NoDataThrowsException()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphController<InvokableController>()
+                .AddController<InvokableController>()
                 .Build();
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         public async Task PublishSubEvent_ExistingEventCollectionisAppendedTo()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphController<InvokableController>()
+                .AddController<InvokableController>()
                 .Build();
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void PublishSubEvent_UnusableListForSubscriptionEvents_ThrowsException()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphController<InvokableController>()
+                .AddController<InvokableController>()
                 .Build();
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void PublishSubEvent_NoEventNameFailsTheResolver_BubblesExceptionUp()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphController<InvokableController>()
+                .AddController<InvokableController>()
                 .Build();
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(

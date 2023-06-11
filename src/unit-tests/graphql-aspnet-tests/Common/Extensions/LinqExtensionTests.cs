@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Interfaces;
     using NUnit.Framework;
 
     [TestFixture]
@@ -62,14 +63,14 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
         public void OfTypeButNotType()
         {
             // V1 and V3 implement a  common interface
-            var list = new List<ITwoPropertyObject>();
+            var list = new List<ISinglePropertyObject>();
 
             var obj1 = new TwoPropertyObject();
             var obj3 = new TwoPropertyObjectV3();
             list.Add(obj1);
             list.Add(obj3);
 
-            var result = list.OfTypeButNotType<ITwoPropertyObject, TwoPropertyObject>();
+            var result = list.OfTypeButNotType<ISinglePropertyObject, TwoPropertyObject>();
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(obj3, result.First());
         }
@@ -77,7 +78,7 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
         [Test]
         public void OfTypeButNotType_AgainstNull_ReturnsEmpty()
         {
-            var result = LinqExtensions.OfTypeButNotType<ITwoPropertyObject, TwoPropertyObject>(null);
+            var result = LinqExtensions.OfTypeButNotType<ISinglePropertyObject, TwoPropertyObject>(null);
             CollectionAssert.IsEmpty(result);
         }
     }

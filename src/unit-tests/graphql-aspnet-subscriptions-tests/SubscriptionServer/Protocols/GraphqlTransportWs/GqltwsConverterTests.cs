@@ -183,7 +183,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
         public async Task DataMessage_WithData_SerializesCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphController<GqltwsDataMessageController>()
+                .AddController<GqltwsDataMessageController>()
                 .AddSubscriptionServer()
                 .Build();
 

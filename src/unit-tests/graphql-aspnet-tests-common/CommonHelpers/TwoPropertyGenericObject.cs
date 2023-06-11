@@ -10,10 +10,10 @@
 namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
 {
     /// <summary>
-    /// A test object that has two properties, both generic.
+    /// A test object that has two properties of any type, both generic.
     /// </summary>
-    /// <typeparam name="T1">The type of the first prop.</typeparam>
-    /// <typeparam name="T2">The type of the second prop.</typeparam>
+    /// <typeparam name="T1">The type of the first property.</typeparam>
+    /// <typeparam name="T2">The type of the second property.</typeparam>
     public class TwoPropertyGenericObject<T1, T2>
     {
         /// <summary>

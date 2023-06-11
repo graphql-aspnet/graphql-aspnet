@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Interfaces;
 
     public class ExtensionMethodController : GraphController
     {
@@ -53,15 +54,15 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData
         }
 
         [Description("InterfaceTypeExtensionDescription")]
-        [TypeExtension(typeof(ITwoPropertyObject), "Property3", typeof(TwoPropertyObjectV2))]
-        public IGraphActionResult InterfaceTypeExtension(ITwoPropertyObject sourceData, int arg1)
+        [TypeExtension(typeof(ISinglePropertyObject), "Property3", typeof(TwoPropertyObjectV2))]
+        public IGraphActionResult InterfaceTypeExtension(ISinglePropertyObject sourceData, int arg1)
         {
             return null;
         }
 
         [Description("InterfaceBatchExtensionDescription")]
-        [BatchTypeExtension(typeof(ITwoPropertyObject), "Property3", typeof(List<int>))]
-        public IGraphActionResult InterfaceBatchTestExtension(IEnumerable<ITwoPropertyObject> sourceData, int arg1)
+        [BatchTypeExtension(typeof(ISinglePropertyObject), "Property3", typeof(List<int>))]
+        public IGraphActionResult InterfaceBatchTestExtension(IEnumerable<ISinglePropertyObject> sourceData, int arg1)
         {
             return null;
         }

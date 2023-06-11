@@ -28,7 +28,8 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
             var expectedObject = JsonDocument.Parse(expected).RootElement;
             var actualObject = JsonDocument.Parse(actual).RootElement;
 
-            JsonComparer.AreEqualJson(expectedObject, actualObject);
+            var result = JsonComparer.AreEqualJsonElements(expectedObject, actualObject);
+            Assert.IsTrue(result.ElementsAreEqual);
         }
 
         [Test]
@@ -40,7 +41,8 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
             var expectedObject = JsonDocument.Parse(expected).RootElement;
             var actualObject = JsonDocument.Parse(actual).RootElement;
 
-            JsonComparer.AreEqualJson(expectedObject, actualObject);
+            var result = JsonComparer.AreEqualJsonElements(expectedObject, actualObject);
+            Assert.IsTrue(result.ElementsAreEqual);
         }
 
         [Test]
@@ -52,7 +54,8 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
             var expectedObject = JsonDocument.Parse(expected).RootElement;
             var actualObject = JsonDocument.Parse(actual).RootElement;
 
-            JsonComparer.AreEqualJson(expectedObject, actualObject);
+            var result = JsonComparer.AreEqualJsonElements(expectedObject, actualObject);
+            Assert.IsTrue(result.ElementsAreEqual);
         }
 
         [Test]
@@ -64,7 +67,8 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
             var expectedObject = JsonDocument.Parse(expected).RootElement;
             var actualObject = JsonDocument.Parse(actual).RootElement;
 
-            JsonComparer.AreEqualJson(expectedObject, actualObject);
+            var result = JsonComparer.AreEqualJsonElements(expectedObject, actualObject);
+            Assert.IsTrue(result.ElementsAreEqual);
         }
     }
 }

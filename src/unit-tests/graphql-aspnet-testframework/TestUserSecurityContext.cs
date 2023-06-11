@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// is authenticated under. If null, the user will be set as "not authenticated".</param>
         /// <param name="claims">The claims to add the the principal.</param>
         /// <param name="roles">The roles to add to the principal.</param>
-        public void Setup(string authSchemeUsed, IEnumerable<Claim> claims, IEnumerable<string> roles)
+        public virtual void Setup(string authSchemeUsed, IEnumerable<Claim> claims, IEnumerable<string> roles)
         {
             _schemeAuthedWith = authSchemeUsed;
             var isAuthenticated = authSchemeUsed != null;
@@ -62,16 +62,16 @@ namespace GraphQL.AspNet.Tests.Framework
                 var claimsToAdd = new List<Claim>();
                 claimsToAdd.AddRange(claims);
                 foreach (var role in roles)
-                    claimsToAdd.Add(new Claim(TestAuthorizationBuilder.ROLE_CLAIM_TYPE, role));
+                    claimsToAdd.Add(new Claim(TestFrameworkConstants.ROLE_CLAIM_TYPE, role));
 
                 ClaimsIdentity identity;
                 if (isAuthenticated)
                 {
                     identity = new ClaimsIdentity(
                         claimsToAdd,
-                        TestAuthorizationBuilder.AUTH_SCHEMA,
-                        TestAuthorizationBuilder.USERNAME_CLAIM_TYPE,
-                        TestAuthorizationBuilder.ROLE_CLAIM_TYPE);
+                        TestFrameworkConstants.DEFAULT_AUTH_SCHEME,
+                        TestFrameworkConstants.USERNAME_CLAIM_TYPE,
+                        TestFrameworkConstants.ROLE_CLAIM_TYPE);
                 }
                 else
                 {
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public Task<IAuthenticationResult> AuthenticateAsync(string scheme, CancellationToken token = default)
+        public virtual Task<IAuthenticationResult> AuthenticateAsync(string scheme, CancellationToken token = default)
         {
             var schemeToCheckAgainst = scheme ?? _defaultAuthScheme;
 
@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public Task<IAuthenticationResult> AuthenticateAsync(CancellationToken token = default)
+        public virtual Task<IAuthenticationResult> AuthenticateAsync(CancellationToken token = default)
         {
             return this.AuthenticateAsync(null, token);
         }

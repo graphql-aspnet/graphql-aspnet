@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Interfaces;
 
     public class ControllerWithDirectAndIndirectTypeExtension : GraphController
     {
@@ -22,13 +23,13 @@ namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
         }
 
         [QueryRoot]
-        public ITwoPropertyObject DoOtherThing(int number)
+        public ISinglePropertyObject DoOtherThing(int number)
         {
             return null;
         }
 
-        [TypeExtension(typeof(ITwoPropertyObject), "Property3")]
-        public string ExtendThroughInterface(ITwoPropertyObject obj)
+        [TypeExtension(typeof(ISinglePropertyObject), "Property3")]
+        public string ExtendThroughInterface(ISinglePropertyObject obj)
         {
             return string.Empty;
         }

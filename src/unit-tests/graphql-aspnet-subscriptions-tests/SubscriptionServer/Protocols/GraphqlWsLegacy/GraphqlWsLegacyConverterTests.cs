@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
         {
             var dt = DateTime.UtcNow;
             var server = new TestServerBuilder()
-                .AddGraphController<GraphqlWsLegacyDataMessageController>()
+                .AddController<GraphqlWsLegacyDataMessageController>()
                 .AddSubscriptionServer()
                 .AddGraphQL(options =>
                 {

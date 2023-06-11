@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using GraphQL.AspNet.Interfaces.Execution.Response;
 
     /// <summary>
-    /// Represents a generated response to a query.
+    /// Represents a generated response to a graphql query.
     /// </summary>
     public interface IQueryExecutionResult
     {

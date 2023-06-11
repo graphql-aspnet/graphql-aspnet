@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests
         [Test]
         public void SettingNewConcurrentRecieverCount_UpdatesValue()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             var randoValue = _rando.Next();
             GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = randoValue;
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests
         [Test]
         public void SettingNewMaxConnectedClientCount_UpdatesValue()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             var randoValue = _rando.Next();
             GraphQLSubscriptionServerSettings.MaxConnectedClientCount = randoValue;

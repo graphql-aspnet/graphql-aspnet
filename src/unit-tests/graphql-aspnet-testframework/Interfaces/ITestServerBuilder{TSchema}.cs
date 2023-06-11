@@ -15,55 +15,42 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A test server builder targeting a specific schema.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema being targetd.</typeparam>
-    public interface ITestServerBuilder<TSchema> : ITestServerBuilder
+    public interface ITestServerBuilder<TSchema> : ITestServerBuilder, IServiceCollection
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Adds the test component to those injected into the service provider when the server is built.
+        /// Adds the custom testing component into the service provider when the server is built.
         /// </summary>
-        /// <param name="component">The component.</param>
+        /// <param name="component">The component to add.</param>
         /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
-        ITestServerBuilder<TSchema> AddTestComponent(IGraphTestFrameworkComponent component);
+        ITestServerBuilder<TSchema> AddTestComponent(IGraphQLTestFrameworkComponent component);
 
-        /// <summary>
-        /// Helpful overload for direct access to inject a graph type into the server.
-        /// </summary>
-        /// <typeparam name="TType">The concrete type to parse when creating a graph type.</typeparam>
-        /// <param name="typeKind">The kind of graph type to register as.</param>
-        /// <returns>TestServerBuilder.</returns>
+        /// <inheritdoc cref="SchemaOptions.AddType{TType}(TypeKind?)" />
         ITestServerBuilder<TSchema> AddType<TType>(TypeKind? typeKind = null);
 
-        /// <summary>
-        /// Helpful overload for direct access to inject a graph type into the server.
-        /// </summary>
-        /// <param name="type">The type to inject.</param>
-        /// <param name="typeKind">The kind of graph type to register as.</param>
-        /// <returns>TestServerBuilder.</returns>
+        /// <inheritdoc cref="SchemaOptions.AddType(Type, TypeKind?)" />
         ITestServerBuilder<TSchema> AddType(Type type, TypeKind? typeKind = null);
 
-        /// <summary>
-        /// Helpful overload for direct access to inject a directive into the server.
-        /// </summary>
-        /// <typeparam name="TType">The concrete type to parse when creating a graph type.</typeparam>
-        /// <returns>TestServerBuilder.</returns>
-        ITestServerBuilder<TSchema> AddDirective<TType>()
+        /// <inheritdoc cref="SchemaOptions.AddDirective{TDirective}(ServiceLifetime?)" />
+        ITestServerBuilder<TSchema> AddDirective<TType>(ServiceLifetime? customLifetime = null)
             where TType : GraphDirective;
 
-        /// <summary>
-        /// Adds the graph controller to the server and renders it and its dependents into the target schema.
-        /// </summary>
-        /// <typeparam name="TController">The type of the controller to include.</typeparam>
-        /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
-        ITestServerBuilder<TSchema> AddGraphController<TController>()
+        /// <inheritdoc cref="SchemaOptions.AddController{TController}(ServiceLifetime?)" />
+        ITestServerBuilder<TSchema> AddController<TController>(ServiceLifetime? customLifetime = null)
+            where TController : GraphController;
+
+        /// <inheritdoc cref="SchemaOptions.AddController{TController}(ServiceLifetime?)" />
+        ITestServerBuilder<TSchema> AddGraphController<TController>(ServiceLifetime? customLifetime = null)
             where TController : GraphController;
 
         /// <summary>
-        /// Provides access to the options configuration function used when graphQL is first added
+        /// Provides access to set the runtime configuration function used when graphQL is first added
         /// to a server instance.
         /// </summary>
         /// <param name="configureOptions">The function to invoke to configure graphql settings.</param>
@@ -71,23 +58,23 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         ITestServerBuilder<TSchema> AddGraphQL(Action<SchemaOptions> configureOptions);
 
         /// <summary>
-        /// Adds an action to execute against the master schema builder when this server is built. Mimics a
-        /// call to <see cref="AddGraphQL(Action{SchemaOptions})"/> then taking further action against
-        /// the returned <see cref="ISchemaBuilder{TSchema}"/>.
+        /// Adds a custom action to execute against the master schema builder when this server
+        /// is built. Mimics a scenario where you would call <c>.AddGraphQL()</c> then perform
+        /// further actions against the returned <see cref="ISchemaBuilder{TSchema}"/>, such as updating
+        /// middleware pipelines.
         /// </summary>
-        /// <param name="action">The action.</param>
+        /// <param name="action">The action to perform against the schema builder.</param>
         /// <returns>GraphQL.AspNet.Tests.Framework.TestServerBuilder&lt;TSchema&gt;.</returns>
         ITestServerBuilder<TSchema> AddSchemaBuilderAction(Action<ISchemaBuilder<TSchema>> action);
 
         /// <summary>
-        /// Creates a new test server instance from the current settings in this builder.
+        /// Builds a new test server instance from the current settings in this builder.
         /// </summary>
         /// <returns>TestServer.</returns>
         TestServer<TSchema> Build();
 
         /// <summary>
-        /// Gets the schema options containing all the configuration data for the schema this test
-        /// server will execute for.
+        /// Gets the schema options containing all the configuration data for the target schema.
         /// </summary>
         /// <value>The schema options.</value>
         SchemaOptions<TSchema> SchemaOptions { get; }
