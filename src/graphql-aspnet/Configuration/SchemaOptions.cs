@@ -348,7 +348,7 @@ namespace GraphQL.AspNet.Configuration
             }
         }
 
-        internal void AddFieldTemplate(IGraphQLFieldBuilder fieldTemplate)
+        internal void AddFieldTemplate(IGraphQLResolvedFieldTemplate fieldTemplate)
         {
             throw new NotImplementedException();
         }

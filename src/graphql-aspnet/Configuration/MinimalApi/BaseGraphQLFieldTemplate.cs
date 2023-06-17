@@ -19,27 +19,27 @@ namespace GraphQL.AspNet.Configuration.MinimalApi
     /// An abstract class containing all the common elements across minimal field builders and
     /// their supporting classes.
     /// </summary>
-    internal abstract class BaseGraphQLFieldBuilder : Dictionary<string, object>
+    internal abstract class BaseGraphQLFieldTemplate : Dictionary<string, object>
     {
-        private IGraphQLFieldGroupBuilder _parent;
+        private IGraphQLFieldTemplate _parent;
         private string _partialPathTemplate;
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="BaseGraphQLFieldBuilder"/> class from being created.
+        /// Prevents a default instance of the <see cref="BaseGraphQLFieldTemplate"/> class from being created.
         /// </summary>
-        private BaseGraphQLFieldBuilder()
+        private BaseGraphQLFieldTemplate()
         {
             this.Attributes = new List<Attribute>();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseGraphQLFieldBuilder" /> class.
+        /// Initializes a new instance of the <see cref="BaseGraphQLFieldTemplate" /> class.
         /// </summary>
         /// <param name="options">The schema options where this field item
         /// is being defined.</param>
         /// <param name="partialPathTemplate">The partial path template defined for this
         /// individual entity.</param>
-        protected BaseGraphQLFieldBuilder(
+        protected BaseGraphQLFieldTemplate(
             SchemaOptions options,
             string partialPathTemplate)
             : this()
@@ -51,29 +51,29 @@ namespace GraphQL.AspNet.Configuration.MinimalApi
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseGraphQLFieldBuilder"/> class.
+        /// Initializes a new instance of the <see cref="BaseGraphQLFieldTemplate"/> class.
         /// </summary>
-        /// <param name="groupBuilder">The group builder from which this entity is being created.</param>
+        /// <param name="parentVirtualFieldBuilder">The group builder from which this entity is being created.</param>
         /// <param name="partialPathTemplate">The partial path template defined for this
         /// individual entity.</param>
-        protected BaseGraphQLFieldBuilder(
-            IGraphQLFieldGroupBuilder groupBuilder,
+        protected BaseGraphQLFieldTemplate(
+            IGraphQLFieldTemplate parentVirtualFieldBuilder,
             string partialPathTemplate)
             : this()
         {
-            _parent = Validation.ThrowIfNullOrReturn(groupBuilder, nameof(groupBuilder));
-            this.Options = Validation.ThrowIfNullOrReturn(groupBuilder?.Options, nameof(groupBuilder.Options));
+            _parent = Validation.ThrowIfNullOrReturn(parentVirtualFieldBuilder, nameof(parentVirtualFieldBuilder));
+            this.Options = Validation.ThrowIfNullOrReturn(parentVirtualFieldBuilder?.Options, nameof(parentVirtualFieldBuilder.Options));
 
             _partialPathTemplate = Validation.ThrowIfNullWhiteSpaceOrReturn(partialPathTemplate, nameof(partialPathTemplate));
         }
 
-        /// <inheritdoc cref="IGraphQLFieldBuilder.Options" />
+        /// <inheritdoc cref="IGraphQLResolvedFieldTemplate.Options" />
         public virtual SchemaOptions Options { get; protected set; }
 
-        /// <inheritdoc cref="IGraphQLFieldBuilder.Attributes" />
+        /// <inheritdoc cref="IGraphQLResolvedFieldTemplate.Attributes" />
         public IList<Attribute> Attributes { get; }
 
-        /// <inheritdoc cref="IGraphQLFieldBuilder.Template" />
+        /// <inheritdoc cref="IGraphQLResolvedFieldTemplate.Template" />
         public string Template
         {
             get

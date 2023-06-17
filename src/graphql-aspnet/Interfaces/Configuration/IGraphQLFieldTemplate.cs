@@ -14,10 +14,10 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using GraphQL.AspNet.Configuration;
 
     /// <summary>
-    /// A builder that utilizies a key/value pair system to build up a set of component parts
+    /// An intermediate template that utilizies a key/value pair system to build up a set of component parts
     /// that the templating engine will use to generate a full fledged field in a schema.
     /// </summary>
-    public interface IGraphQLFieldBuilder : IDictionary<string, object>
+    public interface IGraphQLFieldTemplate : IDictionary<string, object>
     {
         /// <summary>
         /// Gets the full path template that points to a location in
