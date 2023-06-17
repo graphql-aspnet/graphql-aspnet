@@ -11,8 +11,8 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Configuration.MinimalApi;
-    using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Configuration.Templates;
+    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Controllers;
     using Microsoft.AspNetCore.Authorization;
 
@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Configuration
         {
             // convert the virtual field to a resolved field
             var resolvedBuilder = GraphQLResolvedFieldTemplate.FromFieldTemplate(field);
-            resolvedBuilder.Options.AddFieldTemplate(resolvedBuilder);
+            resolvedBuilder.Options.AddSchemaItemTemplate(resolvedBuilder);
 
             resolvedBuilder.Resolver = resolverMethod;
             resolvedBuilder.ReturnType = null;
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Configuration
         {
             // convert the virtual field to a resolved field
             var resolvedBuilder = GraphQLResolvedFieldTemplate.FromFieldTemplate(field);
-            resolvedBuilder.Options.AddFieldTemplate(resolvedBuilder);
+            resolvedBuilder.Options.AddSchemaItemTemplate(resolvedBuilder);
 
             resolvedBuilder.Resolver = resolverMethod;
             resolvedBuilder.ReturnType = typeof(TReturnType);
@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Configuration
             var subField = new GraphQLResolvedFieldTemplate(field, subTemplate);
             subField.AddResolver(resolverMethod);
 
-            subField.Options.AddFieldTemplate(subField);
+            subField.Options.AddSchemaItemTemplate(subField);
             return subField;
         }
 

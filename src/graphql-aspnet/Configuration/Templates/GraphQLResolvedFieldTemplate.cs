@@ -7,17 +7,18 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.MinimalApi
+namespace GraphQL.AspNet.Configuration.Templates
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Configuration.Templates;
 
     /// <summary>
     /// An internal implementation of the <see cref="IGraphQLResolvedFieldTemplate"/>
     /// used to generate new graphql fields via a minimal api style of coding.
     /// </summary>
-    internal class GraphQLResolvedFieldTemplate : BaseGraphQLFieldTemplate, IGraphQLResolvedFieldTemplate
+    internal class GraphQLResolvedFieldTemplate : BaseGraphQLRuntimeSchemaItemTemplate, IGraphQLResolvedFieldTemplate
     {
         /// <summary>
         /// Converts the unresolved field into a resolved field. The newly generated field

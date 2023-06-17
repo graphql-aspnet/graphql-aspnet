@@ -16,10 +16,10 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration.Exceptions;
-    using GraphQL.AspNet.Configuration.MinimalApi;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -35,6 +35,7 @@ namespace GraphQL.AspNet.Configuration
         private readonly HashSet<SchemaTypeToRegister> _possibleTypes;
 
         private readonly List<ServiceToRegister> _registeredServices;
+        private readonly List<IGraphQLRuntimeSchemaItemTemplate> _runtimeTemplates;
         private List<ISchemaConfigurationExtension> _configExtensions;
 
         /// <summary>
@@ -51,6 +52,7 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNotCastable<ISchema>(schemaType, nameof(schemaType));
 
             _possibleTypes = new HashSet<SchemaTypeToRegister>(SchemaTypeToRegister.DefaultEqualityComparer);
+            _runtimeTemplates = new List<IGraphQLRuntimeSchemaItemTemplate>();
             _serverExtensions = new Dictionary<Type, IGraphQLServerExtension>();
             _registeredServices = new List<ServiceToRegister>();
             _configExtensions = new List<ISchemaConfigurationExtension>();
@@ -348,10 +350,25 @@ namespace GraphQL.AspNet.Configuration
             }
         }
 
-        internal void AddFieldTemplate(IGraphQLResolvedFieldTemplate fieldTemplate)
+        /// <summary>
+        /// Adds the runtime schema item template to the schema options so that it can be
+        /// created when the schema is set up.
+        /// </summary>
+        /// <param name="template">The template to add.</param>
+        internal void AddSchemaItemTemplate(IGraphQLRuntimeSchemaItemTemplate template)
         {
-            throw new NotImplementedException();
+            _runtimeTemplates.Add(template);
         }
+
+        /// <summary>
+        /// Gets the runtime configured schema item templates that need to be setup
+        /// when the schema is generated.
+        /// </summary>
+        /// <remarks>
+        /// These are the templates created via the Minimal API methods.
+        /// </remarks>
+        /// <value>The runtime templates.</value>
+        public IEnumerable<IGraphQLRuntimeSchemaItemTemplate> RuntimeTemplates => _runtimeTemplates;
 
         /// <summary>
         /// Gets the classes, enums, structs and other types that need to be

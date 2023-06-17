@@ -7,11 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.MinimalApi
+namespace GraphQL.AspNet.Configuration.Templates
 {
     using System;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Configuration.Templates;
 
     /// <summary>
     /// An internal implementation of the <see cref="IGraphQLFieldTemplate"/>
@@ -39,7 +40,7 @@ namespace GraphQL.AspNet.Configuration.MinimalApi
         }
 
         /// <inheritdoc />
-        public FieldResolutionMode ExecutionMode { get; }
+        public FieldResolutionMode ExecutionMode { get; set; }
 
         /// <inheritdoc />
         public Type TargetType { get; }

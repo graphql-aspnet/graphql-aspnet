@@ -7,15 +7,16 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.MinimalApi
+namespace GraphQL.AspNet.Configuration.Templates
 {
-    using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Configuration.Templates;
 
     /// <summary>
     /// An internal implementation of the <see cref="IGraphQLFieldTemplate"/>
     /// used to generate new graphql fields via a minimal api style of coding.
     /// </summary>
-    internal class GraphQLVirtualFieldTemplate : BaseGraphQLFieldTemplate, IGraphQLFieldTemplate
+    internal class GraphQLVirtualFieldTemplate : BaseGraphQLRuntimeSchemaItemTemplate, IGraphQLFieldTemplate
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLVirtualFieldTemplate"/> class.

@@ -11,8 +11,12 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Configuration.Templates;
+    using GraphQL.AspNet.Interfaces.Controllers;
+    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
     /// Extension methods for configuring minimal API methods as fields on the graph.
@@ -20,66 +24,102 @@ namespace GraphQL.AspNet.Configuration
     public static partial class GraphQLMinimalApiExtensions
     {
         /// <summary>
-        /// Registers a new batched type extension to a given type for the target schema.
+        /// Adds policy-based authorization requirements to the field.
         /// </summary>
         /// <remarks>
-        /// The supplied resolver must declare a parameter that implements an <see cref="IEnumerable{T}"/>
-        /// for the supplied <typeparamref name="TType"/>.
+        /// This is similar to adding the <see cref="AuthorizeAttribute"/> to a controller method
         /// </remarks>
-        /// <typeparam name="TType">The concrete interface, class or struct to extend with a new field.</typeparam>
-        /// <param name="schemaOptions">The configuration options for the target schema.</param>
-        /// <param name="fieldName">Name of the field to add to the <typeparamref name="TType"/>.</param>
-        /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
-        /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLResolvedFieldTemplate MapBatchTypeExtension<TType>(this SchemaOptions schemaOptions, string fieldName, Delegate resolverMethod = null)
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="policyName">The name of the policy to assign via this requirement.</param>
+        /// <param name="roles">A comma-seperated list of roles to assign via this requirement.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLTypeExtensionTemplate RequireAuthorization(
+            this IGraphQLTypeExtensionTemplate fieldBuilder,
+            string policyName = null,
+            string roles = null)
         {
-            return schemaOptions.MapBatchTypeExtension(
-                typeof(TType),
-                fieldName,
-                resolverMethod);
+            Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
+
+            var attrib = new AuthorizeAttribute();
+            attrib.Policy = policyName?.Trim();
+            attrib.Roles = roles?.Trim();
+            fieldBuilder.Attributes.Add(attrib);
+            return fieldBuilder;
         }
 
         /// <summary>
-        /// Registers a new batched type extension to a given type for the target schema.
+        /// Indicates that the field should allow anonymous access.
         /// </summary>
         /// <remarks>
-        /// The supplied resolver must declare a parameter that implements an <see cref="IEnumerable{T}"/>
-        /// for the supplied <paramref name="typeToExtend"/>.
+        /// This is similar to adding the <see cref="AllowAnonymousAttribute"/> to a controller method
         /// </remarks>
-        /// <param name="schemaOptions">The configuration options for the target schema.</param>
-        /// <param name="typeToExtend">The concrete interface, class or struct to extend with a new field.</param>
-        /// <param name="fieldName">Name of the field to add to the <paramref name="typeToExtend"/>.</param>
-        /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
-        /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLResolvedFieldTemplate MapBatchTypeExtension(this SchemaOptions schemaOptions, Type typeToExtend, string fieldName, Delegate resolverMethod = null)
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLTypeExtensionTemplate AllowAnonymous(this IGraphQLTypeExtensionTemplate fieldBuilder)
         {
-            var field = MapTypeExtension(
-                schemaOptions,
-                typeToExtend,
-                fieldName,
-                FieldResolutionMode.Batch);
+            Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
+            fieldBuilder.Attributes.Add(new AllowAnonymousAttribute());
+            return fieldBuilder;
+        }
 
-            if (resolverMethod != null)
-                field = field.AddResolver(resolverMethod);
+        /// <summary>
+        /// Sets the resolver to be used when this field is requested at runtime.
+        /// </summary>
+        /// <remarks>
+        ///  If this method is called more than once the previously set resolver will be replaced.
+        /// </remarks>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
+        /// parsed to determine input arguments for the field on the target schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLTypeExtensionTemplate AddResolver(this IGraphQLTypeExtensionTemplate fieldBuilder, Delegate resolverMethod)
+        {
+            fieldBuilder.Resolver = resolverMethod;
+            fieldBuilder.ReturnType = null;
 
-            return field;
+            return fieldBuilder;
+        }
+
+        /// <summary>
+        /// Sets the resolver to be used when this field is requested at runtime.
+        /// </summary>
+        /// <remarks>
+        ///  If this method is called more than once the previously set resolver will be replaced.
+        /// </remarks>
+        /// <typeparam name="TReturnType">The expected, primary return type of the field. Must be provided
+        /// if the supplied delegate returns an <see cref="IGraphActionResult"/>.</typeparam>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
+        /// parsed to determine input arguments for the field on the target schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLTypeExtensionTemplate AddResolver<TReturnType>(this IGraphQLTypeExtensionTemplate fieldBuilder, Delegate resolverMethod)
+        {
+            fieldBuilder.Resolver = resolverMethod;
+            fieldBuilder.ReturnType = typeof(TReturnType);
+            return fieldBuilder;
         }
 
         /// <summary>
         /// Registers a new type extension to a given type for the target schema.
         /// </summary>
         /// <remarks>
-        /// The supplied resolver must declare a parameter that is of the same type as <typeparamref name="TType"/>.
+        /// <para>
+        /// This method is synonymous with using the <see cref="TypeExtensionAttribute"/> on
+        /// a controller action.
+        /// </para>
+        /// <para>
+        /// The supplied resolver must declare a parameter that is of the same type as <typeparamref name="TOwnerType"/>.
+        /// </para>
         /// </remarks>
-        /// <typeparam name="TType">The concrete interface, class or struct to extend with a new field.</typeparam>
+        /// <typeparam name="TOwnerType">The concrete interface, class or struct to extend with a new field.</typeparam>
         /// <param name="schemaOptions">The configuration options for the target schema.</param>
-        /// <param name="fieldName">Name of the field to add to the <typeparamref name="TType"/>.</param>
+        /// <param name="fieldName">Name of the field to add to the <typeparamref name="TOwnerType"/>.</param>
         /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLResolvedFieldTemplate MapTypeExtension<TType>(this SchemaOptions schemaOptions, string fieldName, Delegate resolverMethod = null)
+        public static IGraphQLTypeExtensionTemplate MapField<TOwnerType>(this SchemaOptions schemaOptions, string fieldName, Delegate resolverMethod = null)
         {
-            return schemaOptions.MapTypeExtension(
-                typeof(TType),
+            return schemaOptions.MapField(
+                typeof(TOwnerType),
                 fieldName,
                 resolverMethod);
         }
@@ -88,19 +128,20 @@ namespace GraphQL.AspNet.Configuration
         /// Registers a new type extension to a given type for the target schema.
         /// </summary>
         /// <remarks>
-        /// The supplied resolver must declare a parameter that is of the same type as
-        /// <paramref name="typeToExtend"/>.
+        /// <para>
+        /// The supplied resolver must declare a parameter that is of the same type as <paramref name="fieldOwnerType"/>.
+        /// </para>
         /// </remarks>
         /// <param name="schemaOptions">The configuration options for the target schema.</param>
-        /// <param name="typeToExtend">The concrete interface, class or struct to extend with a new field.</param>
-        /// <param name="fieldName">Name of the field to add to the <paramref name="typeToExtend"/>.</param>
+        /// <param name="fieldOwnerType">The concrete interface, class or struct to extend with a new field.</param>
+        /// <param name="fieldName">Name of the field to add to the <paramref name="fieldOwnerType"/>.</param>
         /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLResolvedFieldTemplate MapTypeExtension(this SchemaOptions schemaOptions, Type typeToExtend, string fieldName, Delegate resolverMethod = null)
+        public static IGraphQLTypeExtensionTemplate MapField(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName, Delegate resolverMethod = null)
         {
-            var field = MapTypeExtension(
+            var field = MapTypeExtensionInternal(
                 schemaOptions,
-                typeToExtend,
+                fieldOwnerType,
                 fieldName,
                 FieldResolutionMode.PerSourceItem);
 
@@ -108,6 +149,44 @@ namespace GraphQL.AspNet.Configuration
                 field = field.AddResolver(resolverMethod);
 
             return field;
+        }
+
+        /// <summary>
+        /// Instructs the new type extension field that it should process data in batched mode rather than
+        /// in a "per source item" mode.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The supplied resolver must declare a parameter that is an <see cref="IEnumerable{T}"/> of the same <see cref="Type"/> as
+        /// class, interface or struct that was originally extended as indicated by <see cref="IGraphQLTypeExtensionTemplate.TargetType"/>.
+        /// </para>
+        /// </remarks>
+        /// <param name="typeExtension">The type extension to make into a batch field.</param>
+        /// <returns>IGraphQLTypeExtensionTemplate.</returns>
+        public static IGraphQLTypeExtensionTemplate WithBatchProcessing(this IGraphQLTypeExtensionTemplate typeExtension)
+        {
+            typeExtension.ExecutionMode = FieldResolutionMode.Batch;
+            return typeExtension;
+        }
+
+        /// <summary>
+        /// Adds a set of possible return types for this field. This is synonymous to using the
+        /// <see cref="PossibleTypesAttribute" /> on a controller's action method.
+        /// </summary>
+        /// <remarks>
+        /// This method can be called multiple times. Any new types will be appended to the field.
+        /// </remarks>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="firstPossibleType">The first possible type that might be returned by this
+        /// field.</param>
+        /// <param name="additionalPossibleTypes">Any number of additional possible types that
+        /// might be returned by this field.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLTypeExtensionTemplate AddPossibleTypes(this IGraphQLTypeExtensionTemplate fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
+        {
+            var possibleTypes = new PossibleTypesAttribute(firstPossibleType, additionalPossibleTypes);
+            fieldBuilder.Attributes.Add(possibleTypes);
+            return fieldBuilder;
         }
     }
 }

@@ -11,9 +11,9 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Configuration.MinimalApi;
+    using GraphQL.AspNet.Configuration.Templates;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Configuration
     /// </summary>
     public static partial class GraphQLMinimalApiExtensions
     {
-        private static IGraphQLFieldTemplate MapGraphQLField(
+        private static IGraphQLFieldTemplate MapGraphQLFieldInternal(
             SchemaOptions schemaOptions,
             GraphOperationType operationType,
             string pathTemplate)
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Configuration
             return fieldTemplate;
         }
 
-        private static IGraphQLResolvedFieldTemplate MapTypeExtension(
+        private static IGraphQLTypeExtensionTemplate MapTypeExtensionInternal(
             SchemaOptions schemaOptions,
             Type typeToExtend,
             string fieldName,
@@ -48,14 +48,22 @@ namespace GraphQL.AspNet.Configuration
             schemaOptions = Validation.ThrowIfNullOrReturn(schemaOptions, nameof(schemaOptions));
             fieldName = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
 
-            IGraphQLResolvedFieldTemplate field = new GraphQLTypeExtensionFieldTemplate(
+            IGraphQLTypeExtensionTemplate field = new GraphQLTypeExtensionFieldTemplate(
                 schemaOptions,
                 typeToExtend,
                 fieldName,
                 resolutionMode);
 
-            schemaOptions.AddFieldTemplate(field);
+            schemaOptions.AddSchemaItemTemplate(field);
             return field;
+        }
+
+        private static IGraphQLDirectiveTemplate MapDirectiveInternal(this SchemaOptions schemaOptions, string directiveName)
+        {
+            var directive = new GraphQLDirectiveTemplate(schemaOptions, directiveName);
+
+            schemaOptions.AddSchemaItemTemplate(directive);
+            return directive;
         }
     }
 }
