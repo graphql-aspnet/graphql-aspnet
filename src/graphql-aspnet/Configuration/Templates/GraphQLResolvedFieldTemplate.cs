@@ -16,11 +16,11 @@ namespace GraphQL.AspNet.Configuration.Templates
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
 
     /// <summary>
-    /// An internal implementation of the <see cref="IGraphQLResolvedFieldTemplate"/>
+    /// An internal implementation of the <see cref="IGraphQLRuntimeResolvedFieldTemplate"/>
     /// used to generate new graphql fields via a minimal api style of coding.
     /// </summary>
     [DebuggerDisplay("{Template}")]
-    internal class GraphQLResolvedFieldTemplate : BaseGraphQLRuntimeSchemaItemTemplate, IGraphQLResolvedFieldTemplate
+    internal class GraphQLResolvedFieldTemplate : BaseGraphQLRuntimeSchemaItemTemplate, IGraphQLRuntimeResolvedFieldTemplate
     {
         /// <summary>
         /// Converts the unresolved field into a resolved field. The newly generated field
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Configuration.Templates
         /// </summary>
         /// <param name="fieldTemplate">The field template.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLResolvedFieldTemplate FromFieldTemplate(IGraphQLFieldTemplate fieldTemplate)
+        public static IGraphQLRuntimeResolvedFieldTemplate FromFieldTemplate(IGraphQLFieldTemplate fieldTemplate)
         {
             Validation.ThrowIfNull(fieldTemplate, nameof(fieldTemplate));
             var field = new GraphQLResolvedFieldTemplate(fieldTemplate.Options, fieldTemplate.Template);

@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Configuration
             return fieldTemplate;
         }
 
-        private static IGraphQLTypeExtensionTemplate MapTypeExtensionInternal(
+        private static IGraphQLRuntimeTypeExtensionTemplate MapTypeExtensionInternal(
             SchemaOptions schemaOptions,
             Type typeToExtend,
             string fieldName,
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Configuration
             schemaOptions = Validation.ThrowIfNullOrReturn(schemaOptions, nameof(schemaOptions));
             fieldName = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
 
-            IGraphQLTypeExtensionTemplate field = new GraphQLTypeExtensionFieldTemplate(
+            IGraphQLRuntimeTypeExtensionTemplate field = new GraphQLTypeExtensionFieldTemplate(
                 schemaOptions,
                 typeToExtend,
                 fieldName,
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Configuration
             return field;
         }
 
-        private static IGraphQLDirectiveTemplate MapDirectiveInternal(this SchemaOptions schemaOptions, string directiveName)
+        private static IGraphQLRuntimeDirectiveTemplate MapDirectiveInternal(this SchemaOptions schemaOptions, string directiveName)
         {
             var directive = new GraphQLDirectiveTemplate(schemaOptions, directiveName);
 

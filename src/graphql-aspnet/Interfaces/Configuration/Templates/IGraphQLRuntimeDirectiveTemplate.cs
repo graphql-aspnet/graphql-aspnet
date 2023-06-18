@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration.Templates
     /// An intermediate template that utilizies a key/value pair system to build up a set of component parts
     /// that the templating engine will use to generate a full fledged field in a schema.
     /// </summary>
-    public interface IGraphQLDirectiveTemplate : IGraphQLRuntimeSchemaItemTemplate, IGraphQLResolvableSchemaItemTemplate
+    public interface IGraphQLRuntimeDirectiveTemplate : IGraphQLRuntimeSchemaItemTemplate, IGraphQLResolvableSchemaItemTemplate
     {
     }
 }

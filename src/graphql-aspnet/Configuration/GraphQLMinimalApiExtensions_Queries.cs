@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The resolver method to execute when
         /// this field is requested by a caller.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLResolvedFieldTemplate MapQuery(this SchemaOptions schemaOptions, string template, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldTemplate MapQuery(this SchemaOptions schemaOptions, string template, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(resolverMethod, nameof(resolverMethod));
 
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The resolver method to execute when this
         /// field is requested.</param>
         /// <returns>IGraphQLFieldTemplate.</returns>
-        public static IGraphQLResolvedFieldTemplate MapQuery(this ISchemaBuilder schemaBuilder, string template, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldTemplate MapQuery(this ISchemaBuilder schemaBuilder, string template, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
             Validation.ThrowIfNull(resolverMethod, nameof(resolverMethod));

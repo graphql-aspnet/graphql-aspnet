@@ -31,8 +31,8 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="policyName">The name of the policy to assign via this requirement.</param>
         /// <param name="roles">A comma-seperated list of roles to assign via this requirement.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLResolvedFieldTemplate RequireAuthorization(
-            this IGraphQLResolvedFieldTemplate fieldBuilder,
+        public static IGraphQLRuntimeResolvedFieldTemplate RequireAuthorization(
+            this IGraphQLRuntimeResolvedFieldTemplate fieldBuilder,
             string policyName = null,
             string roles = null)
         {
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Configuration
         /// </remarks>
         /// <param name="fieldBuilder">The field being built.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLResolvedFieldTemplate AllowAnonymous(this IGraphQLResolvedFieldTemplate fieldBuilder)
+        public static IGraphQLRuntimeResolvedFieldTemplate AllowAnonymous(this IGraphQLRuntimeResolvedFieldTemplate fieldBuilder)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
             fieldBuilder.Attributes.Add(new AllowAnonymousAttribute());
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLResolvedFieldTemplate AddResolver(this IGraphQLResolvedFieldTemplate fieldBuilder, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldTemplate AddResolver(this IGraphQLRuntimeResolvedFieldTemplate fieldBuilder, Delegate resolverMethod)
         {
             fieldBuilder.Resolver = resolverMethod;
             fieldBuilder.ReturnType = null;
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLResolvedFieldTemplate AddResolver<TReturnType>(this IGraphQLResolvedFieldTemplate fieldBuilder, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldTemplate AddResolver<TReturnType>(this IGraphQLRuntimeResolvedFieldTemplate fieldBuilder, Delegate resolverMethod)
         {
             fieldBuilder.Resolver = resolverMethod;
             fieldBuilder.ReturnType = typeof(TReturnType);
@@ -110,7 +110,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="additionalPossibleTypes">Any number of additional possible types that
         /// might be returned by this field.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLResolvedFieldTemplate AddPossibleTypes(this IGraphQLResolvedFieldTemplate fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
+        public static IGraphQLRuntimeResolvedFieldTemplate AddPossibleTypes(this IGraphQLRuntimeResolvedFieldTemplate fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
         {
             var possibleTypes = new PossibleTypesAttribute(firstPossibleType, additionalPossibleTypes);
             fieldBuilder.Attributes.Add(possibleTypes);

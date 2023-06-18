@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The resolver method to execute when
         /// this field is requested by a caller.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLResolvedFieldTemplate MapMutation(this SchemaOptions schemaOptions, string template, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldTemplate MapMutation(this SchemaOptions schemaOptions, string template, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(resolverMethod, nameof(resolverMethod));
 
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
         /// <param name="resolverMethod">The resolver method to execute when this field is requested.</param>
         /// <returns>IGraphQLFieldTemplate.</returns>
-        public static IGraphQLResolvedFieldTemplate MapMutation(this ISchemaBuilder schemaBuilder, string template, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldTemplate MapMutation(this ISchemaBuilder schemaBuilder, string template, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
             Validation.ThrowIfNull(resolverMethod, nameof(resolverMethod));

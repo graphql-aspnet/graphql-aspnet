@@ -25,8 +25,6 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
     [TestFixture]
     public class MappedTypeExtensionTemplateTests
     {
-        public IGraphQLRuntimeSchemaItemTemplate TypeExtension { get; private set; }
-
         [Test]
         public void MapTypeExtension_ByOptions_AddsTypeExtensionToOptions()
         {
@@ -34,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var options = new SchemaOptions<GraphSchema>(services);
 
             var typeExt = options.MapField<TwoPropertyObject>("myField");
-            Assert.IsInstanceOf(typeof(IGraphQLTypeExtensionTemplate), typeExt);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionTemplate), typeExt);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
@@ -54,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             builderMock.Setup(x => x.Options).Returns(options);
 
             var typeExt = options.MapField<TwoPropertyObject>("myField");
-            Assert.IsInstanceOf(typeof(IGraphQLTypeExtensionTemplate), typeExt);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionTemplate), typeExt);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
@@ -68,7 +66,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var options = new SchemaOptions<GraphSchema>(services);
 
             var typeExt = options.MapField<TwoPropertyObject>("myField", (string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLTypeExtensionTemplate), typeExt);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionTemplate), typeExt);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
@@ -87,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             builderMock.Setup(x => x.Options).Returns(options);
 
             var typeExt = options.MapField<TwoPropertyObject>("myField", (string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLTypeExtensionTemplate), typeExt);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionTemplate), typeExt);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));

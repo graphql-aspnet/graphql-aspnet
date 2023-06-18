@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLResolvedFieldTemplate AddResolver(this IGraphQLFieldTemplate field, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldTemplate AddResolver(this IGraphQLFieldTemplate field, Delegate resolverMethod)
         {
             // convert the virtual field to a resolved field
             var resolvedBuilder = GraphQLResolvedFieldTemplate.FromFieldTemplate(field);
@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLResolvedFieldTemplate AddResolver<TReturnType>(this IGraphQLFieldTemplate field, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldTemplate AddResolver<TReturnType>(this IGraphQLFieldTemplate field, Delegate resolverMethod)
         {
             // convert the virtual field to a resolved field
             var resolvedBuilder = GraphQLResolvedFieldTemplate.FromFieldTemplate(field);
@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="subTemplate">The template pattern to be appended to the supplied <paramref name="field"/>.</param>
         /// <param name="resolverMethod">The resolver method to be called when this field is requested.</param>
         /// <returns>IGraphQLResolvedFieldBuilder.</returns>
-        public static IGraphQLResolvedFieldTemplate MapField(this IGraphQLFieldTemplate field, string subTemplate, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldTemplate MapField(this IGraphQLFieldTemplate field, string subTemplate, Delegate resolverMethod)
         {
             var subField = new GraphQLResolvedFieldTemplate(field, subTemplate);
             subField.AddResolver(resolverMethod);

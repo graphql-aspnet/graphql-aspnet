@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var options = new SchemaOptions<GraphSchema>(services);
 
             var directive = options.MapDirective("@myDirective");
-            Assert.IsInstanceOf(typeof(IGraphQLDirectiveTemplate), directive);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveTemplate), directive);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == directive));
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             builderMock.Setup(x => x.Options).Returns(options);
 
             var directive = builderMock.Object.MapDirective("@myDirective");
-            Assert.IsInstanceOf(typeof(IGraphQLDirectiveTemplate), directive);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveTemplate), directive);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == directive));
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var options = new SchemaOptions<GraphSchema>(services);
 
             var directive = options.MapDirective("@myDirective", (string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLDirectiveTemplate), directive);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveTemplate), directive);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == directive));
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             builderMock.Setup(x => x.Options).Returns(options);
 
             var directive = builderMock.Object.MapDirective("@myDirective", (string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLDirectiveTemplate), directive);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveTemplate), directive);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == directive));

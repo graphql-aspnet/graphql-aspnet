@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration.Templates
     /// in that it has an explicit resolver applied. The runtime will not attempt to
     /// autoresolve this field.
     /// </summary>
-    public interface IGraphQLResolvedFieldTemplate : IGraphQLRuntimeSchemaItemTemplate, IGraphQLResolvableSchemaItemTemplate
+    public interface IGraphQLRuntimeResolvedFieldTemplate : IGraphQLRuntimeSchemaItemTemplate, IGraphQLResolvableSchemaItemTemplate
     {
     }
 }

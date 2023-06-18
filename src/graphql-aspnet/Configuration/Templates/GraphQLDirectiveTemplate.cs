@@ -15,11 +15,11 @@ namespace GraphQL.AspNet.Configuration.Templates
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
 
     /// <summary>
-    /// An internal implementation of the <see cref="IGraphQLDirectiveTemplate"/>
+    /// An internal implementation of the <see cref="IGraphQLRuntimeDirectiveTemplate"/>
     /// used to generate new graphql directives via a minimal api style of coding.
     /// </summary>
     [DebuggerDisplay("{Template}")]
-    internal class GraphQLDirectiveTemplate : BaseGraphQLRuntimeSchemaItemTemplate, IGraphQLDirectiveTemplate
+    internal class GraphQLDirectiveTemplate : BaseGraphQLRuntimeSchemaItemTemplate, IGraphQLRuntimeDirectiveTemplate
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLDirectiveTemplate"/> class.

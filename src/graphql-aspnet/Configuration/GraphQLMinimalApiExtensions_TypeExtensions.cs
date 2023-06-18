@@ -33,8 +33,8 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="policyName">The name of the policy to assign via this requirement.</param>
         /// <param name="roles">A comma-seperated list of roles to assign via this requirement.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLTypeExtensionTemplate RequireAuthorization(
-            this IGraphQLTypeExtensionTemplate fieldBuilder,
+        public static IGraphQLRuntimeTypeExtensionTemplate RequireAuthorization(
+            this IGraphQLRuntimeTypeExtensionTemplate fieldBuilder,
             string policyName = null,
             string roles = null)
         {
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Configuration
         /// </remarks>
         /// <param name="fieldBuilder">The field being built.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLTypeExtensionTemplate AllowAnonymous(this IGraphQLTypeExtensionTemplate fieldBuilder)
+        public static IGraphQLRuntimeTypeExtensionTemplate AllowAnonymous(this IGraphQLRuntimeTypeExtensionTemplate fieldBuilder)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
             fieldBuilder.Attributes.Add(new AllowAnonymousAttribute());
@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLTypeExtensionTemplate AddResolver(this IGraphQLTypeExtensionTemplate fieldBuilder, Delegate resolverMethod)
+        public static IGraphQLRuntimeTypeExtensionTemplate AddResolver(this IGraphQLRuntimeTypeExtensionTemplate fieldBuilder, Delegate resolverMethod)
         {
             fieldBuilder.Resolver = resolverMethod;
             fieldBuilder.ReturnType = null;
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLTypeExtensionTemplate AddResolver<TReturnType>(this IGraphQLTypeExtensionTemplate fieldBuilder, Delegate resolverMethod)
+        public static IGraphQLRuntimeTypeExtensionTemplate AddResolver<TReturnType>(this IGraphQLRuntimeTypeExtensionTemplate fieldBuilder, Delegate resolverMethod)
         {
             fieldBuilder.Resolver = resolverMethod;
             fieldBuilder.ReturnType = typeof(TReturnType);
@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="fieldName">Name of the field to add to the <typeparamref name="TOwnerType"/>.</param>
         /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLTypeExtensionTemplate MapField<TOwnerType>(this SchemaOptions schemaOptions, string fieldName, Delegate resolverMethod = null)
+        public static IGraphQLRuntimeTypeExtensionTemplate MapField<TOwnerType>(this SchemaOptions schemaOptions, string fieldName, Delegate resolverMethod = null)
         {
             return schemaOptions.MapField(
                 typeof(TOwnerType),
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Registers a new type extension to a given type for the target schema.
+        /// Registers a new field to a given type on the target schema.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="fieldName">Name of the field to add to the <paramref name="fieldOwnerType"/>.</param>
         /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLTypeExtensionTemplate MapField(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName, Delegate resolverMethod = null)
+        public static IGraphQLRuntimeTypeExtensionTemplate MapField(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName, Delegate resolverMethod = null)
         {
             var field = MapTypeExtensionInternal(
                 schemaOptions,
@@ -158,12 +158,12 @@ namespace GraphQL.AspNet.Configuration
         /// <remarks>
         /// <para>
         /// The supplied resolver must declare a parameter that is an <see cref="IEnumerable{T}"/> of the same <see cref="Type"/> as
-        /// class, interface or struct that was originally extended as indicated by <see cref="IGraphQLTypeExtensionTemplate.TargetType"/>.
+        /// class, interface or struct that was originally extended as indicated by <see cref="IGraphQLRuntimeTypeExtensionTemplate.TargetType"/>.
         /// </para>
         /// </remarks>
         /// <param name="typeExtension">The type extension to make into a batch field.</param>
         /// <returns>IGraphQLTypeExtensionTemplate.</returns>
-        public static IGraphQLTypeExtensionTemplate WithBatchProcessing(this IGraphQLTypeExtensionTemplate typeExtension)
+        public static IGraphQLRuntimeTypeExtensionTemplate WithBatchProcessing(this IGraphQLRuntimeTypeExtensionTemplate typeExtension)
         {
             typeExtension.ExecutionMode = FieldResolutionMode.Batch;
             return typeExtension;
@@ -182,7 +182,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="additionalPossibleTypes">Any number of additional possible types that
         /// might be returned by this field.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLTypeExtensionTemplate AddPossibleTypes(this IGraphQLTypeExtensionTemplate fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
+        public static IGraphQLRuntimeTypeExtensionTemplate AddPossibleTypes(this IGraphQLRuntimeTypeExtensionTemplate fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
         {
             var possibleTypes = new PossibleTypesAttribute(firstPossibleType, additionalPossibleTypes);
             fieldBuilder.Attributes.Add(possibleTypes);
