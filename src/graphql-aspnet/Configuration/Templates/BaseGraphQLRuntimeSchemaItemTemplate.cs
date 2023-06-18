@@ -68,13 +68,19 @@ namespace GraphQL.AspNet.Configuration.Templates
             _partialPathTemplate = Validation.ThrowIfNullWhiteSpaceOrReturn(partialPathTemplate, nameof(partialPathTemplate));
         }
 
-        /// <inheritdoc cref="IGraphQLRuntimeSchemaItemTemplate.Options" />
+        /// <inheritdoc />
+        public SchemaItemPath CreatePath()
+        {
+            return new SchemaItemPath(this.Template);
+        }
+
+        /// <inheritdoc />
         public virtual SchemaOptions Options { get; protected set; }
 
-        /// <inheritdoc cref="IGraphQLRuntimeSchemaItemTemplate.Attributes" />
+        /// <inheritdoc />
         public IList<Attribute> Attributes { get; }
 
-        /// <inheritdoc cref="IGraphQLRuntimeSchemaItemTemplate.Template" />
+        /// <inheritdoc />
         public string Template
         {
             get

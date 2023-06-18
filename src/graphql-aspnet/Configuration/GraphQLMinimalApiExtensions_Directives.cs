@@ -126,6 +126,25 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
+        /// Sets the resolver to be used when this directive is requested at runtime.
+        /// </summary>
+        /// <remarks>
+        ///  If this method is called more than once the previously set resolver will be replaced.
+        /// </remarks>
+        /// <typeparam name="TReturnType">The expected, primary return type of the directive. Must be provided
+        /// if the supplied delegate returns an <see cref="IGraphActionResult"/>.</typeparam>
+        /// <param name="directiveTemplate">The directive being built.</param>
+        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
+        /// parsed to determine input arguments for the directive on the target schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLDirectiveTemplate AddResolver<TReturnType>(this IGraphQLDirectiveTemplate directiveTemplate, Delegate resolverMethod)
+        {
+            directiveTemplate.Resolver = resolverMethod;
+            directiveTemplate.ReturnType = typeof(TReturnType);
+            return directiveTemplate;
+        }
+
+        /// <summary>
         /// Maps a new directive into the target schema.
         /// </summary>
         /// <param name="schemaOptions">The schema options where the directive will be created.</param>

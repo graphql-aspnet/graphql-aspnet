@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration.Templates
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A marker templtae for any runtime-built schema item (field, directive etc.)
@@ -19,6 +20,14 @@ namespace GraphQL.AspNet.Interfaces.Configuration.Templates
     /// </summary>
     public interface IGraphQLRuntimeSchemaItemTemplate : IDictionary<string, object>
     {
+        /// <summary>
+        /// Creates a path object using the current template path assigned to this template. This
+        /// path object is not guarunteed to be the final path when the template is rendered into
+        /// a schema.
+        /// </summary>
+        /// <returns>SchemaItemPath.</returns>
+        SchemaItemPath CreatePath();
+
         /// <summary>
         /// Gets the templated name that will be given to the item on the target schema.
         /// </summary>

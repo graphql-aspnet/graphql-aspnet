@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration.Templates
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
@@ -18,6 +19,7 @@ namespace GraphQL.AspNet.Configuration.Templates
     /// An internal implementation of the <see cref="IGraphQLFieldTemplate"/>
     /// used to generate new type extensions via a minimal api style of coding.
     /// </summary>
+    [DebuggerDisplay("{Template}")]
     internal class GraphQLTypeExtensionFieldTemplate : GraphQLResolvedFieldTemplate, IGraphQLTypeExtensionTemplate
     {
         /// <summary>

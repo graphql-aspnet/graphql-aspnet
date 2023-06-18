@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration.Templates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Configuration;
 
     /// <summary>
