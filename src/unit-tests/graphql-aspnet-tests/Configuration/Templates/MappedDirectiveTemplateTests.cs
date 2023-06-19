@@ -31,11 +31,11 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var options = new SchemaOptions<GraphSchema>(services);
 
             var directive = options.MapDirective("@myDirective");
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveDefinition), directive);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveActionDefinition), directive);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == directive));
-            Assert.AreEqual("@myDirective", directive.Template);
+            Assert.AreEqual("[directive]/myDirective", directive.Route.Path);
             Assert.IsNull(directive.ReturnType);
             Assert.IsNull(directive.Resolver);
         }
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             builderMock.Setup(x => x.Options).Returns(options);
 
             var directive = builderMock.Object.MapDirective("@myDirective");
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveDefinition), directive);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveActionDefinition), directive);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == directive));
@@ -63,11 +63,11 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var options = new SchemaOptions<GraphSchema>(services);
 
             var directive = options.MapDirective("@myDirective", (string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveDefinition), directive);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveActionDefinition), directive);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == directive));
-            Assert.AreEqual("@myDirective", directive.Template);
+            Assert.AreEqual("[directive]/myDirective", directive.Route.Path);
             Assert.IsNull(directive.ReturnType);
             Assert.AreEqual(typeof(int), directive.Resolver.Method.ReturnType);
         }
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             builderMock.Setup(x => x.Options).Returns(options);
 
             var directive = builderMock.Object.MapDirective("@myDirective", (string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveDefinition), directive);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveActionDefinition), directive);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == directive));
@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             directive.AllowAnonymous();
 
-            Assert.AreEqual(1, directive.Attributes.Count);
+            Assert.AreEqual(1, directive.Attributes.Count());
             Assert.IsNotNull(directive.Attributes.FirstOrDefault(x => x is AllowAnonymousAttribute));
         }
 
@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             directive.RequireAuthorization("policy1", "roles1");
 
-            Assert.AreEqual(1, directive.Attributes.Count);
+            Assert.AreEqual(1, directive.Attributes.Count());
             var attrib = directive.Attributes.FirstOrDefault(x => x is AuthorizeAttribute) as AuthorizeAttribute;
             Assert.IsNotNull(attrib);
             Assert.AreEqual("policy1", attrib.Policy);
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             directive.RestrictLocations(DirectiveLocation.QUERY | DirectiveLocation.MUTATION);
 
-            Assert.AreEqual(1, directive.Attributes.Count);
+            Assert.AreEqual(1, directive.Attributes.Count());
             var attrib = directive.Attributes.FirstOrDefault(x => x is DirectiveLocationsAttribute) as DirectiveLocationsAttribute;
             Assert.IsNotNull(attrib);
             Assert.IsTrue(attrib.Locations.HasFlag(DirectiveLocation.QUERY));
@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             directive.IsRepeatable();
 
-            Assert.AreEqual(1, directive.Attributes.Count);
+            Assert.AreEqual(1, directive.Attributes.Count());
             var attrib = directive.Attributes.FirstOrDefault(x => x is RepeatableAttribute) as RepeatableAttribute;
             Assert.IsNotNull(attrib);
         }

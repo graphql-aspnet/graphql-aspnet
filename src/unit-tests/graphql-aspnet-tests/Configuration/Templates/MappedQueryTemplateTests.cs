@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Configuration.Templates
 {
     using System.Linq;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
@@ -37,9 +38,12 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var field = options.MapQuery("/path1/path2");
 
             Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Query, field.CreatePath().RootCollection);
+            Assert.AreEqual(SchemaItemCollections.Query, field.Route.RootCollection);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
             Assert.AreEqual(0, options.RuntimeTemplates.Count());
+
+            // no top level attribute should be available
+            Assert.AreEqual(0, field.Attributes.Count());
         }
 
         [Test]
@@ -51,9 +55,12 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var field = options.MapQuery("/path1/path2", TestDelegate);
 
             Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Query, field.CreatePath().RootCollection);
+            Assert.AreEqual(SchemaItemCollections.Query, field.Route.RootCollection);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
+
+            var queryRootAttrib = field.Attributes.FirstOrDefault(x => x.GetType() == typeof(QueryRootAttribute));
+            Assert.IsNotNull(queryRootAttrib);
         }
 
         [Test]
@@ -68,9 +75,12 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var field = builderMock.Object.MapQuery("/path1/path2");
 
             Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Query, field.CreatePath().RootCollection);
+            Assert.AreEqual(SchemaItemCollections.Query, field.Route.RootCollection);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
             Assert.AreEqual(0, options.RuntimeTemplates.Count());
+
+            // no top level attribute should be available
+            Assert.AreEqual(0, field.Attributes.Count());
         }
 
         [Test]
@@ -85,10 +95,13 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var field = builderMock.Object.MapQuery("/path1/path2", TestDelegate);
 
             Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Query, field.CreatePath().RootCollection);
+            Assert.AreEqual(SchemaItemCollections.Query, field.Route.RootCollection);
 
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
+
+            var queryRootAttrib = field.Attributes.FirstOrDefault(x => x.GetType() == typeof(QueryRootAttribute));
+            Assert.IsNotNull(queryRootAttrib);
         }
     }
 }

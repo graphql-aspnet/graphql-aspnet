@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Configuration
             var attrib = new AuthorizeAttribute();
             attrib.Policy = policyName?.Trim();
             attrib.Roles = roles?.Trim();
-            fieldBuilder.Attributes.Add(attrib);
+            fieldBuilder.AddAttribute(attrib);
             return fieldBuilder;
         }
 
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Configuration
         public static IGraphQLRuntimeTypeExtensionDefinition AllowAnonymous(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            fieldBuilder.Attributes.Add(new AllowAnonymousAttribute());
+            fieldBuilder.AddAttribute(new AllowAnonymousAttribute());
             return fieldBuilder;
         }
 
@@ -185,7 +185,7 @@ namespace GraphQL.AspNet.Configuration
         public static IGraphQLRuntimeTypeExtensionDefinition AddPossibleTypes(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
         {
             var possibleTypes = new PossibleTypesAttribute(firstPossibleType, additionalPossibleTypes);
-            fieldBuilder.Attributes.Add(possibleTypes);
+            fieldBuilder.AddAttribute(possibleTypes);
             return fieldBuilder;
         }
     }

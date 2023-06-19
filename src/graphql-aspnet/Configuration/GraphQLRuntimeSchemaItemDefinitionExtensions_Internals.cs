@@ -13,6 +13,8 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration.Templates;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -30,11 +32,10 @@ namespace GraphQL.AspNet.Configuration
             schemaOptions = Validation.ThrowIfNullOrReturn(schemaOptions, nameof(schemaOptions));
             pathTemplate = Validation.ThrowIfNullWhiteSpaceOrReturn(pathTemplate, nameof(pathTemplate));
 
-            var path = new SchemaItemPath((SchemaItemCollections)operationType, pathTemplate);
-
             var fieldTemplate = new RuntimeVirtualFieldTemplate(
                 schemaOptions,
-                path.Path);
+                (SchemaItemCollections)operationType,
+                pathTemplate);
 
             return fieldTemplate;
         }
@@ -48,7 +49,7 @@ namespace GraphQL.AspNet.Configuration
             schemaOptions = Validation.ThrowIfNullOrReturn(schemaOptions, nameof(schemaOptions));
             fieldName = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
 
-            IGraphQLRuntimeTypeExtensionDefinition field = new RuntimeTypeExtensionFieldDefinition(
+            IGraphQLRuntimeTypeExtensionDefinition field = new RuntimeTypeExtensionDefinition(
                 schemaOptions,
                 typeToExtend,
                 fieldName,
@@ -58,9 +59,12 @@ namespace GraphQL.AspNet.Configuration
             return field;
         }
 
-        private static IGraphQLRuntimeDirectiveDefinition MapDirectiveInternal(this SchemaOptions schemaOptions, string directiveName)
+        private static IGraphQLRuntimeDirectiveActionDefinition MapDirectiveInternal(this SchemaOptions schemaOptions, string directiveName)
         {
-            var directive = new RuntimeDirectiveDefinition(schemaOptions, directiveName);
+            while (directiveName != null && directiveName.StartsWith(TokenTypeNames.STRING_AT_SYMBOL))
+                directiveName = directiveName.Substring(1);
+
+            var directive = new RuntimeDirectiveActionDefinition(schemaOptions, directiveName);
 
             schemaOptions.AddSchemaItemTemplate(directive);
             return directive;

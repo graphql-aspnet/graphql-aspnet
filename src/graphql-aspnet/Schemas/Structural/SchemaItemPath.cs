@@ -44,6 +44,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         private bool _pathInitialized;
         private SchemaItemCollections _rootCollection;
         private string _path;
+        private string _pathMinusCollection;
         private SchemaItemPath _parentField;
         private string _name;
         private bool _isTopLevelField;
@@ -72,6 +73,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             _parentField = null;
             _isTopLevelField = false;
             _path = string.Empty;
+            _pathMinusCollection = string.Empty;
             _name = string.Empty;
             _isValid = false;
             _rootCollection = SchemaItemCollections.Unknown;
@@ -92,7 +94,6 @@ namespace GraphQL.AspNet.Schemas.Structural
 
                 // split the path into its fragments
                 List<string> pathFragments = workingPath.Split(new[] { RouteConstants.PATH_SEPERATOR }, StringSplitOptions.None).ToList();
-
                 switch (pathFragments[0])
                 {
                     case RouteConstants.QUERY_ROOT:
@@ -150,6 +151,11 @@ namespace GraphQL.AspNet.Schemas.Structural
                 _isTopLevelField = pathFragments.Count == 1 || (pathFragments.Count == 2 && this.RootCollection > SchemaItemCollections.Unknown); // e.g. "[query]/name"
                 _isValid = this.Name.Length > 0;
                 _path = this.GeneratePathString(pathFragments);
+
+                if (_rootCollection == SchemaItemCollections.Unknown)
+                    _pathMinusCollection = this.GeneratePathString(pathFragments);
+                else
+                    _pathMinusCollection = $"{RouteConstants.PATH_SEPERATOR}{this.GeneratePathString(pathFragments.Skip(1).ToList())}";
             }
         }
 
@@ -191,6 +197,17 @@ namespace GraphQL.AspNet.Schemas.Structural
         public bool HasChildRoute(SchemaItemPath route)
         {
             return (route?.Path?.Length ?? 0) > 0 && route.Path.StartsWith(this.Path);
+        }
+
+        /// <summary>
+        /// Deconstructs the instance into its constituent parts.
+        /// </summary>
+        /// <param name="collection">The collection this item belongs to.</param>
+        /// <param name="path">The path within the collection that points to this item.</param>
+        public void Deconstruct(out SchemaItemCollections collection, out string path)
+        {
+            collection = this.RootCollection;
+            path = _pathMinusCollection;
         }
 
         /// <summary>

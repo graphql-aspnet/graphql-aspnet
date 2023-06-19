@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             field.AllowAnonymous();
 
-            Assert.AreEqual(1, field.Attributes.Count);
+            Assert.AreEqual(2, field.Attributes.Count());
             Assert.IsNotNull(field.Attributes.FirstOrDefault(x => x is AllowAnonymousAttribute));
         }
 
@@ -46,7 +46,8 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             field.RequireAuthorization("policy1", "roles1");
 
-            Assert.AreEqual(1, field.Attributes.Count);
+            Assert.AreEqual(2, field.Attributes.Count());
+
             var attrib = field.Attributes.FirstOrDefault(x => x is AuthorizeAttribute) as AuthorizeAttribute;
             Assert.IsNotNull(attrib);
             Assert.AreEqual("policy1", attrib.Policy);
@@ -90,12 +91,12 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var field = options.MapMutation("/path1/path2", (string a) => 1);
             field.AddPossibleTypes(typeof(TwoPropertyObject), typeof(TwoPropertyObjectV2));
 
-            Assert.AreEqual(1, field.Attributes.Count);
-            var attrib = field.Attributes.FirstOrDefault(x => x is PossibleTypesAttribute) as PossibleTypesAttribute;
+            Assert.AreEqual(2, field.Attributes.Count());
+            var possibleTypesAttrib = field.Attributes.FirstOrDefault(x => x is PossibleTypesAttribute) as PossibleTypesAttribute;
 
-            Assert.AreEqual(2, attrib.PossibleTypes.Count);
-            Assert.IsNotNull(attrib.PossibleTypes.FirstOrDefault(x => x == typeof(TwoPropertyObject)));
-            Assert.IsNotNull(attrib.PossibleTypes.FirstOrDefault(x => x == typeof(TwoPropertyObjectV2)));
+            Assert.AreEqual(2, possibleTypesAttrib.PossibleTypes.Count);
+            Assert.IsNotNull(possibleTypesAttrib.PossibleTypes.FirstOrDefault(x => x == typeof(TwoPropertyObject)));
+            Assert.IsNotNull(possibleTypesAttrib.PossibleTypes.FirstOrDefault(x => x == typeof(TwoPropertyObjectV2)));
         }
     }
 }

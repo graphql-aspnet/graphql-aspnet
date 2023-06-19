@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             field.AllowAnonymous();
 
-            Assert.AreEqual(1, field.Attributes.Count);
+            Assert.AreEqual(1, field.Attributes.Count());
             Assert.IsNotNull(field.Attributes.FirstOrDefault(x => x is AllowAnonymousAttribute));
         }
 
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             field.RequireAuthorization("policy1", "roles1");
 
-            Assert.AreEqual(1, field.Attributes.Count);
+            Assert.AreEqual(1, field.Attributes.Count());
             var attrib = field.Attributes.FirstOrDefault(x => x is AuthorizeAttribute) as AuthorizeAttribute;
             Assert.IsNotNull(attrib);
             Assert.AreEqual("policy1", attrib.Policy);
@@ -93,8 +93,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             var childField = field.MapField("/path3/path4");
 
-            var path = childField.CreatePath();
-            Assert.AreEqual("[query]/path1/path2/path3/path4", path.Path);
+            Assert.AreEqual("[query]/path1/path2/path3/path4", childField.Route.Path);
         }
 
         [Test]
@@ -107,8 +106,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
-            var path = childField.CreatePath();
-            Assert.AreEqual("[query]/path1/path2/path3/path4", path.Path);
+            Assert.AreEqual("[query]/path1/path2/path3/path4", childField.Route.Path);
         }
 
         [Test]
@@ -121,8 +119,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var childField = field.MapField("/path3/path4");
             var resolvedField = childField.MapField("/path5/path6", (string a) => 1);
 
-            var path = resolvedField.CreatePath();
-            Assert.AreEqual("[query]/path1/path2/path3/path4/path5/path6", path.Path);
+            Assert.AreEqual("[query]/path1/path2/path3/path4/path5/path6", resolvedField.Route.Path);
             Assert.IsNotNull(resolvedField.Resolver);
         }
 
@@ -136,8 +133,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
-            var path = childField.CreatePath();
-            Assert.AreEqual("[query]/path1/path2/path3/path4", path.Path);
+            Assert.AreEqual("[query]/path1/path2/path3/path4", childField.Route.Path);
         }
     }
 }

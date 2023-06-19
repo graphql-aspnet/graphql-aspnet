@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Configuration
             var attrib = new AuthorizeAttribute();
             attrib.Policy = policyName?.Trim();
             attrib.Roles = roles?.Trim();
-            fieldBuilder.Attributes.Add(attrib);
+            fieldBuilder.AddAttribute(attrib);
             return fieldBuilder;
         }
 
@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Configuration
         public static IGraphQLRuntimeFieldDefinition AllowAnonymous(this IGraphQLRuntimeFieldDefinition fieldBuilder)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            fieldBuilder.Attributes.Add(new AllowAnonymousAttribute());
+            fieldBuilder.AddAttribute(new AllowAnonymousAttribute());
             return fieldBuilder;
         }
 

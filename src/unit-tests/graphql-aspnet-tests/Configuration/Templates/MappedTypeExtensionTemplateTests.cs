@@ -36,10 +36,15 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
-            Assert.AreEqual("myField", typeExt.Template);
+            Assert.AreEqual("[type]/TwoPropertyObject/myField", typeExt.Route.Path);
             Assert.IsNull(typeExt.ReturnType);
             Assert.IsNull(typeExt.Resolver);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, typeExt.ExecutionMode);
+
+            Assert.AreEqual(1, typeExt.Attributes.Count());
+
+            var typeExtensionAttrib = typeExt.Attributes.FirstOrDefault(x => x.GetType() == typeof(TypeExtensionAttribute));
+            Assert.IsNotNull(typeExtensionAttrib);
         }
 
         [Test]
@@ -70,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
-            Assert.AreEqual("myField", typeExt.Template);
+            Assert.AreEqual("[type]/TwoPropertyObject/myField", typeExt.Route.Path);
             Assert.IsNull(typeExt.ReturnType);
             Assert.AreEqual(typeof(int), typeExt.Resolver.Method.ReturnType);
         }
@@ -103,7 +108,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             typeExt.AllowAnonymous();
 
-            Assert.AreEqual(1, typeExt.Attributes.Count);
+            Assert.AreEqual(2, typeExt.Attributes.Count());
             Assert.IsNotNull(typeExt.Attributes.FirstOrDefault(x => x is AllowAnonymousAttribute));
         }
 
@@ -117,7 +122,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             typeExt.RequireAuthorization("policy1", "roles1");
 
-            Assert.AreEqual(1, typeExt.Attributes.Count);
+            Assert.AreEqual(2, typeExt.Attributes.Count());
             var attrib = typeExt.Attributes.FirstOrDefault(x => x is AuthorizeAttribute) as AuthorizeAttribute;
             Assert.IsNotNull(attrib);
             Assert.AreEqual("policy1", attrib.Policy);
@@ -149,6 +154,9 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             typeExt.WithBatchProcessing();
             Assert.AreEqual(FieldResolutionMode.Batch, typeExt.ExecutionMode);
+
+            var typeExtensionAttrib = typeExt.Attributes.FirstOrDefault(x => x.GetType() == typeof(BatchTypeExtensionAttribute));
+            Assert.IsNotNull(typeExtensionAttrib);
         }
 
         [Test]
@@ -160,7 +168,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var typeExt = options.MapField<TwoPropertyObject>("myField", (string a) => 1);
             typeExt.AddPossibleTypes(typeof(TwoPropertyObjectV2), typeof(TwoPropertyObjectV3));
 
-            Assert.AreEqual(1, typeExt.Attributes.Count);
+            Assert.AreEqual(2, typeExt.Attributes.Count());
             var attrib = typeExt.Attributes.FirstOrDefault(x => x is PossibleTypesAttribute) as PossibleTypesAttribute;
 
             Assert.AreEqual(2, attrib.PossibleTypes.Count);

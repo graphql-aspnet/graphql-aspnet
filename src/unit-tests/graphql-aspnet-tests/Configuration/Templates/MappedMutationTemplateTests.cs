@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Configuration.Templates
 {
     using System.Linq;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
@@ -36,9 +37,12 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var field = options.MapMutation("/path1/path2");
 
             Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Mutation, field.CreatePath().RootCollection);
+            Assert.AreEqual("[mutation]/path1/path2", field.Route.Path);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
             Assert.AreEqual(0, options.RuntimeTemplates.Count());
+
+            // no top level attribute should be available
+            Assert.AreEqual(0, field.Attributes.Count());
         }
 
         [Test]
@@ -50,9 +54,13 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var field = options.MapMutation("/path1/path2", TestDelegate);
 
             Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Mutation, field.CreatePath().RootCollection);
+            Assert.AreEqual("[mutation]/path1/path2", field.Route.Path);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
+
+            Assert.AreEqual(1, field.Attributes.Count());
+            var mutationRootAttrib = field.Attributes.FirstOrDefault(x => x.GetType() == typeof(MutationRootAttribute));
+            Assert.IsNotNull(mutationRootAttrib);
         }
 
         [Test]
@@ -67,9 +75,12 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var field = builderMock.Object.MapMutation("/path1/path2");
 
             Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Mutation, field.CreatePath().RootCollection);
+            Assert.AreEqual("[mutation]/path1/path2", field.Route.Path);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
             Assert.AreEqual(0, options.RuntimeTemplates.Count());
+
+            // no top level attribute should be available
+            Assert.AreEqual(0, field.Attributes.Count());
         }
 
         [Test]
@@ -84,9 +95,13 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var field = builderMock.Object.MapMutation("/path1/path2", TestDelegate);
 
             Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Mutation, field.CreatePath().RootCollection);
+            Assert.AreEqual("[mutation]/path1/path2", field.Route.Path);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
+
+            Assert.AreEqual(1, field.Attributes.Count());
+            var mutationRootAttrib = field.Attributes.FirstOrDefault(x => x.GetType() == typeof(MutationRootAttribute));
+            Assert.IsNotNull(mutationRootAttrib);
         }
     }
 }

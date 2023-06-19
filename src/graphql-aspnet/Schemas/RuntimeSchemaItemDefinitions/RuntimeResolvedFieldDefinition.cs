@@ -11,16 +11,20 @@ namespace GraphQL.AspNet.Configuration.Templates
 {
     using System;
     using System.Diagnostics;
+    using System.Linq;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// An internal implementation of the <see cref="IGraphQLRuntimeResolvedFieldDefinition"/>
     /// used to generate new graphql fields via a minimal api style of coding.
     /// </summary>
     [DebuggerDisplay("{Template}")]
-    internal class RuntimeResolvedFieldDefinition : BaseRuntimeSchemaItemDefinition, IGraphQLRuntimeResolvedFieldDefinition
+    internal class RuntimeResolvedFieldDefinition : BaseRuntimeControllerActionDefinition, IGraphQLRuntimeResolvedFieldDefinition
     {
         /// <summary>
         /// Converts the unresolved field into a resolved field. The newly generated field
@@ -31,26 +35,39 @@ namespace GraphQL.AspNet.Configuration.Templates
         public static IGraphQLRuntimeResolvedFieldDefinition FromFieldTemplate(IGraphQLRuntimeFieldDefinition fieldTemplate)
         {
             Validation.ThrowIfNull(fieldTemplate, nameof(fieldTemplate));
-            var field = new RuntimeResolvedFieldDefinition(fieldTemplate.Options, fieldTemplate.Template);
+            var field = new RuntimeResolvedFieldDefinition(
+                fieldTemplate.Options,
+                fieldTemplate.Route);
 
             foreach (var attrib in fieldTemplate.Attributes)
-                field.Attributes.Add(attrib);
-
-            foreach (var kvp in fieldTemplate)
-                field.Add(kvp.Key, kvp.Value);
+                field.AddAttribute(attrib);
 
             return field;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RuntimeResolvedFieldDefinition"/> class.
+        /// Initializes a new instance of the <see cref="RuntimeResolvedFieldDefinition" /> class.
         /// </summary>
         /// <param name="schemaOptions">The schema options to which this field is being added.</param>
-        /// <param name="fullPathTemplate">The full path template describing where the field will live.</param>
+        /// <param name="route">The full route to use for this item.</param>
+        private RuntimeResolvedFieldDefinition(
+            SchemaOptions schemaOptions,
+            SchemaItemPath route)
+            : base(schemaOptions, route)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RuntimeResolvedFieldDefinition" /> class.
+        /// </summary>
+        /// <param name="schemaOptions">The schema options to which this field is being added.</param>
+        /// <param name="collection">The schema collection this item will belong to.</param>
+        /// <param name="pathTemplate">The path template identifying this item.</param>
         public RuntimeResolvedFieldDefinition(
             SchemaOptions schemaOptions,
-            string fullPathTemplate)
-            : base(schemaOptions, fullPathTemplate)
+            SchemaItemCollections collection,
+            string pathTemplate)
+            : base(schemaOptions,  collection, pathTemplate)
         {
         }
 
@@ -65,6 +82,22 @@ namespace GraphQL.AspNet.Configuration.Templates
             string fieldSubTemplate)
             : base(parentFieldBuilder, fieldSubTemplate)
         {
+        }
+
+        /// <inheritdoc />
+        protected override Attribute CreatePrimaryAttribute()
+        {
+            var (collection, path) = this.Route;
+            switch (collection)
+            {
+                case SchemaItemCollections.Query:
+                    return new QueryRootAttribute(path, this.ReturnType);
+
+                case SchemaItemCollections.Mutation:
+                    return new MutationRootAttribute(path, this.ReturnType);
+            }
+
+            return null;
         }
 
         /// <inheritdoc />
