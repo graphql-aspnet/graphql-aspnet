@@ -14,20 +14,20 @@ namespace GraphQL.AspNet.Configuration.Templates
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
 
     /// <summary>
-    /// An internal implementation of the <see cref="IGraphQLFieldTemplate"/>
+    /// An internal implementation of the <see cref="IGraphQLRuntimeFieldDefinition"/>
     /// used to generate new graphql fields via a minimal api style of coding.
     /// </summary>
     [DebuggerDisplay("{Template}")]
-    internal class GraphQLVirtualFieldTemplate : BaseGraphQLRuntimeSchemaItemTemplate, IGraphQLFieldTemplate
+    internal class RuntimeVirtualFieldTemplate : BaseRuntimeSchemaItemDefinition, IGraphQLRuntimeFieldDefinition
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphQLVirtualFieldTemplate"/> class.
+        /// Initializes a new instance of the <see cref="RuntimeVirtualFieldTemplate"/> class.
         /// </summary>
         /// <param name="options">The schema options that will own the fields created from
         /// this builder.</param>
         /// <param name="fieldTemplate">The partial field path template
         /// that will be prepended to any fields or groups created from this builder.</param>
-        public GraphQLVirtualFieldTemplate(
+        public RuntimeVirtualFieldTemplate(
             SchemaOptions options,
             string fieldTemplate)
             : base(options, fieldTemplate)
@@ -35,13 +35,13 @@ namespace GraphQL.AspNet.Configuration.Templates
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphQLVirtualFieldTemplate"/> class.
+        /// Initializes a new instance of the <see cref="RuntimeVirtualFieldTemplate"/> class.
         /// </summary>
         /// <param name="parentFieldBuilder">The parent virtual field from which
         /// this builder will copy its settings.</param>
         /// <param name="fieldSubTemplate">The partial path template to be appended to
         /// the parent's already defined template.</param>
-        public GraphQLVirtualFieldTemplate(IGraphQLFieldTemplate parentFieldBuilder, string fieldSubTemplate)
+        public RuntimeVirtualFieldTemplate(IGraphQLRuntimeFieldDefinition parentFieldBuilder, string fieldSubTemplate)
             : base(parentFieldBuilder, fieldSubTemplate)
         {
         }

@@ -59,11 +59,11 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             var field = options.MapQuery("/path1/path2");
 
-            Assert.IsInstanceOf(typeof(IGraphQLFieldTemplate), field);
-            Assert.IsNotInstanceOf(typeof(IGraphQLRuntimeResolvedFieldTemplate), field);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
+            Assert.IsNotInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
 
             var field1 = field.AddResolver((string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldTemplate), field1);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field1);
             Assert.IsNull(field1.ReturnType);
         }
 
@@ -75,11 +75,11 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             var field = options.MapQuery("/path1/path2");
 
-            Assert.IsInstanceOf(typeof(IGraphQLFieldTemplate), field);
-            Assert.IsNotInstanceOf(typeof(IGraphQLRuntimeResolvedFieldTemplate), field);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
+            Assert.IsNotInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
 
             var field1 = field.AddResolver<decimal>((string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldTemplate), field1);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field1);
             Assert.AreEqual(typeof(decimal), field1.ReturnType);
         }
 

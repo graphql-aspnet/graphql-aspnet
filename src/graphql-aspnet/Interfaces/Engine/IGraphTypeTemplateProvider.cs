@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System;
+    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -35,7 +36,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         ISchemaItemTemplate ParseType<TObjectType>(TypeKind? kind = null);
 
         /// <summary>
-        /// Parses the provided type, extracting the metadata to used in type generation for the object graph.
+        /// Parses the provided type, extracting the metadata used in type generation for the object graph.
         /// </summary>
         /// <param name="objectType">The type of the object to parse.</param>
         /// <param name="kind">The graph <see cref="TypeKind" /> to create a template for. If not supplied the template provider

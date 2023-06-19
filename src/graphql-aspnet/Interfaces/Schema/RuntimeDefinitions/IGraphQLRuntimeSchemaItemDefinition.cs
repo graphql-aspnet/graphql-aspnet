@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration.Templates
     /// A marker templtae for any runtime-built schema item (field, directive etc.)
     /// being added to the schema.
     /// </summary>
-    public interface IGraphQLRuntimeSchemaItemTemplate : IDictionary<string, object>
+    public interface IGraphQLRuntimeSchemaItemDefinition : IDictionary<string, object>
     {
         /// <summary>
         /// Creates a path object using the current template path assigned to this template. This

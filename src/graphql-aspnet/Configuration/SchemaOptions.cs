@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Configuration
         private readonly HashSet<SchemaTypeToRegister> _possibleTypes;
 
         private readonly List<ServiceToRegister> _registeredServices;
-        private readonly List<IGraphQLRuntimeSchemaItemTemplate> _runtimeTemplates;
+        private readonly List<IGraphQLRuntimeSchemaItemDefinition> _runtimeTemplates;
         private List<ISchemaConfigurationExtension> _configExtensions;
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNotCastable<ISchema>(schemaType, nameof(schemaType));
 
             _possibleTypes = new HashSet<SchemaTypeToRegister>(SchemaTypeToRegister.DefaultEqualityComparer);
-            _runtimeTemplates = new List<IGraphQLRuntimeSchemaItemTemplate>();
+            _runtimeTemplates = new List<IGraphQLRuntimeSchemaItemDefinition>();
             _serverExtensions = new Dictionary<Type, IGraphQLServerExtension>();
             _registeredServices = new List<ServiceToRegister>();
             _configExtensions = new List<ISchemaConfigurationExtension>();
@@ -355,7 +355,7 @@ namespace GraphQL.AspNet.Configuration
         /// created when the schema is set up.
         /// </summary>
         /// <param name="template">The template to add.</param>
-        internal void AddSchemaItemTemplate(IGraphQLRuntimeSchemaItemTemplate template)
+        internal void AddSchemaItemTemplate(IGraphQLRuntimeSchemaItemDefinition template)
         {
             _runtimeTemplates.Add(template);
         }
@@ -368,7 +368,7 @@ namespace GraphQL.AspNet.Configuration
         /// These are the templates created via the Minimal API methods.
         /// </remarks>
         /// <value>The runtime templates.</value>
-        public IEnumerable<IGraphQLRuntimeSchemaItemTemplate> RuntimeTemplates => _runtimeTemplates;
+        public IEnumerable<IGraphQLRuntimeSchemaItemDefinition> RuntimeTemplates => _runtimeTemplates;
 
         /// <summary>
         /// Gets the classes, enums, structs and other types that need to be

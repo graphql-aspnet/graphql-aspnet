@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;
@@ -377,8 +378,8 @@ namespace GraphQL.AspNet.Schemas
             Validation.ThrowIfNull(type, nameof(type));
             if (Validation.IsCastable<GraphController>(type))
             {
-                if (GraphQLProviders.TemplateProvider.ParseType(type) is IGraphControllerTemplate controllerDefinition)
-                    this.AddController(controllerDefinition);
+                if (GraphQLProviders.TemplateProvider.ParseType(type) is IGraphControllerTemplate controllerTemplate)
+                    this.AddController(controllerTemplate);
 
                 return;
             }

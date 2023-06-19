@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Controllers;
     using Microsoft.AspNetCore.Authorization;
@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// Extension methods for configuring minimal API methods as fields on the graph.
     /// </summary>
-    public static partial class GraphQLMinimalApiExtensions
+    public static partial class GraphQLRuntimeSchemaItemDefinitionExtensions
     {
         /// <summary>
         /// Adds policy-based authorization requirements to the field.
@@ -31,8 +31,8 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="policyName">The name of the policy to assign via this requirement.</param>
         /// <param name="roles">A comma-seperated list of roles to assign via this requirement.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldTemplate RequireAuthorization(
-            this IGraphQLRuntimeResolvedFieldTemplate fieldBuilder,
+        public static IGraphQLRuntimeFieldDefinition RequireAuthorization(
+            this IGraphQLRuntimeFieldDefinition fieldBuilder,
             string policyName = null,
             string roles = null)
         {
@@ -49,11 +49,17 @@ namespace GraphQL.AspNet.Configuration
         /// Indicates that the field should allow anonymous access.
         /// </summary>
         /// <remarks>
+        /// <para>
         /// This is similar to adding the <see cref="AllowAnonymousAttribute"/> to a controller method
+        /// </para>
+        /// <para>
+        /// Any inherited authorization permissions from field groups are automatically
+        /// dropped from this field instance.
+        /// </para>
         /// </remarks>
         /// <param name="fieldBuilder">The field being built.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldTemplate AllowAnonymous(this IGraphQLRuntimeResolvedFieldTemplate fieldBuilder)
+        public static IGraphQLRuntimeFieldDefinition AllowAnonymous(this IGraphQLRuntimeFieldDefinition fieldBuilder)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
             fieldBuilder.Attributes.Add(new AllowAnonymousAttribute());
@@ -66,16 +72,20 @@ namespace GraphQL.AspNet.Configuration
         /// <remarks>
         ///  If this method is called more than once the previously set resolver will be replaced.
         /// </remarks>
-        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="field">The field being built.</param>
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldTemplate AddResolver(this IGraphQLRuntimeResolvedFieldTemplate fieldBuilder, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver(this IGraphQLRuntimeFieldDefinition field, Delegate resolverMethod)
         {
-            fieldBuilder.Resolver = resolverMethod;
-            fieldBuilder.ReturnType = null;
+            // convert the virtual field to a resolved field
+            var resolvedBuilder = RuntimeResolvedFieldDefinition.FromFieldTemplate(field);
+            resolvedBuilder.Options.AddSchemaItemTemplate(resolvedBuilder);
 
-            return fieldBuilder;
+            resolvedBuilder.Resolver = resolverMethod;
+            resolvedBuilder.ReturnType = null;
+
+            return resolvedBuilder;
         }
 
         /// <summary>
@@ -86,35 +96,48 @@ namespace GraphQL.AspNet.Configuration
         /// </remarks>
         /// <typeparam name="TReturnType">The expected, primary return type of the field. Must be provided
         /// if the supplied delegate returns an <see cref="IGraphActionResult"/>.</typeparam>
-        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="field">The field being built.</param>
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldTemplate AddResolver<TReturnType>(this IGraphQLRuntimeResolvedFieldTemplate fieldBuilder, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver<TReturnType>(this IGraphQLRuntimeFieldDefinition field, Delegate resolverMethod)
         {
-            fieldBuilder.Resolver = resolverMethod;
-            fieldBuilder.ReturnType = typeof(TReturnType);
-            return fieldBuilder;
+            // convert the virtual field to a resolved field
+            var resolvedBuilder = RuntimeResolvedFieldDefinition.FromFieldTemplate(field);
+            resolvedBuilder.Options.AddSchemaItemTemplate(resolvedBuilder);
+
+            resolvedBuilder.Resolver = resolverMethod;
+            resolvedBuilder.ReturnType = typeof(TReturnType);
+            return resolvedBuilder;
         }
 
         /// <summary>
-        /// Adds a set of possible return types for this field. This is synonymous to using the
-        /// <see cref="PossibleTypesAttribute" /> on a controller's action method.
+        /// Maps a terminal child field into the schema and assigns the resolver method to it.
         /// </summary>
-        /// <remarks>
-        /// This method can be called multiple times. Any new types will be appended to the field.
-        /// </remarks>
-        /// <param name="fieldBuilder">The field being built.</param>
-        /// <param name="firstPossibleType">The first possible type that might be returned by this
-        /// field.</param>
-        /// <param name="additionalPossibleTypes">Any number of additional possible types that
-        /// might be returned by this field.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldTemplate AddPossibleTypes(this IGraphQLRuntimeResolvedFieldTemplate fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
+        /// <param name="field">The field under which this new field will be nested.</param>
+        /// <param name="subTemplate">The template pattern to be appended to the supplied <paramref name="field"/>.</param>
+        /// <param name="resolverMethod">The resolver method to be called when this field is requested.</param>
+        /// <returns>IGraphQLResolvedFieldBuilder.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition MapField(this IGraphQLRuntimeFieldDefinition field, string subTemplate, Delegate resolverMethod)
         {
-            var possibleTypes = new PossibleTypesAttribute(firstPossibleType, additionalPossibleTypes);
-            fieldBuilder.Attributes.Add(possibleTypes);
-            return fieldBuilder;
+            var subField = new RuntimeResolvedFieldDefinition(field, subTemplate);
+            subField.AddResolver(resolverMethod);
+
+            subField.Options.AddSchemaItemTemplate(subField);
+            return subField;
+        }
+
+        /// <summary>
+        /// Maps a child field into the schema underneath the supplied field. This field can be
+        /// further extended.
+        /// </summary>
+        /// <param name="field">The field under which this new field will be nested.</param>
+        /// <param name="subTemplate">The template pattern to be appended to the supplied <paramref name="field"/>.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLRuntimeFieldDefinition MapField(this IGraphQLRuntimeFieldDefinition field, string subTemplate)
+        {
+            var subField = new RuntimeVirtualFieldTemplate(field, subTemplate);
+            return subField;
         }
     }
 }

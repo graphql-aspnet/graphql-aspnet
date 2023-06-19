@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration.Templates
     /// An intermediate template that utilizies a key/value pair system to build up a set of component parts
     /// that the templating engine will use to generate a full fledged type extension in a schema.
     /// </summary>
-    public interface IGraphQLRuntimeTypeExtensionTemplate : IGraphQLRuntimeSchemaItemTemplate, IGraphQLResolvableSchemaItemTemplate
+    public interface IGraphQLRuntimeTypeExtensionDefinition : IGraphQLRuntimeSchemaItemDefinition, IGraphQLResolvableSchemaItemDefinition
     {
         /// <summary>
         /// Gets the concrcete type of the OBJECT or INTERFACE that will be extended.

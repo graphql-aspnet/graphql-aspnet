@@ -20,27 +20,27 @@ namespace GraphQL.AspNet.Configuration.Templates
     /// An abstract class containing all the common elements across minimal field builders and
     /// their supporting classes.
     /// </summary>
-    internal abstract class BaseGraphQLRuntimeSchemaItemTemplate : Dictionary<string, object>, IGraphQLRuntimeSchemaItemTemplate
+    internal abstract class BaseRuntimeSchemaItemDefinition : Dictionary<string, object>, IGraphQLRuntimeSchemaItemDefinition
     {
-        private IGraphQLFieldTemplate _parent;
+        private IGraphQLRuntimeFieldDefinition _parent;
         private string _partialPathTemplate;
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="BaseGraphQLRuntimeSchemaItemTemplate"/> class from being created.
+        /// Prevents a default instance of the <see cref="BaseRuntimeSchemaItemDefinition"/> class from being created.
         /// </summary>
-        private BaseGraphQLRuntimeSchemaItemTemplate()
+        private BaseRuntimeSchemaItemDefinition()
         {
             this.Attributes = new List<Attribute>();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseGraphQLRuntimeSchemaItemTemplate" /> class.
+        /// Initializes a new instance of the <see cref="BaseRuntimeSchemaItemDefinition" /> class.
         /// </summary>
         /// <param name="options">The schema options where this field item
         /// is being defined.</param>
         /// <param name="partialPathTemplate">The partial path template defined for this
         /// individual entity.</param>
-        protected BaseGraphQLRuntimeSchemaItemTemplate(
+        protected BaseRuntimeSchemaItemDefinition(
             SchemaOptions options,
             string partialPathTemplate)
             : this()
@@ -52,13 +52,13 @@ namespace GraphQL.AspNet.Configuration.Templates
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseGraphQLRuntimeSchemaItemTemplate"/> class.
+        /// Initializes a new instance of the <see cref="BaseRuntimeSchemaItemDefinition"/> class.
         /// </summary>
         /// <param name="parentVirtualFieldBuilder">The group builder from which this entity is being created.</param>
         /// <param name="partialPathTemplate">The partial path template defined for this
         /// individual entity.</param>
-        protected BaseGraphQLRuntimeSchemaItemTemplate(
-            IGraphQLFieldTemplate parentVirtualFieldBuilder,
+        protected BaseRuntimeSchemaItemDefinition(
+            IGraphQLRuntimeFieldDefinition parentVirtualFieldBuilder,
             string partialPathTemplate)
             : this()
         {

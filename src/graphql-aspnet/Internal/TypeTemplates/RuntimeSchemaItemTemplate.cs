@@ -15,17 +15,21 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
 
     /// <summary>
-    /// A template of a directive generated at runtime rather than via a class that
-    /// inherits from a <see cref="GraphDirective"/>.
+    /// A template of a schema item generated at runtime rather than via a class defined
+    /// at compile time.
     /// </summary>
     internal class RuntimeSchemaItemTemplate : GraphDirectiveTemplate
     {
-        private IGraphQLRuntimeSchemaItemTemplate _runtimeTemplate;
+        private IGraphQLRuntimeSchemaItemDefinition _runtimeDefinition;
 
-        public RuntimeSchemaItemTemplate(IGraphQLRuntimeSchemaItemTemplate template)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RuntimeSchemaItemTemplate"/> class.
+        /// </summary>
+        /// <param name="definition">The definition, configured at runtime to templatize.</param>
+        public RuntimeSchemaItemTemplate(IGraphQLRuntimeSchemaItemDefinition definition)
             : base(typeof(RuntimeSchemaItemTypeMarker))
         {
-            _runtimeTemplate = Validation.ThrowIfNullOrReturn(template, nameof(template));
+            _runtimeDefinition = Validation.ThrowIfNullOrReturn(definition, nameof(definition));
         }
     }
 }

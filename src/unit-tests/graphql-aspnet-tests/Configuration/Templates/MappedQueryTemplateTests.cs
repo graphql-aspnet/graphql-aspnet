@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             Assert.IsNotNull(field);
             Assert.AreEqual(SchemaItemCollections.Query, field.CreatePath().RootCollection);
-            Assert.IsInstanceOf(typeof(IGraphQLFieldTemplate), field);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
             Assert.AreEqual(0, options.RuntimeTemplates.Count());
         }
 
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             Assert.IsNotNull(field);
             Assert.AreEqual(SchemaItemCollections.Query, field.CreatePath().RootCollection);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldTemplate), field);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
         }
 
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             Assert.IsNotNull(field);
             Assert.AreEqual(SchemaItemCollections.Query, field.CreatePath().RootCollection);
-            Assert.IsInstanceOf(typeof(IGraphQLFieldTemplate), field);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
             Assert.AreEqual(0, options.RuntimeTemplates.Count());
         }
 
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             Assert.IsNotNull(field);
             Assert.AreEqual(SchemaItemCollections.Query, field.CreatePath().RootCollection);
 
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldTemplate), field);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
         }
     }

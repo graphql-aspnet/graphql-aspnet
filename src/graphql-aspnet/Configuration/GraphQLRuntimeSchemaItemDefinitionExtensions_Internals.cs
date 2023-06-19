@@ -20,9 +20,9 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// Extension methods for configuring minimal API methods as fields on the graph.
     /// </summary>
-    public static partial class GraphQLMinimalApiExtensions
+    public static partial class GraphQLRuntimeSchemaItemDefinitionExtensions
     {
-        private static IGraphQLFieldTemplate MapGraphQLFieldInternal(
+        private static IGraphQLRuntimeFieldDefinition MapGraphQLFieldInternal(
             SchemaOptions schemaOptions,
             GraphOperationType operationType,
             string pathTemplate)
@@ -32,14 +32,14 @@ namespace GraphQL.AspNet.Configuration
 
             var path = new SchemaItemPath((SchemaItemCollections)operationType, pathTemplate);
 
-            var fieldTemplate = new GraphQLVirtualFieldTemplate(
+            var fieldTemplate = new RuntimeVirtualFieldTemplate(
                 schemaOptions,
                 path.Path);
 
             return fieldTemplate;
         }
 
-        private static IGraphQLRuntimeTypeExtensionTemplate MapTypeExtensionInternal(
+        private static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtensionInternal(
             SchemaOptions schemaOptions,
             Type typeToExtend,
             string fieldName,
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Configuration
             schemaOptions = Validation.ThrowIfNullOrReturn(schemaOptions, nameof(schemaOptions));
             fieldName = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
 
-            IGraphQLRuntimeTypeExtensionTemplate field = new GraphQLTypeExtensionFieldTemplate(
+            IGraphQLRuntimeTypeExtensionDefinition field = new RuntimeTypeExtensionFieldDefinition(
                 schemaOptions,
                 typeToExtend,
                 fieldName,
@@ -58,9 +58,9 @@ namespace GraphQL.AspNet.Configuration
             return field;
         }
 
-        private static IGraphQLRuntimeDirectiveTemplate MapDirectiveInternal(this SchemaOptions schemaOptions, string directiveName)
+        private static IGraphQLRuntimeDirectiveDefinition MapDirectiveInternal(this SchemaOptions schemaOptions, string directiveName)
         {
-            var directive = new GraphQLDirectiveTemplate(schemaOptions, directiveName);
+            var directive = new RuntimeDirectiveDefinition(schemaOptions, directiveName);
 
             schemaOptions.AddSchemaItemTemplate(directive);
             return directive;

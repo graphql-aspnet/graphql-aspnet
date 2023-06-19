@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var options = new SchemaOptions<GraphSchema>(services);
 
             var typeExt = options.MapField<TwoPropertyObject>("myField");
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionTemplate), typeExt);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionDefinition), typeExt);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             builderMock.Setup(x => x.Options).Returns(options);
 
             var typeExt = options.MapField<TwoPropertyObject>("myField");
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionTemplate), typeExt);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionDefinition), typeExt);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             var options = new SchemaOptions<GraphSchema>(services);
 
             var typeExt = options.MapField<TwoPropertyObject>("myField", (string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionTemplate), typeExt);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionDefinition), typeExt);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
             builderMock.Setup(x => x.Options).Returns(options);
 
             var typeExt = options.MapField<TwoPropertyObject>("myField", (string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionTemplate), typeExt);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionDefinition), typeExt);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));

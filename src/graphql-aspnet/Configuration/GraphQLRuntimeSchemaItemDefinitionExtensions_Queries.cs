@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// Extension methods for configuring minimal API methods as fields on the graph.
     /// </summary>
-    public static partial class GraphQLMinimalApiExtensions
+    public static partial class GraphQLRuntimeSchemaItemDefinitionExtensions
     {
         /// <summary>
         /// Creates a new field in the query root object with the given path. This field can act as a
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Configuration
         /// will be created.</param>
         /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
         /// <returns>IGraphQLFieldTemplate.</returns>
-        public static IGraphQLFieldTemplate MapQuery(this SchemaOptions schemaOptions, string template)
+        public static IGraphQLRuntimeFieldDefinition MapQuery(this SchemaOptions schemaOptions, string template)
         {
             var field = MapGraphQLFieldInternal(
                 schemaOptions,
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The resolver method to execute when
         /// this field is requested by a caller.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLRuntimeResolvedFieldTemplate MapQuery(this SchemaOptions schemaOptions, string template, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldDefinition MapQuery(this SchemaOptions schemaOptions, string template, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(resolverMethod, nameof(resolverMethod));
 
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Configuration
         /// will be created.</param>
         /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
         /// <returns>IGraphQLFieldTemplate.</returns>
-        public static IGraphQLFieldTemplate MapQuery(this ISchemaBuilder schemaBuilder, string template)
+        public static IGraphQLRuntimeFieldDefinition MapQuery(this ISchemaBuilder schemaBuilder, string template)
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
 
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The resolver method to execute when this
         /// field is requested.</param>
         /// <returns>IGraphQLFieldTemplate.</returns>
-        public static IGraphQLRuntimeResolvedFieldTemplate MapQuery(this ISchemaBuilder schemaBuilder, string template, Delegate resolverMethod)
+        public static IGraphQLRuntimeResolvedFieldDefinition MapQuery(this ISchemaBuilder schemaBuilder, string template, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
             Validation.ThrowIfNull(resolverMethod, nameof(resolverMethod));

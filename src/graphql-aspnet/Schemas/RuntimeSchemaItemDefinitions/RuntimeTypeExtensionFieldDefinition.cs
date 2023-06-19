@@ -16,26 +16,26 @@ namespace GraphQL.AspNet.Configuration.Templates
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
 
     /// <summary>
-    /// An internal implementation of the <see cref="IGraphQLFieldTemplate"/>
+    /// An internal implementation of the <see cref="IGraphQLRuntimeFieldDefinition"/>
     /// used to generate new type extensions via a minimal api style of coding.
     /// </summary>
     [DebuggerDisplay("{Template}")]
-    internal class GraphQLTypeExtensionFieldTemplate : GraphQLResolvedFieldTemplate, IGraphQLRuntimeTypeExtensionTemplate
+    internal class RuntimeTypeExtensionFieldDefinition : RuntimeResolvedFieldDefinition, IGraphQLRuntimeTypeExtensionDefinition
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphQLTypeExtensionFieldTemplate"/> class.
+        /// Initializes a new instance of the <see cref="RuntimeTypeExtensionFieldDefinition"/> class.
         /// </summary>
         /// <param name="schemaOptions">The schema options where this type extension is being declared.</param>
         /// <param name="typeToExtend">The target OBJECT or INTERFACE type to extend.</param>
         /// <param name="fieldName">Name of the field to add to the <paramref name="typeToExtend"/>.</param>
         /// <param name="resolutionMode">The resolution mode for the resolver implemented by this
         /// type extension.</param>
-        public GraphQLTypeExtensionFieldTemplate(
+        public RuntimeTypeExtensionFieldDefinition(
             SchemaOptions schemaOptions,
             Type typeToExtend,
             string fieldName,
             FieldResolutionMode resolutionMode)
-            : base(schemaOptions, fieldName)
+            : base(schemaOptions,  fieldName)
         {
             this.ExecutionMode = resolutionMode;
             this.TargetType = typeToExtend;
