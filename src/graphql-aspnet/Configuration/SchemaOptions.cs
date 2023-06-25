@@ -351,12 +351,16 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Adds the runtime schema item template to the schema options so that it can be
-        /// created when the schema is set up.
+        /// Adds "runtime declared" schema item to this instance so that it can be
+        /// created and registered when the schema is set up.
         /// </summary>
-        /// <param name="template">The template to add.</param>
-        internal void AddSchemaItemTemplate(IGraphQLRuntimeSchemaItemDefinition template)
+        /// <remarks>
+        /// "Runtime declared" schema items are synonymous with minimal api defined fields.
+        /// </remarks>
+        /// <param name="template">The schema item to include.</param>
+        internal void AddRuntimeSchemaItem(IGraphQLRuntimeSchemaItemDefinition template)
         {
+            this.ServiceCollection.AddRuntimeFieldExecutionSupport();
             _runtimeTemplates.Add(template);
         }
 

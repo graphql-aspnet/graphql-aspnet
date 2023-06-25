@@ -47,11 +47,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<MemberInfo> GatherPossibleTemplateMembers()
+        protected override IEnumerable<IFieldMemberInfoProvider> GatherPossibleFieldTemplates()
         {
             return this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
               .Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
-              .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance));
+              .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+              .Select(x => new MemberInfoProvider(x));
         }
 
         /// <inheritdoc />
@@ -107,35 +108,29 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override bool CouldBeGraphField(MemberInfo memberInfo)
+        protected override bool CouldBeGraphField(IFieldMemberInfoProvider fieldProvider)
         {
-            if (memberInfo == null || memberInfo is PropertyInfo)
+            if (fieldProvider?.MemberInfo == null || !(fieldProvider.MemberInfo is MethodInfo))
                 return false;
 
-            if (!base.CouldBeGraphField(memberInfo))
+            if (!base.CouldBeGraphField(fieldProvider))
                 return false;
 
             // always require explicit attribution from controller action methods
-            return memberInfo.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>() != null;
+            return fieldProvider.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>() != null;
         }
 
         /// <inheritdoc />
-        protected override IGraphFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
-        {
-            if (methodInfo == null)
-                return null;
-
-            if (methodInfo.HasAttribute<TypeExtensionAttribute>())
-                return new GraphTypeExtensionFieldTemplate(this, methodInfo);
-            else
-                return new ControllerActionGraphFieldTemplate(this, methodInfo);
-        }
-
-        /// <inheritdoc />
-        protected override IGraphFieldTemplate CreatePropertyFieldTemplate(PropertyInfo prop)
+        protected override IGraphFieldTemplate CreateFieldTemplate(IFieldMemberInfoProvider member)
         {
             // safety check to ensure properites on controllers can never be parsed as fields
-            return null;
+            if (member?.MemberInfo == null || !(member.MemberInfo is MethodInfo))
+                return null;
+
+            if (member.AttributeProvider.HasAttribute<TypeExtensionAttribute>())
+                return new GraphTypeExtensionFieldTemplate(this, (MethodInfo)member.MemberInfo, member.AttributeProvider);
+            else
+                return new ControllerActionGraphFieldTemplate(this, (MethodInfo)member.MemberInfo, member.AttributeProvider);
         }
 
         /// <summary>

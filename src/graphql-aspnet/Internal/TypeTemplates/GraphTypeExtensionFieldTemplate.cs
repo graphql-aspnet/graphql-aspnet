@@ -43,6 +43,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="GraphTypeExtensionFieldTemplate" /> class.
+        /// </summary>
+        /// <param name="parent">The parent object template that owns this method.</param>
+        /// <param name="methodInfo">The method information.</param>
+        /// <param name="attributeProvider">A custom, external attribute provider to use instead for extracting
+        /// configuration attributes instead of the provider on <paramref name="methodInfo" />.</param>
+        public GraphTypeExtensionFieldTemplate(IGraphTypeTemplate parent, MethodInfo methodInfo, ICustomAttributeProvider attributeProvider)
+            : base(parent, methodInfo, attributeProvider)
+        {
+        }
+
+        /// <summary>
         /// Builds out this field template parsing out the required type declarations unions, nameing scheme etc.  This method should be
         /// overridden in any child classes for additional decalration requirements.
         /// </summary>

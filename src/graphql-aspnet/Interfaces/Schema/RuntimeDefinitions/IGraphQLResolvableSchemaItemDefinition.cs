@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration.Templates
     /// A template for a runtime created schema item that has an attached resolver. Usually
     /// a field or a directive.
     /// </summary>
-    public interface IGraphQLResolvableSchemaItemDefinition
+    public interface IGraphQLResolvableSchemaItemDefinition : IGraphQLRuntimeSchemaItemDefinition
     {
         /// <summary>
         /// Gets or sets the resolver function that has been assigned to execute when this

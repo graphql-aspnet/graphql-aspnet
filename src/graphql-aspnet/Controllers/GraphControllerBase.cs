@@ -74,17 +74,8 @@ namespace GraphQL.AspNet.Controllers
 
                 _schemaItemContext.Logger?.ActionMethodModelStateValidated(_action, this.Request, this.ModelState);
 
-                if (_action.Method.DeclaringType != this.GetType())
-                {
-                    throw new TargetException($"Unable to invoke action '{_action.Route.Path}' on controller '{this.GetType().FriendlyName()}'. The controller " +
-                                              "does not own the method.");
-                }
-
-                var invoker = InstanceFactory.CreateInstanceMethodInvoker(_action.Method);
-                var invocationParameters = schemaItemContext.Arguments.PrepareArguments(_action);
-
-                var controllerRef = this as object;
-                var invokeReturn = invoker(ref controllerRef, invocationParameters);
+                var invocationParameters = _schemaItemContext.Arguments.PrepareArguments(_action);
+                var invokeReturn = this.CreateAndInvokeAction(_action, invocationParameters);
                 if (_action.IsAsyncField)
                 {
                     if (invokeReturn is Task task)
@@ -133,6 +124,28 @@ namespace GraphQL.AspNet.Controllers
                         throw;
                 }
             }
+        }
+
+        /// <summary>
+        /// Invoke the actual C# method declared by the <paramref name="resolver"/>
+        /// using this controller instance as the target object of the invocation.
+        /// </summary>
+        /// <param name="resolver">The resolver declaration that needs to be executed.</param>
+        /// <param name="invocationArguments">The realized set of arguments that need
+        /// to be passed to the invocable method instance.</param>
+        /// <returns>Task.</returns>
+        protected virtual object CreateAndInvokeAction(IGraphFieldResolverMethod resolver, object[] invocationArguments)
+        {
+            if (resolver.Method.DeclaringType != this.GetType())
+            {
+                throw new TargetException($"Unable to invoke action '{_action.Route.Path}' on controller '{this.GetType().FriendlyName()}'. The controller " +
+                                          "does not own the method.");
+            }
+
+            var invoker = InstanceFactory.CreateInstanceMethodInvoker(resolver.Method);
+
+            var controllerRef = this as object;
+            return invoker(ref controllerRef, invocationArguments);
         }
 
         /// <summary>

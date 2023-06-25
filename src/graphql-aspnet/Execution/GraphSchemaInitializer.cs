@@ -10,10 +10,12 @@
 namespace GraphQL.AspNet.Execution
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
 
@@ -66,6 +68,7 @@ namespace GraphQL.AspNet.Execution
                 manager.AddBuiltInDirectives();
 
                 // add any configured types to this instance
+                // --------------------------------------
                 foreach (var registration in _options.SchemaTypesToRegister)
                 {
                     var typeDeclaration = registration.Type.SingleAttributeOrDefault<GraphTypeAttribute>();
@@ -75,8 +78,17 @@ namespace GraphQL.AspNet.Execution
                     manager.EnsureGraphType(registration.Type, registration.TypeKind);
                 }
 
+                // add in any runtime configured fields and directives (minimal api)
+                // --------------------------------------
+                var runtimeFields = _options.RuntimeTemplates
+                    .Where(x => x is IGraphQLRuntimeResolvedFieldDefinition)
+                    .Cast<IGraphQLRuntimeResolvedFieldDefinition>();
+
+                foreach (var field in runtimeFields)
+                    manager.AddRuntimeFieldDeclaration(field);
+
                 // execute any assigned schema configuration extensions
-                //
+                // -----------------------
                 // this includes any late bound directives added to the type
                 // system via .ApplyDirective()
                 foreach (var extension in _options.ConfigurationExtensions)

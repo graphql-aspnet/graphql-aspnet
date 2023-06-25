@@ -34,8 +34,25 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyGraphFieldTemplate" /> class.
         /// </summary>
-        /// <param name="parent">The parent.</param>
-        /// <param name="propInfo">The property information.</param>
+        /// <param name="parent">The owner of this field template.</param>
+        /// <param name="propInfo">The property information that will be used to create the field.</param>
+        /// <param name="attributeProvider">A custom, external attribute provider to use instead for extracting
+        /// configuration attributes instead of the provider on <paramref name="propInfo"/>.</param>
+        /// <param name="ownerKind">The kind of graph type that will own this field.</param>
+        public PropertyGraphFieldTemplate(IGraphTypeTemplate parent, PropertyInfo propInfo, ICustomAttributeProvider attributeProvider, TypeKind ownerKind)
+            : base(parent, attributeProvider)
+        {
+            this.Property = Validation.ThrowIfNullOrReturn(propInfo, nameof(propInfo));
+            this.Method = this.Property.GetGetMethod();
+            this.Parameters = this.Method?.GetParameters().ToList() ?? new List<ParameterInfo>();
+            this.OwnerTypeKind = ownerKind;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyGraphFieldTemplate" /> class.
+        /// </summary>
+        /// <param name="parent">The owner of this field template.</param>
+        /// <param name="propInfo">The property information that will be used to create the field.</param>
         /// <param name="ownerKind">The kind of graph type that will own this field.</param>
         public PropertyGraphFieldTemplate(IGraphTypeTemplate parent, PropertyInfo propInfo, TypeKind ownerKind)
             : base(parent, propInfo)

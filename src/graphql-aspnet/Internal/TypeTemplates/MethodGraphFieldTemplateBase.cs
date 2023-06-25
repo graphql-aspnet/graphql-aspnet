@@ -34,6 +34,21 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="parent">The parent object template that owns this method.</param>
         /// <param name="methodInfo">The method information.</param>
+        /// <param name="attributeProvider">A custom, external attribute provider to use instead for extracting
+        /// configuration attributes instead of the provider on <paramref name="methodInfo"/>.</param>
+        protected MethodGraphFieldTemplateBase(IGraphTypeTemplate parent, MethodInfo methodInfo, ICustomAttributeProvider attributeProvider)
+            : base(parent, attributeProvider)
+        {
+            this.Method = Validation.ThrowIfNullOrReturn(methodInfo, nameof(methodInfo));
+            this.Parameters = this.Method.GetParameters().ToList();
+            _arguments = new List<GraphArgumentTemplate>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MethodGraphFieldTemplateBase" /> class.
+        /// </summary>
+        /// <param name="parent">The parent object template that owns this method.</param>
+        /// <param name="methodInfo">The method information.</param>
         protected MethodGraphFieldTemplateBase(IGraphTypeTemplate parent, MethodInfo methodInfo)
             : base(parent, methodInfo)
         {

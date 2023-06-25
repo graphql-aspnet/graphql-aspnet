@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
+    using System;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
@@ -31,6 +32,20 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <param name="ownerTypeKind">The kind of object that will own this field.</param>
         public MethodGraphFieldTemplate(IGraphTypeTemplate parent, MethodInfo methodInfo, TypeKind ownerTypeKind)
             : base(parent, methodInfo)
+        {
+            this.OwnerTypeKind = ownerTypeKind;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MethodGraphFieldTemplate" /> class.
+        /// </summary>
+        /// <param name="parent">The parent object template that owns this method.</param>
+        /// <param name="methodInfo">The method information.</param>
+        /// <param name="attributeProvider">A custom, external attribute provider to use instead for extracting
+        /// configuration attributes instead of the provider on <paramref name="methodInfo"/>.</param>
+        /// <param name="ownerTypeKind">The kind of object that will own this field.</param>
+        public MethodGraphFieldTemplate(IGraphTypeTemplate parent, MethodInfo methodInfo, ICustomAttributeProvider attributeProvider, TypeKind ownerTypeKind)
+            : base(parent, methodInfo, attributeProvider)
         {
             this.OwnerTypeKind = ownerTypeKind;
         }

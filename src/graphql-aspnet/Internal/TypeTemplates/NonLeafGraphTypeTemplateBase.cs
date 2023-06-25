@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
@@ -106,7 +107,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // ------------------------------------
             var parsedItems = new List<IGraphFieldTemplate>();
 
-            var templateMembers = this.GatherPossibleTemplateMembers();
+            var templateMembers = this.GatherPossibleFieldTemplates();
 
             foreach (var member in templateMembers)
             {
@@ -160,25 +161,27 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Extract the possible template members of <see cref="SchemaItemTemplateBase.ObjectType"/>
         /// that might be includable in this template.
         /// </summary>
-        /// <returns>IEnumerable&lt;MemberInfo&gt;.</returns>
-        protected abstract IEnumerable<MemberInfo> GatherPossibleTemplateMembers();
+        /// <returns>IEnumerable&lt;IFieldMemberInfoProvider&gt;.</returns>
+        protected abstract IEnumerable<IFieldMemberInfoProvider> GatherPossibleFieldTemplates();
 
         /// <summary>
-        /// Creates the member template from the given info. If overriden in a child class methods <see cref="CreatePropertyFieldTemplate"/> and
-        /// <see cref="CreateMethodFieldTemplate"/> may no longer be called. This method gives you a point of inflection to override how all
-        /// field templates are created or just those for a given member type.
+        /// Creates the member template from the given info. If a provided <paramref name="fieldProvider"/>
+        /// should not be templatized, return <c>null</c>.
         /// </summary>
-        /// <param name="member">The member.</param>
+        /// <param name="fieldProvider">The member to templatize.</param>
         /// <returns>GraphQL.AspNet.Internal.Interfaces.IGraphFieldTemplate.</returns>
-        protected virtual IGraphFieldTemplate CreateFieldTemplate(MemberInfo member)
+        protected virtual IGraphFieldTemplate CreateFieldTemplate(IFieldMemberInfoProvider fieldProvider)
         {
-            switch (member)
+            if (fieldProvider?.MemberInfo == null)
+                return null;
+
+            switch (fieldProvider.MemberInfo)
             {
                 case PropertyInfo pi:
-                    return this.CreatePropertyFieldTemplate(pi);
+                    return new PropertyGraphFieldTemplate(this, pi, fieldProvider.AttributeProvider, this.Kind);
 
                 case MethodInfo mi:
-                    return this.CreateMethodFieldTemplate(mi);
+                    return new MethodGraphFieldTemplate(this, mi, fieldProvider.AttributeProvider, this.Kind);
             }
 
             return null;
@@ -189,24 +192,24 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// explictly declared as such or that it conformed to the required parameters of being
         /// a field.
         /// </summary>
-        /// <param name="memberInfo">The member information to check.</param>
+        /// <param name="fieldProvider">The member information to check.</param>
         /// <returns>
         ///   <c>true</c> if the info represents a possible graph field; otherwise, <c>false</c>.</returns>
-        protected virtual bool CouldBeGraphField(MemberInfo memberInfo)
+        protected virtual bool CouldBeGraphField(IFieldMemberInfoProvider fieldProvider)
         {
             // always skip those marked as such regardless of anything else
-            if (memberInfo.HasAttribute<GraphSkipAttribute>())
+            if (fieldProvider.AttributeProvider.HasAttribute<GraphSkipAttribute>())
                 return false;
 
-            if (Constants.IgnoredFieldNames.Contains(memberInfo.Name))
+            if (Constants.IgnoredFieldNames.Contains(fieldProvider.MemberInfo.Name))
                 return false;
 
             // when the member declares any known attribute in the library include it
             // and allow it to generate validation failures if its not properly constructed
-            if (memberInfo.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>() != null)
+            if (fieldProvider.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>() != null)
                 return true;
 
-            switch (memberInfo)
+            switch (fieldProvider.MemberInfo)
             {
                 case MethodInfo mi:
                     if (!GraphValidation.IsValidGraphType(mi.ReturnType, false))
@@ -230,7 +233,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// When overridden in a child class, this metyhod builds the route that will be assigned to this method
+        /// When overridden in a child class, this method builds the route that will be assigned to this method
         /// using the implementation rules of the concrete type.
         /// </summary>
         /// <returns>GraphRoutePath.</returns>
@@ -269,34 +272,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             foreach (var field in this.FieldTemplates.Values)
                 field.ValidateOrThrow();
-        }
-
-        /// <summary>
-        /// When overridden in a child, allows the class to create custom templates that inherit from <see cref="MethodGraphFieldTemplateBase" />
-        /// to provide additional functionality or guarantee a certian type structure for all methods on this object template.
-        /// </summary>
-        /// <param name="methodInfo">The method information to templatize.</param>
-        /// <returns>IGraphFieldTemplate.</returns>
-        protected virtual IGraphFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
-        {
-            if (methodInfo == null)
-                return null;
-
-            return new MethodGraphFieldTemplate(this, methodInfo, this.Kind);
-        }
-
-        /// <summary>
-        /// When overridden in a child, allows the class to create custom templates to provide additional functionality or
-        /// guarantee a certian type structure for all properties on this object template.
-        /// </summary>
-        /// <param name="propInfo">The property information to templatize.</param>
-        /// <returns>IGraphFieldTemplate.</returns>
-        protected virtual IGraphFieldTemplate CreatePropertyFieldTemplate(PropertyInfo propInfo)
-        {
-            if (propInfo == null)
-                return null;
-
-            return new PropertyGraphFieldTemplate(this, propInfo, this.Kind);
         }
 
         /// <inheritdoc />

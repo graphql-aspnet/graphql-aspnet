@@ -345,6 +345,21 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
+        /// Adds a runtime declared field (with its assigned resolver) as a field in the schema.
+        /// </summary>
+        /// <param name="fieldDefinition">The field definition to add to the schema.</param>
+        public void AddRuntimeFieldDeclaration(IGraphQLRuntimeResolvedFieldDefinition fieldDefinition)
+        {
+            Validation.ThrowIfNull(fieldDefinition, nameof(fieldDefinition));
+            var template = new RuntimeGraphControllerTemplate(fieldDefinition);
+
+            template.Parse();
+            template.ValidateOrThrow();
+
+            this.AddController(template);
+        }
+
+        /// <summary>
         /// Inspects and adds the given type to the schema as a graph type or a registered controller depending
         /// on the type. The type kind will be automatically inferred or an error will be thrown.
         /// </summary>
@@ -436,9 +451,9 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
-        /// Clears, builds and caches the introspection metadata to describe this schema. If introspection
+        /// Clears, builds and caches the introspection metadata used to describe this schema. If introspection
         /// fields have not been added to the schema this method does nothing. No changes to the schema
-        /// items themselves happens during this method.
+        /// items themselves happens during this method call.
         /// </summary>
         public void RebuildIntrospectionData()
         {

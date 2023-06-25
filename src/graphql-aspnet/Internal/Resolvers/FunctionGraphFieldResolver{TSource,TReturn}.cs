@@ -23,7 +23,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// <typeparam name="TSource">The expected type of the source data.</typeparam>
     /// <typeparam name="TReturn">The expected type of the returned data.</typeparam>
     /// <remarks>
-    /// This resolver is used heavily by the introspection system.
+    /// This resolver is used heavily by the introspection system for simple, static data resolution
+    /// and extending other more involved resolvers with simple add-on functionality.
     /// </remarks>
     internal class FunctionGraphFieldResolver<TSource, TReturn> : IGraphFieldResolver
         where TSource : class

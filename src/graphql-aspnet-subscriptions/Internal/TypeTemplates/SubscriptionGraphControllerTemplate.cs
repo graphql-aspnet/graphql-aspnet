@@ -33,21 +33,20 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
         }
 
-        /// <summary>
-        /// When overridden in a child, allows the class to create custom template that inherit from <see cref="MethodGraphFieldTemplateBase" />
-        /// to provide additional functionality or garuntee a certian type structure for all methods on this object template.
-        /// </summary>
-        /// <param name="methodInfo">The method information.</param>
-        /// <returns>IGraphFieldTemplate.</returns>
-        protected override IGraphFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
+        /// <inheritdoc />
+        protected override IGraphFieldTemplate CreateFieldTemplate(IFieldMemberInfoProvider member)
         {
-            if (methodInfo == null)
+            if (member?.MemberInfo == null || !(member.MemberInfo is MethodInfo))
                 return null;
 
-            if (methodInfo.HasAttribute<SubscriptionAttribute>() || methodInfo.HasAttribute<SubscriptionRootAttribute>())
-                return new SubscriptionControllerActionGraphFieldTemplate(this, methodInfo);
+            if (member?.MemberInfo != null &&
+                member.MemberInfo is MethodInfo methodInfo &&
+                (member.AttributeProvider.HasAttribute<SubscriptionAttribute>() || member.AttributeProvider.HasAttribute<SubscriptionRootAttribute>()))
+            {
+                return new SubscriptionControllerActionGraphFieldTemplate(this, methodInfo, member.AttributeProvider);
+            }
 
-            return base.CreateMethodFieldTemplate(methodInfo);
+            return base.CreateFieldTemplate(member);
         }
     }
 }

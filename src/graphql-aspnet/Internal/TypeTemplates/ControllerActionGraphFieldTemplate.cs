@@ -32,10 +32,22 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// Initializes a new instance of the <see cref="ControllerActionGraphFieldTemplate" /> class.
         /// </summary>
-        /// <param name="parent">The parent.</param>
-        /// <param name="methodInfo">The method information.</param>
+        /// <param name="parent">The controller that owns this action.</param>
+        /// <param name="methodInfo">The method information to be templatized.</param>
         public ControllerActionGraphFieldTemplate(IGraphControllerTemplate parent, MethodInfo methodInfo)
             : base(parent, methodInfo)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ControllerActionGraphFieldTemplate" /> class.
+        /// </summary>
+        /// <param name="parent">The controller that owns this action.</param>
+        /// <param name="methodInfo">The method information to be templatized.</param>
+        /// <param name="attributeProvider">A custom, external attribute provider to use instead for extracting
+        /// configuration attributes instead of the provider on <paramref name="methodInfo"/>.</param>
+        public ControllerActionGraphFieldTemplate(IGraphControllerTemplate parent, MethodInfo methodInfo, ICustomAttributeProvider attributeProvider)
+            : base(parent, methodInfo, attributeProvider)
         {
         }
 

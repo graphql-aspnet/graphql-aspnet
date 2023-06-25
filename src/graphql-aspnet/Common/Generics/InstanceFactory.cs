@@ -304,7 +304,7 @@ namespace GraphQL.AspNet.Common.Generics
             // in combination with Roger Johanson: https://rogerjohansson.blog/2008/02/28/linq-expressions-creating-objects/ .
             // -----------------------------
             if (args == null)
-                return CreateInstance(type);
+                return CreateInstance(type, new object[0]);
 
             if ((args.Length > 3)
                 || (args.Length > 0 && args[0] == null)

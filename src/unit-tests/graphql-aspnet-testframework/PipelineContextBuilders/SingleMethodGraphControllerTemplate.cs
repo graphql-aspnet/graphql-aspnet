@@ -9,8 +9,8 @@
 
 namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
-    using System.Reflection;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
 
     /// <summary>
@@ -41,9 +41,9 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// </summary>
         /// <param name="memberInfo">The member information to check.</param>
         /// <returns><c>true</c> if the info represents a possible graph field; otherwise, <c>false</c>.</returns>
-        protected override bool CouldBeGraphField(MemberInfo memberInfo)
+        protected override bool CouldBeGraphField(IFieldMemberInfoProvider memberInfo)
         {
-            if (_methodName != null && memberInfo.Name != _methodName)
+            if (_methodName != null && memberInfo.MemberInfo.Name != _methodName)
                 return false;
 
             return base.CouldBeGraphField(memberInfo);

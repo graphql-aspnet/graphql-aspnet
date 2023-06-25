@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Configuration
         {
             // convert the virtual field to a resolved field
             var resolvedBuilder = RuntimeResolvedFieldDefinition.FromFieldTemplate(field);
-            resolvedBuilder.Options.AddSchemaItemTemplate(resolvedBuilder);
+            resolvedBuilder.Options.AddRuntimeSchemaItem(resolvedBuilder);
 
             resolvedBuilder.Resolver = resolverMethod;
             resolvedBuilder.ReturnType = null;
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Configuration
         {
             // convert the virtual field to a resolved field
             var resolvedBuilder = RuntimeResolvedFieldDefinition.FromFieldTemplate(field);
-            resolvedBuilder.Options.AddSchemaItemTemplate(resolvedBuilder);
+            resolvedBuilder.Options.AddRuntimeSchemaItem(resolvedBuilder);
 
             resolvedBuilder.Resolver = resolverMethod;
             resolvedBuilder.ReturnType = typeof(TReturnType);
@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Configuration
             var subField = new RuntimeResolvedFieldDefinition(field, subTemplate);
             subField.AddResolver(resolverMethod);
 
-            subField.Options.AddSchemaItemTemplate(subField);
+            subField.Options.AddRuntimeSchemaItem(subField);
             return subField;
         }
 

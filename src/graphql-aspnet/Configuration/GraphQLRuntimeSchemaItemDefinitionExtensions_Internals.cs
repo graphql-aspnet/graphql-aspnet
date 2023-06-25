@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Configuration
                 fieldName,
                 resolutionMode);
 
-            schemaOptions.AddSchemaItemTemplate(field);
+            schemaOptions.AddRuntimeSchemaItem(field);
             return field;
         }
 
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Configuration
 
             var directive = new RuntimeDirectiveActionDefinition(schemaOptions, directiveName);
 
-            schemaOptions.AddSchemaItemTemplate(directive);
+            schemaOptions.AddRuntimeSchemaItem(directive);
             return directive;
         }
     }

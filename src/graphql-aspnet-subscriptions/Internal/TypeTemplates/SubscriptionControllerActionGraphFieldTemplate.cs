@@ -32,12 +32,28 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionControllerActionGraphFieldTemplate"/> class.
         /// </summary>
-        /// <param name="parent">The parent.</param>
-        /// <param name="methodInfo">The method information.</param>
+        /// <param name="parent">The controller that owns this action.</param>
+        /// <param name="methodInfo">The method information to be templatized.</param>
         public SubscriptionControllerActionGraphFieldTemplate(
             IGraphControllerTemplate parent,
             MethodInfo methodInfo)
             : base(parent, methodInfo)
+        {
+            this.EventName = null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SubscriptionControllerActionGraphFieldTemplate" /> class.
+        /// </summary>
+        /// <param name="parent">The controller that owns this action.</param>
+        /// <param name="methodInfo">The method information to be templatized.</param>
+        /// <param name="attributeProvider">A custom, external attribute provider to use instead for extracting
+        /// configuration attributes instead of the provider on <paramref name="methodInfo"/>.</param>
+        public SubscriptionControllerActionGraphFieldTemplate(
+            IGraphControllerTemplate parent,
+            MethodInfo methodInfo,
+            ICustomAttributeProvider attributeProvider)
+            : base(parent, methodInfo, attributeProvider)
         {
             this.EventName = null;
         }
