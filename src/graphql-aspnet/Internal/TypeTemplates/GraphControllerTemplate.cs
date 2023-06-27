@@ -110,7 +110,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         protected override bool CouldBeGraphField(IFieldMemberInfoProvider fieldProvider)
         {
-            if (fieldProvider?.MemberInfo == null || !(fieldProvider.MemberInfo is MethodInfo))
+            if (fieldProvider?.MemberInfo == null || !(fieldProvider.MemberInfo is MethodInfo methodInfo))
                 return false;
 
             if (!base.CouldBeGraphField(fieldProvider))

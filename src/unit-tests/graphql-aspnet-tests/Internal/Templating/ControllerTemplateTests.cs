@@ -111,5 +111,18 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 101, "controller arg" }, appliedDirective.Arguments);
         }
+
+        [Test]
+        public void Parse_StaticMethodsWithProperGraphFieldDeclarations_AreSkipped()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithStaticMethod));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.Actions.Count());
+
+            var action = template.Actions.First();
+            Assert.AreEqual(nameof(ControllerWithStaticMethod.InstanceMethod), action.Name);
+        }
     }
 }

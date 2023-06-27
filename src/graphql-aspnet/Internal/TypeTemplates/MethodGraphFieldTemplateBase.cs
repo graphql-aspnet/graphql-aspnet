@@ -92,13 +92,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             base.ValidateOrThrow();
 
-            if (this.Method.IsStatic)
-            {
-                throw new GraphTypeDeclarationException(
-                    $"Invalid graph method declaration. The method '{this.InternalFullName}' is static. Only " +
-                    "instance members can be registered as field.");
-            }
-
             if (this.ExpectedReturnType == null)
             {
                 throw new GraphTypeDeclarationException(

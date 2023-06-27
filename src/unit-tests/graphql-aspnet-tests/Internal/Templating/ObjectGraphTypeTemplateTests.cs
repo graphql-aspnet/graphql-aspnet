@@ -421,5 +421,18 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectThatInheritsNonExplicitMethodField.FieldOnObject)));
             Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectWithNonExplicitMethodField.FieldOnBaseObject)));
         }
+
+        [Test]
+        public void Parse_StaticMethodsWithProperGraphFieldDeclarations_AreSkipped()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithStatics));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count());
+
+            Assert.IsNotNull(template.FieldTemplates.Values.SingleOrDefault(x => x.Route.Name == nameof(ObjectWithStatics.InstanceProperty)));
+            Assert.IsNotNull(template.FieldTemplates.Values.SingleOrDefault(x => x.Route.Name == nameof(ObjectWithStatics.InstanceMethod)));
+        }
     }
 }

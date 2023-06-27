@@ -23,12 +23,19 @@ namespace GraphQL.AspNet.Controllers
         /// <inheritdoc />
         protected override object CreateAndInvokeAction(IGraphFieldResolverMethod resolver, object[] invocationArguments)
         {
-            // for minimal api resolvers create an instance of the
-            // "runtime declared owner type" and invoke using it
-            var instance = InstanceFactory.CreateInstance(resolver.Method.DeclaringType);
-            var invoker = InstanceFactory.CreateInstanceMethodInvoker(resolver.Method);
-
-            return invoker(ref instance, invocationArguments);
+            // minimal api resolvers are allowed to be static since there is no
+            // extra context to setup or make available such as 'this.User' etc.
+            if (resolver.Method.IsStatic)
+            {
+                var invoker = InstanceFactory.CreateStaticMethodInvoker(resolver.Method);
+                return invoker(invocationArguments);
+            }
+            else
+            {
+                var invoker = InstanceFactory.CreateInstanceMethodInvoker(resolver.Method);
+                var instance = InstanceFactory.CreateInstance(resolver.Method.DeclaringType);
+                return invoker(ref instance, invocationArguments);
+            }
         }
     }
 }

@@ -10,15 +10,10 @@
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System.Collections.Generic;
-    using System.Reflection;
-    using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A "controller template" representing a single runtime configured field (e.g. minimal api).
@@ -27,7 +22,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     internal class RuntimeGraphControllerTemplate : GraphControllerTemplate
     {
         private readonly IFieldMemberInfoProvider _fieldProvider;
-        private readonly IGraphQLResolvableSchemaItemDefinition _fieldDefinition;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeGraphControllerTemplate" /> class.

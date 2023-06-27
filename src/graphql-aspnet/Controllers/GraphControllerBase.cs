@@ -142,6 +142,12 @@ namespace GraphQL.AspNet.Controllers
                                           "does not own the method.");
             }
 
+            if (resolver.Method.IsStatic)
+            {
+                throw new TargetException($"Unable to invoke action '{_action.Route.Path}' on controller '{this.GetType().FriendlyName()}'. The method " +
+                                          "is static and cannot be directly invoked on this controller instance.");
+            }
+
             var invoker = InstanceFactory.CreateInstanceMethodInvoker(resolver.Method);
 
             var controllerRef = this as object;

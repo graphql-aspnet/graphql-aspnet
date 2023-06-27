@@ -32,6 +32,10 @@ namespace GraphQL.AspNet.Tests.Common
         {
         }
 
+        public static void DivideNumbersAsStaticMethod(int arg1, int arg2)
+        {
+        }
+
         public static int SubtractNumbers(int arg1, int arg2)
         {
             return arg1 - arg2;
@@ -139,14 +143,14 @@ namespace GraphQL.AspNet.Tests.Common
         }
 
         [Test]
-        public void MethodInvoker_NullMethodInfo_ReturnsNull()
+        public void InstanceMethodInvoker_NullMethodInfo_ReturnsNull()
         {
             var invoker = InstanceFactory.CreateInstanceMethodInvoker(null);
             Assert.IsNull(invoker);
         }
 
         [Test]
-        public void MethodInvoker_StaticMethodInfo_ThrowsException()
+        public void InstanceMethodInvoker_StaticMethodInfo_ThrowsException()
         {
             InstanceFactory.Clear();
             var methodInfo = typeof(InstanceFactoryTests).GetMethod(nameof(InstanceFactoryTests.SubtractNumbers));
@@ -158,7 +162,7 @@ namespace GraphQL.AspNet.Tests.Common
         }
 
         [Test]
-        public void MethodInvoker_VoidReturn_ThrowsException()
+        public void InstanceMethodInvoker_VoidReturn_ThrowsException()
         {
             InstanceFactory.Clear();
             var methodInfo = typeof(InstanceFactoryTests).GetMethod(nameof(InstanceFactoryTests.DivideNumbers));
@@ -170,7 +174,7 @@ namespace GraphQL.AspNet.Tests.Common
         }
 
         [Test]
-        public void MethodInvoker_StandardInvoke_ReturnsValue()
+        public void InstanceMethodInvoker_StandardInvoke_ReturnsValue()
         {
             InstanceFactory.Clear();
             var methodInfo = typeof(InstanceFactoryTests).GetMethod(nameof(InstanceFactoryTests.AddNumbers));
@@ -183,12 +187,12 @@ namespace GraphQL.AspNet.Tests.Common
             Assert.AreEqual(8, result);
 
             // ensure it was cached.
-            Assert.AreEqual(1, InstanceFactory.MethodInvokers.Count);
+            Assert.AreEqual(1, InstanceFactory.InstanceMethodInvokers.Count);
             InstanceFactory.Clear();
         }
 
         [Test]
-        public void MethodInvoker_StandardInvoke_CachesAndReturnsValue()
+        public void InstanceMethodInvoker_StandardInvoke_CachesAndReturnsValue()
         {
             InstanceFactory.Clear();
             var methodInfo = typeof(InstanceFactoryTests).GetMethod(nameof(InstanceFactoryTests.AddNumbers));
@@ -208,12 +212,12 @@ namespace GraphQL.AspNet.Tests.Common
 
             // ensure it was cached.
             Assert.AreSame(invoker, secondInvoker);
-            Assert.AreEqual(1, InstanceFactory.MethodInvokers.Count);
+            Assert.AreEqual(1, InstanceFactory.InstanceMethodInvokers.Count);
             InstanceFactory.Clear();
         }
 
         [Test]
-        public void MethodInvoker_Struct_StandardInvoke_ReturnsValue_StructIsModified()
+        public void InstanceMethodInvoker_Struct_StandardInvoke_ReturnsValue_StructIsModified()
         {
             InstanceFactory.Clear();
             var methodInfo = typeof(StructWithMethod).GetMethod(nameof(StructWithMethod.AddAndSet));
@@ -230,7 +234,7 @@ namespace GraphQL.AspNet.Tests.Common
             Assert.AreEqual("propValue1", resultCast.Property1);
 
             // ensure it was cached.
-            Assert.AreEqual(1, InstanceFactory.MethodInvokers.Count);
+            Assert.AreEqual(1, InstanceFactory.InstanceMethodInvokers.Count);
             InstanceFactory.Clear();
         }
 
@@ -314,6 +318,63 @@ namespace GraphQL.AspNet.Tests.Common
             Assert.AreEqual(1, InstanceFactory.PropertyGetterInvokers.Count);
             Assert.AreEqual(0, InstanceFactory.PropertySetterInvokers.Count);
 
+            InstanceFactory.Clear();
+        }
+
+        [Test]
+        public void StaticMethodInvoker_NullMethodInfo_ReturnsNull()
+        {
+            var invoker = InstanceFactory.CreateStaticMethodInvoker(null);
+            Assert.IsNull(invoker);
+        }
+
+        [Test]
+        public void StaticMethodInvoker_VoidReturn_ThrowsException()
+        {
+            InstanceFactory.Clear();
+            var methodInfo = typeof(InstanceFactoryTests).GetMethod(nameof(InstanceFactoryTests.DivideNumbersAsStaticMethod));
+
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var invoker = InstanceFactory.CreateStaticMethodInvoker(methodInfo);
+            });
+        }
+
+        [Test]
+        public void StaticMethodInvoker_StandardInvoke_ReturnsValue()
+        {
+            InstanceFactory.Clear();
+            var methodInfo = typeof(InstanceFactoryTests).GetMethod(nameof(InstanceFactoryTests.SubtractNumbers));
+
+            var invoker = InstanceFactory.CreateStaticMethodInvoker(methodInfo);
+
+            var result = invoker(5, 3);
+            Assert.AreEqual(2, result);
+
+            // ensure it was cached.
+            Assert.AreEqual(1, InstanceFactory.StaticMethodInvokers.Count);
+            InstanceFactory.Clear();
+        }
+
+        [Test]
+        public void StaticMethodInvoker_StandardInvoke_CachesAndReturnsValue()
+        {
+            InstanceFactory.Clear();
+            var methodInfo = typeof(InstanceFactoryTests).GetMethod(nameof(InstanceFactoryTests.SubtractNumbers));
+
+            var invoker = InstanceFactory.CreateStaticMethodInvoker(methodInfo);
+
+            var result = invoker(5, 3);
+            Assert.AreEqual(2, result);
+
+            var secondInvoker = InstanceFactory.CreateStaticMethodInvoker(methodInfo);
+
+            result = secondInvoker(9, 1);
+            Assert.AreEqual(8, result);
+
+            // ensure it was cached.
+            Assert.AreSame(invoker, secondInvoker);
+            Assert.AreEqual(1, InstanceFactory.StaticMethodInvokers.Count);
             InstanceFactory.Clear();
         }
     }

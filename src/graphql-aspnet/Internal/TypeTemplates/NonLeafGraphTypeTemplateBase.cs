@@ -212,6 +212,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             switch (fieldProvider.MemberInfo)
             {
                 case MethodInfo mi:
+                    if (mi.IsStatic)
+                        return false;
                     if (!GraphValidation.IsValidGraphType(mi.ReturnType, false))
                         return false;
                     if (mi.GetParameters().Any(x => !GraphValidation.IsValidGraphType(x.ParameterType, false)))
@@ -220,6 +222,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
                 case PropertyInfo pi:
                     if (pi.GetGetMethod() == null)
+                        return false;
+                    if (pi.GetGetMethod().IsStatic)
                         return false;
                     if (pi.GetIndexParameters().Length > 0)
                         return false;
