@@ -76,12 +76,12 @@ namespace GraphQL.AspNet.Configuration.Templates
             string partialPathTemplate)
             : this()
         {
-            parentField = Validation.ThrowIfNullOrReturn(parentField, nameof(parentField));
+            _parentField = Validation.ThrowIfNullOrReturn(parentField, nameof(parentField));
             this.Options = Validation.ThrowIfNullOrReturn(parentField?.Options, nameof(parentField.Options));
 
             partialPathTemplate = Validation.ThrowIfNullWhiteSpaceOrReturn(partialPathTemplate, nameof(partialPathTemplate));
 
-            this.Route = parentField.Route.CreateChild(partialPathTemplate);
+            this.Route = _parentField.Route.CreateChild(partialPathTemplate);
         }
 
         /// <inheritdoc />
@@ -97,6 +97,8 @@ namespace GraphQL.AspNet.Configuration.Templates
         /// <returns>Attribute.</returns>
         protected abstract Attribute CreatePrimaryAttribute();
 
+        private readonly IGraphQLRuntimeFieldDefinition _parentField;
+
         /// <inheritdoc />
         public virtual SchemaOptions Options { get; protected set; }
 
@@ -108,6 +110,12 @@ namespace GraphQL.AspNet.Configuration.Templates
                 var topAttrib = this.CreatePrimaryAttribute();
                 if (topAttrib != null)
                     yield return topAttrib;
+
+                if (_parentField != null)
+                {
+                    foreach (var attrib in _parentField.Attributes)
+                        yield return attrib;
+                }
 
                 foreach (var attrib in this.AppendedAttributes)
                     yield return attrib;

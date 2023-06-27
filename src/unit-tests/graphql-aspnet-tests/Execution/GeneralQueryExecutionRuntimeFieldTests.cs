@@ -11,6 +11,8 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Controllers.ActionResults;
+    using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTest;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
@@ -48,12 +50,99 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
+        public async Task BasicMappedQuery_AddingResolverAfter_ExecutesMethod()
+        {
+            var serverBuilder = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.MapQuery("/field1/field2")
+                        .AddResolver((int a, int b) =>
+                        {
+                            return a + b;
+                        });
+                });
+
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field1 { field2(a: 5, b: 33 } } }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                    ""data"": {
+                        ""field1"": {
+                            ""field2"" : 38
+                        }
+                    }
+                }",
+                result);
+        }
+
+        [Test]
+        public async Task MappedQuery_ViaGroup_ExecutesMethod()
+        {
+            var serverBuilder = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    var group = o.MapQueryGroup("/field1");
+                    group.MapField("/field2", (int a, int b) =>
+                    {
+                        return a + b;
+                    });
+                });
+
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field1 { field2(a: 5, b: 33 } } }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                    ""data"": {
+                        ""field1"": {
+                            ""field2"" : 38
+                        }
+                    }
+                }",
+                result);
+        }
+
+        [Test]
         public async Task BasicMappedMutation_ExecutesMethod()
         {
             var serverBuilder = new TestServerBuilder()
                 .AddGraphQL(o =>
                 {
                     o.MapMutation("/field1/field2", (int a, int b) =>
+                    {
+                        return a + b;
+                    });
+                });
+
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"mutation { field1 { field2(a: 4, b: 33 } } }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                    ""data"": {
+                        ""field1"": {
+                            ""field2"" : 37
+                        }
+                    }
+                }",
+                result);
+        }
+
+        [Test]
+        public async Task BasicMappedMutation_AddingResolverAfter_ExecutesMethod()
+        {
+            var serverBuilder = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.MapMutation("/field1/field2")
+                    .AddResolver((int a, int b) =>
                     {
                         return a + b;
                     });
@@ -122,6 +211,35 @@ namespace GraphQL.AspNet.Tests.Execution
                     ""data"": {
                         ""field1"": {
                             ""field2"" : 41
+                        }
+                    }
+                }",
+                result);
+        }
+
+        [Test]
+        public async Task BasicMappedQuery_ReturningActionResult_ResolvesCorrectly()
+        {
+            var serverBuilder = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.MapQuery("/field1/field2")
+                        .AddResolver<int>((int a, int b) =>
+                        {
+                            return GraphActionResult.Ok(a + b);
+                        });
+                });
+
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field1 { field2(a: 5, b: 33 } } }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                    ""data"": {
+                        ""field1"": {
+                            ""field2"" : 38
                         }
                     }
                 }",

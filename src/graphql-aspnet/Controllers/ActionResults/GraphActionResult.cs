@@ -7,29 +7,30 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Controllers
+namespace GraphQL.AspNet.Controllers.ActionResults
 {
     using System;
-    using GraphQL.AspNet.Controllers.ActionResults;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers.ActionResults.Batching;
-    using GraphQL.AspNet.Controllers.InputModel;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A base class from which all graph controllers must inherit.
+    /// A helper class to allow the use of common <see cref="IGraphActionResult"/> methods
+    /// with non-controller based resolvers.
     /// </summary>
-    public abstract partial class GraphController
+    public static class GraphActionResult
     {
         /// <summary>
         /// Returns an result with the given item as the resolved value for the field.
         /// </summary>
         /// <param name="item">The object to resolve the field with.</param>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
-        protected virtual IGraphActionResult Ok(object item)
+        public static IGraphActionResult Ok(object item)
         {
-            return GraphActionResult.Ok(item);
+            return new ObjectReturnedGraphActionResult(item);
         }
 
         /// <summary>
@@ -37,9 +38,9 @@ namespace GraphQL.AspNet.Controllers
         /// for the field.
         /// </summary>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
-        protected virtual IGraphActionResult Ok()
+        public static IGraphActionResult Ok()
         {
-            return GraphActionResult.Ok();
+            return Ok(null);
         }
 
         /// <summary>
@@ -49,12 +50,12 @@ namespace GraphQL.AspNet.Controllers
         /// <param name="code">The code to assign to the error entry in the graph result.</param>
         /// <param name="exception">An optional exception that generated this error.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult Error(
+        public static IGraphActionResult Error(
             string message,
             string code = null,
             Exception exception = null)
         {
-            return GraphActionResult.Error(message, code, exception);
+            return new GraphFieldErrorActionResult(message, code, exception);
         }
 
         /// <summary>
@@ -65,13 +66,14 @@ namespace GraphQL.AspNet.Controllers
         /// <param name="code">The error code to assign to the reported error in the graph result.</param>
         /// <param name="exception">An optional exception to be published if the query is configured to allow exposing exceptions.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult Error(
+        public static IGraphActionResult Error(
             GraphMessageSeverity severity,
             string message,
             string code = null,
             Exception exception = null)
         {
-            return GraphActionResult.Error(severity, message, code, exception: exception);
+            var errorMessage = new GraphExecutionMessage(severity, message, code, exception: exception);
+            return Error(errorMessage);
         }
 
         /// <summary>
@@ -79,9 +81,9 @@ namespace GraphQL.AspNet.Controllers
         /// </summary>
         /// <param name="message">A custom generated error message.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult Error(IGraphMessage message)
+        public static IGraphActionResult Error(IGraphMessage message)
         {
-            return GraphActionResult.Error(message);
+            return new GraphFieldErrorActionResult(message);
         }
 
         /// <summary>
@@ -90,9 +92,9 @@ namespace GraphQL.AspNet.Controllers
         /// </summary>
         /// <param name="errorMessage">The error message.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult InternalServerError(string errorMessage)
+        public static IGraphActionResult InternalServerError(string errorMessage)
         {
-            return GraphActionResult.InternalServerError(errorMessage);
+            return new InternalServerErrorGraphActionResult(errorMessage);
         }
 
         /// <summary>
@@ -101,9 +103,9 @@ namespace GraphQL.AspNet.Controllers
         /// </summary>
         /// <param name="message">The message indicating what was not found.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult NotFound(string message)
+        public static IGraphActionResult NotFound(string message)
         {
-            return GraphActionResult.NotFound(message);
+            return new RouteNotFoundGraphActionResult(message);
         }
 
         /// <summary>
@@ -112,20 +114,9 @@ namespace GraphQL.AspNet.Controllers
         /// </summary>
         /// <param name="message">The message.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult BadRequest(string message)
+        public static IGraphActionResult BadRequest(string message)
         {
-            return GraphActionResult.BadRequest(message);
-        }
-
-        /// <summary>
-        /// Returns an negative result, indicating the data supplied on the request was bad or
-        /// otherwise not usable by the controller method.
-        /// </summary>
-        /// <param name="modelState">The model state with its contained validation failures.</param>
-        /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult BadRequest(InputModelStateDictionary modelState)
-        {
-            return new BadRequestGraphActionResult(modelState);
+            return new BadRequestGraphActionResult(message);
         }
 
         /// <summary>
@@ -134,9 +125,9 @@ namespace GraphQL.AspNet.Controllers
         /// <param name="message">The message to return to the client.</param>
         /// <param name="errorCode">The error code to apply to the error returned to the client.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult Unauthorized(string message = null, string errorCode = null)
+        public static IGraphActionResult Unauthorized(string message = null, string errorCode = null)
         {
-            return GraphActionResult.Unauthorized(message, errorCode);
+            return new UnauthorizedGraphActionResult(message, errorCode);
         }
 
         /// <summary>
@@ -146,10 +137,12 @@ namespace GraphQL.AspNet.Controllers
         /// generated indicating an issue if the batch produced cannot fulfill the requirements of the field.
         /// This method will not throw an exception.
         /// </summary>
+        /// <param name="targetField">The graph field the batch will be built for.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual BatchBuilder StartBatch()
+        public static BatchBuilder StartBatch(IGraphField targetField)
         {
-            return GraphActionResult.StartBatch(this.Request.InvocationContext.Field);
+            Validation.ThrowIfNull(targetField, nameof(targetField));
+            return new BatchBuilder(targetField);
         }
     }
 }

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Configuration.Templates
 {
     using System.Linq;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Schemas;
@@ -18,15 +19,15 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
     using NUnit.Framework;
 
     [TestFixture]
-    public class UnresolvedFieldTemplateTests
+    public class MappedQueryGroupTests
     {
         [Test]
-        public void UnresolvedField_WhenAllowAnonymousAdded_AddsAnonymousAttribute()
+        public void MapQueryGroup_WhenAllowAnonymousAdded_AddsAnonymousAttribute()
         {
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var field = options.MapQuery("/path1/path2");
+            var field = options.MapQueryGroup("/path1/path2");
 
             field.AllowAnonymous();
 
@@ -35,12 +36,12 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
         }
 
         [Test]
-        public void UnresolvedField_WhenRequireAuthAdded_AddsAuthAttribute()
+        public void MapQueryGroup_WhenRequireAuthAdded_AddsAuthAttribute()
         {
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var field = options.MapQuery("/path1/path2");
+            var field = options.MapQueryGroup("/path1/path2");
 
             field.RequireAuthorization("policy1", "roles1");
 
@@ -52,57 +53,25 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
         }
 
         [Test]
-        public void UnresolvedField_WhenResolverAdded_BecomesResolvedField()
+        public void MapQueryGroup_WhenUnresolvedChildFieldIsAdded_PathIsCorrect()
         {
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var field = options.MapQuery("/path1/path2");
+            var field = options.MapQueryGroup("/path1/path2");
 
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
-            Assert.IsNotInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
-
-            var field1 = field.AddResolver((string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field1);
-            Assert.IsNull(field1.ReturnType);
-        }
-
-        [Test]
-        public void UnresolvedField_WhenResolverAddedWithSpecificType_BecomesResolvedField()
-        {
-            var services = new ServiceCollection();
-            var options = new SchemaOptions<GraphSchema>(services);
-
-            var field = options.MapQuery("/path1/path2");
-
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
-            Assert.IsNotInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
-
-            var field1 = field.AddResolver<decimal>((string a) => 1);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field1);
-            Assert.AreEqual(typeof(decimal), field1.ReturnType);
-        }
-
-        [Test]
-        public void UnresolvedField_WhenUnresolvedChildFieldIsAdded_PathIsCorrect()
-        {
-            var services = new ServiceCollection();
-            var options = new SchemaOptions<GraphSchema>(services);
-
-            var field = options.MapQuery("/path1/path2");
-
-            var childField = field.MapField("/path3/path4");
+            var childField = field.MapSubGroup("/path3/path4");
 
             Assert.AreEqual("[query]/path1/path2/path3/path4", childField.Route.Path);
         }
 
         [Test]
-        public void UnresolvedField_WhenResolvedChildFieldIsAdded_PathIsCorrect()
+        public void MapQueryGroup_WhenResolvedChildFieldIsAdded_PathIsCorrect()
         {
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var field = options.MapQuery("/path1/path2");
+            var field = options.MapQueryGroup("/path1/path2");
 
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
@@ -110,13 +79,30 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
         }
 
         [Test]
-        public void UnresolvedField_WhenResolvedChildFieldIsAddedToUnresolvedChildField_PathIsCorrect()
+        public void MapMutationGroup_WhenAllowAnonymousAdded_ThenResolvedField_AddsAnonymousAttributeToField()
         {
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var field = options.MapQuery("/path1/path2");
-            var childField = field.MapField("/path3/path4");
+            var field = options.MapQueryGroup("/path1/path2");
+
+            field.AllowAnonymous();
+
+            var chidlField = field.MapField("/path3/path4", (string a) => 1);
+
+            Assert.AreEqual(2, chidlField.Attributes.Count());
+            Assert.IsNotNull(chidlField.Attributes.FirstOrDefault(x => x is AllowAnonymousAttribute));
+            Assert.IsNotNull(chidlField.Attributes.FirstOrDefault(x => x is QueryRootAttribute));
+        }
+
+        [Test]
+        public void MapQueryGroup_WhenResolvedChildFieldIsAddedToUnresolvedChildField_PathIsCorrect()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options.MapQueryGroup("/path1/path2");
+            var childField = field.MapSubGroup("/path3/path4");
             var resolvedField = childField.MapField("/path5/path6", (string a) => 1);
 
             Assert.AreEqual("[query]/path1/path2/path3/path4/path5/path6", resolvedField.Route.Path);
@@ -124,12 +110,12 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
         }
 
         [Test]
-        public void UnresolvedField_WhenResolvedChildFieldIsAdded_AndParentPathIsChanged_PathIsCorrect()
+        public void MapQueryGroup_WhenResolvedChildFieldIsAdded_AndParentPathIsChanged_PathIsCorrect()
         {
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var field = options.MapQuery("/path1/path2");
+            var field = options.MapQueryGroup("/path1/path2");
 
             var childField = field.MapField("/path3/path4", (string a) => 1);
 

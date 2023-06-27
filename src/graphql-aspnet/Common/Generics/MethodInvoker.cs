@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Common.Generics
     /// <summary>
     /// A representation of a compiled lamda to invoke a method on an instance of an object.
     /// </summary>
-    /// <param name="instanceToInvokeOn">The object instance to invoke on.</param>
+    /// <param name="instanceToInvokeOn">The object instance to invoke the delegated method on.</param>
     /// <param name="methodParameters">The parameters to pass the method call.</param>
     /// <returns>The result of the call.</returns>
     internal delegate object InstanceMethodInvoker(ref object instanceToInvokeOn, params object[] methodParameters);

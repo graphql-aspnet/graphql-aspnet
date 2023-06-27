@@ -133,7 +133,7 @@ namespace GraphQL.AspNet.Controllers
         /// <param name="resolver">The resolver declaration that needs to be executed.</param>
         /// <param name="invocationArguments">The realized set of arguments that need
         /// to be passed to the invocable method instance.</param>
-        /// <returns>Task.</returns>
+        /// <returns>The exact return value from the invoked resolver.</returns>
         protected virtual object CreateAndInvokeAction(IGraphFieldResolverMethod resolver, object[] invocationArguments)
         {
             if (resolver.Method.DeclaringType != this.GetType())

@@ -228,7 +228,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (this.PossibleTypes.Count == 0)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The field '{this.InternalFullName}' declared no possible return types either on its attribute declarations or as the " +
+                    $"The field '{this.InternalFullName}' declared no possible return types either as part of its specification or as the " +
                     "declared return type for the field. GraphQL requires the type information be known " +
                     $"to setup the schema and client tooling properly. If this field returns a '{nameof(IGraphActionResult)}' you must " +
                     "provide a graph field declaration attribute and add at least one type; be that a concrete type, an interface or a union.");

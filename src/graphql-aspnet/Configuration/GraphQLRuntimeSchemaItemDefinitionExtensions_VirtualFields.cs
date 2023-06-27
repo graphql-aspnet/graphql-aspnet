@@ -10,8 +10,11 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
+    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration.Templates;
+    using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Controllers;
     using Microsoft.AspNetCore.Authorization;
@@ -67,48 +70,65 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Sets the resolver to be used when this field is requested at runtime.
+        /// Begins a new field group for the query schema object. All fields created using <see cref="MapField(IGraphQLRuntimeFieldDefinition, string)"/>
+        /// against this group will be nested underneath it and inherit any set parameters such as authorization requirements.
         /// </summary>
-        /// <remarks>
-        ///  If this method is called more than once the previously set resolver will be replaced.
-        /// </remarks>
-        /// <param name="field">The field being built.</param>
-        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
-        /// parsed to determine input arguments for the field on the target schema.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver(this IGraphQLRuntimeFieldDefinition field, Delegate resolverMethod)
+        /// <param name="schemaBuilder">The builder to append the query group to.</param>
+        /// <param name="template">The template path for this group.</param>
+        /// <returns>IGraphQLRuntimeFieldDefinition.</returns>
+        public static IGraphQLRuntimeFieldDefinition MapQueryGroup(this ISchemaBuilder schemaBuilder, string template)
         {
-            // convert the virtual field to a resolved field
-            var resolvedBuilder = RuntimeResolvedFieldDefinition.FromFieldTemplate(field);
-            resolvedBuilder.Options.AddRuntimeSchemaItem(resolvedBuilder);
-
-            resolvedBuilder.Resolver = resolverMethod;
-            resolvedBuilder.ReturnType = null;
-
-            return resolvedBuilder;
+            return MapQueryGroup(schemaBuilder?.Options, template);
         }
 
         /// <summary>
-        /// Sets the resolver to be used when this field is requested at runtime.
+        /// Begins a new field group for the query schema object. All fields created using <see cref="MapField(IGraphQLRuntimeFieldDefinition, string)"/>
+        /// against this group will be nested underneath it and inherit any set parameters such as authorization requirements.
         /// </summary>
-        /// <remarks>
-        ///  If this method is called more than once the previously set resolver will be replaced.
-        /// </remarks>
-        /// <typeparam name="TReturnType">The expected, primary return type of the field. Must be provided
-        /// if the supplied delegate returns an <see cref="IGraphActionResult"/>.</typeparam>
-        /// <param name="field">The field being built.</param>
-        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
-        /// parsed to determine input arguments for the field on the target schema.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver<TReturnType>(this IGraphQLRuntimeFieldDefinition field, Delegate resolverMethod)
+        /// <param name="schemaOptions">The schema options to append the query group to.</param>
+        /// <param name="template">The template path for this group.</param>
+        /// <returns>IGraphQLRuntimeFieldDefinition.</returns>
+        public static IGraphQLRuntimeFieldDefinition MapQueryGroup(this SchemaOptions schemaOptions, string template)
         {
-            // convert the virtual field to a resolved field
-            var resolvedBuilder = RuntimeResolvedFieldDefinition.FromFieldTemplate(field);
-            resolvedBuilder.Options.AddRuntimeSchemaItem(resolvedBuilder);
+            var virtualField = new RuntimeVirtualFieldTemplate(schemaOptions, SchemaItemCollections.Query, template);
+            return virtualField;
+        }
 
-            resolvedBuilder.Resolver = resolverMethod;
-            resolvedBuilder.ReturnType = typeof(TReturnType);
-            return resolvedBuilder;
+        /// <summary>
+        /// Begins a new field group for the mutation schema object. All fields created using <see cref="MapField(IGraphQLRuntimeFieldDefinition, string)"/>
+        /// against this group will be nested underneath it and inherit any set parameters such as authorization requirements.
+        /// </summary>
+        /// <param name="schemaBuilder">The builder to append the mutation group to.</param>
+        /// <param name="template">The template path for this group.</param>
+        /// <returns>IGraphQLRuntimeFieldDefinition.</returns>
+        public static IGraphQLRuntimeFieldDefinition MapMutationGroup(this ISchemaBuilder schemaBuilder, string template)
+        {
+            return MapMutationGroup(schemaBuilder?.Options, template);
+        }
+
+        /// <summary>
+        /// Begins a new field group for the mutation schema object. All fields created using <see cref="MapField(IGraphQLRuntimeFieldDefinition, string)"/>
+        /// against this group will be nested underneath it and inherit any set parameters such as authorization requirements.
+        /// </summary>
+        /// <param name="schemaOptions">The schema options to append the mutation group to.</param>
+        /// <param name="template">The template path for this group.</param>
+        /// <returns>IGraphQLRuntimeFieldDefinition.</returns>
+        public static IGraphQLRuntimeFieldDefinition MapMutationGroup(this SchemaOptions schemaOptions, string template)
+        {
+            var virtualField = new RuntimeVirtualFieldTemplate(schemaOptions, SchemaItemCollections.Mutation, template);
+            return virtualField;
+        }
+
+        /// <summary>
+        /// Maps an intermediate child field into the schema. This field will inherit any parameters set from its parent (including the template path).
+        /// Any fields created from this new group will inherit any parameters set on the group AND the parent group.
+        /// </summary>
+        /// <param name="field">The field under which this new field will be nested.</param>
+        /// <param name="subTemplate">The template pattern to be appended to the supplied <paramref name="field"/>.</param>
+        /// <returns>IGraphQLRuntimeFieldDefinition.</returns>
+        public static IGraphQLRuntimeFieldDefinition MapSubGroup(this IGraphQLRuntimeFieldDefinition field, string subTemplate)
+        {
+            return new RuntimeVirtualFieldTemplate(field, subTemplate);
         }
 
         /// <summary>
@@ -124,19 +144,6 @@ namespace GraphQL.AspNet.Configuration
             subField.AddResolver(resolverMethod);
 
             subField.Options.AddRuntimeSchemaItem(subField);
-            return subField;
-        }
-
-        /// <summary>
-        /// Maps a child field into the schema underneath the supplied field. This field can be
-        /// further extended.
-        /// </summary>
-        /// <param name="field">The field under which this new field will be nested.</param>
-        /// <param name="subTemplate">The template pattern to be appended to the supplied <paramref name="field"/>.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeFieldDefinition MapField(this IGraphQLRuntimeFieldDefinition field, string subTemplate)
-        {
-            var subField = new RuntimeVirtualFieldTemplate(field, subTemplate);
             return subField;
         }
     }

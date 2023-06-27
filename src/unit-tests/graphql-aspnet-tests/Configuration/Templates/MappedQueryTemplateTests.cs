@@ -30,23 +30,6 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
         }
 
         [Test]
-        public void MapQuery_FromSchemaOptions_WithNoDelegate_DoesNotAddFieldToSchema()
-        {
-            var services = new ServiceCollection();
-            var options = new SchemaOptions<GraphSchema>(services);
-
-            var field = options.MapQuery("/path1/path2");
-
-            Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Query, field.Route.RootCollection);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
-            Assert.AreEqual(0, options.RuntimeTemplates.Count());
-
-            // no top level attribute should be available
-            Assert.AreEqual(0, field.Attributes.Count());
-        }
-
-        [Test]
         public void MapQuery_FromSchemaOptions_WithDelegate_DoesAddFieldToSchema()
         {
             var services = new ServiceCollection();
@@ -61,26 +44,6 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             var queryRootAttrib = field.Attributes.FirstOrDefault(x => x.GetType() == typeof(QueryRootAttribute));
             Assert.IsNotNull(queryRootAttrib);
-        }
-
-        [Test]
-        public void MapQuery_FromBuilder_WithNoDelegate_DoesNotAddFieldToSchema()
-        {
-            var services = new ServiceCollection();
-            var options = new SchemaOptions<GraphSchema>(services);
-
-            var builderMock = new Mock<ISchemaBuilder>();
-            builderMock.Setup(x => x.Options).Returns(options);
-
-            var field = builderMock.Object.MapQuery("/path1/path2");
-
-            Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Query, field.Route.RootCollection);
-            Assert.IsInstanceOf(typeof(IGraphQLRuntimeFieldDefinition), field);
-            Assert.AreEqual(0, options.RuntimeTemplates.Count());
-
-            // no top level attribute should be available
-            Assert.AreEqual(0, field.Attributes.Count());
         }
 
         [Test]

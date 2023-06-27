@@ -28,14 +28,14 @@ namespace GraphQL.AspNet.Configuration
         /// will be created.</param>
         /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
         /// <returns>IGraphQLFieldTemplate.</returns>
-        public static IGraphQLRuntimeFieldDefinition MapMutation(this SchemaOptions schemaOptions, string template)
+        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this SchemaOptions schemaOptions, string template)
         {
             var field = MapGraphQLFieldInternal(
                 schemaOptions,
                 GraphOperationType.Mutation,
                 template);
 
-            return field;
+            return field.AddResolver(null);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Configuration
         /// will be created.</param>
         /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
         /// <returns>IGraphQLFieldTemplate.</returns>
-        public static IGraphQLRuntimeFieldDefinition MapMutation(this ISchemaBuilder schemaBuilder, string template)
+        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this ISchemaBuilder schemaBuilder, string template)
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
 
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Configuration
                 GraphOperationType.Mutation,
                 template);
 
-            return field;
+            return field.AddResolver(null);
         }
 
         /// <summary>
