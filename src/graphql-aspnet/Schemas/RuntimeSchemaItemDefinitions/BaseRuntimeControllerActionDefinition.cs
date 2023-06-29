@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Configuration.Templates
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration.Templates;
@@ -23,6 +24,8 @@ namespace GraphQL.AspNet.Configuration.Templates
     /// </summary>
     internal abstract class BaseRuntimeControllerActionDefinition : IGraphQLRuntimeSchemaItemDefinition
     {
+        private readonly IGraphQLRuntimeFieldDefinition _parentField;
+
         /// <summary>
         /// Prevents a default instance of the <see cref="BaseRuntimeControllerActionDefinition"/> class from being created.
         /// </summary>
@@ -92,33 +95,54 @@ namespace GraphQL.AspNet.Configuration.Templates
         }
 
         /// <summary>
-        /// Creates the primary attribute that would identify this
+        /// Creates the primary attribute that would identify this instance if it was defined on
+        /// a controller.
         /// </summary>
-        /// <returns>Attribute.</returns>
+        /// <returns>The primary attribute.</returns>
         protected abstract Attribute CreatePrimaryAttribute();
 
-        private readonly IGraphQLRuntimeFieldDefinition _parentField;
-
         /// <inheritdoc />
-        public virtual SchemaOptions Options { get; protected set; }
-
-        /// <inheritdoc />
-        public IEnumerable<Attribute> Attributes
+        public virtual IEnumerable<Attribute> Attributes
         {
             get
             {
-                var topAttrib = this.CreatePrimaryAttribute();
-                if (topAttrib != null)
-                    yield return topAttrib;
+                var combinedAttribs = new List<Attribute>(1 + this.AppendedAttributes.Count);
+                var definedTypes = new HashSet<Type>();
 
+                // apply the attributes defined on the parent (and parent's parents)
+                // FIRST to mimic controller level attribs being encountered before action method params.
                 if (_parentField != null)
                 {
                     foreach (var attrib in _parentField.Attributes)
-                        yield return attrib;
+                    {
+                        if (!definedTypes.Contains(attrib.GetType()) || attrib.CanBeAppliedMultipleTimes())
+                        {
+                            combinedAttribs.Add(attrib);
+                            definedTypes.Add(attrib.GetType());
+                        }
+                    }
                 }
 
+                // apply the primary attribute first as its defined by this
+                // exact instance
+                var topAttrib = this.CreatePrimaryAttribute();
+                if (topAttrib != null)
+                {
+                    combinedAttribs.Add(topAttrib);
+                    definedTypes.Add(topAttrib.GetType());
+                }
+
+                // apply all the secondary attributes defined directly on this instance
                 foreach (var attrib in this.AppendedAttributes)
-                    yield return attrib;
+                {
+                    if (!definedTypes.Contains(attrib.GetType()) || attrib.CanBeAppliedMultipleTimes())
+                    {
+                        combinedAttribs.Add(attrib);
+                        definedTypes.Add(attrib.GetType());
+                    }
+                }
+
+                return combinedAttribs;
             }
         }
 
@@ -126,7 +150,10 @@ namespace GraphQL.AspNet.Configuration.Templates
         /// Gets a list of attributes that were directly appended to this instance.
         /// </summary>
         /// <value>The appended attributes.</value>
-        protected IList<Attribute> AppendedAttributes { get; }
+        protected List<Attribute> AppendedAttributes { get; }
+
+        /// <inheritdoc />
+        public virtual SchemaOptions Options { get; protected set; }
 
         /// <inheritdoc />
         public SchemaItemPath Route { get; protected set; }

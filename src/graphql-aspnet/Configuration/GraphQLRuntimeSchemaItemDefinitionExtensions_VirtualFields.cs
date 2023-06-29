@@ -70,8 +70,8 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Begins a new field group for the query schema object. All fields created using <see cref="MapField(IGraphQLRuntimeFieldDefinition, string)"/>
-        /// against this group will be nested underneath it and inherit any set parameters such as authorization requirements.
+        /// Begins a new field group for the query schema object. All fields created using
+        /// this group will be nested underneath it and inherit any set parameters such as authorization requirements.
         /// </summary>
         /// <param name="schemaBuilder">The builder to append the query group to.</param>
         /// <param name="template">The template path for this group.</param>
@@ -82,8 +82,8 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Begins a new field group for the query schema object. All fields created using <see cref="MapField(IGraphQLRuntimeFieldDefinition, string)"/>
-        /// against this group will be nested underneath it and inherit any set parameters such as authorization requirements.
+        /// Begins a new field group for the query schema object. All fields created using
+        /// this group will be nested underneath it and inherit any set parameters such as authorization requirements.
         /// </summary>
         /// <param name="schemaOptions">The schema options to append the query group to.</param>
         /// <param name="template">The template path for this group.</param>
@@ -95,8 +95,7 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Begins a new field group for the mutation schema object. All fields created using <see cref="MapField(IGraphQLRuntimeFieldDefinition, string)"/>
-        /// against this group will be nested underneath it and inherit any set parameters such as authorization requirements.
+        /// Begins a new field group for the mutation schema object. All fields created using this group will be nested underneath it and inherit any set parameters such as authorization requirements.
         /// </summary>
         /// <param name="schemaBuilder">The builder to append the mutation group to.</param>
         /// <param name="template">The template path for this group.</param>
@@ -107,8 +106,7 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Begins a new field group for the mutation schema object. All fields created using <see cref="MapField(IGraphQLRuntimeFieldDefinition, string)"/>
-        /// against this group will be nested underneath it and inherit any set parameters such as authorization requirements.
+        /// Begins a new field group for the mutation schema object. All fields created using this group will be nested underneath it and inherit any set parameters such as authorization requirements.
         /// </summary>
         /// <param name="schemaOptions">The schema options to append the mutation group to.</param>
         /// <param name="template">The template path for this group.</param>

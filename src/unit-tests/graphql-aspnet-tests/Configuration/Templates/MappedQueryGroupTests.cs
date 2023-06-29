@@ -121,5 +121,59 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
 
             Assert.AreEqual("[query]/path1/path2/path3/path4", childField.Route.Path);
         }
+
+        [Test]
+        public void MapQueryGroup_SingleCopyAttribute_AppliedToGroupAndField_IsOnlyAppliedOnce()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options.MapQueryGroup("/path1/path2")
+                               .AllowAnonymous();
+
+            var childField = field.MapField("/path3/path4", (string a) => 1)
+                                  .AllowAnonymous();
+
+            var anonCount = childField.Attributes.Where(x => x is AllowAnonymousAttribute).Count();
+            Assert.AreEqual(1, anonCount);
+        }
+
+        [Test]
+        public void MapQueryGroup_MultipleCopyAttribute_AppliedToGroupAndField_IsAppliedMultipleTimes()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options.MapQueryGroup("/path1/path2")
+                               .RequireAuthorization("policy1");
+
+            var childField = field.MapField("/path3/path4", (string a) => 1)
+                                  .RequireAuthorization("policy2");
+
+            Assert.AreEqual(3, childField.Attributes.Count());
+            var anonCount = childField.Attributes.Where(x => x is AuthorizeAttribute).Count();
+
+            Assert.AreEqual(2, anonCount);
+            Assert.IsNotNull(childField.Attributes.SingleOrDefault(x => x is AuthorizeAttribute a && a.Policy == "policy1"));
+            Assert.IsNotNull(childField.Attributes.SingleOrDefault(x => x is AuthorizeAttribute a && a.Policy == "policy2"));
+
+            // ensure the order of applied attributes is parent field then child field
+            var i = 0;
+            foreach (var attrib in childField.Attributes)
+            {
+                if (attrib is AuthorizeAttribute a && a.Policy == "policy1")
+                {
+                    Assert.AreEqual(0, i);
+                    i++;
+                }
+                else if (attrib is AuthorizeAttribute b && b.Policy == "policy2")
+                {
+                    Assert.AreEqual(1, i);
+                    i++;
+                }
+            }
+
+            Assert.AreEqual(2, i);
+        }
     }
 }
