@@ -47,9 +47,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             IGraphFieldResolver resolver = null,
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
             IAppliedDirectiveCollection directives = null)
-            : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
+            : base(fieldName, typeExpression, route, declaredPropertyName, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
         {
-            this.InternalName = declaredPropertyName;
         }
 
         /// <summary>
@@ -71,12 +70,5 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.SecurityGroups,
                 this.AppliedDirectives);
         }
-
-        /// <summary>
-        /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName.PropertyName). This name
-        /// is used in many exceptions and internal error messages.
-        /// </summary>
-        /// <value>The fully qualified name of the proeprty this field was created from.</value>
-        public string InternalName { get; }
     }
 }

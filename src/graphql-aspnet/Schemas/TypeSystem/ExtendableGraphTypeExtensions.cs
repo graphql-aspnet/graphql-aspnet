@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             where TSource : class
         {
             Validation.ThrowIfNullOrReturn(graphType, nameof(graphType));
-            Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
+            fieldName = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
 
             var fieldRoute = graphType.Route.CreateChild(fieldName);
 
@@ -74,6 +74,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 fieldName,
                 typeExpression,
                 fieldRoute,
+                $"GraphQLExtendedField",
                 GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 typeof(TReturn),
                 FieldResolutionMode.PerSourceItem,

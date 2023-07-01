@@ -78,7 +78,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var action = this.CreateActionTemplate<SubscriptionMethodController>(nameof(SubscriptionMethodController.SingleMethod));
 
             Assert.AreEqual(1, action.Arguments.Count);
-            Assert.IsTrue(action.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.Internal));
             Assert.IsTrue(action.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
         }
 
@@ -88,7 +87,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var action = this.CreateActionTemplate<SubscriptionMethodController>(nameof(SubscriptionMethodController.ExplicitSourceReference));
 
             Assert.AreEqual(1, action.Arguments.Count);
-            Assert.IsTrue(action.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.Internal));
             Assert.IsTrue(action.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
         }
 

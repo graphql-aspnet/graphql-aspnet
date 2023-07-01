@@ -6,6 +6,15 @@
 // --
 // License:  MIT
 // *************************************************************
+
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
 namespace GraphQL.AspNet.Engine.TypeMakers
 {
     using System;
@@ -14,7 +23,6 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -121,6 +129,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
                         formatter.FormatFieldName(template.Name),
                         template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
                         template.Route,
+                        template.DeclaredName,
                         template.ObjectType,
                         template.DeclaredReturnType,
                         template.Mode,

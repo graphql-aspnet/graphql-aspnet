@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         public override void Initialize(IntrospectedSchema introspectedSchema)
         {
             var list = new List<IntrospectedInputValueType>();
-            foreach (var arg in _field.Arguments.Where(x => !x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.Internal)))
+            foreach (var arg in _field.Arguments.Where(x => x.ArgumentModifiers.IsPartOfTheSchema()))
             {
                 var introspectedType = introspectedSchema.FindIntrospectedType(arg.TypeExpression.TypeName);
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, arg.TypeExpression);

@@ -23,10 +23,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         None = 0,
 
-        /// <summary>
-        /// This parameter is internal to the server environment and will not be exposed on the object graph.
-        /// </summary>
-        Internal = 1,
+        // The Value 1 was deprecated and removed. Its value will not be re-used
+        // to ensure no cross contamination of old code in referencing libraries.
 
         /// <summary>
         /// This parameter is declared to contain the result of the resolved parent field.
@@ -38,5 +36,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// governing the request or the default token if none was supplied on said request.
         /// </summary>
         CancellationToken = 4,
+
+        /// <summary>
+        /// This parameter is supplied to a field via a DI Container injection. It will not be exposed
+        /// on the object graph.
+        /// </summary>
+        Injected = 8,
     }
 }

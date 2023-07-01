@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Execution
                 var manager = new GraphSchemaManager(schema);
                 manager.AddBuiltInDirectives();
 
-                // add any configured types to this instance
+                // Step 1: Register any configured types to this instance
                 // --------------------------------------
                 foreach (var registration in _options.SchemaTypesToRegister)
                 {
@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Execution
                     manager.EnsureGraphType(registration.Type, registration.TypeKind);
                 }
 
-                // add in any runtime configured fields and directives (minimal api)
+                // Step 2: Register any runtime configured fields and directives (minimal api)
                 // --------------------------------------
                 var runtimeFields = _options.RuntimeTemplates
                     .Where(x => x is IGraphQLRuntimeResolvedFieldDefinition)
@@ -87,19 +87,27 @@ namespace GraphQL.AspNet.Execution
                 foreach (var field in runtimeFields)
                     manager.AddRuntimeFieldDeclaration(field);
 
-                // execute any assigned schema configuration extensions
-                // -----------------------
-                // this includes any late bound directives added to the type
-                // system via .ApplyDirective()
+                // Step 3: execute any assigned schema configuration extensions
+                // --------------------------------------
+                // this includes any late bound directives added to the type system via .ApplyDirective()
                 foreach (var extension in _options.ConfigurationExtensions)
                     extension.Configure(schema);
 
-                // apply all queued type system directives
+                // Step 4: Set runtime properties of all fields on all objects
+                //         and interfaces to determine if they are part of the schema
+                //         or read from the DI container
+                // --------------------------------------
+                // manager.RebuildFieldArgumentSourceLocations();
+
+                // Step 5: apply all queued type system directives
+                // --------------------------------------
                 var processor = new DirectiveProcessorTypeSystem<TSchema>(
                     _serviceProvider,
                     new QuerySession());
                 processor.ApplyDirectives(schema);
 
+                // Step 6: Generate the schema's final introspection data
+                // --------------------------------------
                 manager.RebuildIntrospectionData();
                 schema.IsInitialized = true;
             }

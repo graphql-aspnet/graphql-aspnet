@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 {
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -45,6 +46,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 "field1",
                 GraphTypeExpression.FromDeclaration("[Int]"),
                 new SchemaItemPath("[type]/JohnType/field1"),
+                "internalFieldName",
                 typeof(TwoPropertyObject),
                 typeof(List<TwoPropertyObject>),
                 AspNet.Execution.FieldResolutionMode.PerSourceItem,
@@ -89,6 +91,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(field.DeprecationReason, clonedField.DeprecationReason);
             Assert.AreEqual(field.Complexity, clonedField.Complexity);
             Assert.AreEqual(field.FieldSource, clonedField.FieldSource);
+            Assert.AreEqual(field.InternalName, clonedField.InternalName);
 
             Assert.IsFalse(object.ReferenceEquals(field.TypeExpression, clonedField.TypeExpression));
             Assert.IsTrue(object.ReferenceEquals(field.Resolver, clonedField.Resolver));

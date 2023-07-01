@@ -37,6 +37,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="fieldName">Name of the field in the graph.</param>
         /// <param name="typeExpression">The meta data describing the type of data this field returns.</param>
         /// <param name="route">The formal route to this field in the object graph.</param>
+        /// <param name="declaredMethodName">Name of the method this field respresents, as it was declared
+        /// in C# code.</param>
         /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
         /// <param name="mode">The mode in which the runtime will process this field.</param>
@@ -47,6 +49,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string fieldName,
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
+            string declaredMethodName,
             Type objectType = null,
             Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
@@ -60,6 +63,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Arguments = new GraphFieldArgumentCollection(this);
             this.ObjectType = objectType;
             this.DeclaredReturnType = declaredReturnType;
+            this.InternalName = declaredMethodName;
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
@@ -67,6 +71,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.UpdateResolver(resolver, mode);
             this.Publish = true;
+
         }
 
         /// <inheritdoc/>
@@ -150,6 +155,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.Name,
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
+                this.InternalName,
                 this.ObjectType,
                 this.DeclaredReturnType,
                 this.Mode,
@@ -214,5 +220,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public string InternalName { get; }
     }
 }

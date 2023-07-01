@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Security
     public class MappedQuery_AuthorizationTests
     {
         [Test]
-        public async Task MappedQuery_UserWithPolicy_CanAccessMethod()
+        public async Task MappedQuery_AuthorizedUser_AccessAllowed()
         {
             var serverBuilder = new TestServerBuilder();
             serverBuilder.AddGraphQL(o =>
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Tests.Security
         }
 
         [Test]
-        public async Task MappedQuery_UserWithoutPolicy_AccessDenied()
+        public async Task MappedQuery_UnauthorizedUser_AccessDenied()
         {
             var serverBuilder = new TestServerBuilder();
             serverBuilder.AddGraphQL(o =>

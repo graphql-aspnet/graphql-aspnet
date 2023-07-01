@@ -88,6 +88,7 @@ namespace GraphQL.AspNet.Schemas.Structural
                 fieldName,
                 typeExpression,
                 route,
+                "GraphQLCustomInternalField",
                 GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 typeof(TReturn),
                 FieldResolutionMode.PerSourceItem,

@@ -117,15 +117,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // since the source data will be an OBJECT type (not INPUT_OBJECT) there is no way the user could have supplied it
             if (this.IsSourceDataArgument())
             {
-                this.ArgumentModifiers = this.ArgumentModifiers
-                                        | GraphArgumentModifiers.Internal
-                                        | GraphArgumentModifiers.ParentFieldResult;
+                this.ArgumentModifiers = this.ArgumentModifiers | GraphArgumentModifiers.ParentFieldResult;
             }
             else if (this.IsCancellationTokenArgument())
             {
-                this.ArgumentModifiers = this.ArgumentModifiers
-                                        | GraphArgumentModifiers.Internal
-                                        | GraphArgumentModifiers.CancellationToken;
+                this.ArgumentModifiers = this.ArgumentModifiers | GraphArgumentModifiers.CancellationToken;
             }
         }
 
@@ -175,7 +171,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <returns>IEnumerable&lt;Type&gt;.</returns>
         public IEnumerable<DependentType> RetrieveRequiredTypes()
         {
-            if (this.ArgumentModifiers.IsInternalParameter())
+            if (this.ArgumentModifiers.IsNotPartOfTheSchema())
             {
                 // internal parameters should not be injected into the object graph
                 // so they have no dependents
@@ -225,7 +221,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $".NET parameter. (Declared '{this.TypeExpression}' is incompatiable with '{actualTypeExpression}') ");
             }
 
-            if (!this.ArgumentModifiers.IsInternalParameter() && this.ObjectType.IsInterface)
+            if (this.ArgumentModifiers.IsPartOfTheSchema() && this.ObjectType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
                     $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' of type  '{this.ObjectType.FriendlyName()}' " +

@@ -27,6 +27,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="fieldName">Name of the field in the type declaration..</param>
         /// <param name="typeExpression">The meta data about how this type field is implemented.</param>
         /// <param name="route">The formal route to this field in the object graph.</param>
+        /// <param name="declaredMethodName">Name of the declared method.</param>
         /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
         /// <param name="mode">The execution mode of this field.</param>
@@ -38,6 +39,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string fieldName,
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
+            string declaredMethodName,
             Type objectType = null,
             Type declaredReturnType = null,
             Execution.FieldResolutionMode mode = Execution.FieldResolutionMode.PerSourceItem,
@@ -45,7 +47,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
             string eventName = null,
             IAppliedDirectiveCollection directives = null)
-            : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
+            : base(fieldName, typeExpression, route, declaredMethodName, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
         {
             this.EventName = eventName;
         }
@@ -57,6 +59,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.Name,
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
+                this.InternalName,
                 this.ObjectType,
                 this.DeclaredReturnType,
                 this.Mode,

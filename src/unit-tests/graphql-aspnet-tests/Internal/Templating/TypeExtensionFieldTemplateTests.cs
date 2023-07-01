@@ -66,7 +66,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             // first arg should be declared for the source data
             Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.Internal));
         }
 
         [Test]
@@ -87,7 +86,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             // first arg should be declared for the source data
             Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.Internal));
         }
 
         [Test]
@@ -114,7 +112,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             // first arg should be declared for the source data
             Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.Internal));
         }
 
         [Test]
@@ -135,7 +132,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             // first arg should be declared for the source data
             Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.Internal));
         }
 
         [Test]
@@ -162,7 +158,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             // first arg should be declared for the source data
             Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.Internal));
         }
 
         [Test]
@@ -183,7 +178,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             // first arg should be declared for the source data
             Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.Internal));
         }
 
         [Test]

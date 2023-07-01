@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
     /// <summary>
     /// A base set of items common between all field types (input, interface or object based fields).
     /// </summary>
-    public interface IGraphFieldBase : ISchemaItem
+    public interface IGraphFieldBase : ITypedSchemaItem, ISchemaItem
     {
         /// <summary>
         /// Updates the known graph type this field belongs to.
@@ -48,13 +48,5 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// </summary>
         /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
         bool Publish { get; set; }
-
-        /// <summary>
-        /// Gets the core type of the object (or objects) returned by this field. If this field
-        /// is meant to return a list of items, this property represents the type of item in
-        /// that list.
-        /// </summary>
-        /// <value>The type of the object.</value>
-        public Type ObjectType { get; }
     }
 }

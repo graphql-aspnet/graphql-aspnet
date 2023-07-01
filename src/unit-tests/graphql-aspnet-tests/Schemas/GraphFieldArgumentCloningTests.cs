@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 "argName",
                 GraphTypeExpression.FromDeclaration("String"),
                 new SchemaItemPath("[type]/GraphType1/Field1/Arg1"),
-                GraphArgumentModifiers.Internal,
+                GraphArgumentModifiers.ParentFieldResult,
                 "paramName",
                 "internalName",
                 typeof(string),
