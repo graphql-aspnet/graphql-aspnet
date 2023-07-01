@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Execution
                 //         and interfaces to determine if they are part of the schema
                 //         or read from the DI container
                 // --------------------------------------
-                // manager.RebuildFieldArgumentSourceLocations();
+                manager.RebuildFieldArgumentSourceLocations();
 
                 // Step 5: apply all queued type system directives
                 // --------------------------------------
@@ -108,7 +108,16 @@ namespace GraphQL.AspNet.Execution
 
                 // Step 6: Generate the schema's final introspection data
                 // --------------------------------------
+                manager.RebuildFieldArgumentSourceLocations();
+
+                // Step 7: Run final validations to ensure the schema is internally consistant
+                // --------------------------------------
+                manager.ValidateSchemaIntegrity();
+
+                // Step 8: Rebuild introspection data to match the now completed schema instance
+                // --------------------------------------
                 manager.RebuildIntrospectionData();
+
                 schema.IsInitialized = true;
             }
         }

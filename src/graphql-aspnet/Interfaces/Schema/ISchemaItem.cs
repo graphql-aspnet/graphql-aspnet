@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Schema
 {
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
