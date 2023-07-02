@@ -48,6 +48,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var methodInfo = typeof(OneMethodSubscriptionController).GetMethod(nameof(OneMethodSubscriptionController.SingleMethod));
             var action = this.CreateActionTemplate<OneMethodSubscriptionController>(nameof(OneMethodSubscriptionController.SingleMethod));
+            var metaData = action.CreateResolverMetaData();
 
             Assert.AreEqual("SubDescription", action.Description);
             Assert.AreEqual(typeof(TwoPropertyObject), action.SourceObjectType);
@@ -55,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(SchemaItemCollections.Subscription, action.Route.RootCollection);
             Assert.AreEqual("[subscription]/path0/path1", action.Route.Path);
             Assert.AreEqual($"{nameof(OneMethodSubscriptionController)}.{nameof(OneMethodSubscriptionController.SingleMethod)}", action.InternalFullName);
-            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)action).Parent.ObjectType);
+            Assert.AreEqual(methodInfo.ReflectedType, metaData.Parent.ObjectType);
             Assert.AreEqual("path0", action.Parent.Name);
             Assert.AreEqual(methodInfo, action.Method);
             Assert.AreEqual(1, action.Arguments.Count);

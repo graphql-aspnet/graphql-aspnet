@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Internal
             fieldContextBuilder.AddSourceData(null);
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.GraphMethod.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
             await resolver.ResolveAsync(resolutionContext);
 
             Assert.AreEqual(null, resolutionContext.Result);
@@ -67,8 +67,8 @@ namespace GraphQL.AspNet.Tests.Internal
             var parentMock = new Mock<IGraphTypeTemplate>();
             parentMock.Setup(x => x.ObjectType).Returns(typeof(IResolverInterface));
 
-            fieldContextBuilder.GraphMethod.Setup(x => x.Parent).Returns(parentMock.Object);
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.GraphMethod.Object);
+            fieldContextBuilder.ResolverMetaData.Setup(x => x.Parent).Returns(parentMock.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             await resolver.ResolveAsync(resolutionContext);
@@ -94,9 +94,9 @@ namespace GraphQL.AspNet.Tests.Internal
             var parentMock = new Mock<IGraphTypeTemplate>();
             parentMock.Setup(x => x.ObjectType).Returns(typeof(ITestInterface));
 
-            fieldContextBuilder.GraphMethod.Setup(x => x.Parent).Returns(parentMock.Object);
+            fieldContextBuilder.ResolverMetaData.Setup(x => x.Parent).Returns(parentMock.Object);
 
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.GraphMethod.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             await resolver.ResolveAsync(resolutionContext);
@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Tests.Internal
                 new ResolverStructB("struct"));
 
             // source data is not of the type the resolver is for
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.GraphMethod.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             await resolver.ResolveAsync(resolutionContext);
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Internal
 
             // source data is not of the type the resolver is for
             fieldContextBuilder.AddSourceData(new ResolverObject());
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.GraphMethod.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             await resolver.ResolveAsync(resolutionContext);
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.GraphMethod.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
             await resolver.ResolveAsync(resolutionContext);
 
             Assert.IsNotNull(resolutionContext.Result);
@@ -185,7 +185,7 @@ namespace GraphQL.AspNet.Tests.Internal
 
             // source data is not of the type the resolver is for
             fieldContextBuilder.AddSourceData(new ResolverObject());
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.GraphMethod.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             await resolver.ResolveAsync(resolutionContext);

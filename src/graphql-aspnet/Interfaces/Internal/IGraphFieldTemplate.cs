@@ -27,6 +27,8 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// <returns>IGraphFieldResolver.</returns>
         IGraphFieldResolver CreateResolver();
 
+        IGraphFieldResolverMetaData CreateResolverMetaData();
+
         /// <summary>
         /// Gets the return type of this field as its declared in the C# code base with no modifications or
         /// coerions applied.

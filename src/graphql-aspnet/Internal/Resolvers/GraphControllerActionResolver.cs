@@ -26,13 +26,13 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// </summary>
     internal class GraphControllerActionResolver : GraphControllerActionResolverBase, IGraphFieldResolver
     {
-        private readonly IGraphFieldResolverMethod _actionMethod;
+        private readonly IGraphFieldResolverMetaData _actionMethod;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphControllerActionResolver"/> class.
         /// </summary>
         /// <param name="actionMethod">The action method that this resolver will invoke.</param>
-        public GraphControllerActionResolver(IGraphFieldResolverMethod actionMethod)
+        public GraphControllerActionResolver(IGraphFieldResolverMetaData actionMethod)
         {
             _actionMethod = Validation.ThrowIfNullOrReturn(actionMethod, nameof(actionMethod));
         }

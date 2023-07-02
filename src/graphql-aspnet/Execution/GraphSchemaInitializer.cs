@@ -93,28 +93,18 @@ namespace GraphQL.AspNet.Execution
                 foreach (var extension in _options.ConfigurationExtensions)
                     extension.Configure(schema);
 
-                // Step 4: Set runtime properties of all fields on all objects
-                //         and interfaces to determine if they are part of the schema
-                //         or read from the DI container
-                // --------------------------------------
-                manager.RebuildFieldArgumentSourceLocations();
-
-                // Step 5: apply all queued type system directives
+                // Step 4: apply all queued type system directives
                 // --------------------------------------
                 var processor = new DirectiveProcessorTypeSystem<TSchema>(
                     _serviceProvider,
                     new QuerySession());
                 processor.ApplyDirectives(schema);
 
-                // Step 6: Generate the schema's final introspection data
-                // --------------------------------------
-                manager.RebuildFieldArgumentSourceLocations();
-
-                // Step 7: Run final validations to ensure the schema is internally consistant
+                // Step 5: Run final validations to ensure the schema is internally consistant
                 // --------------------------------------
                 manager.ValidateSchemaIntegrity();
 
-                // Step 8: Rebuild introspection data to match the now completed schema instance
+                // Step 6: Rebuild introspection data to match the now completed schema instance
                 // --------------------------------------
                 manager.RebuildIntrospectionData();
 

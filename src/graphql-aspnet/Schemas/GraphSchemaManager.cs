@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.SchemaItemValidators;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection;
@@ -447,58 +448,6 @@ namespace GraphQL.AspNet.Schemas
             foreach (var dependent in dependencySet.DependentTypes)
             {
                 this.EnsureGraphType(dependent.Type, dependent.ExpectedKind);
-            }
-        }
-
-        /// <summary>
-        /// Inspects the schema's current exposed types and attempts to determine the source location
-        /// for any arguments of any fields declared on those types.
-        /// </summary>
-        public void RebuildFieldArgumentSourceLocations()
-        {
-            var typesToConfigure = this.Schema.KnownTypes.Where(
-                x => x.Kind == TypeKind.OBJECT ||
-                x.Kind == TypeKind.INTERFACE ||
-                x.Kind == TypeKind.DIRECTIVE);
-
-            foreach (var type in typesToConfigure)
-            {
-                IEnumerable<IGraphArgumentCollection> fieldArguments;
-                switch (type)
-                {
-                    case IObjectGraphType ogt:
-                        fieldArguments = ogt.Fields.Select(x => x.Arguments);
-                        break;
-
-                    case IInterfaceGraphType iigt:
-                        fieldArguments = iigt.Fields.Select(x => x.Arguments);
-                        break;
-
-                    case IDirective id:
-                        fieldArguments = new IGraphArgumentCollection[] { id.Arguments };
-                        break;
-
-                    default:
-                        continue;
-                }
-
-                foreach (var argumentSet in fieldArguments)
-                {
-                    foreach (var argument in argumentSet)
-                    {
-                        if (argument.ArgumentModifiers.IsPartOfTheSchema())
-                        {
-                            // need the ability to chagne argument modifiers on IGraphArgument
-
-                            // need some validation routines on each ISchemaItem
-                            // to ensure its runtime validity after its been built
-                            //
-                            // how does this relate to template validation some things need to be moved
-
-
-                        }
-                    }
-                }
             }
         }
 

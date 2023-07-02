@@ -201,7 +201,7 @@ namespace GraphQL.AspNet.Tests.Framework
                 _userSecurityContext,
                 fieldResult.Field,
                 this.Schema,
-                template as IGraphFieldResolverMethod);
+                template.CreateResolverMetaData());
 
             builder.AddSourceData(new object());
             return builder;
@@ -364,7 +364,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="fieldName">Name of the field.</param>
         /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
         /// <returns>IGraphMethod.</returns>
-        public virtual IGraphFieldResolverMethod CreateInvokableReference<TObjectType>(string fieldName, TypeKind? typeKind = null)
+        public virtual IGraphFieldResolverMetaData CreateInvokableReference<TObjectType>(string fieldName, TypeKind? typeKind = null)
         {
             var template = GraphQLTemplateHelper.CreateGraphTypeTemplate<TObjectType>(typeKind);
             var fieldContainer = template as IGraphTypeFieldTemplateContainer;
@@ -383,10 +383,10 @@ namespace GraphQL.AspNet.Tests.Framework
                 throw new InvalidOperationException($"The provided type '{typeof(TObjectType).FriendlyName()}' does not " + $"contain a field named '{fieldName}'.");
             }
 
-            var method = fieldTemplate as IGraphFieldResolverMethod;
+            var method = fieldTemplate.CreateResolverMetaData();
             if (method == null)
             {
-                throw new InvalidOperationException($"The field named '{fieldName}' on the provided type '{typeof(TObjectType).FriendlyName()}' " + $"does not represent an invokable {typeof(IGraphFieldResolverMethod)}. Operation cannot proceed.");
+                throw new InvalidOperationException($"The field named '{fieldName}' on the provided type '{typeof(TObjectType).FriendlyName()}' " + $"does not represent an invokable {typeof(IGraphFieldResolverMetaData)}. Operation cannot proceed.");
             }
 
             return method;

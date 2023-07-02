@@ -1,18 +1,19 @@
-﻿namespace GraphQL.AspNet.Schemas.SchemaItemValidators
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.AspNet.Schemas.SchemaItemValidators
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Schema;
 
-    internal class BaseSchemaItemValidator : ISchemaItemValidator
+    internal abstract class BaseSchemaItemValidator : ISchemaItemValidator
     {
         /// <inheritdoc />
-        public void ValidateOrThrow(ISchemaItem schemaItem, ISchema schema)
-        {
-            
-        }
+        public abstract void ValidateOrThrow(ISchemaItem schemaItem, ISchema schema);
     }
 }

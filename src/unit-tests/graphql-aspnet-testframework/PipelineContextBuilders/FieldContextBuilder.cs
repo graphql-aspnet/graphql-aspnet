@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             IUserSecurityContext userSecurityContext,
             IGraphField graphField,
             ISchema schema,
-            IGraphFieldResolverMethod graphMethod)
+            IGraphFieldResolverMetaData graphMethod)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _graphField = Validation.ThrowIfNullOrReturn(graphField, nameof(graphField));
@@ -99,17 +99,17 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockRequest.Setup(x => x.Field).Returns(_graphField);
             _mockRequest.Setup(x => x.InvocationContext).Returns(_mockInvocationContext.Object);
 
-            this.GraphMethod = new Mock<IGraphFieldResolverMethod>();
-            this.GraphMethod.Setup(x => x.Parent).Returns(graphMethod.Parent);
-            this.GraphMethod.Setup(x => x.ObjectType).Returns(graphMethod.ObjectType);
-            this.GraphMethod.Setup(x => x.ExpectedReturnType).Returns(graphMethod.ExpectedReturnType);
-            this.GraphMethod.Setup(x => x.Method).Returns(graphMethod.Method);
-            this.GraphMethod.Setup(x => x.IsAsyncField).Returns(graphMethod.IsAsyncField);
-            this.GraphMethod.Setup(x => x.Name).Returns(graphMethod.Name);
-            this.GraphMethod.Setup(x => x.InternalFullName).Returns(graphMethod.InternalFullName);
-            this.GraphMethod.Setup(x => x.InternalName).Returns(graphMethod.InternalName);
-            this.GraphMethod.Setup(x => x.Route).Returns(graphMethod.Route);
-            this.GraphMethod.Setup(x => x.Arguments).Returns(graphMethod.Arguments);
+            this.ResolverMetaData = new Mock<IGraphFieldResolverMetaData>();
+            this.ResolverMetaData.Setup(x => x.Parent).Returns(graphMethod.Parent);
+            this.ResolverMetaData.Setup(x => x.ObjectType).Returns(graphMethod.ObjectType);
+            this.ResolverMetaData.Setup(x => x.ExpectedReturnType).Returns(graphMethod.ExpectedReturnType);
+            this.ResolverMetaData.Setup(x => x.Method).Returns(graphMethod.Method);
+            this.ResolverMetaData.Setup(x => x.IsAsyncField).Returns(graphMethod.IsAsyncField);
+            this.ResolverMetaData.Setup(x => x.Name).Returns(graphMethod.Name);
+            this.ResolverMetaData.Setup(x => x.InternalFullName).Returns(graphMethod.InternalFullName);
+            this.ResolverMetaData.Setup(x => x.InternalName).Returns(graphMethod.InternalName);
+            this.ResolverMetaData.Setup(x => x.Route).Returns(graphMethod.Route);
+            this.ResolverMetaData.Setup(x => x.Arguments).Returns(graphMethod.Arguments);
         }
 
         /// <summary>
@@ -249,6 +249,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// against the testserver.
         /// </summary>
         /// <value>The graph method.</value>
-        public Mock<IGraphFieldResolverMethod> GraphMethod { get; }
+        public Mock<IGraphFieldResolverMetaData> ResolverMetaData { get; }
     }
 }

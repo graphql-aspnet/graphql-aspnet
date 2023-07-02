@@ -24,6 +24,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -32,7 +33,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A template describing an action method declared on a directive.
     /// </summary>
     [DebuggerDisplay("{InternalName} (Type: {Parent.InternalName})")]
-    public class GraphDirectiveMethodTemplate : IGraphFieldTemplateBase, IGraphFieldResolverMethod
+    public class GraphDirectiveMethodTemplate : IGraphFieldTemplateBase
     {
         private readonly List<GraphArgumentTemplate> _arguments;
 
@@ -190,6 +191,22 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
 
             return list;
+        }
+
+        internal IGraphFieldResolverMetaData CreateResolverMetaData()
+        {
+            return new FieldResolverMetaData(
+                this.Parent,
+                this.Method,
+                this.Parameters,
+                this.Arguments,
+                this.ExpectedReturnType,
+                this.ObjectType,
+                this.Route,
+                this.IsAsyncField,
+                this.Name,
+                this.InternalName,
+                this.InternalFullName);
         }
 
         /// <summary>

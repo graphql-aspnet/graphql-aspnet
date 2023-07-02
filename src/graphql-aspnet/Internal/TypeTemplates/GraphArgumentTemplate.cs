@@ -221,13 +221,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $".NET parameter. (Declared '{this.TypeExpression}' is incompatiable with '{actualTypeExpression}') ");
             }
 
-            if (this.ArgumentModifiers.IsPartOfTheSchema() && this.ObjectType.IsInterface)
-            {
-                throw new GraphTypeDeclarationException(
-                    $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' of type  '{this.ObjectType.FriendlyName()}' " +
-                    $"which is an interface. Interfaces cannot be used as input arguments to any type.");
-            }
-
             foreach (var directive in this.AppliedDirectives)
                 directive.ValidateOrThrow();
         }

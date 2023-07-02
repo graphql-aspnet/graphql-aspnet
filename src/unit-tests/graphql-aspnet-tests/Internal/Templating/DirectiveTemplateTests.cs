@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(SimpleExecutableDirective), template.ObjectType);
             Assert.AreEqual("[directive]/SimpleExecutable", template.Route.Path);
             Assert.AreEqual(DirectiveLocation.FIELD, template.Locations);
-            Assert.IsNotNull(template.Methods.FindMethod(DirectiveLocation.FIELD));
+            Assert.IsNotNull(template.Methods.FindMetaData(DirectiveLocation.FIELD));
             Assert.IsFalse(template.IsRepeatable);
         }
 

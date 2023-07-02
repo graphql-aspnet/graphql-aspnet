@@ -27,13 +27,13 @@ namespace GraphQL.AspNet.Internal.Resolvers
     [DebuggerDisplay("Prop Resolver: {_graphMethod.Name}")]
     internal class ObjectPropertyGraphFieldResolver : IGraphFieldResolver
     {
-        private readonly IGraphFieldResolverMethod _graphMethod;
+        private readonly IGraphFieldResolverMetaData _graphMethod;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectPropertyGraphFieldResolver" /> class.
         /// </summary>
         /// <param name="propertyGetMethod">A resolver method that points to a .NET property getter.</param>
-        public ObjectPropertyGraphFieldResolver(IGraphFieldResolverMethod propertyGetMethod)
+        public ObjectPropertyGraphFieldResolver(IGraphFieldResolverMetaData propertyGetMethod)
         {
             _graphMethod = Validation.ThrowIfNullOrReturn(propertyGetMethod, nameof(propertyGetMethod));
         }

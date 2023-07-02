@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// This interface describes the "bridge" between a field on an schema
     /// and the C# code from which that field originated.
     /// </remarks>
-    public interface IGraphFieldResolverMethod
+    public interface IGraphFieldResolverMetaData
     {
         /// <summary>
         /// Gets the type template from which this method was generated.

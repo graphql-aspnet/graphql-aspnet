@@ -119,7 +119,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         [Test]
         public async Task InternalServerError_WithAction_AndException_FriendlyErrorMessage()
         {
-            var action = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)) as IGraphFieldResolverMethod;
+            var action = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)).CreateResolverMetaData();
 
             var exception = new Exception("Fail");
             var actionResult = new InternalServerErrorGraphActionResult(action, exception);
@@ -167,7 +167,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         [Test]
         public async Task RouteNotFound_ViaGraphAction_YieldsNegativeResult()
         {
-            var action = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)) as IGraphFieldResolverMethod;
+            var action = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)).CreateResolverMetaData();
 
             var exception = new Exception("fail");
             var actionResult = new RouteNotFoundGraphActionResult(action, exception);

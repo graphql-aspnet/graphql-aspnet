@@ -794,27 +794,6 @@ namespace GraphQL.AspNet.Tests.Schemas
         }
 
         [Test]
-        public void EnsureGraphType_WhenControllerHasInputParameterAsInterface_ThrowsException()
-        {
-            var schema = new GraphSchema() as ISchema;
-            schema.SetNoAlterationConfiguration();
-
-            var manager = new GraphSchemaManager(schema);
-            try
-            {
-                manager.EnsureGraphType<ControllerWithInterfaceInput>();
-            }
-            catch (GraphTypeDeclarationException ex)
-            {
-                var name = typeof(IPersonData).FriendlyName();
-                Assert.IsTrue(ex.Message.Contains(name));
-                return;
-            }
-
-            Assert.Fail("No exception was thrown when one was expected.");
-        }
-
-        [Test]
         public void AttemptingToExtendATypeDirectly_AndThroughInterface_ThrowsException()
         {
             var schema = new GraphSchema() as ISchema;
@@ -853,6 +832,19 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(ObjectWithNoStrings))); // the item itself
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));  // for the declared property
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(string))); // for __typename
+        }
+
+        [Test]
+        public void ValidateSchemaIntegrity_WhenInterfaceArgument_OnField_ThrowsException()
+        {
+            var schema = new GraphSchema();
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<PocoWithInterfaceArgument>();
+
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                manager.ValidateSchemaIntegrity();
+            });
         }
     }
 }

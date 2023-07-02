@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Controllers
         where TRequest : class, IDataRequest
     {
         private SchemaItemResolutionContext<TRequest> _schemaItemContext;
-        private IGraphFieldResolverMethod _action;
+        private IGraphFieldResolverMetaData _action;
 
         /// <summary>
         /// Invoke the specified action method as an asynchronous operation.
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>Task&lt;System.Object&gt;.</returns>
         [GraphSkip]
         internal virtual async Task<object> InvokeActionAsync(
-            IGraphFieldResolverMethod actionToInvoke,
+            IGraphFieldResolverMetaData actionToInvoke,
             SchemaItemResolutionContext<TRequest> schemaItemContext)
         {
             // deconstruct the context for processing
@@ -127,28 +127,28 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// Invoke the actual C# method declared by the <paramref name="resolver"/>
+        /// Invoke the actual C# method declared by the <paramref name="methodMetadata"/>
         /// using this controller instance as the target object of the invocation.
         /// </summary>
-        /// <param name="resolver">The resolver declaration that needs to be executed.</param>
+        /// <param name="methodMetadata">The resolver declaration that needs to be executed.</param>
         /// <param name="invocationArguments">The realized set of arguments that need
         /// to be passed to the invocable method instance.</param>
         /// <returns>The exact return value from the invoked resolver.</returns>
-        protected virtual object CreateAndInvokeAction(IGraphFieldResolverMethod resolver, object[] invocationArguments)
+        protected virtual object CreateAndInvokeAction(IGraphFieldResolverMetaData methodMetadata, object[] invocationArguments)
         {
-            if (resolver.Method.DeclaringType != this.GetType())
+            if (methodMetadata.Method.DeclaringType != this.GetType())
             {
                 throw new TargetException($"Unable to invoke action '{_action.Route.Path}' on controller '{this.GetType().FriendlyName()}'. The controller " +
                                           "does not own the method.");
             }
 
-            if (resolver.Method.IsStatic)
+            if (methodMetadata.Method.IsStatic)
             {
                 throw new TargetException($"Unable to invoke action '{_action.Route.Path}' on controller '{this.GetType().FriendlyName()}'. The method " +
                                           "is static and cannot be directly invoked on this controller instance.");
             }
 
-            var invoker = InstanceFactory.CreateInstanceMethodInvoker(resolver.Method);
+            var invoker = InstanceFactory.CreateInstanceMethodInvoker(methodMetadata.Method);
 
             var controllerRef = this as object;
             return invoker(ref controllerRef, invocationArguments);

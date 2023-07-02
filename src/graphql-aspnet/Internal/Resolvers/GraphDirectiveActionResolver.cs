@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// <inheritdoc />
         public async Task ResolveAsync(DirectiveResolutionContext context, CancellationToken cancelToken = default)
         {
-            var action = _directiveTemplate.FindMethod(context.Request.InvocationContext.Location);
+            var action = _directiveTemplate.FindMetaData(context.Request.InvocationContext.Location);
 
             // if no action is found skip processing of this directive
             if (action == null)

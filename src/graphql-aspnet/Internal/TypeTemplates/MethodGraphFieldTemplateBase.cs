@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// C# methods.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public abstract class MethodGraphFieldTemplateBase : GraphFieldTemplateBase, IGraphFieldResolverMethod
+    public abstract class MethodGraphFieldTemplateBase : GraphFieldTemplateBase
     {
         private readonly List<GraphArgumentTemplate> _arguments;
 
@@ -103,7 +103,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public override IGraphFieldResolver CreateResolver()
         {
-            return new ObjectMethodGraphFieldResolver(this);
+            return new ObjectMethodGraphFieldResolver(this.CreateResolverMetaData());
+        }
+
+        public override IGraphFieldResolverMetaData CreateResolverMetaData()
+        {
+            return new FieldResolverMetaData(
+                this.Parent,
+                this.Method,
+                this.Parameters,
+                this.Arguments,
+                this.ExpectedReturnType,
+                this.ObjectType,
+                this.Route,
+                this.IsAsyncField,
+                this.Name,
+                this.InternalName,
+                this.InternalFullName);
         }
 
         /// <inheritdoc />

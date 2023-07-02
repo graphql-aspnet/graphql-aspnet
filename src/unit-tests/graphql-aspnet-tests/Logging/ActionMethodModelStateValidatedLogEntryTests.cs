@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Logging
         }
 
         private void ValidateModelDictionaryToLogEntry(
-            IGraphFieldResolverMethod graphMethod,
+            IGraphFieldResolverMetaData graphMethod,
             IGraphFieldRequest fieldRequest,
             InputModelStateDictionary dictionary,
             ActionMethodModelStateValidatedLogEntry logEntry)
@@ -127,11 +127,11 @@ namespace GraphQL.AspNet.Tests.Logging
             var dictionary = generator.CreateStateDictionary(argumentToTest);
 
             var entry = new ActionMethodModelStateValidatedLogEntry(
-                builder.GraphMethod.Object,
+                builder.ResolverMetaData.Object,
                 context.Request,
                 dictionary);
 
-            this.ValidateModelDictionaryToLogEntry(builder.GraphMethod.Object, context.Request, dictionary, entry);
+            this.ValidateModelDictionaryToLogEntry(builder.ResolverMetaData.Object, context.Request, dictionary, entry);
         }
 
         [Test]
@@ -157,11 +157,11 @@ namespace GraphQL.AspNet.Tests.Logging
             var dictionary = generator.CreateStateDictionary(argumentToTest);
 
             var entry = new ActionMethodModelStateValidatedLogEntry(
-                builder.GraphMethod.Object,
+                builder.ResolverMetaData.Object,
                 context.Request,
                 dictionary);
 
-            this.ValidateModelDictionaryToLogEntry(builder.GraphMethod.Object, context.Request, dictionary, entry);
+            this.ValidateModelDictionaryToLogEntry(builder.ResolverMetaData.Object, context.Request, dictionary, entry);
         }
     }
 }

@@ -116,24 +116,5 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 template.ValidateOrThrow();
             });
         }
-
-        [Test]
-        public void InterfaceAsInputParameter_ThrowsException()
-        {
-            var method = typeof(TestDirectiveMethodTemplateContainer2)
-                .GetMethod(nameof(TestDirectiveMethodTemplateContainer2.InterfaceAsParameter));
-
-            var mock = new Mock<IGraphTypeTemplate>();
-            mock.Setup(x => x.InternalFullName).Returns("Simple");
-            var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
-            mock.Setup(x => x.Route).Returns(route);
-
-            Assert.Throws<GraphTypeDeclarationException>(() =>
-            {
-                var template = new GraphDirectiveMethodTemplate(mock.Object, method);
-                template.Parse();
-                template.ValidateOrThrow();
-            });
-        }
     }
 }

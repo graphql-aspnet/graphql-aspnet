@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Controllers
     internal sealed class RuntimeFieldExecutionController : GraphController
     {
         /// <inheritdoc />
-        protected override object CreateAndInvokeAction(IGraphFieldResolverMethod resolver, object[] invocationArguments)
+        protected override object CreateAndInvokeAction(IGraphFieldResolverMetaData resolver, object[] invocationArguments)
         {
             // minimal api resolvers are allowed to be static since there is no
             // extra context to setup or make available such as 'this.User' etc.

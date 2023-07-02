@@ -399,7 +399,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddType<LogTestController>()
                                          .Build();
-            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
+            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
@@ -423,7 +423,7 @@ namespace GraphQL.AspNet.Tests.Logging
                                          .AddType<LogTestController>()
                                          .Build();
 
-            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
+            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
@@ -449,7 +449,7 @@ namespace GraphQL.AspNet.Tests.Logging
                                          .AddType<LogTestController>()
                                          .Build();
 
-            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
+            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
@@ -482,18 +482,19 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphFieldResolverMethod;
+            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2));
+            var metaData = template.CreateResolverMetaData();
             var fieldRequest = package.FieldRequest;
 
             var result = new object();
 
             var exception = new Exception("inner error");
-            var entry = new ActionMethodUnhandledExceptionLogEntry(graphMethod, fieldRequest, exception);
+            var entry = new ActionMethodUnhandledExceptionLogEntry(metaData, fieldRequest, exception);
 
             Assert.AreEqual(LogEventIds.ControllerUnhandledException.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
-            Assert.AreEqual(graphMethod.Parent.InternalFullName, entry.ControllerTypeName);
-            Assert.AreEqual(graphMethod.Name, entry.ActionName);
+            Assert.AreEqual(metaData.Parent.InternalFullName, entry.ControllerTypeName);
+            Assert.AreEqual(metaData.Name, entry.ActionName);
             Assert.IsNotNull(entry.ToString());
 
             var exceptionEntry = entry.Exception as ExceptionLogItem;

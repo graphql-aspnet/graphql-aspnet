@@ -81,10 +81,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="location">A valid graphql directive location.</param>
         /// <returns>IGraphMethod.</returns>
-        public IGraphFieldResolverMethod FindMethod(DirectiveLocation location)
+        public IGraphFieldResolverMetaData FindMetaData(DirectiveLocation location)
         {
             if (_templateMap.ContainsKey(location))
-                return _templateMap[location];
+                return _templateMap[location].CreateResolverMetaData();
 
             return null;
         }

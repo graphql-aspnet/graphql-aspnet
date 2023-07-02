@@ -382,6 +382,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public abstract IGraphFieldResolver CreateResolver();
 
         /// <inheritdoc />
+        public abstract IGraphFieldResolverMetaData CreateResolverMetaData();
+
+        /// <inheritdoc />
         public override IEnumerable<DependentType> RetrieveRequiredTypes()
         {
             var list = new List<DependentType>();

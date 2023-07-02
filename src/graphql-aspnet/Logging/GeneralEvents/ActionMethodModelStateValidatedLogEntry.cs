@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// <param name="request">The request being executed on the method.</param>
         /// <param name="modelState">the model dictionary created by the controller.</param>
         public ActionMethodModelStateValidatedLogEntry(
-            IGraphFieldResolverMethod method,
+            IGraphFieldResolverMetaData method,
             IDataRequest request,
             InputModelStateDictionary modelState)
             : base(LogEventIds.ControllerModelValidated)

@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// is created from a C# object property.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public class PropertyGraphFieldTemplate : GraphFieldTemplateBase, IGraphFieldResolverMethod
+    public class PropertyGraphFieldTemplate : GraphFieldTemplateBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyGraphFieldTemplate" /> class.
@@ -111,7 +111,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public override IGraphFieldResolver CreateResolver()
         {
-            return new ObjectPropertyGraphFieldResolver(this);
+            return new ObjectPropertyGraphFieldResolver(this.CreateResolverMetaData());
+        }
+
+        public override IGraphFieldResolverMetaData CreateResolverMetaData()
+        {
+            return new FieldResolverMetaData(
+                this.Parent,
+                this.Method,
+                this.Parameters,
+                this.Arguments,
+                this.ExpectedReturnType,
+                this.ObjectType,
+                this.Route,
+                this.IsAsyncField,
+                this.Name,
+                this.InternalName,
+                this.InternalFullName);
         }
 
         /// <inheritdoc />

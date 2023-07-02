@@ -84,9 +84,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public IGraphFieldResolverMethod FindMethod(DirectiveLocation location)
+        public IGraphFieldResolverMetaData FindMetaData(DirectiveLocation location)
         {
-            return this.Methods.FindMethod(location);
+            return this.Methods.FindMetaData(location);
         }
 
         /// <inheritdoc />

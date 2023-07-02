@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// </summary>
         /// <param name="action">The action method on the controller being invoked.</param>
         /// <param name="request">The request being completed by the action method.</param>
-        void ActionMethodInvocationRequestStarted(IGraphFieldResolverMethod action, IDataRequest request);
+        void ActionMethodInvocationRequestStarted(IGraphFieldResolverMetaData action, IDataRequest request);
 
         /// <summary>
         /// Recorded when a controller completes validation of the model data that will be passed
@@ -146,7 +146,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// <param name="action">The action method on the controller being invoked.</param>
         /// <param name="request">The request being completed by the action method.</param>
         /// <param name="modelState">The model data that was validated.</param>
-        void ActionMethodModelStateValidated(IGraphFieldResolverMethod action, IDataRequest request, InputModelStateDictionary modelState);
+        void ActionMethodModelStateValidated(IGraphFieldResolverMetaData action, IDataRequest request, InputModelStateDictionary modelState);
 
         /// <summary>
         /// Recorded after a controller invokes and receives a result from an action method.
@@ -154,7 +154,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// <param name="action">The action method on the controller being invoked.</param>
         /// <param name="request">The request being completed by the action method.</param>
         /// <param name="result">The result object that was returned from the action method.</param>
-        void ActionMethodInvocationCompleted(IGraphFieldResolverMethod action, IDataRequest request, object result);
+        void ActionMethodInvocationCompleted(IGraphFieldResolverMetaData action, IDataRequest request, object result);
 
         /// <summary>
         /// Recorded when the invocation of action method generated a known exception; generally
@@ -163,7 +163,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// <param name="action">The action method on the controller being invoked.</param>
         /// <param name="request">The request being completed by the action method.</param>
         /// <param name="exception">The exception that was generated.</param>
-        void ActionMethodInvocationException(IGraphFieldResolverMethod action, IDataRequest request, Exception exception);
+        void ActionMethodInvocationException(IGraphFieldResolverMetaData action, IDataRequest request, Exception exception);
 
         /// <summary>
         /// Recorded when the invocation of action method generated an unknown exception. This
@@ -172,7 +172,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// <param name="action">The action method on the controller being invoked.</param>
         /// <param name="request">The request being completed by the action method.</param>
         /// <param name="exception">The exception that was generated.</param>
-        void ActionMethodUnhandledException(IGraphFieldResolverMethod action, IDataRequest request, Exception exception);
+        void ActionMethodUnhandledException(IGraphFieldResolverMetaData action, IDataRequest request, Exception exception);
 
         /// <summary>
         /// Recorded by an executor after the entire graphql operation has been completed
