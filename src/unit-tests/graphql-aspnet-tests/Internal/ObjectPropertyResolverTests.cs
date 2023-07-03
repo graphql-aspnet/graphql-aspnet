@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var parentMock = new Mock<IGraphTypeTemplate>();
             parentMock.Setup(x => x.ObjectType).Returns(typeof(IResolverInterface));
 
-            fieldContextBuilder.ResolverMetaData.Setup(x => x.Parent).Returns(parentMock.Object);
+            fieldContextBuilder.ResolverMetaData.Setup(x => x.ParentObjectType).Returns(parentMock.Object.ObjectType);
             var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var parentMock = new Mock<IGraphTypeTemplate>();
             parentMock.Setup(x => x.ObjectType).Returns(typeof(ITestInterface));
 
-            fieldContextBuilder.ResolverMetaData.Setup(x => x.Parent).Returns(parentMock.Object);
+            fieldContextBuilder.ResolverMetaData.Setup(x => x.ParentObjectType).Returns(parentMock.Object.ObjectType);
 
             var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
 

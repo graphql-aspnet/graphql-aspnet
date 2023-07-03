@@ -100,20 +100,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <returns>IGraphFieldResolver.</returns>
         public override IGraphFieldResolver CreateResolver()
         {
-            var metaData = new FieldResolverMetaData(
-                this.Parent,
-                this.Method,
-                this.Parameters,
-                this.Arguments,
-                this.ExpectedReturnType,
-                this.ObjectType,
-                this.Route,
-                this.IsAsyncField,
-                this.Name,
-                this.InternalName,
-                this.InternalFullName);
-
-            return new GraphControllerActionResolver(metaData);
+            return new GraphControllerActionResolver(this.CreateResolverMetaData());
         }
 
         /// <summary>

@@ -408,7 +408,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(LogEventIds.ControllerInvocationStarted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
-            Assert.AreEqual(graphMethod.Parent.InternalFullName, entry.ControllerName);
+            Assert.AreEqual(graphMethod.ParentInternalFullName, entry.ControllerName);
             Assert.AreEqual(graphMethod.Name, entry.ActionName);
             Assert.AreEqual(graphMethod.Route.Path, entry.FieldPath);
             Assert.AreEqual(graphMethod.ObjectType.ToString(), entry.SourceObjectType);
@@ -423,7 +423,7 @@ namespace GraphQL.AspNet.Tests.Logging
                                          .AddType<LogTestController>()
                                          .Build();
 
-            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
+            var metaData = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
@@ -431,13 +431,13 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var result = new object();
 
-            var entry = new ActionMethodInvocationCompletedLogEntry(graphMethod, fieldRequest, result);
+            var entry = new ActionMethodInvocationCompletedLogEntry(metaData, fieldRequest, result);
 
             Assert.AreEqual(LogEventIds.ControllerInvocationCompleted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
-            Assert.AreEqual(graphMethod.Parent.InternalFullName, entry.ControllerName);
-            Assert.AreEqual(graphMethod.Name, entry.ActionName);
-            Assert.AreEqual(graphMethod.Route.Path, entry.FieldPath);
+            Assert.AreEqual(metaData.ParentInternalFullName, entry.ControllerName);
+            Assert.AreEqual(metaData.Name, entry.ActionName);
+            Assert.AreEqual(metaData.Route.Path, entry.FieldPath);
             Assert.AreEqual(result.GetType().FriendlyName(true), entry.ResultTypeName);
             Assert.IsNotNull(entry.ToString());
         }
@@ -449,7 +449,7 @@ namespace GraphQL.AspNet.Tests.Logging
                                          .AddType<LogTestController>()
                                          .Build();
 
-            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
+            var metaData = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
@@ -458,12 +458,12 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var inner = new Exception("inner error");
             var exception = new TargetInvocationException("invocation error message", inner);
-            var entry = new ActionMethodInvocationExceptionLogEntry(graphMethod, fieldRequest, exception);
+            var entry = new ActionMethodInvocationExceptionLogEntry(metaData, fieldRequest, exception);
 
             Assert.AreEqual(LogEventIds.ControllerInvocationException.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
-            Assert.AreEqual(graphMethod.Parent.InternalFullName, entry.ControllerTypeName);
-            Assert.AreEqual(graphMethod.Name, entry.ActionName);
+            Assert.AreEqual(metaData.ParentInternalFullName, entry.ControllerTypeName);
+            Assert.AreEqual(metaData.Name, entry.ActionName);
             Assert.IsNotNull(entry.ToString());
 
             var exceptionEntry = entry.Exception as ExceptionLogItem;
@@ -493,7 +493,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(LogEventIds.ControllerUnhandledException.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
-            Assert.AreEqual(metaData.Parent.InternalFullName, entry.ControllerTypeName);
+            Assert.AreEqual(metaData.ParentInternalFullName, entry.ControllerTypeName);
             Assert.AreEqual(metaData.Name, entry.ActionName);
             Assert.IsNotNull(entry.ToString());
 

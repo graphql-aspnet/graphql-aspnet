@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Logging
             ActionMethodModelStateValidatedLogEntry logEntry)
         {
             Assert.AreEqual(fieldRequest.Id.ToString(), logEntry.PipelineRequestId);
-            Assert.AreEqual(graphMethod.Parent.ObjectType.FriendlyName(true), logEntry.ControllerName);
+            Assert.AreEqual(graphMethod.ParentInternalFullName, logEntry.ControllerName);
             Assert.AreEqual(graphMethod.Name, logEntry.ActionName);
             Assert.AreEqual(dictionary.IsValid, logEntry.ModelDataIsValid);
 

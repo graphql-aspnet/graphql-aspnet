@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             : base(eventId)
         {
             this.PipelineRequestId = request?.Id.ToString();
-            this.ControllerTypeName = method?.Parent?.InternalFullName;
+            this.ControllerTypeName = method?.ParentInternalFullName;
             this.ActionName = method?.Name;
             this.Exception = new ExceptionLogItem(exception);
         }

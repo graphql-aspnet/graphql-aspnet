@@ -26,15 +26,16 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// </summary>
     internal class GraphControllerActionResolver : GraphControllerActionResolverBase, IGraphFieldResolver
     {
-        private readonly IGraphFieldResolverMetaData _actionMethod;
+        private readonly IGraphFieldResolverMetaData _actionResolverMetaData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphControllerActionResolver"/> class.
         /// </summary>
-        /// <param name="actionMethod">The action method that this resolver will invoke.</param>
-        public GraphControllerActionResolver(IGraphFieldResolverMetaData actionMethod)
+        /// <param name="actionResolverMetadata">The metadata describing an action
+        /// method that this resolver will invoke.</param>
+        public GraphControllerActionResolver(IGraphFieldResolverMetaData actionResolverMetadata)
         {
-            _actionMethod = Validation.ThrowIfNullOrReturn(actionMethod, nameof(actionMethod));
+            _actionResolverMetaData = Validation.ThrowIfNullOrReturn(actionResolverMetadata, nameof(actionResolverMetadata));
         }
 
         /// <inheritdoc />
@@ -47,7 +48,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 // create a scoped controller instance for this invocation
                 var controller = context
                     .ServiceProvider?
-                    .GetService(_actionMethod.Parent.ObjectType) as GraphController;
+                    .GetService(_actionResolverMetaData.ParentObjectType) as GraphController;
 
                 if (controller == null)
                 {
@@ -58,7 +59,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 else
                 {
                     // invoke the right action method and set a result.
-                    var task = controller.InvokeActionAsync(_actionMethod, context);
+                    var task = controller.InvokeActionAsync(_actionResolverMetaData, context);
                     var returnedItem = await task.ConfigureAwait(false);
                     result = this.EnsureGraphActionResult(returnedItem);
                 }
@@ -75,6 +76,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
         }
 
         /// <inheritdoc />
-        public Type ObjectType => _actionMethod.ObjectType;
+        public Type ObjectType => _actionResolverMetaData.ObjectType;
     }
 }

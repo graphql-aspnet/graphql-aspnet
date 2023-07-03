@@ -38,11 +38,12 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             : base(LogEventIds.ControllerModelValidated)
         {
             this.PipelineRequestId = request?.Id.ToString();
-            this.ControllerName = method?.Parent?.ObjectType?.FriendlyName(true) ?? method?.Parent?.Name;
+            this.ControllerName = method?.ParentInternalFullName;
             this.ActionName = method?.Name;
             this.FieldPath = method?.Route?.Path;
             this.ModelDataIsValid = modelState?.IsValid;
-            _shortControllerName = method?.Parent?.ObjectType?.FriendlyName() ?? method?.Parent?.Name;
+
+            _shortControllerName = method?.ParentInternalName;
             this.ModelItems = null;
             if (modelState?.Values != null && modelState.Values.Any())
             {

@@ -31,11 +31,11 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             : base(LogEventIds.ControllerInvocationCompleted)
         {
             this.PipelineRequestId = request?.Id.ToString();
-            this.ControllerName = method?.Parent?.InternalFullName;
+            this.ControllerName = method?.ParentInternalFullName;
             this.ActionName = method?.InternalName;
             this.FieldPath = method?.Route?.Path;
             this.ResultTypeName = result?.GetType().FriendlyName(true);
-            _shortControllerName = method?.Parent?.InternalName;
+            _shortControllerName = method?.ParentInternalName;
         }
 
         /// <summary>

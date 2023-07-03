@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                    context.Request.Origin,
                    new GraphExecutionException(
                        $"The method '{_graphMethod.InternalFullName}' expected source data of type " +
-                       $"'{_graphMethod.Parent.ObjectType.FriendlyName()}' but received '{sourceData.GetType().FriendlyName()}' " +
+                       $"'{_graphMethod.ParentObjectType.FriendlyName()}' but received '{sourceData.GetType().FriendlyName()}' " +
                        "which is not compatible."));
 
                 return;

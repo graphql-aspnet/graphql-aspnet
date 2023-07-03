@@ -51,16 +51,14 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var action = this.CreateActionTemplate<OneMethodController>(nameof(OneMethodController.MethodWithBasicAttribtributes));
             action.ValidateOrThrow();
 
-            var metadata = action.CreateResolverMetaData();
-
             Assert.AreEqual("MethodDescription", action.Description);
             Assert.AreEqual(typeof(OneMethodController), action.SourceObjectType);
             Assert.AreEqual(typeof(OneMethodController), action.Parent.ObjectType);
             Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
             Assert.AreEqual("[query]/path0/path1", action.Route.Path);
             Assert.AreEqual($"{nameof(OneMethodController)}.{nameof(OneMethodController.MethodWithBasicAttribtributes)}", action.InternalFullName);
-            Assert.AreEqual(methodInfo.ReflectedType, metadata.Parent.ObjectType);
-            Assert.AreEqual("path0", metadata.Parent.Name);
+            Assert.AreEqual(methodInfo.ReflectedType, action.Parent.ObjectType);
+            Assert.AreEqual("path0", action.Parent.Name);
             Assert.AreEqual(methodInfo, action.Method);
             Assert.AreEqual(0, action.Arguments.Count);
             Assert.IsFalse(action.Route.IsTopLevelField);

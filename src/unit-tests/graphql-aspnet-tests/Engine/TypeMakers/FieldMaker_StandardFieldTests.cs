@@ -123,7 +123,9 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
+            obj.Setup(x => x.ObjectType).Returns(typeof(SimplePropertyObject));
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Name));
@@ -140,10 +142,11 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         [Test]
         public void PropertyGraphField_GraphName_OverridesDefaultName()
         {
-            var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
+            obj.Setup(x => x.ObjectType).Returns(typeof(SimplePropertyObject));
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Age));
@@ -166,7 +169,9 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
+            obj.Setup(x => x.ObjectType).Returns(typeof(SimplePropertyObject));
 
             var parent = obj.Object;
             var propInfo = typeof(ObjectDirectiveTestItem).GetProperty(nameof(ObjectDirectiveTestItem.Prop1));
@@ -190,7 +195,9 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
+            obj.Setup(x => x.ObjectType).Returns(typeof(ObjectDirectiveTestItem));
 
             var parent = obj.Object;
             var methodInfo = typeof(ObjectDirectiveTestItem).GetMethod(nameof(ObjectDirectiveTestItem.Method1));
@@ -214,7 +221,9 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
+            obj.Setup(x => x.ObjectType).Returns(typeof(ObjectDirectiveTestItem));
 
             var parent = obj.Object;
             var methodInfo = typeof(ObjectDirectiveTestItem).GetMethod(nameof(ObjectDirectiveTestItem.MethodWithArgDirectives));

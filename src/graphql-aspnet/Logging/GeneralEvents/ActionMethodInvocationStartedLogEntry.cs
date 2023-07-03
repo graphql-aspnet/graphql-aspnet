@@ -29,12 +29,12 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             : base(LogEventIds.ControllerInvocationStarted)
         {
             this.PipelineRequestId = request?.Id.ToString();
-            this.ControllerName = method?.Parent?.InternalFullName;
+            this.ControllerName = method?.ParentInternalFullName;
             this.ActionName = method?.Name;
             this.FieldPath = method?.Route?.Path;
             this.SourceObjectType = method?.ObjectType?.ToString();
             this.IsAsync = method?.IsAsyncField;
-            _shortControllerName = method?.Parent?.InternalName;
+            _shortControllerName = method?.ParentInternalName;
         }
 
         /// <summary>

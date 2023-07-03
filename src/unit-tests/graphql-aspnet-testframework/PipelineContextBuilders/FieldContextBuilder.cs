@@ -51,13 +51,13 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <param name="userSecurityContext">The user security context.</param>
         /// <param name="graphField">The graph field.</param>
         /// <param name="schema">The schema.</param>
-        /// <param name="graphMethod">The metadata describing the method/functon to be invoked by a resolver.</param>
+        /// <param name="metaData">The metadata describing the method/functon to be invoked by a resolver.</param>
         public FieldContextBuilder(
             IServiceProvider serviceProvider,
             IUserSecurityContext userSecurityContext,
             IGraphField graphField,
             ISchema schema,
-            IGraphFieldResolverMetaData graphMethod)
+            IGraphFieldResolverMetaData metaData)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _graphField = Validation.ThrowIfNullOrReturn(graphField, nameof(graphField));
@@ -69,10 +69,10 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 
             Type expectedInputType = null;
 
-            if (!Validation.IsCastable<GraphDirective>(graphMethod.Parent.ObjectType)
-                && !Validation.IsCastable<GraphController>(graphMethod.Parent.ObjectType))
+            if (!Validation.IsCastable<GraphDirective>(metaData.ParentObjectType)
+                && !Validation.IsCastable<GraphController>(metaData.ParentObjectType))
             {
-                expectedInputType = graphMethod.Parent.ObjectType;
+                expectedInputType = metaData.ObjectType;
             }
 
             _mockFieldDocumentPart = new Mock<IFieldDocumentPart>();
@@ -100,16 +100,18 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockRequest.Setup(x => x.InvocationContext).Returns(_mockInvocationContext.Object);
 
             this.ResolverMetaData = new Mock<IGraphFieldResolverMetaData>();
-            this.ResolverMetaData.Setup(x => x.Parent).Returns(graphMethod.Parent);
-            this.ResolverMetaData.Setup(x => x.ObjectType).Returns(graphMethod.ObjectType);
-            this.ResolverMetaData.Setup(x => x.ExpectedReturnType).Returns(graphMethod.ExpectedReturnType);
-            this.ResolverMetaData.Setup(x => x.Method).Returns(graphMethod.Method);
-            this.ResolverMetaData.Setup(x => x.IsAsyncField).Returns(graphMethod.IsAsyncField);
-            this.ResolverMetaData.Setup(x => x.Name).Returns(graphMethod.Name);
-            this.ResolverMetaData.Setup(x => x.InternalFullName).Returns(graphMethod.InternalFullName);
-            this.ResolverMetaData.Setup(x => x.InternalName).Returns(graphMethod.InternalName);
-            this.ResolverMetaData.Setup(x => x.Route).Returns(graphMethod.Route);
-            this.ResolverMetaData.Setup(x => x.Arguments).Returns(graphMethod.Arguments);
+            this.ResolverMetaData.Setup(x => x.ParentInternalFullName).Returns(metaData.ParentInternalFullName);
+            this.ResolverMetaData.Setup(x => x.ParentInternalName).Returns(metaData.ParentInternalName);
+            this.ResolverMetaData.Setup(x => x.ParentObjectType).Returns(metaData.ParentObjectType);
+            this.ResolverMetaData.Setup(x => x.ObjectType).Returns(metaData.ObjectType);
+            this.ResolverMetaData.Setup(x => x.ExpectedReturnType).Returns(metaData.ExpectedReturnType);
+            this.ResolverMetaData.Setup(x => x.Method).Returns(metaData.Method);
+            this.ResolverMetaData.Setup(x => x.IsAsyncField).Returns(metaData.IsAsyncField);
+            this.ResolverMetaData.Setup(x => x.Name).Returns(metaData.Name);
+            this.ResolverMetaData.Setup(x => x.InternalFullName).Returns(metaData.InternalFullName);
+            this.ResolverMetaData.Setup(x => x.InternalName).Returns(metaData.InternalName);
+            this.ResolverMetaData.Setup(x => x.Route).Returns(metaData.Route);
+            this.ResolverMetaData.Setup(x => x.Arguments).Returns(metaData.Arguments);
         }
 
         /// <summary>

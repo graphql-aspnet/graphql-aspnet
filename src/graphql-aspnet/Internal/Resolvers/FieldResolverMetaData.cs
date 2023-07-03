@@ -25,7 +25,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
     internal class FieldResolverMetaData : IGraphFieldResolverMetaData
     {
         public FieldResolverMetaData(
-            IGraphTypeTemplate parent,
             MethodInfo method,
             IEnumerable<ParameterInfo> parameters,
             IEnumerable<IGraphArgumentTemplate> arguments,
@@ -35,11 +34,13 @@ namespace GraphQL.AspNet.Internal.Resolvers
             bool isAsyncField,
             string name,
             string internalName,
-            string internalFullName)
+            string internalFullName,
+            Type parentObjectType,
+            string parentInternalName,
+            string parentInternalFullName)
         {
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
-            this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
 
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.ExpectedReturnType = Validation.ThrowIfNullOrReturn(expectedReturnType, nameof(expectedReturnType));
@@ -51,6 +52,10 @@ namespace GraphQL.AspNet.Internal.Resolvers
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
+
+            this.ParentObjectType = Validation.ThrowIfNullOrReturn(parentObjectType, nameof(parentObjectType));
+            this.ParentInternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentInternalName, nameof(parentInternalName));
+            this.ParentInternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentInternalFullName, nameof(parentInternalFullName));
         }
 
         /// <inheritdoc />
@@ -72,9 +77,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
         public string InternalName { get; }
 
         /// <inheritdoc />
-        public IGraphTypeTemplate Parent { get; }
-
-        /// <inheritdoc />
         public Type ObjectType { get; }
 
         /// <inheritdoc />
@@ -85,5 +87,14 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
         /// <inheritdoc />
         public IReadOnlyList<IGraphArgumentTemplate> Arguments { get; }
+
+        /// <inheritdoc />
+        public string ParentInternalName { get; }
+
+        /// <inheritdoc />
+        public string ParentInternalFullName { get; }
+
+        /// <inheritdoc />
+        public Type ParentObjectType { get; }
     }
 }

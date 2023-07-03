@@ -109,7 +109,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override IGraphFieldResolverMetaData CreateResolverMetaData()
         {
             return new FieldResolverMetaData(
-                this.Parent,
                 this.Method,
                 this.Parameters,
                 this.Arguments,
@@ -119,7 +118,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 this.IsAsyncField,
                 this.Name,
                 this.InternalName,
-                this.InternalFullName);
+                this.InternalFullName,
+                this.Parent.ObjectType,
+                this.Parent.InternalName,
+                this.Parent.InternalFullName);
         }
 
         /// <inheritdoc />

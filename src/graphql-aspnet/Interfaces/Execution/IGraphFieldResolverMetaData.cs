@@ -26,20 +26,14 @@ namespace GraphQL.AspNet.Interfaces.Execution
     public interface IGraphFieldResolverMetaData
     {
         /// <summary>
-        /// Gets the type template from which this method was generated.
+        /// Gets the singular concrete type that represents the graph type returned by the resolver.
         /// </summary>
-        /// <value>The type template that owns this method.</value>
-        IGraphTypeTemplate Parent { get; }
-
-        /// <summary>
-        /// Gets the singular concrete type this method is defined on.
-        /// </summary>
-        /// <value>The objec type that defines this method.</value>
+        /// <value>The concrete object type that represents the graph type returned by the resolver.</value>
         Type ObjectType { get; }
 
         /// <summary>
         /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
-        /// represents the implementation return type as opposed to the expected graph type.
+        /// represents the implementation return type as opposed to the expected graph type represented by <see cref="ObjectType"/>.
         /// </summary>
         /// <value>The expected type of data returned by this method.</value>
         Type ExpectedReturnType { get; }
@@ -83,6 +77,27 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The internal name given to this item.</value>
         string InternalName { get; }
+
+        /// <summary>
+        /// Gets the type representing the graph type that will invoke the resolver identified by this
+        /// metadata object.
+        /// </summary>
+        /// <value>The concrete type of the parent object that owns the resolver.</value>
+        Type ParentObjectType { get; }
+
+        /// <summary>
+        /// Gets the internal name of the parent item that ows the <see cref="Method"/> which generated
+        /// this metdata object.
+        /// </summary>
+        /// <value>The name of the parent.</value>
+        string ParentInternalName { get; }
+
+        /// <summary>
+        /// Gets the full internal name of the parent item that ows the <see cref="Method"/> which generated
+        /// this metdata object.
+        /// </summary>
+        /// <value>The name of the parent.</value>
+        string ParentInternalFullName { get; }
 
         /// <summary>
         /// Gets the unique route that points to the field in the object graph.
