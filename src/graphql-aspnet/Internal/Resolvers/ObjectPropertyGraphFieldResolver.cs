@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             {
                 context.Messages.Critical(
                     "No source data was provided to the field resolver " +
-                    $"for '{_resolverMetadata.Name}'. Unable to complete the request.",
+                    $"for '{context.Request.Field.Route.Path}'. Unable to complete the request.",
                     Constants.ErrorCodes.INVALID_OBJECT,
                     context.Request.Origin);
 
@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 {
                     context.Messages.Critical(
                         "The source data provided to the field resolver " +
-                        $"for '{_resolverMetadata.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
+                        $"for '{context.Request.Field.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
                         Constants.ErrorCodes.INVALID_OBJECT,
                         context.Request.Origin,
                         new GraphExecutionException(
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             {
                 context.Messages.Critical(
                     "The source data provided to the field resolver " +
-                    $"for '{_resolverMetadata.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
+                    $"for '{context.Request.Field.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
                     Constants.ErrorCodes.INVALID_OBJECT,
                     context.Request.Origin,
                     new GraphExecutionException(
@@ -106,11 +106,11 @@ namespace GraphQL.AspNet.Internal.Resolvers
                     {
                         context.Messages.Critical(
                             "The source data provided to the field resolver " +
-                            $"for '{_resolverMetadata.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
+                            $"for '{context.Request.Field.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
                             Constants.ErrorCodes.INVALID_OBJECT,
                             context.Request.Origin,
                             new GraphExecutionException(
-                                $"The method '{_resolverMetadata.Route.Path}' is defined " +
+                                $"The method '{context.Request.Field.Route.Path}' is defined " +
                                 $"as asyncronous but it did not return a {typeof(Task)}."));
                         invokeReturn = null;
                     }
@@ -128,7 +128,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             catch (Exception ex)
             {
                 context.Messages.Critical(
-                    $"An unknown error occured atttempting to resolve the field '{_resolverMetadata.Route.Path}'. See exception for details.",
+                    $"An unknown error occured atttempting to resolve the field '{context.Request.Field.Route.Path}'. See exception for details.",
                     Constants.ErrorCodes.UNHANDLED_EXCEPTION,
                     context.Request.Origin,
                     ex);

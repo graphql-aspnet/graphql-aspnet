@@ -71,7 +71,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.UpdateResolver(resolver, mode);
             this.Publish = true;
-
         }
 
         /// <inheritdoc/>

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Internal
 {
     using System;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -18,6 +19,8 @@ namespace GraphQL.AspNet.Interfaces.Internal
     /// </summary>
     public interface IGraphArgumentTemplate : ISchemaItemTemplate
     {
+        IGraphFieldResolverParameterMetaData CreateResolverMetaData();
+
         /// <summary>
         /// Gets the parent method this parameter belongs to.
         /// </summary>

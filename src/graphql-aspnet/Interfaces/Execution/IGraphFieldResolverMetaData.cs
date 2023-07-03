@@ -10,10 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
-    using System.Collections.Generic;
     using System.Reflection;
-    using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A data package describing the details necessary to
@@ -45,24 +42,11 @@ namespace GraphQL.AspNet.Interfaces.Execution
         MethodInfo Method { get; }
 
         /// <summary>
-        /// Gets the raw parameters that exist on the <see cref="Method"/>
-        /// that must be supplied at invocation.
-        /// </summary>
-        /// <value>The parameters of the target <see cref="Method"/>.</value>
-        IReadOnlyList<ParameterInfo> Parameters { get; }
-
-        /// <summary>
         /// Gets a value indicating whether the method described by this instance should be
         /// invoked asyncronously.
         /// </summary>
         /// <value><c>true</c> if the method is asynchronous; otherwise, <c>false</c>.</value>
         bool IsAsyncField { get; }
-
-        /// <summary>
-        /// Gets the method's field name in the object graph.
-        /// </summary>
-        /// <value>This method's name in the object graph.</value>
-        string Name { get; }
 
         /// <summary>
         /// Gets the fully qualified name, including namespace, of this item as it exists in the
@@ -100,15 +84,9 @@ namespace GraphQL.AspNet.Interfaces.Execution
         string ParentInternalFullName { get; }
 
         /// <summary>
-        /// Gets the unique route that points to the field in the object graph.
-        /// </summary>
-        /// <value>The route.</value>
-        SchemaItemPath Route { get; }
-
-        /// <summary>
         /// Gets the templatized field arguments representing the field (if any).
         /// </summary>
         /// <value>The arguments defined on this field.</value>
-        IReadOnlyList<IGraphArgumentTemplate> Arguments { get; }
+        IGraphFieldResolverParameterMetaDataCollection Parameters { get; }
     }
 }

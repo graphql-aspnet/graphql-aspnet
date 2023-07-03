@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     {
         private readonly ISchemaItem _owner;
         private readonly OrderedDictionary<string, IGraphArgument> _arguments;
+        private readonly Dictionary<string, IGraphArgument> _argumentByInternalName;
         private IGraphArgument _sourceArgument;
 
         /// <summary>
@@ -37,13 +38,17 @@ namespace GraphQL.AspNet.Schemas.Structural
         {
             _owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
             _arguments = new OrderedDictionary<string, IGraphArgument>(StringComparer.Ordinal);
+            _argumentByInternalName = new Dictionary<string, IGraphArgument>();
         }
 
         /// <inheritdoc />
         public IGraphArgument AddArgument(IGraphArgument argument)
         {
             Validation.ThrowIfNull(argument, nameof(argument));
+
             _arguments.Add(argument.Name, argument);
+            _argumentByInternalName.Add(argument.InternalName, argument);
+
             if (argument.ArgumentModifiers.IsSourceParameter() && _sourceArgument == null)
                 _sourceArgument = argument;
 
@@ -121,6 +126,15 @@ namespace GraphQL.AspNet.Schemas.Structural
         {
             if (this.ContainsKey(argumentName))
                 return this[argumentName];
+
+            return null;
+        }
+
+        /// <inheritdoc />
+        public IGraphArgument FindArgumentByInternalName(string internalName)
+        {
+            if (_argumentByInternalName.ContainsKey(internalName))
+                return _argumentByInternalName[internalName];
 
             return null;
         }

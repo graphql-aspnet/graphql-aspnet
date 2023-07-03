@@ -39,18 +39,18 @@ namespace GraphQL.AspNet.Controllers
         /// <summary>
         /// Invoke the specified action method as an asynchronous operation.
         /// </summary>
-        /// <param name="actionToInvoke">The action to invoke.</param>
+        /// <param name="actionMetadata">The action to invoke.</param>
         /// <param name="schemaItemContext">The invocation context to process.</param>
         /// <returns>Task&lt;System.Object&gt;.</returns>
         [GraphSkip]
         internal virtual async Task<object> InvokeActionAsync(
-            IGraphFieldResolverMetaData actionToInvoke,
+            IGraphFieldResolverMetaData actionMetadata,
             SchemaItemResolutionContext<TRequest> schemaItemContext)
         {
             // deconstruct the context for processing
             Validation.ThrowIfNull(schemaItemContext, nameof(schemaItemContext));
             _schemaItemContext = schemaItemContext;
-            _action = actionToInvoke;
+            _action = actionMetadata;
 
             // ensure a field request is available
             var fieldRequest = schemaItemContext?.Request;
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Controllers
                     {
                         // given all the checking and parsing this should be imnpossible, but just in case
                         invokeReturn = new InternalServerErrorGraphActionResult(
-                            $"The action '{_action.Route.Path}' is defined " +
+                            $"The action '{_action.InternalName}' on controller '{_action.ParentInternalName}' is defined " +
                             $"as asyncronous but it did not return a {typeof(Task)}.");
                     }
                 }
@@ -138,13 +138,13 @@ namespace GraphQL.AspNet.Controllers
         {
             if (methodMetadata.Method.DeclaringType != this.GetType())
             {
-                throw new TargetException($"Unable to invoke action '{_action.Route.Path}' on controller '{this.GetType().FriendlyName()}'. The controller " +
+                throw new TargetException($"Unable to invoke action '{_action.InternalName}' on controller '{this.GetType().FriendlyName()}'. The controller " +
                                           "does not own the method.");
             }
 
             if (methodMetadata.Method.IsStatic)
             {
-                throw new TargetException($"Unable to invoke action '{_action.Route.Path}' on controller '{this.GetType().FriendlyName()}'. The method " +
+                throw new TargetException($"Unable to invoke action '{_action.InternalName}' on controller '{this.GetType().FriendlyName()}'. The method " +
                                           "is static and cannot be directly invoked on this controller instance.");
             }
 

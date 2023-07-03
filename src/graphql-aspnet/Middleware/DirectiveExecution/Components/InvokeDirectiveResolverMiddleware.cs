@@ -44,6 +44,8 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
                 }
                 else
                 {
+                    executionArguments = executionArguments.ForContext(context);
+
                     var resolutionContext = new DirectiveResolutionContext(
                         context.Schema,
                         context,

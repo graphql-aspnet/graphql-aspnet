@@ -39,8 +39,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         {
             this.PipelineRequestId = request?.Id.ToString();
             this.ControllerName = method?.ParentInternalFullName;
-            this.ActionName = method?.Name;
-            this.FieldPath = method?.Route?.Path;
+            this.ActionName = method?.InternalName;
             this.ModelDataIsValid = modelState?.IsValid;
 
             _shortControllerName = method?.ParentInternalName;
@@ -89,16 +88,6 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         {
             get => this.GetProperty<string>(LogPropertyNames.ACTION_NAME);
             private set => this.SetProperty(LogPropertyNames.ACTION_NAME, value);
-        }
-
-        /// <summary>
-        /// Gets the path, in the target schema, of the action.
-        /// </summary>
-        /// <value>The action name.</value>
-        public string FieldPath
-        {
-            get => this.GetProperty<string>(LogPropertyNames.SCHEMA_ITEM_PATH);
-            private set => this.SetProperty(LogPropertyNames.SCHEMA_ITEM_PATH, value);
         }
 
         /// <summary>

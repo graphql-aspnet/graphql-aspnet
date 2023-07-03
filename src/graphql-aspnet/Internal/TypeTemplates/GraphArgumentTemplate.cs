@@ -20,7 +20,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -223,6 +225,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             foreach (var directive in this.AppliedDirectives)
                 directive.ValidateOrThrow();
+        }
+
+        /// <inheritdoc />
+        public IGraphFieldResolverParameterMetaData CreateResolverMetaData()
+        {
+            return new FieldResolverParameterMetaData(
+                this.Parameter,
+                this.ObjectType,
+                this.InternalName,
+                this.InternalFullName,
+                this.ArgumentModifiers,
+                this.DefaultValue);
         }
 
         /// <inheritdoc />

@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -27,6 +26,7 @@ namespace GraphQL.AspNet.Execution
     internal class ExecutionArgumentCollection : IExecutionArgumentCollection
     {
         private readonly Dictionary<string, ExecutionArgument> _arguments;
+        private readonly GraphDirectiveExecutionContext _directiveContext;
         private readonly GraphFieldExecutionContext _fieldContext;
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Execution
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionArgumentCollection" /> class.
         /// </summary>
-        /// <param name="argumentList">The argument list.</param>
+        /// <param name="argumentList">The argument list keyed by the argument's name in the graph.</param>
         /// <param name="fieldContext">The field context.</param>
         private ExecutionArgumentCollection(
             IDictionary<string, ExecutionArgument> argumentList,
@@ -51,6 +51,19 @@ namespace GraphQL.AspNet.Execution
         {
             _arguments = new Dictionary<string, ExecutionArgument>(argumentList);
             _fieldContext = fieldContext;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExecutionArgumentCollection" /> class.
+        /// </summary>
+        /// <param name="argumentList">The argument list keyed by the argument's name in the graph.</param>
+        /// <param name="directiveContext">The directive context.</param>
+        private ExecutionArgumentCollection(
+            IDictionary<string, ExecutionArgument> argumentList,
+            GraphDirectiveExecutionContext directiveContext)
+        {
+            _arguments = new Dictionary<string, ExecutionArgument>(argumentList);
+            _directiveContext = directiveContext;
         }
 
         /// <inheritdoc />
@@ -63,7 +76,14 @@ namespace GraphQL.AspNet.Execution
         /// <inheritdoc />
         public IExecutionArgumentCollection ForContext(GraphFieldExecutionContext fieldContext)
         {
-            return new ExecutionArgumentCollection(_arguments, fieldContext);
+            return new ExecutionArgumentCollection(_arguments,  fieldContext);
+        }
+
+
+        /// <inheritdoc />
+        public IExecutionArgumentCollection ForContext(GraphDirectiveExecutionContext directiveContext)
+        {
+            return new ExecutionArgumentCollection(_arguments, directiveContext);
         }
 
         /// <inheritdoc />
@@ -85,31 +105,49 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <inheritdoc />
-        public object[] PrepareArguments(IGraphFieldResolverMetaData graphMethod)
+        public object[] PrepareArguments(IGraphFieldResolverMetaData resolverMetadata)
         {
-            var preparedParams = new List<object>();
-            var paramInfos = graphMethod.Parameters;
+            Validation.ThrowIfNull(resolverMetadata, nameof(resolverMetadata));
 
-            for (var i = 0; i < graphMethod.Arguments.Count; i++)
+            var preparedParams = new List<object>();
+
+            for (var i = 0; i < resolverMetadata.Parameters.Count; i++)
             {
-                var argTemplate = graphMethod.Arguments[i];
-                object passedValue = this.ResolveParameterFromArgumentTemplate(argTemplate);
-                if (passedValue == null && !argTemplate.TypeExpression.IsNullable)
+                var parameter = resolverMetadata.Parameters[i];
+                object passedValue = this.ResolveParameterFromMetadata(parameter);
+
+                var fieldArgument = _fieldContext?
+                    .Request
+                    .Field
+                    .Arguments
+                    .FindArgumentByInternalName(parameter.InternalName);
+
+                fieldArgument = fieldArgument ??
+                    _directiveContext?
+                    .Request
+                    .Directive
+                    .Arguments
+                    .FindArgumentByInternalName(parameter.InternalName);
+
+                if (fieldArgument == null)
+                    throw new GraphExecutionException($"Argument '{parameter.InternalName}' was not found on its expected parent.");
+
+                if (passedValue == null && !fieldArgument.TypeExpression.IsNullable)
                 {
                     // technically shouldn't be throwable given the validation routines
                     // but captured here as a saftey net for users
                     // doing custom extensions or implementations
                     throw new GraphExecutionException(
-                        $"The parameter '{argTemplate.Name}' for field '{graphMethod.Route.Path}' could not be resolved from the query document " +
+                        $"The parameter '{parameter.InternalName}' for field '{_fieldContext?.Request?.Field?.Route.Path}' could not be resolved from the query document " +
                         "or variable collection and no default value was found.");
                 }
 
                 // ensure compatible list types between the internally
                 // tracked data and the target type of the method being invoked
                 // i.e. convert List<T> =>  T[]  when needed
-                if (argTemplate.TypeExpression.IsListOfItems)
+                if (fieldArgument.TypeExpression.IsListOfItems)
                 {
-                    var listMangler = new ListMangler(paramInfos[i].ParameterType);
+                    var listMangler = new ListMangler(parameter.ExpectedType);
                     var result = listMangler.Convert(passedValue);
                     passedValue = result.Data;
                 }
@@ -120,12 +158,7 @@ namespace GraphQL.AspNet.Execution
             return preparedParams.ToArray();
         }
 
-        /// <summary>
-        /// Attempts to deserialize a parameter value from the graph ql context supplied.
-        /// </summary>
-        /// <param name="argDefinition">The argument definition.</param>
-        /// <returns>System.Object.</returns>
-        private object ResolveParameterFromArgumentTemplate(IGraphArgumentTemplate argDefinition)
+        private object ResolveParameterFromMetadata(IGraphFieldResolverParameterMetaData argDefinition)
         {
             if (argDefinition == null)
                 return null;
@@ -136,9 +169,10 @@ namespace GraphQL.AspNet.Execution
             if (argDefinition.ArgumentModifiers.IsCancellationToken())
                 return _fieldContext?.CancellationToken ?? default;
 
-            return this.ContainsKey(argDefinition.DeclaredArgumentName)
-                ? this[argDefinition.DeclaredArgumentName].Value
-                : argDefinition.DefaultValue;
+            if (this.ContainsKey(argDefinition.InternalName))
+                return this[argDefinition.InternalName].Value;
+
+            return argDefinition.DefaultValue;
         }
 
         /// <inheritdoc />

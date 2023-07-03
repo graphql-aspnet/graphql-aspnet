@@ -26,17 +26,17 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// </summary>
     internal class ObjectMethodGraphFieldResolver : IGraphFieldResolver
     {
-        private readonly IGraphFieldResolverMetaData _graphMethod;
+        private readonly IGraphFieldResolverMetaData _resolverMetadata;
         private readonly MethodInfo _methodInfo;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectMethodGraphFieldResolver" /> class.
         /// </summary>
-        /// <param name="graphMethod">A resolver method that points to a .NET method.</param>
-        public ObjectMethodGraphFieldResolver(IGraphFieldResolverMetaData graphMethod)
+        /// <param name="resolverMetadata">A resolver method that points to a .NET method.</param>
+        public ObjectMethodGraphFieldResolver(IGraphFieldResolverMetaData resolverMetadata)
         {
-            _graphMethod = Validation.ThrowIfNullOrReturn(graphMethod, nameof(graphMethod));
-            _methodInfo = _graphMethod.Method;
+            _resolverMetadata = Validation.ThrowIfNullOrReturn(resolverMetadata, nameof(resolverMetadata));
+            _methodInfo = _resolverMetadata.Method;
         }
 
         /// <inheritdoc />
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             {
                 context.Messages.Critical(
                     "No source data was provided to the field resolver " +
-                    $"for '{_graphMethod.Route.Path}'. Unable to complete the request.",
+                    $"for '{context.Request.Field.Route.Path}'. Unable to complete the request.",
                     Constants.ErrorCodes.INVALID_OBJECT,
                     context.Request.Origin);
 
@@ -59,12 +59,12 @@ namespace GraphQL.AspNet.Internal.Resolvers
             {
                 context.Messages.Critical(
                    "The source data provided to the field resolver " +
-                   $"for '{_graphMethod.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
+                   $"for '{context.Request.Field.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
                    Constants.ErrorCodes.INVALID_OBJECT,
                    context.Request.Origin,
                    new GraphExecutionException(
-                       $"The method '{_graphMethod.InternalFullName}' expected source data of type " +
-                       $"'{_graphMethod.ParentObjectType.FriendlyName()}' but received '{sourceData.GetType().FriendlyName()}' " +
+                       $"The method '{_resolverMetadata.InternalFullName}' expected source data of type " +
+                       $"'{_resolverMetadata.ParentObjectType.FriendlyName()}' but received '{sourceData.GetType().FriendlyName()}' " +
                        "which is not compatible."));
 
                 return;
@@ -74,17 +74,17 @@ namespace GraphQL.AspNet.Internal.Resolvers
             {
                 object data = null;
 
-                var paramSet = context.Arguments.PrepareArguments(_graphMethod);
-                var invoker = InstanceFactory.CreateInstanceMethodInvoker(_graphMethod.Method);
+                var paramSet = context.Arguments.PrepareArguments(_resolverMetadata);
+                var invoker = InstanceFactory.CreateInstanceMethodInvoker(_resolverMetadata.Method);
 
                 var invokableObject = context.Arguments.SourceData as object;
                 var invokeReturn = invoker(ref invokableObject, paramSet);
-                if (_graphMethod.IsAsyncField)
+                if (_resolverMetadata.IsAsyncField)
                 {
                     if (invokeReturn is Task task)
                     {
                         await task.ConfigureAwait(false);
-                        data = task.ResultOfTypeOrNull(_graphMethod.ExpectedReturnType);
+                        data = task.ResultOfTypeOrNull(_resolverMetadata.ExpectedReturnType);
                     }
                 }
                 else
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             catch (Exception ex)
             {
                 context.Messages.Critical(
-                    $"An unknown error occured atttempting to resolve the field '{_graphMethod.Route.Path}'. " +
+                    $"An unknown error occured atttempting to resolve the field '{context.Request.Field.Route.Path}'. " +
                     "See exception for details.",
                     Constants.ErrorCodes.UNHANDLED_EXCEPTION,
                     context.Request.Origin,
@@ -113,6 +113,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
         }
 
         /// <inheritdoc />
-        public Type ObjectType => _graphMethod.ObjectType;
+        public Type ObjectType => _resolverMetadata.ObjectType;
     }
 }

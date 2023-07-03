@@ -54,9 +54,12 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         public InternalServerErrorGraphActionResult(IGraphFieldResolverMetaData action, Exception exception)
         {
             _action = action;
-            _errorMessage = $"An unhandled exception was thrown during the execution of field '{_action?.Name ?? "-unknown-"}'.";
+            _errorMessage = $"An unhandled exception was thrown during the execution of an action.  See inner exception for details.";
 
             _exception = exception;
+
+            if (_exception == null)
+                _exception = new Exception($"The action method '{action?.InternalFullName}' failed to complete successfully but did not record an exception.");
         }
 
         /// <inheritdoc />

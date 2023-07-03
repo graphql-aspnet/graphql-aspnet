@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
                 template.Route,
                 template.ArgumentModifiers,
                 template.DeclaredArgumentName,
-                template.InternalFullName,
+                template.InternalName,
                 template.ObjectType,
                 template.HasDefaultValue,
                 template.DefaultValue,

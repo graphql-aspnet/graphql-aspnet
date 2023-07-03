@@ -178,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_ROUTE, context.Messages[0].Code);
-            Assert.IsTrue(context.Messages[0].Message.Contains(action.Name));
+            Assert.IsTrue(context.Messages[0].Message.Contains(action.InternalName));
         }
 
         [Test]

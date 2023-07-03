@@ -341,14 +341,14 @@ namespace GraphQL.AspNet.Tests.Framework
                 throw new InvalidOperationException($"The target graph type '{graphType.Name}' does not contain a field named '{fieldName}'.");
             }
 
-            var graphMethod = this.CreateInvokableReference<TType>(fieldName, typeKind);
+            var metaData = this.CreateResolverMetadata<TType>(fieldName, typeKind);
 
             var builder = new FieldContextBuilder(
                 this.ServiceProvider,
                 _userSecurityContext,
                 field,
                 this.Schema,
-                graphMethod);
+                metaData);
 
             builder.AddSourceData(sourceData);
 
@@ -364,7 +364,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="fieldName">Name of the field.</param>
         /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
         /// <returns>IGraphMethod.</returns>
-        public virtual IGraphFieldResolverMetaData CreateInvokableReference<TObjectType>(string fieldName, TypeKind? typeKind = null)
+        public virtual IGraphFieldResolverMetaData CreateResolverMetadata<TObjectType>(string fieldName, TypeKind? typeKind = null)
         {
             var template = GraphQLTemplateHelper.CreateGraphTypeTemplate<TObjectType>(typeKind);
             var fieldContainer = template as IGraphTypeFieldTemplateContainer;
@@ -383,13 +383,13 @@ namespace GraphQL.AspNet.Tests.Framework
                 throw new InvalidOperationException($"The provided type '{typeof(TObjectType).FriendlyName()}' does not " + $"contain a field named '{fieldName}'.");
             }
 
-            var method = fieldTemplate.CreateResolverMetaData();
-            if (method == null)
+            var metaData = fieldTemplate.CreateResolverMetaData();
+            if (metaData == null)
             {
                 throw new InvalidOperationException($"The field named '{fieldName}' on the provided type '{typeof(TObjectType).FriendlyName()}' " + $"does not represent an invokable {typeof(IGraphFieldResolverMetaData)}. Operation cannot proceed.");
             }
 
-            return method;
+            return metaData;
         }
 
         /// <summary>
@@ -424,6 +424,7 @@ namespace GraphQL.AspNet.Tests.Framework
             directiveRequest.Setup(x => x.DirectivePhase).Returns(phase);
             directiveRequest.Setup(x => x.InvocationContext).Returns(invocationContext.Object);
             directiveRequest.Setup(x => x.DirectiveTarget).Returns(directiveTarget);
+            directiveRequest.Setup(x => x.Directive).Returns(targetDirective);
 
             invocationContext.Setup(x => x.Location).Returns(location);
             invocationContext.Setup(x => x.Arguments).Returns(argCollection);

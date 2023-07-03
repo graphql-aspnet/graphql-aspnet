@@ -28,6 +28,14 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IExecutionArgumentCollection ForContext(GraphFieldExecutionContext fieldExecutionContext);
 
         /// <summary>
+        /// Augments the collection with a source data object for a specific field execution and returns
+        /// a copy of itself with that data attached.
+        /// </summary>
+        /// <param name="directiveContext">The directive context being executed.</param>
+        /// <returns>IExecutionArgumentCollection.</returns>
+        IExecutionArgumentCollection ForContext(GraphDirectiveExecutionContext directiveContext);
+
+        /// <summary>
         /// Adds the specified argument to the collection.
         /// </summary>
         /// <param name="argument">The argument.</param>

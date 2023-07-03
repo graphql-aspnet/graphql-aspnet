@@ -58,8 +58,16 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         {
             if (_invokeDef != null)
             {
+                string fieldName;
+                if (context is FieldResolutionContext frc)
+                    fieldName = frc.Request.Field.Route.Path;
+                else if (context is DirectiveResolutionContext drc)
+                    fieldName = drc.Request.Directive.Route.Path;
+                else
+                    fieldName = "-unknown-";
+
                 context.Messages.Critical(
-                    $"The field '{_invokeDef.Name}' was not found or could not be invoked.",
+                    $"The field '{fieldName}' was not found or could not be invoked.",
                     Constants.ErrorCodes.INVALID_ROUTE,
                     context.Request.Origin,
                     _thrownException);

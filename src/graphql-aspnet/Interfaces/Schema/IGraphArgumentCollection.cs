@@ -74,6 +74,14 @@ namespace GraphQL.AspNet.Interfaces.Schema
         IGraphArgument FindArgument(string argumentName);
 
         /// <summary>
+        /// Finds the name of the argument by internally declared name. e.g. the name of the parameter
+        /// on a C# method.
+        /// </summary>
+        /// <param name="internalName">The internal name of the argument.</param>
+        /// <returns>IGraphArgument.</returns>
+        IGraphArgument FindArgumentByInternalName(string internalName);
+
+        /// <summary>
         /// Gets the <see cref="IGraphArgument" /> with the specified name. Argument
         /// names are case sensitive and should match the public name as its defined on the target schema.
         /// </summary>

@@ -409,8 +409,7 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(LogEventIds.ControllerInvocationStarted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(graphMethod.ParentInternalFullName, entry.ControllerName);
-            Assert.AreEqual(graphMethod.Name, entry.ActionName);
-            Assert.AreEqual(graphMethod.Route.Path, entry.FieldPath);
+            Assert.AreEqual(graphMethod.InternalName, entry.ActionName);
             Assert.AreEqual(graphMethod.ObjectType.ToString(), entry.SourceObjectType);
             Assert.AreEqual(graphMethod.IsAsyncField, entry.IsAsync);
             Assert.IsNotNull(entry.ToString());
@@ -436,8 +435,7 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(LogEventIds.ControllerInvocationCompleted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(metaData.ParentInternalFullName, entry.ControllerName);
-            Assert.AreEqual(metaData.Name, entry.ActionName);
-            Assert.AreEqual(metaData.Route.Path, entry.FieldPath);
+            Assert.AreEqual(metaData.InternalName, entry.ActionName);
             Assert.AreEqual(result.GetType().FriendlyName(true), entry.ResultTypeName);
             Assert.IsNotNull(entry.ToString());
         }
@@ -463,7 +461,7 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(LogEventIds.ControllerInvocationException.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(metaData.ParentInternalFullName, entry.ControllerTypeName);
-            Assert.AreEqual(metaData.Name, entry.ActionName);
+            Assert.AreEqual(metaData.InternalName, entry.ActionName);
             Assert.IsNotNull(entry.ToString());
 
             var exceptionEntry = entry.Exception as ExceptionLogItem;
@@ -494,7 +492,7 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(LogEventIds.ControllerUnhandledException.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(metaData.ParentInternalFullName, entry.ControllerTypeName);
-            Assert.AreEqual(metaData.Name, entry.ActionName);
+            Assert.AreEqual(metaData.InternalName, entry.ActionName);
             Assert.IsNotNull(entry.ToString());
 
             var exceptionEntry = entry.Exception as ExceptionLogItem;

@@ -107,11 +107,10 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             this.ResolverMetaData.Setup(x => x.ExpectedReturnType).Returns(metaData.ExpectedReturnType);
             this.ResolverMetaData.Setup(x => x.Method).Returns(metaData.Method);
             this.ResolverMetaData.Setup(x => x.IsAsyncField).Returns(metaData.IsAsyncField);
-            this.ResolverMetaData.Setup(x => x.Name).Returns(metaData.Name);
+            this.ResolverMetaData.Setup(x => x.InternalName).Returns(metaData.InternalName);
             this.ResolverMetaData.Setup(x => x.InternalFullName).Returns(metaData.InternalFullName);
             this.ResolverMetaData.Setup(x => x.InternalName).Returns(metaData.InternalName);
-            this.ResolverMetaData.Setup(x => x.Route).Returns(metaData.Route);
-            this.ResolverMetaData.Setup(x => x.Arguments).Returns(metaData.Arguments);
+            this.ResolverMetaData.Setup(x => x.Parameters).Returns(metaData.Parameters);
         }
 
         /// <summary>

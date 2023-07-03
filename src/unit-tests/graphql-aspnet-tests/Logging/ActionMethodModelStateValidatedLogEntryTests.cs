@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             Assert.AreEqual(fieldRequest.Id.ToString(), logEntry.PipelineRequestId);
             Assert.AreEqual(graphMethod.ParentInternalFullName, logEntry.ControllerName);
-            Assert.AreEqual(graphMethod.Name, logEntry.ActionName);
+            Assert.AreEqual(graphMethod.InternalName, logEntry.ActionName);
             Assert.AreEqual(dictionary.IsValid, logEntry.ModelDataIsValid);
 
             foreach (var kvp in dictionary)
