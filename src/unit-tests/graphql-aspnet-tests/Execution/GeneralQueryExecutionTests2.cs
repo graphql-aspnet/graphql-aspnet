@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 .AddQueryText(@"query {
                       retrieveUnion  {
                          ... on TwoPropertyObject {
-                                property1 
+                                property1
                                 property2
                          }
                          __typename

@@ -60,6 +60,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(Constants.ReservedNames.FIELD_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "fields"),
                 "Introspection_TypeType_Fields",
+                objectType: typeof(IEnumerable<IntrospectedField>),
+                declaredReturnType: typeof(IEnumerable<IntrospectedField>),
                 mode: FieldResolutionMode.PerSourceItem,
                 resolver: new Type_TypeGraphFieldResolver())
             {
@@ -97,6 +99,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(Constants.ReservedNames.ENUM_VALUE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, Constants.ReservedNames.ENUM_VALUE_TYPE),
                 "Introspection_TypeType_EnumValues",
+                objectType: typeof(IEnumerable<IntrospectedEnumValue>),
+                declaredReturnType: typeof(IEnumerable<IntrospectedEnumValue>),
                 mode: FieldResolutionMode.PerSourceItem,
                 resolver: new Type_EnumValuesGraphFieldResolver())
             {

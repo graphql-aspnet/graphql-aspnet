@@ -29,12 +29,5 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
         /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
         Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default);
-
-        /// <summary>
-        /// Gets the concrete type this resolver attempts to create as a during its invocation (the data type it returns).
-        /// If this resolver may generate a list, this type should represent a single list item. (i.e. 'string' not 'List{string}').
-        /// </summary>
-        /// <value>The type of the return.</value>
-        Type ObjectType { get; }
     }
 }

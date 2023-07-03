@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Logging.GeneralEvents
 {
     using System;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
@@ -31,7 +32,10 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             this.PipelineRequestId = request?.Id.ToString();
             this.ControllerName = method?.ParentInternalFullName;
             this.ActionName = method?.InternalName;
-            this.SourceObjectType = method?.ObjectType?.ToString();
+
+            if (request is IGraphFieldRequest gfr)
+                this.SourceObjectType = gfr.InvocationContext?.ExpectedSourceType?.FriendlyName(true);
+
             this.IsAsync = method?.IsAsyncField;
             _shortControllerName = method?.ParentInternalName;
         }

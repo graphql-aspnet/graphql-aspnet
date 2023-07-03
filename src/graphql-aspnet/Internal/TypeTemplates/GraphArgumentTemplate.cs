@@ -232,7 +232,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             return new FieldResolverParameterMetaData(
                 this.Parameter,
-                this.ObjectType,
                 this.InternalName,
                 this.InternalFullName,
                 this.ArgumentModifiers,

@@ -111,8 +111,5 @@ namespace GraphQL.AspNet.Internal.Resolvers
                     ex);
             }
         }
-
-        /// <inheritdoc />
-        public Type ObjectType => _resolverMetadata.ObjectType;
     }
 }

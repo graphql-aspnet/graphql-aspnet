@@ -46,8 +46,5 @@ namespace GraphQL.AspNet.Internal.Resolvers
             var data = await _func(context?.Arguments.SourceData as TSource).ConfigureAwait(false);
             context.Result = data;
         }
-
-        /// <inheritdoc />
-        public Type ObjectType => typeof(TReturn);
     }
 }

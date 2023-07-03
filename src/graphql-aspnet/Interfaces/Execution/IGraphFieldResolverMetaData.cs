@@ -23,12 +23,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
     public interface IGraphFieldResolverMetaData
     {
         /// <summary>
-        /// Gets the singular concrete type that represents the graph type returned by the resolver.
-        /// </summary>
-        /// <value>The concrete object type that represents the graph type returned by the resolver.</value>
-        Type ObjectType { get; }
-
-        /// <summary>
         /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
         /// represents the implementation return type as opposed to the expected graph type represented by <see cref="ObjectType"/>.
         /// </summary>

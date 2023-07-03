@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Execution
 
                 // ensure compatible list types between the internally
                 // tracked data and the target type of the method being invoked
-                // i.e. convert List<T> =>  T[]  when needed
+                // e.g. convert List<T> =>  T[]  when needed
                 if (fieldArgument.TypeExpression.IsListOfItems)
                 {
                     var listMangler = new ListMangler(parameter.ExpectedType);

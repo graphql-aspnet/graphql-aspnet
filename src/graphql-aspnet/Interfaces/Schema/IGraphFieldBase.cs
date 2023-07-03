@@ -31,9 +31,10 @@ namespace GraphQL.AspNet.Interfaces.Schema
         GraphTypeExpression TypeExpression { get; }
 
         /// <summary>
-        /// Gets .NET type of the method or property that generated this field as it was declared in code.
+        /// Gets .NET return type of the method or property that generated this field as it was declared in code. This
+        /// type may include task wrappers etc.
         /// </summary>
-        /// <value>The type of the declared return.</value>
+        /// <value>The .NET declared type returned from this field.</value>
         public Type DeclaredReturnType { get; }
 
         /// <summary>

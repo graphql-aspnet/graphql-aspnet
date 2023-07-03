@@ -45,8 +45,5 @@ namespace GraphQL.AspNet.Internal.Resolvers
             await _primaryResolver.ResolveAsync(context, cancelToken).ConfigureAwait(false);
             await _extension.Invoke(context, cancelToken).ConfigureAwait(false);
         }
-
-        /// <inheritdoc />
-        public Type ObjectType => _primaryResolver.ObjectType;
     }
 }

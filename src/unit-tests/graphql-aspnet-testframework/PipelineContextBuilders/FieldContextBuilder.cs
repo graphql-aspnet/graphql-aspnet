@@ -72,7 +72,10 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             if (!Validation.IsCastable<GraphDirective>(metaData.ParentObjectType)
                 && !Validation.IsCastable<GraphController>(metaData.ParentObjectType))
             {
-                expectedInputType = metaData.ObjectType;
+                if (graphField.Parent is IInterfaceGraphType iif)
+                    expectedInputType = iif.ObjectType;
+                else if (graphField.Parent is IObjectGraphType ogt)
+                    expectedInputType = ogt.ObjectType;
             }
 
             _mockFieldDocumentPart = new Mock<IFieldDocumentPart>();
@@ -103,7 +106,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             this.ResolverMetaData.Setup(x => x.ParentInternalFullName).Returns(metaData.ParentInternalFullName);
             this.ResolverMetaData.Setup(x => x.ParentInternalName).Returns(metaData.ParentInternalName);
             this.ResolverMetaData.Setup(x => x.ParentObjectType).Returns(metaData.ParentObjectType);
-            this.ResolverMetaData.Setup(x => x.ObjectType).Returns(metaData.ObjectType);
             this.ResolverMetaData.Setup(x => x.ExpectedReturnType).Returns(metaData.ExpectedReturnType);
             this.ResolverMetaData.Setup(x => x.Method).Returns(metaData.Method);
             this.ResolverMetaData.Setup(x => x.IsAsyncField).Returns(metaData.IsAsyncField);

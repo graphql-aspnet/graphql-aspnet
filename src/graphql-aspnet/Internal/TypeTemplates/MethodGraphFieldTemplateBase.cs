@@ -116,7 +116,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 this.Method,
                 paramSet,
                 this.ExpectedReturnType,
-                this.ObjectType,
                 this.IsAsyncField,
                 this.InternalName,
                 this.InternalFullName,

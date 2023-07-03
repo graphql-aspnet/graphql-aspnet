@@ -57,8 +57,5 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
 
             return Task.CompletedTask;
         }
-
-        /// <inheritdoc />
-        public Type ObjectType => typeof(IntrospectedType);
     }
 }

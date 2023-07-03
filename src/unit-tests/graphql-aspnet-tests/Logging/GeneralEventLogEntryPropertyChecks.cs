@@ -410,7 +410,6 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(graphMethod.ParentInternalFullName, entry.ControllerName);
             Assert.AreEqual(graphMethod.InternalName, entry.ActionName);
-            Assert.AreEqual(graphMethod.ObjectType.ToString(), entry.SourceObjectType);
             Assert.AreEqual(graphMethod.IsAsyncField, entry.IsAsync);
             Assert.IsNotNull(entry.ToString());
         }

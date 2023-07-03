@@ -74,8 +74,5 @@ namespace GraphQL.AspNet.Internal.Resolvers
             // in what ever manner is appropriate for the result itself
             await result.CompleteAsync(context).ConfigureAwait(false);
         }
-
-        /// <inheritdoc />
-        public Type ObjectType => _actionResolverMetaData.ObjectType;
     }
 }

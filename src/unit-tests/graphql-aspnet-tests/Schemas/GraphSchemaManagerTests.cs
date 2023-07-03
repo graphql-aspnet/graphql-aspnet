@@ -120,7 +120,6 @@ namespace GraphQL.AspNet.Tests.Schemas
             var actionField = firstFieldType.Fields["path2"];
             Assert.IsNotNull(actionField);
             Assert.IsNotNull(actionField.Resolver as GraphControllerActionResolver);
-            Assert.AreEqual(typeof(TwoPropertyObjectV2), ((GraphControllerActionResolver)actionField.Resolver).ObjectType);
         }
 
         [Test]

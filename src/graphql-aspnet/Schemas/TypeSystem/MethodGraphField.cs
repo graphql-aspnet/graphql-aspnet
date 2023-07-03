@@ -50,8 +50,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
             string declaredMethodName,
-            Type objectType = null,
-            Type declaredReturnType = null,
+            Type objectType,
+            Type declaredReturnType,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
@@ -61,14 +61,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.Arguments = new GraphFieldArgumentCollection(this);
-            this.ObjectType = objectType;
-            this.DeclaredReturnType = declaredReturnType;
-            this.InternalName = declaredMethodName;
+            this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
+            this.DeclaredReturnType = Validation.ThrowIfNullOrReturn(declaredReturnType, nameof(declaredReturnType));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(declaredMethodName, nameof(declaredMethodName));
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
             this.SecurityGroups = new AppliedSecurityPolicyGroups(securityPolicies);
 
+            this.IsLeaf = GraphQLProviders.ScalarProvider.IsLeaf(this.ObjectType);
             this.UpdateResolver(resolver, mode);
             this.Publish = true;
         }
@@ -79,9 +80,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Resolver = newResolver;
             if (mode.HasValue)
                 this.Mode = mode.Value;
-
-            var unrwrappedType = GraphValidation.EliminateWrappersFromCoreType(this.Resolver?.ObjectType);
-            this.IsLeaf = this.Resolver?.ObjectType != null && GraphQLProviders.ScalarProvider.IsLeaf(unrwrappedType);
         }
 
         /// <inheritdoc/>

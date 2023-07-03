@@ -7,20 +7,25 @@
 // License:  MIT
 // *************************************************************
 
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
 namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// A concrete class that implements <see cref="IGraphFieldResolverMetaData"/>. Used by the templating
-    /// engine to generate invocation info for any method or property.
+    /// A metadata object containing parsed and computed values related to
+    /// C# method that is used a a resolver to a graph field.
     /// </summary>
     internal class FieldResolverMetaData : IGraphFieldResolverMetaData
     {
@@ -28,7 +33,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
             MethodInfo method,
             IGraphFieldResolverParameterMetaDataCollection parameters,
             Type expectedReturnType,
-            Type objectType,
             bool isAsyncField,
             string internalName,
             string internalFullName,
@@ -38,7 +42,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
         {
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
 
-            this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.ExpectedReturnType = Validation.ThrowIfNullOrReturn(expectedReturnType, nameof(expectedReturnType));
 
             this.IsAsyncField = isAsyncField;
@@ -66,9 +69,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
         /// <inheritdoc />
         public string InternalName { get; }
-
-        /// <inheritdoc />
-        public Type ObjectType { get; }
 
         /// <inheritdoc />
         public IGraphFieldResolverParameterMetaDataCollection Parameters { get; }

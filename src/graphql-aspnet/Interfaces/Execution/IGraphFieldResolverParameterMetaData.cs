@@ -15,7 +15,8 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A metadata object that describes a single parameter passed to a resolver for execution.
+    /// A metadata object containing parsed and computed values related to a single parameter
+    /// on a C# method that is used a a resolver to a graph field.
     /// </summary>
     /// <remarks>
     /// This metadata object is expressed in terms of the implementation method. That is, .NET <see cref="ParameterInfo"/>
@@ -62,13 +63,5 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The default value.</value>
         object DefaultValue { get; }
-
-        /// <summary>
-        /// Gets the concrete type that represents this parameter in a graphql graph. If this
-        /// parameter is a list this will represent the object type of a singular instance of the
-        /// item nested within the list.
-        /// </summary>
-        /// <value>The type of the object that represents this parameter in an object graph.</value>
-        Type ObjectType { get; }
     }
 }

@@ -15,11 +15,14 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
+    /// <summary>
+    /// A metadata object containing parsed and computed values related to a single parameter
+    /// on a C# method that is used a a resolver to a graph field.
+    /// </summary>
     internal class FieldResolverParameterMetaData : IGraphFieldResolverParameterMetaData
     {
         public FieldResolverParameterMetaData(
             ParameterInfo paramInfo,
-            Type objectType,
             string internalName,
             string internalFullName,
             GraphArgumentModifiers modifiers,
@@ -27,7 +30,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
         {
             this.ParameterInfo = Validation.ThrowIfNullOrReturn(paramInfo, nameof(paramInfo));
             this.ExpectedType = this.ParameterInfo.ParameterType;
-            this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
             this.DefaultValue = defaultValue;
@@ -48,9 +50,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
         /// <inheritdoc />
         public object DefaultValue { get; }
-
-        /// <inheritdoc />
-        public Type ObjectType { get; }
 
         /// <inheritdoc />
         public Type ExpectedType { get; }
