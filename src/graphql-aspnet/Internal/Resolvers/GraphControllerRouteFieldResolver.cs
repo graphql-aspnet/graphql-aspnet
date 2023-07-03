@@ -43,8 +43,5 @@ namespace GraphQL.AspNet.Internal.Resolvers
             context.Result = _dataObject;
             return Task.CompletedTask;
         }
-
-        /// <inheritdoc />
-        public Type ObjectType => typeof(object);
     }
 }
