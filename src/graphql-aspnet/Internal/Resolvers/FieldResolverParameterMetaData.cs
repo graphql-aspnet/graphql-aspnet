@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System;
+    using System.Diagnostics;
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -19,16 +20,19 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// A metadata object containing parsed and computed values related to a single parameter
     /// on a C# method that is used a a resolver to a graph field.
     /// </summary>
+    [DebuggerDisplay("Parameter: {InternalName}")]
     internal class FieldResolverParameterMetaData : IGraphFieldResolverParameterMetaData
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldResolverParameterMetaData"/> class.
+        /// Initializes a new instance of the <see cref="FieldResolverParameterMetaData" /> class.
         /// </summary>
         /// <param name="paramInfo">The parameter info for a single parameter within a resolver method.</param>
         /// <param name="internalName">The name of the parameter as its declared in source code.</param>
         /// <param name="internalFullName">The full name of the parameter, including namespace, owning object and declared method, as it exists in source code.</param>
         /// <param name="modifiers">Any modifier attributes for this parameter discovered via templating or set
         /// at runtime by the target schema.</param>
+        /// <param name="isListBasedParameter">if set to <c>true</c> this parameter is expecting a list
+        /// of items to be passed to it at runtime.</param>
         /// <param name="defaultValue">The default value assigned to this parameter in source code when the parameter
         /// was declared.</param>
         public FieldResolverParameterMetaData(
@@ -36,6 +40,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             string internalName,
             string internalFullName,
             GraphArgumentModifiers modifiers,
+            bool isListBasedParameter,
             object defaultValue = null)
         {
             this.ParameterInfo = Validation.ThrowIfNullOrReturn(paramInfo, nameof(paramInfo));
@@ -44,6 +49,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
             this.DefaultValue = defaultValue;
             this.ArgumentModifiers = modifiers;
+            this.IsList = isListBasedParameter;
         }
 
         /// <inheritdoc />
@@ -63,5 +69,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
         /// <inheritdoc />
         public Type ExpectedType { get; }
+
+        /// <inheritdoc />
+        public bool IsList { get; }
     }
 }

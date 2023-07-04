@@ -63,5 +63,11 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The default value.</value>
         object DefaultValue { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this parameter is expecting a list or collection of items.
+        /// </summary>
+        /// <value><c>true</c> if this instance is a list or collection; otherwise, <c>false</c>.</value>
+        bool IsList { get; }
     }
 }

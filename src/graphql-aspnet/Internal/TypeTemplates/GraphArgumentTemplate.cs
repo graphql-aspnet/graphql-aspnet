@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
@@ -240,11 +241,19 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public IGraphFieldResolverParameterMetaData CreateResolverMetaData()
         {
+            var isValidList = this.TypeExpression.IsListOfItems;
+            if (!isValidList && this.ArgumentModifiers.IsSourceParameter())
+            {
+                if (this.Parent is IGraphFieldTemplate gft)
+                    isValidList = gft.Mode == FieldResolutionMode.Batch;
+            }
+
             return new FieldResolverParameterMetaData(
                 this.Parameter,
                 this.InternalName,
                 this.InternalFullName,
                 this.ArgumentModifiers,
+                isValidList,
                 this.DefaultValue);
         }
 

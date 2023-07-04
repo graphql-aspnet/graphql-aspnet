@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -18,6 +19,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// <summary>
     /// A collection of parameter metadata that can be accessed by index in its parent method or by name.
     /// </summary>
+    [DebuggerDisplay("Count = {Count}")]
     internal class FieldResolverParameterMetaDataCollection : IGraphFieldResolverParameterMetaDataCollection
     {
         private List<IGraphFieldResolverParameterMetaData> _parameters;

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System;
+    using System.Diagnostics;
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -18,6 +19,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// A metadata object containing parsed and computed values related to
     /// C# method that is used a a resolver to a graph field.
     /// </summary>
+    [DebuggerDisplay("Method: {InternalName}")]
     internal class FieldResolverMetaData : IGraphFieldResolverMetaData
     {
         /// <summary>

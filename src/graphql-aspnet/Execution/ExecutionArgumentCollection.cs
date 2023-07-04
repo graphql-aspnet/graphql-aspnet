@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Execution
         /// <inheritdoc />
         public IExecutionArgumentCollection ForContext(GraphFieldExecutionContext fieldContext)
         {
-            return new ExecutionArgumentCollection(_arguments,  fieldContext);
+            return new ExecutionArgumentCollection(_arguments, fieldContext);
         }
 
         /// <inheritdoc />
@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Execution
         {
             Validation.ThrowIfNull(resolverMetadata, nameof(resolverMetadata));
 
-            var preparedParams = new List<object>();
+            var preparedParams = new object[resolverMetadata.Parameters.Count];
 
             for (var i = 0; i < resolverMetadata.Parameters.Count; i++)
             {
@@ -116,6 +116,7 @@ namespace GraphQL.AspNet.Execution
 
                 object passedValue = this.ResolveParameterFromMetadata(parameter);
 
+                var schemaListItem = false;
                 if (parameter.ArgumentModifiers.IsPartOfTheSchema())
                 {
                     // additional checks and coersion if this the value is
@@ -136,31 +137,32 @@ namespace GraphQL.AspNet.Execution
                     if (graphArgument == null)
                         throw new GraphExecutionException($"Argument '{parameter.InternalName}' was not found on its expected parent.");
 
+                    schemaListItem = graphArgument.TypeExpression.IsListOfItems;
                     if (passedValue == null && !graphArgument.TypeExpression.IsNullable)
                     {
-                        // technically shouldn't be throwable given the validation routines
+                        // technically shouldn't be possible given the validation routines
                         // but captured here as a saftey net for users
                         // doing custom extensions or implementations
                         throw new GraphExecutionException(
                             $"The parameter '{parameter.InternalName}' for field '{_fieldContext?.Request?.Field?.Route.Path}' could not be resolved from the query document " +
                             "or variable collection and no default value was found.");
                     }
-
-                    // ensure compatible list types between the internally
-                    // tracked data and the target type of the method being invoked
-                    // e.g. convert List<T> =>  T[]  when needed
-                    if (graphArgument.TypeExpression.IsListOfItems)
-                    {
-                        var listMangler = new ListMangler(parameter.ExpectedType);
-                        var result = listMangler.Convert(passedValue);
-                        passedValue = result.Data;
-                    }
                 }
 
-                preparedParams.Add(passedValue);
+                // ensure compatible list types between the internally
+                // tracked data and the target type of the method being invoked
+                // e.g. convert List<T> =>  T[]  when needed
+                if (parameter.IsList)
+                {
+                    var listMangler = new ListMangler(parameter.ExpectedType);
+                    var result = listMangler.Convert(passedValue);
+                    passedValue = result.Data;
+                }
+
+                preparedParams[i] = passedValue;
             }
 
-            return preparedParams.ToArray();
+            return preparedParams;
         }
 
         private object ResolveParameterFromMetadata(IGraphFieldResolverParameterMetaData argDefinition)
