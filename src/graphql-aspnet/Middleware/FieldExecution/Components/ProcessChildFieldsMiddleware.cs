@@ -28,6 +28,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Internal;
 
     /// <summary>
     /// A middleware component that, when a result exists on the context, invokes the next set
@@ -109,8 +110,6 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 return;
             }
 
-            var allChildPipelines = new List<Task>();
-
             // Step 0
             // -----------------------------------------------------------------------
             // create a lookup of source items by concrete type known to the schema, for easy seperation to the individual
@@ -177,6 +176,8 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                         _resolversToIsolate.ShouldIsolateFieldSource(childToExecute.Field.FieldSource));
                 }
             }
+
+            var allChildPipelines = new List<Task>(executableChildContexts.Count);
 
             // Step 4
             // ---------------------------------
@@ -365,7 +366,9 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
                 // create a list to house the raw source data being passed for the batch
                 // this is the IEnumerable<T> required as an input to any batch resolver
-                var sourceArgumentType = parentContext.Field.ObjectType ?? typeof(object);
+                var coreSourceParamType = childInvocationContext.Field.Resolver.MetaData.Parameters.SourceParameter?.UnwrappedExpectedParameterType;
+
+                var sourceArgumentType = coreSourceParamType ?? typeof(object);
                 var sourceListType = typeof(List<>).MakeGenericType(sourceArgumentType);
                 var sourceDataList = InstanceFactory.CreateInstance(sourceListType, sourceItemsToInclude.Count) as IList;
 

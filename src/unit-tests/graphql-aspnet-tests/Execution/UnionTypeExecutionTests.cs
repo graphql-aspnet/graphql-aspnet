@@ -339,7 +339,6 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task WhenMultipleUnrelatedTypesAreReturnedGenerally_AndOneExecutesATypeExtensionForAnImplementedInterface_QueryExecutesCorrectly()
         {
-
             var server = new TestServerBuilder()
                 .AddType<Television>()
                 .AddType<Person>()
@@ -389,6 +388,5 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
-
     }
 }

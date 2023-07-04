@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.UnionTypeExecutionTestData
 
     public class UnrelatedItemsController : GraphController
     {
-
         [QueryRoot("retrieveItems", "TheThingsUnion", typeof(Television), typeof(Person), typeof(Home), TypeExpression = "[Type]")]
         public IGraphActionResult RetrieveItems()
         {

@@ -45,6 +45,12 @@ namespace GraphQL.AspNet.Internal.Resolvers
         {
             this.ParameterInfo = Validation.ThrowIfNullOrReturn(paramInfo, nameof(paramInfo));
             this.ExpectedType = this.ParameterInfo.ParameterType;
+            this.UnwrappedExpectedParameterType = GraphValidation.EliminateWrappersFromCoreType(
+                this.ExpectedType,
+                eliminateEnumerables: true,
+                eliminateTask: true,
+                eliminateNullableT: false);
+
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
             this.DefaultValue = defaultValue;
@@ -69,6 +75,9 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
         /// <inheritdoc />
         public Type ExpectedType { get; }
+
+        /// <inheritdoc />
+        public Type UnwrappedExpectedParameterType { get; }
 
         /// <inheritdoc />
         public bool IsList { get; }

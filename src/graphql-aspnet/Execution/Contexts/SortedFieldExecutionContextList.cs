@@ -58,5 +58,11 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// </summary>
         /// <value>The paralell contexts.</value>
         public IEnumerable<GraphFieldExecutionContext> ParalellContexts => _paralellList;
+
+        /// <summary>
+        /// Gets the total number of contexts to be executed.
+        /// </summary>
+        /// <value>The total number of contexts in this instance.</value>
+        public int Count => _paralellList.Count + _syncList.Count;
     }
 }

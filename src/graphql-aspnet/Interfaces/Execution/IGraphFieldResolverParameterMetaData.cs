@@ -38,6 +38,17 @@ namespace GraphQL.AspNet.Interfaces.Execution
         Type ExpectedType { get; }
 
         /// <summary>
+        /// Gets the core type represented by <see cref="ExpectedType"/>
+        /// </summary>
+        /// <remarks>
+        /// If this parameter is not a
+        /// list this property will be the same as <see cref="ExpectedType"/>. When this parameter is a list
+        /// this property will represent the <c>T</c> in <c>List&lt;T&gt;</c>
+        /// </remarks>
+        /// <value>The type of the unwrapped expected parameter.</value>
+        Type UnwrappedExpectedParameterType { get; }
+
+        /// <summary>
         /// Gets the fully qualified name, including namespace, of this item as it exists in the
         /// .NET code (e.g. <c>Namespace.ObjectType.MethodName</c>).
         /// </summary>
