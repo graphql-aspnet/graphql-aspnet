@@ -56,7 +56,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns><c>true</c> if the modifiers indicate the argument is part of the schema; otherwise, <c>false</c>.</returns>
         public static bool IsPartOfTheSchema(this GraphArgumentModifiers modifiers)
         {
-            return modifiers == GraphArgumentModifiers.None;
+            return modifiers == GraphArgumentModifiers.None
+                || modifiers.IsExplicitlyPartOfTheSchema();
+        }
+
+        /// <summary>
+        /// Determines whether the modifiers indicate that the argument is explicitly declared that it MUST be included in a
+        /// an externally exposed schema.
+        /// </summary>
+        /// <param name="modifiers">The modifiers to check.</param>
+        /// <returns><c>true</c> if the modifiers indicate the argument is explicitly declared to be a part of the schema; otherwise, <c>false</c>.</returns>
+        public static bool IsExplicitlyPartOfTheSchema(this GraphArgumentModifiers modifiers)
+        {
+            return modifiers.HasFlag(GraphArgumentModifiers.ExplicitSchemaItem);
         }
 
         /// <summary>
@@ -67,7 +79,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns><c>true</c> if the modifiers indicate the argument is to be resolved from a DI continer; otherwise, <c>false</c>.</returns>
         public static bool IsInjected(this GraphArgumentModifiers modifiers)
         {
-            return modifiers.HasFlag(GraphArgumentModifiers.Injected);
+            return modifiers.HasFlag(GraphArgumentModifiers.ExplicitInjected);
         }
     }
 }

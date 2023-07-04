@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Execution
             {
                 var parameter = resolverMetadata.Parameters[i];
 
-                object passedValue = this.ResolveParameterFromMetadata(parameter);
+                object passedValue = this.ResolveParameterValue(parameter);
 
                 var schemaListItem = false;
                 if (parameter.ArgumentModifiers.IsPartOfTheSchema())
@@ -125,14 +125,14 @@ namespace GraphQL.AspNet.Execution
                         .Request
                         .Field
                         .Arguments
-                        .FindArgumentByInternalName(parameter.InternalName);
+                        .FindArgumentByParameterName(parameter.InternalName);
 
                     graphArgument = graphArgument ??
                         _directiveContext?
                         .Request
                         .Directive
                         .Arguments
-                        .FindArgumentByInternalName(parameter.InternalName);
+                        .FindArgumentByParameterName(parameter.InternalName);
 
                     if (graphArgument == null)
                         throw new GraphExecutionException($"Argument '{parameter.InternalName}' was not found on its expected parent.");
@@ -165,32 +165,32 @@ namespace GraphQL.AspNet.Execution
             return preparedParams;
         }
 
-        private object ResolveParameterFromMetadata(IGraphFieldResolverParameterMetaData argDefinition)
+        private object ResolveParameterValue(IGraphFieldResolverParameterMetaData parameterDefinition)
         {
-            if (argDefinition == null)
+            if (parameterDefinition == null)
                 return null;
 
-            if (argDefinition.ArgumentModifiers.IsSourceParameter())
+            if (parameterDefinition.ArgumentModifiers.IsSourceParameter())
                 return this.SourceData;
 
-            if (argDefinition.ArgumentModifiers.IsCancellationToken())
+            if (parameterDefinition.ArgumentModifiers.IsCancellationToken())
                 return _fieldContext?.CancellationToken ?? default;
 
-            if (argDefinition.ArgumentModifiers.IsInjected())
+            if (parameterDefinition.ArgumentModifiers.IsInjected())
             {
                 if (_fieldContext != null)
-                    return _fieldContext.ServiceProvider.GetService(argDefinition.ExpectedType);
+                    return _fieldContext.ServiceProvider.GetService(parameterDefinition.ExpectedType);
 
                 if (_directiveContext != null)
-                    return _directiveContext.ServiceProvider.GetService(argDefinition.ExpectedType);
+                    return _directiveContext.ServiceProvider.GetService(parameterDefinition.ExpectedType);
 
                 return null;
             }
 
-            if (this.ContainsKey(argDefinition.InternalName))
-                return this[argDefinition.InternalName].Value;
+            if (this.ContainsKey(parameterDefinition.InternalName))
+                return this[parameterDefinition.InternalName].Value;
 
-            return argDefinition.DefaultValue;
+            return parameterDefinition.DefaultValue;
         }
 
         /// <inheritdoc />

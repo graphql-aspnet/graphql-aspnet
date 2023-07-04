@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             Validation.ThrowIfNull(argument, nameof(argument));
 
             _arguments.Add(argument.Name, argument);
-            _argumentByInternalName.Add(argument.InternalFullName, argument);
+            _argumentByInternalName.Add(argument.ParameterName, argument);
             return argument;
         }
 
@@ -107,6 +107,18 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <inheritdoc />
+        public void Remove(IGraphArgument arg)
+        {
+            if (arg == null)
+                return;
+
+            if (_argumentByInternalName.ContainsKey(arg.ParameterName))
+                _argumentByInternalName.Remove(arg.ParameterName);
+            if (_arguments.ContainsKey(arg.Name))
+                _arguments.Remove(arg.Name);
+        }
+
+        /// <inheritdoc />
         public bool ContainsKey(string argumentName)
         {
             if (argumentName == null)
@@ -125,10 +137,10 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <inheritdoc />
-        public IGraphArgument FindArgumentByInternalName(string internalName)
+        public IGraphArgument FindArgumentByParameterName(string parameterName)
         {
-            if (_argumentByInternalName.ContainsKey(internalName))
-                return _argumentByInternalName[internalName];
+            if (_argumentByInternalName.ContainsKey(parameterName))
+                return _argumentByInternalName[parameterName];
 
             return null;
         }

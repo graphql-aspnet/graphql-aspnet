@@ -64,7 +64,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             _argDeclaration = this.Parameter.SingleAttributeOrDefault<FromGraphQLAttribute>();
             string name = null;
             if (_argDeclaration != null)
+            {
                 name = _argDeclaration?.ArgumentName?.Trim();
+                this.ArgumentModifiers = this.ArgumentModifiers | GraphArgumentModifiers.ExplicitSchemaItem;
+            }
 
             if (string.IsNullOrWhiteSpace(name))
                 name = Constants.Routing.PARAMETER_META_NAME;
@@ -73,7 +76,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // to be consumed from a DI container
             var fromServicesAttrib = this.Parameter.SingleAttributeOfTypeOrDefault<FromServicesAttribute>();
             if (fromServicesAttrib != null)
-                this.ArgumentModifiers = this.ArgumentModifiers | GraphArgumentModifiers.Injected;
+                this.ArgumentModifiers = this.ArgumentModifiers | GraphArgumentModifiers.ExplicitInjected;
 
             name = name.Replace(Constants.Routing.PARAMETER_META_NAME, this.Parameter.Name);
             this.Route = new GraphArgumentFieldPath(this.Parent.Route, name);
@@ -234,6 +237,15 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $".NET parameter. (Declared '{this.TypeExpression}' is incompatiable with '{actualTypeExpression}') ");
             }
 
+            if (this.ArgumentModifiers.IsPartOfTheSchema() && this.ArgumentModifiers.IsInjected())
+            {
+                throw new GraphTypeDeclarationException(
+                       $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' that " +
+                       $"is defined to be supplied from a graphql query AND from a DI services container. " +
+                       $"An argument can not be supplied from a graphql query and from a DI container. If declaring argument attributes, supply " +
+                       $"{nameof(FromGraphQLAttribute)} or {nameof(FromServicesAttribute)}, but not both.");
+            }
+
             foreach (var directive in this.AppliedDirectives)
                 directive.ValidateOrThrow();
         }
@@ -300,7 +312,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public GraphArgumentModifiers ArgumentModifiers { get; protected set; }
 
         /// <inheritdoc />
-        public string DeclaredArgumentName => this.Parameter.Name;
+        public string ParameterName => this.Parameter.Name;
 
         /// <inheritdoc />
         public MetaGraphTypes[] DeclaredTypeWrappers { get; private set; }

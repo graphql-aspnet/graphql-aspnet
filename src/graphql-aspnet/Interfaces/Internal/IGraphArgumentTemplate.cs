@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// Gets the name of the argument as its declared in the server side code.
         /// </summary>
         /// <value>The name of the declared argument.</value>
-        string DeclaredArgumentName { get; }
+        string ParameterName { get; }
 
         /// <summary>
         /// Gets the input type of this argument as its declared in the C# code base with no modifications or

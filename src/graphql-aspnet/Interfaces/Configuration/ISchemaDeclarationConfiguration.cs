@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -41,6 +40,14 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// </summary>
         /// <value>The declaration requirements for this schema.</value>
         TemplateDeclarationRequirements FieldDeclarationRequirements { get; }
+
+        /// <summary>
+        /// Gets the defined rules this schema should use when inspecting implicit or late bound
+        /// field arguments before the schema is placed online. These rules do not effect explicitly
+        /// declared arguments that use <c>[FromGraphQL]</c> or <c>[FromServices]</c>.
+        /// </summary>
+        /// <value>The schema item binding rules to obey.</value>
+        HashSet<SchemaArgumentBindingRules> ArgumentBindingRules { get; }
 
         /// <summary>
         /// <para>Gets an object used to format the declared names in your C# code as various items in the type system

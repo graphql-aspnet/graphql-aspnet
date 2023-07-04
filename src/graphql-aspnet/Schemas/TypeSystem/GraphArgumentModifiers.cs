@@ -38,9 +38,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         CancellationToken = 4,
 
         /// <summary>
-        /// This parameter is supplied to a field via a DI Container injection. It will not be exposed
+        /// This parameter is declared to be resolved via a DI Container injection. It WILL NEVER be exposed
         /// on the object graph.
         /// </summary>
-        Injected = 8,
+        ExplicitInjected = 8,
+
+        /// <summary>
+        /// This parameter is declared to be resolved as an argument to a graph field. It WILL ALWAYS be
+        /// exposed on the object graph. If the argument cannot be exposed because of a rule violation the
+        /// schema will fail to build.
+        /// </summary>
+        ExplicitSchemaItem = 16,
     }
 }

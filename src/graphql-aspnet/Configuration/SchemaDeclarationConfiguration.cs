@@ -29,8 +29,13 @@ namespace GraphQL.AspNet.Configuration
         public SchemaDeclarationConfiguration()
         {
             this.AllowedOperations = new HashSet<GraphOperationType>();
+            this.ArgumentBindingRules = new HashSet<SchemaArgumentBindingRules>();
+
             this.AllowedOperations.Add(GraphOperationType.Query);
             this.AllowedOperations.Add(GraphOperationType.Mutation);
+
+            this.ArgumentBindingRules
+                .Add(Configuration.SchemaArgumentBindingRules.ArgumentsPreferQueryResolution);
         }
 
         /// <summary>
@@ -51,10 +56,19 @@ namespace GraphQL.AspNet.Configuration
                 foreach (var op in config.AllowedOperations)
                     this.AllowedOperations.Add(op);
             }
+
+            if (config.ArgumentBindingRules != null)
+            {
+                foreach (var rule in config.ArgumentBindingRules)
+                    this.ArgumentBindingRules.Add(rule);
+            }
         }
 
         /// <inheritdoc />
         public bool DisableIntrospection { get; set; }
+
+        /// <inheritdoc />
+        public HashSet<SchemaArgumentBindingRules> ArgumentBindingRules { get;  }
 
         /// <inheritdoc />
         public TemplateDeclarationRequirements FieldDeclarationRequirements { get; set; } = TemplateDeclarationRequirements.Default;

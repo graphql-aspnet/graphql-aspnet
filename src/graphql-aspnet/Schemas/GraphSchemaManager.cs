@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
+    using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// Assists with the creation of <see cref="IGraphType"/> data
@@ -38,6 +39,7 @@ namespace GraphQL.AspNet.Schemas
     internal sealed class GraphSchemaManager
     {
         private readonly GraphNameFormatter _formatter;
+        private readonly Func<Type, bool> _externalTypeChecker;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaManager" /> class.
@@ -47,6 +49,7 @@ namespace GraphQL.AspNet.Schemas
         {
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
+
             this.EnsureSchemaDependencies();
             this.EnsureGraphOperationType(GraphOperationType.Query);
         }

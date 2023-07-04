@@ -48,8 +48,8 @@ namespace GraphQL.AspNet.Schemas.SchemaItemValidators
             if (argument.ObjectType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The item '{argument.InternalFullName}' declares an argument '{argument.Name}' of type  '{argument.ObjectType.FriendlyName()}' " +
-                    $"which is an interface. Interfaces cannot be used as input arguments to any type.");
+                    $"The argument '{argument.Name}' on  '{argument.Parent.Route.Path}' is of type  '{argument.ObjectType.FriendlyName()}', " +
+                    $"which is an interface. Interfaces cannot be used as input arguments to any graph type.");
             }
         }
     }

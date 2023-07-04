@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         public string InternalName { get; }
 
         /// <inheritdoc />
-        public GraphArgumentModifiers ArgumentModifiers { get; }
+        public GraphArgumentModifiers ArgumentModifiers { get; private set; }
 
         /// <inheritdoc />
         public object DefaultValue { get; }

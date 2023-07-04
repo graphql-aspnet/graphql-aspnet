@@ -57,6 +57,12 @@ namespace GraphQL.AspNet.Interfaces.Schema
             object defaultValue);
 
         /// <summary>
+        /// Removes the specified argument instance from this collection.
+        /// </summary>
+        /// <param name="arg">The argument to remove.</param>
+        void Remove(IGraphArgument arg);
+
+        /// <summary>
         /// Determines whether this collection contains a <see cref="IGraphArgument" />. Argument
         /// names are case sensitive and should match the public name as its defined on the target schema
         /// ...NOT the internal concrete parameter name if the argument is bound to a method parameter.
@@ -79,7 +85,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// </summary>
         /// <param name="internalName">The internal name of the argument.</param>
         /// <returns>IGraphArgument.</returns>
-        IGraphArgument FindArgumentByInternalName(string internalName);
+        IGraphArgument FindArgumentByParameterName(string internalName);
 
         /// <summary>
         /// Gets the <see cref="IGraphArgument" /> with the specified name. Argument
