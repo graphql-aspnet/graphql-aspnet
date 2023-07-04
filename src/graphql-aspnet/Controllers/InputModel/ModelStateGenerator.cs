@@ -77,15 +77,10 @@ namespace GraphQL.AspNet.Controllers.InputModel
             return dictionary;
         }
 
-        /// <summary>
-        /// Processes an input object's attribute validation items.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns>InputModelStateEntry.</returns>
         private InputModelStateEntry ValidateSingleArgument(ExecutionArgument input)
         {
             var entry = new InputModelStateEntry(input);
-            if (input.Value == null || input.Argument.ArgumentModifiers.IsSourceParameter())
+            if (input.Value == null)
             {
                 entry.ValidationState = InputModelValidationState.Skipped;
                 return entry;

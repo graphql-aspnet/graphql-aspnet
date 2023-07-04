@@ -26,7 +26,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// </summary>
     internal class ObjectMethodGraphFieldResolver : IGraphFieldResolver
     {
-        private readonly IGraphFieldResolverMetaData _resolverMetadata;
         private readonly MethodInfo _methodInfo;
 
         /// <summary>
@@ -35,8 +34,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// <param name="resolverMetadata">A resolver method that points to a .NET method.</param>
         public ObjectMethodGraphFieldResolver(IGraphFieldResolverMetaData resolverMetadata)
         {
-            _resolverMetadata = Validation.ThrowIfNullOrReturn(resolverMetadata, nameof(resolverMetadata));
-            _methodInfo = _resolverMetadata.Method;
+            this.MetaData = Validation.ThrowIfNullOrReturn(resolverMetadata, nameof(resolverMetadata));
+            _methodInfo = this.MetaData.Method;
         }
 
         /// <inheritdoc />
@@ -63,8 +62,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
                    Constants.ErrorCodes.INVALID_OBJECT,
                    context.Request.Origin,
                    new GraphExecutionException(
-                       $"The method '{_resolverMetadata.InternalFullName}' expected source data of type " +
-                       $"'{_resolverMetadata.ParentObjectType.FriendlyName()}' but received '{sourceData.GetType().FriendlyName()}' " +
+                       $"The method '{this.MetaData.InternalFullName}' expected source data of type " +
+                       $"'{this.MetaData.ParentObjectType.FriendlyName()}' but received '{sourceData.GetType().FriendlyName()}' " +
                        "which is not compatible."));
 
                 return;
@@ -74,17 +73,17 @@ namespace GraphQL.AspNet.Internal.Resolvers
             {
                 object data = null;
 
-                var paramSet = context.Arguments.PrepareArguments(_resolverMetadata);
-                var invoker = InstanceFactory.CreateInstanceMethodInvoker(_resolverMetadata.Method);
+                var paramSet = context.Arguments.PrepareArguments(this.MetaData);
+                var invoker = InstanceFactory.CreateInstanceMethodInvoker(this.MetaData.Method);
 
                 var invokableObject = context.Arguments.SourceData as object;
                 var invokeReturn = invoker(ref invokableObject, paramSet);
-                if (_resolverMetadata.IsAsyncField)
+                if (this.MetaData.IsAsyncField)
                 {
                     if (invokeReturn is Task task)
                     {
                         await task.ConfigureAwait(false);
-                        data = task.ResultOfTypeOrNull(_resolverMetadata.ExpectedReturnType);
+                        data = task.ResultOfTypeOrNull(this.MetaData.ExpectedReturnType);
                     }
                 }
                 else
@@ -111,5 +110,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
                     ex);
             }
         }
+
+        /// <inheritdoc />
+        public IGraphFieldResolverMetaData MetaData { get; }
     }
 }

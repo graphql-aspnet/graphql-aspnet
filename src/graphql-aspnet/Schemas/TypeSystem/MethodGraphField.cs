@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="fieldName">Name of the field in the graph.</param>
         /// <param name="typeExpression">The meta data describing the type of data this field returns.</param>
         /// <param name="route">The formal route to this field in the object graph.</param>
-        /// <param name="declaredMethodName">Name of the method this field respresents, as it was declared
+        /// <param name="internalFullName">The fully qualified name of the method this field respresents, as it was declared
         /// in C# code.</param>
         /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string fieldName,
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
-            string declaredMethodName,
+            string internalFullName,
             Type objectType,
             Type declaredReturnType,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Arguments = new GraphFieldArgumentCollection(this);
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.DeclaredReturnType = Validation.ThrowIfNullOrReturn(declaredReturnType, nameof(declaredReturnType));
-            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(declaredMethodName, nameof(declaredMethodName));
+            this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
@@ -152,7 +152,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.Name,
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
-                this.InternalName,
+                this.InternalFullName,
                 this.ObjectType,
                 this.DeclaredReturnType,
                 this.Mode,
@@ -219,6 +219,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public string InternalName { get; }
+        public string InternalFullName { get; }
     }
 }

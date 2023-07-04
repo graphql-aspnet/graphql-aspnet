@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System;
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -38,6 +39,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         public FunctionGraphFieldResolver(Func<TSource, Task<TReturn>> func)
         {
             _func = Validation.ThrowIfNullOrReturn(func, nameof(func));
+            this.MetaData = InternalFieldResolverMetaData.CreateMetadata(this.GetType());
         }
 
         /// <inheritdoc />
@@ -46,5 +48,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
             var data = await _func(context?.Arguments.SourceData as TSource).ConfigureAwait(false);
             context.Result = data;
         }
+
+        /// <inheritdoc />
+        public IGraphFieldResolverMetaData MetaData { get; }
     }
 }

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -21,6 +22,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A special resolver specifically for invoking controller actions
@@ -29,26 +31,24 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// </summary>
     internal class GraphDirectiveActionResolver : GraphControllerActionResolverBase, IGraphDirectiveResolver
     {
-        private readonly IGraphDirectiveTemplate _directiveTemplate;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphDirectiveActionResolver"/> class.
+        /// Initializes a new instance of the <see cref="GraphDirectiveActionResolver" /> class.
         /// </summary>
-        /// <param name="directiveTemplate">The directive template from which this resolver will
-        /// query for lifecycle methods.</param>
-        public GraphDirectiveActionResolver(IGraphDirectiveTemplate directiveTemplate)
+        /// <param name="directiveMetadataItems">The directive metadata items, per location,
+        /// that this resolver will use for executing the directive.</param>
+        public GraphDirectiveActionResolver(IReadOnlyDictionary<DirectiveLocation, IGraphFieldResolverMetaData> directiveMetadataItems)
         {
-            _directiveTemplate = Validation.ThrowIfNullOrReturn(directiveTemplate, nameof(directiveTemplate));
+            this.MetaData = Validation.ThrowIfNullOrReturn(directiveMetadataItems, nameof(directiveMetadataItems));
         }
 
         /// <inheritdoc />
         public async Task ResolveAsync(DirectiveResolutionContext context, CancellationToken cancelToken = default)
         {
-            var action = _directiveTemplate.FindMetaData(context.Request.InvocationContext.Location);
-
             // if no action is found skip processing of this directive
-            if (action == null)
+            if (!this.MetaData.ContainsKey(context.Request.InvocationContext.Location))
                 return;
+
+            var action = this.MetaData[context.Request.InvocationContext.Location];
 
             IGraphActionResult result;
             try
@@ -56,14 +56,14 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 // create a directive instance for this invocation
                 var directive = context
                     .ServiceProvider?
-                    .GetService(_directiveTemplate.ObjectType) as GraphDirective;
+                    .GetService(action.ParentObjectType) as GraphDirective;
 
                 if (directive == null)
                 {
                     // fallback: attempt to create the directive if it has no constructor parameters
                     try
                     {
-                        directive = InstanceFactory.CreateInstance(_directiveTemplate.ObjectType) as GraphDirective;
+                        directive = InstanceFactory.CreateInstance(action.ParentObjectType) as GraphDirective;
                     }
                     catch (InvalidOperationException)
                     {
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 if (directive == null)
                 {
                     result = new RouteNotFoundGraphActionResult(
-                        $"The directive '{_directiveTemplate.InternalFullName}' " +
+                        $"The directive '{action.InternalFullName}' " +
                         "was not found in the scoped service provider. Any directives that have constructor parameters " +
                         $"must also be registered to the service provider; Try using '{nameof(SchemaOptions.AddGraphType)}' " +
                         $"with the type of your directive at startup.");
@@ -98,5 +98,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
             // in what ever manner is appropriate for the result itself
             await result.CompleteAsync(context);
         }
+
+        /// <inheritdoc />
+        public IReadOnlyDictionary<DirectiveLocation, IGraphFieldResolverMetaData> MetaData { get; }
     }
 }

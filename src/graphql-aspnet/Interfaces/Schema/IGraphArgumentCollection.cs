@@ -102,11 +102,5 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// </summary>
         /// <value>The count.</value>
         int Count { get; }
-
-        /// <summary>
-        /// Gets the singular argument that is to recieve source data for the field resolution.
-        /// </summary>
-        /// <value>The source data argument.</value>
-        IGraphArgument SourceDataArgument { get; }
     }
 }

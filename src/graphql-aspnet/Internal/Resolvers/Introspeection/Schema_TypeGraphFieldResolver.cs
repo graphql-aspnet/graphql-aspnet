@@ -33,6 +33,8 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
         public Schema_TypeGraphFieldResolver(IntrospectedSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+
+            this.MetaData = InternalFieldResolverMetaData.CreateMetadata(this.GetType());
         }
 
         /// <inheritdoc />
@@ -57,5 +59,8 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
 
             return Task.CompletedTask;
         }
+
+        /// <inheritdoc />
+        public IGraphFieldResolverMetaData MetaData { get; }
     }
 }

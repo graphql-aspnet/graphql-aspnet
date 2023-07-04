@@ -164,6 +164,22 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
+        /// Creates the a dictionary of metadata items, keyed by the location where each resolver
+        /// should execute..
+        /// </summary>
+        /// <returns>IReadOnlyDictionary&lt;DirectiveLocation, IGraphFieldResolverMetaData&gt;.</returns>
+        public IReadOnlyDictionary<DirectiveLocation, IGraphFieldResolverMetaData> CreateMetadataCollection()
+        {
+            var dicOut = new Dictionary<DirectiveLocation, IGraphFieldResolverMetaData>();
+            foreach (var kvp in _templateMap)
+            {
+                dicOut.Add(kvp.Key, kvp.Value.CreateResolverMetaData());
+            }
+
+            return dicOut;
+        }
+
+        /// <summary>
         /// Gets the total number of registrations tracked by this instance.
         /// </summary>
         /// <value>The count.</value>

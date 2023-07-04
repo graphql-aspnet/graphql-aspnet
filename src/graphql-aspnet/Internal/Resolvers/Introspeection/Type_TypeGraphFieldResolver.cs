@@ -51,5 +51,8 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
 
             return Task.CompletedTask;
         }
+
+        /// <inheritdoc />
+        public IGraphFieldResolverMetaData MetaData { get; }
     }
 }

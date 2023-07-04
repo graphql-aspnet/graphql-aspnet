@@ -9,15 +9,15 @@
 
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
-    using System;
-
     /// <summary>
     /// A set of modifiers and flags that can be assigned to individual arguments on graph fields to modify their behavior
     /// during execution.
     /// </summary>
-    [Flags]
     public enum GraphArgumentModifiers
     {
+        // implementation note, this used to be a [Flags] enum
+        // kept numbering of previous usage to prevent clashing in other libraries.
+
         /// <summary>
         /// No special modifications are needed.
         /// </summary>

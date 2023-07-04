@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
-            this.InternalName = this.ObjectType.FriendlyName();
+            this.InternalFullName = this.ObjectType.FriendlyName();
             this.InterfaceNames = new HashSet<string>();
 
             _fieldSet = new GraphFieldCollection(this);
@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Type ObjectType { get; }
 
         /// <inheritdoc />
-        public virtual string InternalName { get; }
+        public virtual string InternalFullName { get; }
 
         /// <inheritdoc />
         public HashSet<string> InterfaceNames { get; }

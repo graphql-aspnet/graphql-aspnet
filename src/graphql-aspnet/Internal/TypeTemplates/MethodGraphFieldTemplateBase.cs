@@ -133,13 +133,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public override IReadOnlyList<IGraphArgumentTemplate> Arguments => _arguments;
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IGraphFieldResolverMetaData.Method" />
         public MethodInfo Method { get; }
 
         /// <inheritdoc />
         public override Type DeclaredReturnType => this.Method.ReturnType;
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IGraphFieldResolverMetaData.ExpectedReturnType" />
         public Type ExpectedReturnType { get; protected set; }
 
         /// <inheritdoc />
@@ -148,7 +148,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public override GraphFieldSource FieldSource => GraphFieldSource.Method;
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the set of parameters found on the target <see cref="Method"/>.
+        /// </summary>
+        /// <value>The parameters.</value>
         public IReadOnlyList<ParameterInfo> Parameters { get; }
     }
 }

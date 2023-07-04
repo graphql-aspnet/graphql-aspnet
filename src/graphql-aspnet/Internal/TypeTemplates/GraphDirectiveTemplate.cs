@@ -114,7 +114,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public IGraphDirectiveResolver CreateResolver()
         {
-            return new GraphDirectiveActionResolver(this);
+            var allMetadata = this.Methods.CreateMetadataCollection();
+            return new GraphDirectiveActionResolver(allMetadata);
         }
 
         /// <summary>

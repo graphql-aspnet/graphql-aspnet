@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             this.SourceLineIndex = appliedTo?.SourceLocation.LineIndex ?? 0;
             this.DirectiveLocation = appliedTo?.AsDirectiveLocation().ToString() ?? "-unknown-";
             this.DirectiveName = directiveApplied?.Name;
-            this.DirectiveInternalName = directiveApplied?.InternalName;
+            this.DirectiveInternalName = directiveApplied?.InternalFullName;
         }
 
         /// <summary>

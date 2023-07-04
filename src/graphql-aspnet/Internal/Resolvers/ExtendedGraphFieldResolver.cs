@@ -45,5 +45,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
             await _primaryResolver.ResolveAsync(context, cancelToken).ConfigureAwait(false);
             await _extension.Invoke(context, cancelToken).ConfigureAwait(false);
         }
+
+        /// <inheritdoc />
+        public IGraphFieldResolverMetaData MetaData => _primaryResolver.MetaData;
     }
 }

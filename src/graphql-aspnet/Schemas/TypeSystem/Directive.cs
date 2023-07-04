@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Publish = true;
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ObjectType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
-            this.InternalName = this.ObjectType.FriendlyName();
+            this.InternalFullName = this.ObjectType.FriendlyName();
 
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
             this.IsRepeatable = isRepeatable;
@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Type ObjectType { get; }
 
         /// <inheritdoc />
-        public string InternalName { get; }
+        public string InternalFullName { get; }
 
         /// <inheritdoc />
         public bool IsRepeatable { get; set; }

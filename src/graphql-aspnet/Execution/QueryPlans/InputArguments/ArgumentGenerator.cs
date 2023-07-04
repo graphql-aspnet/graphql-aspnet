@@ -55,8 +55,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
 
             if (!suppliedArgumentData.ContainsKey(argumentDefinition.Name))
             {
-                if (argumentDefinition.IsRequired
-                    && argumentDefinition.ArgumentModifiers.IsPartOfTheSchema())
+                if (argumentDefinition.IsRequired)
                 {
                     // this should be an impossible scenario due to validation middleware
                     // However, the pipeline can be changed by the developer so we must

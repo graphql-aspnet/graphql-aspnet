@@ -365,7 +365,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
                 // create a list to house the raw source data being passed for the batch
                 // this is the IEnumerable<T> required as an input to any batch resolver
-                var sourceArgumentType = childInvocationContext.Field.Arguments.SourceDataArgument?.ObjectType ?? typeof(object);
+                var sourceArgumentType = parentContext.Field.ObjectType ?? typeof(object);
                 var sourceListType = typeof(List<>).MakeGenericType(sourceArgumentType);
                 var sourceDataList = InstanceFactory.CreateInstance(sourceListType, sourceItemsToInclude.Count) as IList;
 

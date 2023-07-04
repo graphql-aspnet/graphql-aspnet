@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.SourceResolver = Validation.ThrowIfNullOrReturn(resolver, nameof(resolver));
 
-            this.InternalName = this.ObjectType.FriendlyName();
+            this.InternalFullName = this.ObjectType.FriendlyName();
             this.Publish = true;
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual Type ObjectType { get; }
 
         /// <inheritdoc />
-        public virtual string InternalName { get; }
+        public virtual string InternalFullName { get; }
 
         /// <inheritdoc />
         public virtual bool IsVirtual => false;

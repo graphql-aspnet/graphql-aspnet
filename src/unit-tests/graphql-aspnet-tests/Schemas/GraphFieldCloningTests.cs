@@ -61,7 +61,6 @@ namespace GraphQL.AspNet.Tests.Schemas
                 "arg1",
                 GraphTypeExpression.FromDeclaration("String"),
                 field.Route.CreateChild("arg1"),
-                GraphArgumentModifiers.None,
                 "arg1",
                 "arg1",
                 typeof(string),
@@ -91,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(field.DeprecationReason, clonedField.DeprecationReason);
             Assert.AreEqual(field.Complexity, clonedField.Complexity);
             Assert.AreEqual(field.FieldSource, clonedField.FieldSource);
-            Assert.AreEqual(field.InternalName, clonedField.InternalName);
+            Assert.AreEqual(field.InternalFullName, clonedField.InternalFullName);
 
             Assert.IsFalse(object.ReferenceEquals(field.TypeExpression, clonedField.TypeExpression));
             Assert.IsTrue(object.ReferenceEquals(field.Resolver, clonedField.Resolver));
@@ -143,7 +142,6 @@ namespace GraphQL.AspNet.Tests.Schemas
                 "arg1",
                 GraphTypeExpression.FromDeclaration("String"),
                 field.Route.CreateChild("arg1"),
-                GraphArgumentModifiers.None,
                 "arg1",
                 "arg1",
                 typeof(string),
@@ -161,7 +159,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var clonedField = field.Clone(clonedParent.Object) as PropertyGraphField;
 
             Assert.IsNotNull(clonedField);
-            Assert.AreEqual(field.InternalName, clonedField.InternalName);
+            Assert.AreEqual(field.InternalFullName, clonedField.InternalFullName);
             Assert.AreEqual(field.Name, clonedField.Name);
             Assert.AreEqual(field.ObjectType, clonedField.ObjectType);
             Assert.AreEqual(field.DeclaredReturnType, clonedField.DeclaredReturnType);

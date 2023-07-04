@@ -506,7 +506,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             var directive = new Mock<IDirective>();
             directive.Setup(x => x.Name).Returns("The Directive");
-            directive.Setup(x => x.InternalName).Returns("The Directive Internal");
+            directive.Setup(x => x.InternalFullName).Returns("The Directive Internal");
 
             var item = new Mock<ISchemaItem>();
             item.Setup(x => x.Route).Returns(new AspNet.Schemas.Structural.SchemaItemPath(SchemaItemCollections.Types, "path1"));
@@ -515,7 +515,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(LogEventIds.TypeSystemDirectiveApplied.Id, entry.EventId);
             Assert.AreEqual(directive.Object.Name, entry.DirectiveName);
-            Assert.AreEqual(directive.Object.InternalName, entry.DirectiveInternalName);
+            Assert.AreEqual(directive.Object.InternalFullName, entry.DirectiveInternalName);
             Assert.AreEqual(item.Object.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
         }
@@ -525,7 +525,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             var directive = new Mock<IDirective>();
             directive.Setup(x => x.Name).Returns("The Directive");
-            directive.Setup(x => x.InternalName).Returns("The Directive Internal");
+            directive.Setup(x => x.InternalFullName).Returns("The Directive Internal");
 
             var docPart = new DocumentOperation(
                 new Mock<IDocumentPart>().Object,
@@ -539,7 +539,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(LogEventIds.ExecutionDirectiveApplied.Id, entry.EventId);
             Assert.AreEqual(directive.Object.Name, entry.DirectiveName);
-            Assert.AreEqual(directive.Object.InternalName, entry.DirectiveInternalName);
+            Assert.AreEqual(directive.Object.InternalFullName, entry.DirectiveInternalName);
             Assert.AreEqual(DirectiveLocation.QUERY.ToString(), entry.DirectiveLocation);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
             Assert.AreEqual(33, entry.SourceLine);

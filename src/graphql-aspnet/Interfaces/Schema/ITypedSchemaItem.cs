@@ -34,6 +34,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// <b>Object Property:</b>            MyProject.Widget.Name<br/>.
         /// </remarks>
         /// <value>The fully qualiified, internal name of this schema item.</value>
-        string InternalName { get; }
+        string InternalFullName { get; }
     }
 }

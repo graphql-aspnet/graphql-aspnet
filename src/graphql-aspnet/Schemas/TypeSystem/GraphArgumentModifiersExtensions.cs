@@ -58,5 +58,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             return modifiers == GraphArgumentModifiers.None;
         }
+
+        /// <summary>
+        /// Determines whether the modifiers indicate that the argument is to be resolved from a DI
+        /// container as opposed to being passed ona  query
+        /// </summary>
+        /// <param name="modifiers">The modifiers to check.</param>
+        /// <returns><c>true</c> if the modifiers indicate the argument is to be resolved from a DI continer; otherwise, <c>false</c>.</returns>
+        public static bool IsInjected(this GraphArgumentModifiers modifiers)
+        {
+            return modifiers.HasFlag(GraphArgumentModifiers.Injected);
+        }
     }
 }

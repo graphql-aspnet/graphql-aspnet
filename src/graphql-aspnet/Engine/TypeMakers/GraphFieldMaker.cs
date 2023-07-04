@@ -73,10 +73,13 @@ namespace GraphQL.AspNet.Engine.TypeMakers
 
                 foreach (var argTemplate in template.Arguments)
                 {
-                    var argumentResult = argumentMaker.CreateArgument(field, argTemplate);
-                    field.Arguments.AddArgument(argumentResult.Argument);
+                    if (argTemplate.ArgumentModifiers.IsPartOfTheSchema())
+                    {
+                        var argumentResult = argumentMaker.CreateArgument(field, argTemplate);
+                        field.Arguments.AddArgument(argumentResult.Argument);
 
-                    result.MergeDependents(argumentResult);
+                        result.MergeDependents(argumentResult);
+                    }
                 }
             }
 

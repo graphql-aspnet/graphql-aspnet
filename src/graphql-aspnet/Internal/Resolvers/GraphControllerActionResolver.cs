@@ -26,8 +26,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// </summary>
     internal class GraphControllerActionResolver : GraphControllerActionResolverBase, IGraphFieldResolver
     {
-        private readonly IGraphFieldResolverMetaData _actionResolverMetaData;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphControllerActionResolver"/> class.
         /// </summary>
@@ -35,7 +33,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// method that this resolver will invoke.</param>
         public GraphControllerActionResolver(IGraphFieldResolverMetaData actionResolverMetadata)
         {
-            _actionResolverMetaData = Validation.ThrowIfNullOrReturn(actionResolverMetadata, nameof(actionResolverMetadata));
+            this.MetaData = Validation.ThrowIfNullOrReturn(actionResolverMetadata, nameof(actionResolverMetadata));
         }
 
         /// <inheritdoc />
@@ -48,7 +46,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 // create a scoped controller instance for this invocation
                 var controller = context
                     .ServiceProvider?
-                    .GetService(_actionResolverMetaData.ParentObjectType) as GraphController;
+                    .GetService(this.MetaData.ParentObjectType) as GraphController;
 
                 if (controller == null)
                 {
@@ -59,7 +57,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 else
                 {
                     // invoke the right action method and set a result.
-                    var task = controller.InvokeActionAsync(_actionResolverMetaData, context);
+                    var task = controller.InvokeActionAsync(this.MetaData, context);
                     var returnedItem = await task.ConfigureAwait(false);
                     result = this.EnsureGraphActionResult(returnedItem);
                 }
@@ -74,5 +72,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
             // in what ever manner is appropriate for the result itself
             await result.CompleteAsync(context).ConfigureAwait(false);
         }
+
+        /// <inheritdoc />
+        public IGraphFieldResolverMetaData MetaData { get; }
     }
 }

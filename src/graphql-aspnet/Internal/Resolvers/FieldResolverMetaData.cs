@@ -20,6 +20,20 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// </summary>
     internal class FieldResolverMetaData : IGraphFieldResolverMetaData
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FieldResolverMetaData"/> class.
+        /// </summary>
+        /// <param name="method">The method info will be invoked to fulfill the resolver.</param>
+        /// <param name="parameters">The parameters metadata collection related to this resolver method.</param>
+        /// <param name="expectedReturnType">Expected type of the data to be returned by the method. May be different
+        /// from concrete return types (e.g. expecting an interface but actually returning a concrete type that implements that interface).</param>
+        /// <param name="isAsyncField">if set to <c>true</c> the invoked method is asyncronous.</param>
+        /// <param name="internalName">The name of the resolver method or property as it exists in source code.</param>
+        /// <param name="internalFullName">the full name of the resolver method or propert, with namespace and parent owning class,
+        /// as it exists in source code.</param>
+        /// <param name="parentObjectType">The type of the .NET class or struct where the resolver method is declared.</param>
+        /// <param name="parentInternalName">The name of the .NET class or struct where the resolver method is declared.</param>
+        /// <param name="parentInternalFullName">The full name of the .NET class or struct, including namespace, where the resolver method is declared.</param>
         public FieldResolverMetaData(
             MethodInfo method,
             IGraphFieldResolverParameterMetaDataCollection parameters,

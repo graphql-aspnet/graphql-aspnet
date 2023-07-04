@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Schema
 {
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An argument/input value that can be applied to a field.
@@ -23,12 +22,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// <param name="parent">The parent item to assign the newly cloned argument to.</param>
         /// <returns>IGraphField.</returns>
         IGraphArgument Clone(ISchemaItem parent);
-
-        /// <summary>
-        /// Gets the argument modifiers that modify how this argument is interpreted by the runtime.
-        /// </summary>
-        /// <value>The argument modifiers.</value>
-        GraphArgumentModifiers ArgumentModifiers { get; }
 
         /// <summary>
         /// Gets the type expression that represents the data of this argument (i.e. the '[SomeType!]'

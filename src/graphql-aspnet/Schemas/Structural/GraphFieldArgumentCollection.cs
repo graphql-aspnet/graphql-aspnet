@@ -27,7 +27,6 @@ namespace GraphQL.AspNet.Schemas.Structural
         private readonly ISchemaItem _owner;
         private readonly OrderedDictionary<string, IGraphArgument> _arguments;
         private readonly Dictionary<string, IGraphArgument> _argumentByInternalName;
-        private IGraphArgument _sourceArgument;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldArgumentCollection" /> class.
@@ -47,11 +46,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             Validation.ThrowIfNull(argument, nameof(argument));
 
             _arguments.Add(argument.Name, argument);
-            _argumentByInternalName.Add(argument.InternalName, argument);
-
-            if (argument.ArgumentModifiers.IsSourceParameter() && _sourceArgument == null)
-                _sourceArgument = argument;
-
+            _argumentByInternalName.Add(argument.InternalFullName, argument);
             return argument;
         }
 
@@ -59,20 +54,20 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Adds the input argument to the growing collection.
         /// </summary>
         /// <param name="name">The name of the argument in the object graph.</param>
-        /// <param name="internalName">Name of the argument as it was defined in the code.</param>
+        /// <param name="internalFullName">The fully qualfiied name of the argument as it was defined in the code.</param>
         /// <param name="typeExpression">The type expression representing how this value is represented in this graph schema.</param>
         /// <param name="concreteType">The concrete type this field is on the server.</param>
         /// <returns>IGraphFieldArgument.</returns>
         public IGraphArgument AddArgument(
             string name,
-            string internalName,
+            string internalFullName,
             GraphTypeExpression typeExpression,
             Type concreteType)
         {
             var argument = new VirtualGraphFieldArgument(
                 _owner,
                 name,
-                internalName,
+                internalFullName,
                 typeExpression,
                 _owner.Route.CreateChild(name),
                 concreteType,
@@ -85,7 +80,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Adds the input argument to the growing collection.
         /// </summary>
         /// <param name="name">The name of the argument in the object graph.</param>
-        /// <param name="internalName">Name of the argument as it was defined in the code.</param>
+        /// <param name="internalFullName">The fully qualified name of the argument as it was defined in the code.</param>
         /// <param name="typeExpression">The type expression representing how this value is represented in this graph schema.</param>
         /// <param name="concreteType">The concrete type this field is on the server.</param>
         /// <param name="defaultValue">The default value to set for the argument. If null, indicates
@@ -93,7 +88,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <returns>IGraphFieldArgument.</returns>
         public IGraphArgument AddArgument(
             string name,
-            string internalName,
+            string internalFullName,
             GraphTypeExpression typeExpression,
             Type concreteType,
             object defaultValue)
@@ -101,13 +96,12 @@ namespace GraphQL.AspNet.Schemas.Structural
             var argument = new VirtualGraphFieldArgument(
                 _owner,
                 name,
-                internalName,
+                internalFullName,
                 typeExpression,
                 _owner.Route.CreateChild(name),
                 concreteType,
                 true,
-                defaultValue,
-                GraphArgumentModifiers.None);
+                defaultValue);
 
             return this.AddArgument(argument);
         }
@@ -147,9 +141,6 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public int Count => _arguments.Count;
-
-        /// <inheritdoc />
-        public IGraphArgument SourceDataArgument => _sourceArgument;
 
         /// <inheritdoc />
         public IEnumerator<IGraphArgument> GetEnumerator()

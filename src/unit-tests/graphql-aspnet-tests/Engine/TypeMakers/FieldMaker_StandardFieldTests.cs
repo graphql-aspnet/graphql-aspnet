@@ -113,7 +113,6 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var graphArg = Enumerable.FirstOrDefault(graphField.Arguments);
             Assert.IsNotNull(graphArg);
             Assert.IsEmpty(graphArg.TypeExpression.Wrappers);
-            Assert.AreEqual(GraphArgumentModifiers.None, graphArg.ArgumentModifiers);
         }
 
         [Test]

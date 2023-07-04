@@ -19,6 +19,10 @@ namespace GraphQL.AspNet.Interfaces.Internal
     /// </summary>
     public interface IGraphArgumentTemplate : ISchemaItemTemplate
     {
+        /// <summary>
+        /// Creates a metadata object representing the parameter parsed by this template.
+        /// </summary>
+        /// <returns>IGraphFieldResolverParameterMetaData.</returns>
         IGraphFieldResolverParameterMetaData CreateResolverMetaData();
 
         /// <summary>

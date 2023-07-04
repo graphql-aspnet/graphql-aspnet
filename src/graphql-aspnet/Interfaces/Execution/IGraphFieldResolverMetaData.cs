@@ -24,7 +24,8 @@ namespace GraphQL.AspNet.Interfaces.Execution
     {
         /// <summary>
         /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
-        /// represents the implementation return type as opposed to the expected graph type represented by <see cref="ObjectType"/>.
+        /// represents the implementation return type that is needed by the runtime to be success. It may differ from the
+        /// declared return type of <see cref="Method"/> in the case of returning interfaces.
         /// </summary>
         /// <value>The expected type of data returned by this method.</value>
         Type ExpectedReturnType { get; }

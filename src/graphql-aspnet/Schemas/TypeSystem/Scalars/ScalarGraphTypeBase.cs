@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.Route = new SchemaItemPath(SchemaItemCollections.Scalars, this.Name);
             this.ObjectType = Validation.ThrowIfNullOrReturn(primaryType, nameof(primaryType));
-            this.InternalName = this.ObjectType.FriendlyName();
+            this.InternalFullName = this.ObjectType.FriendlyName();
             this.Publish = true;
             this.SourceResolver = this;
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public virtual Type ObjectType { get; }
 
         /// <inheritdoc />
-        public virtual string InternalName { get; }
+        public virtual string InternalFullName { get; }
 
         /// <inheritdoc />
         public string Description { get; set; }

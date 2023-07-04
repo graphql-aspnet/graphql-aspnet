@@ -11,10 +11,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
 {
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A model object containing data for a '__Field' type
@@ -42,7 +40,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         public override void Initialize(IntrospectedSchema introspectedSchema)
         {
             var list = new List<IntrospectedInputValueType>();
-            foreach (var arg in _field.Arguments.Where(x => x.ArgumentModifiers.IsPartOfTheSchema()))
+            foreach (var arg in _field.Arguments)
             {
                 var introspectedType = introspectedSchema.FindIntrospectedType(arg.TypeExpression.TypeName);
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, arg.TypeExpression);

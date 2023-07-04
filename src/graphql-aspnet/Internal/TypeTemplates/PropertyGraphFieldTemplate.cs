@@ -114,6 +114,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return new ObjectPropertyGraphFieldResolver(this.CreateResolverMetaData());
         }
 
+        /// <inheritdoc />
         public override IGraphFieldResolverMetaData CreateResolverMetaData()
         {
             var paramSet = new FieldResolverParameterMetaDataCollection(
@@ -134,7 +135,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public override Type DeclaredReturnType => this.Property.PropertyType;
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IGraphFieldResolverMetaData.ExpectedReturnType" />
         public Type ExpectedReturnType { get; private set; }
 
         /// <inheritdoc />
@@ -152,10 +153,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value>The property.</value>
         private PropertyInfo Property { get; }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IGraphFieldResolverMetaData.Method" />
         public MethodInfo Method { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the set of parameters defined by <see cref="Method"/>.
+        /// </summary>
+        /// <value>The parameters.</value>
         public IReadOnlyList<ParameterInfo> Parameters { get; }
 
         /// <inheritdoc />

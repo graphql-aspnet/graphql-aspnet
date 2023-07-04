@@ -35,6 +35,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
         {
             Validation.ThrowIfNull(dataObject, nameof(dataObject));
             _dataObject = dataObject;
+
+            this.MetaData = InternalFieldResolverMetaData.CreateMetadata(this.GetType());
         }
 
         /// <inheritdoc />
@@ -43,5 +45,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
             context.Result = _dataObject;
             return Task.CompletedTask;
         }
+
+        /// <inheritdoc />
+        public IGraphFieldResolverMetaData MetaData { get; }
     }
 }

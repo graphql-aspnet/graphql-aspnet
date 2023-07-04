@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A collection of parameter metadata that can be accessed by index in its parent method or by name.
@@ -34,8 +35,24 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
             _parametersByName = new Dictionary<string, IGraphFieldResolverParameterMetaData>(_parameters.Count);
 
-            foreach (var arg in _parameters)
-                _parametersByName.Add(arg.ParameterInfo.Name, arg);
+            foreach (var paramItem in _parameters)
+            {
+                _parametersByName.Add(paramItem.ParameterInfo.Name, paramItem);
+                if (paramItem.ArgumentModifiers.IsSourceParameter())
+                    this.SourceParameter = paramItem;
+            }
+        }
+
+        /// <inheritdoc />
+        public IGraphFieldResolverParameterMetaData FindByName(string parameterName)
+        {
+            if (parameterName == null)
+                return null;
+
+            if (_parametersByName.ContainsKey(parameterName))
+                return _parametersByName[parameterName];
+
+            return null;
         }
 
         /// <inheritdoc />
@@ -58,5 +75,8 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
         /// <inheritdoc />
         public int Count => _parameters.Count;
+
+        /// <inheritdoc />
+        public IGraphFieldResolverParameterMetaData SourceParameter { get; }
     }
 }

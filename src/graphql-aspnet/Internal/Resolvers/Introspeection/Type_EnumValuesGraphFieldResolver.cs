@@ -27,6 +27,7 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
         /// </summary>
         public Type_EnumValuesGraphFieldResolver()
         {
+            this.MetaData = InternalFieldResolverMetaData.CreateMetadata(this.GetType());
         }
 
         /// <inheritdoc />
@@ -51,5 +52,8 @@ namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
 
             return Task.CompletedTask;
         }
+
+        /// <inheritdoc />
+        public IGraphFieldResolverMetaData MetaData { get; }
     }
 }

@@ -72,10 +72,13 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             var argMaker = new GraphArgumentMaker(_schema);
             foreach (var argTemplate in template.Arguments)
             {
-                var argumentResult = argMaker.CreateArgument(directive, argTemplate);
-                directive.Arguments.AddArgument(argumentResult.Argument);
+                if (argTemplate.ArgumentModifiers.IsPartOfTheSchema())
+                {
+                    var argumentResult = argMaker.CreateArgument(directive, argTemplate);
+                    directive.Arguments.AddArgument(argumentResult.Argument);
 
-                result.MergeDependents(argumentResult);
+                    result.MergeDependents(argumentResult);
+                }
             }
 
             result.GraphType = directive;

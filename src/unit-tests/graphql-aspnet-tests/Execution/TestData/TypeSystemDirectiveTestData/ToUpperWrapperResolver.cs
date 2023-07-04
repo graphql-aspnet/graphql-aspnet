@@ -24,11 +24,11 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.TypeSystemDirectiveTestData
             _originalResolver = originalResolver;
         }
 
-        public Type ObjectType { get; }
-
         public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             await _originalResolver.ResolveAsync(context, cancelToken);
         }
+
+        public IGraphFieldResolverMetaData MetaData => _originalResolver.MetaData;
     }
 }

@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         public override void Initialize(IntrospectedSchema introspectedSchema)
         {
             var list = new List<IntrospectedInputValueType>();
-            var directiveArguments = this.Directive.Arguments.Where(x => x.ArgumentModifiers.IsPartOfTheSchema());
+            var directiveArguments = this.Directive.Arguments;
             foreach (var arg in directiveArguments)
             {
                 var introspectedType = introspectedSchema.FindIntrospectedType(arg.TypeExpression.TypeName);

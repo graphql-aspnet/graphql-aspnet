@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             : base(name, route, directives)
         {
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
-            this.InternalName = this.ObjectType.FriendlyName();
+            this.InternalFullName = this.ObjectType.FriendlyName();
 
             this.GraphFieldCollection.AddField(new Introspection_TypeNameMetaField(name));
         }
@@ -61,6 +61,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Type ObjectType { get; }
 
         /// <inheritdoc />
-        public string InternalName { get; }
+        public string InternalFullName { get; }
     }
 }

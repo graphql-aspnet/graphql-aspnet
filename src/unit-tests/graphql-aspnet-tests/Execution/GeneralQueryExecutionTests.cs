@@ -930,7 +930,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task TypeExtension_OnGeneralObject_ResolvesDataCorrectly()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.IncludeExceptions)
          .AddType<TypeExtensionOnTwoPropertyObjectController>()
          .Build();
 

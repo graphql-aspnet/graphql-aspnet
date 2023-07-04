@@ -35,7 +35,6 @@ namespace GraphQL.AspNet.Tests.Controllers
 
             argTemplate.Setup(x => x.Name).Returns(name);
             argTemplate.Setup(x => x.TypeExpression).Returns(new GraphTypeExpression(name, wrappers));
-            argTemplate.Setup(x => x.ArgumentModifiers).Returns(GraphArgumentModifiers.None);
             argTemplate.Setup(x => x.ObjectType).Returns(concreteType);
             argTemplate.Setup(x => x.ParameterName).Returns(name);
 

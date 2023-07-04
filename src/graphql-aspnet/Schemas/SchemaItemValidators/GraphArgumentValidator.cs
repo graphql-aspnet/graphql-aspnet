@@ -45,10 +45,10 @@ namespace GraphQL.AspNet.Schemas.SchemaItemValidators
                     $"'{typeof(IGraphArgument).FriendlyName()}' but got '{schema?.GetType().FriendlyName() ?? "-none-"}'");
             }
 
-            if (argument.ArgumentModifiers.IsPartOfTheSchema() && argument.ObjectType.IsInterface)
+            if (argument.ObjectType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The item '{argument.InternalName}' declares an argument '{argument.Name}' of type  '{argument.ObjectType.FriendlyName()}' " +
+                    $"The item '{argument.InternalFullName}' declares an argument '{argument.Name}' of type  '{argument.ObjectType.FriendlyName()}' " +
                     $"which is an interface. Interfaces cannot be used as input arguments to any type.");
             }
         }

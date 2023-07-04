@@ -54,25 +54,20 @@ namespace GraphQL.AspNet.Execution
                     var argDefinition = arg.Argument;
                     var resolvedValue = arg.Value.Resolve(variableData);
 
-                    // no schema arguments are internally controlled
-                    // the resolved value is the value we want
-                    if (argDefinition.ArgumentModifiers.IsPartOfTheSchema())
+                    // its possible for a non-nullable variable to receive a
+                    // null value due to a variable supplying null
+                    // trap it and fail out the execution if so
+                    // see: https://spec.graphql.org/October2021/#sel-GALbLHNCCBCGIp9O
+                    if (resolvedValue == null && argDefinition.TypeExpression.IsNonNullable)
                     {
-                        // its possible for a non-nullable variable to receive a
-                        // null value due to a variable supplying null
-                        // trap it and fail out the execution if so
-                        // see: https://spec.graphql.org/October2021/#sel-GALbLHNCCBCGIp9O
-                        if (resolvedValue == null && argDefinition.TypeExpression.IsNonNullable)
-                        {
-                            messages.Critical(
-                              $"The value supplied to argument '{argDefinition.Name}' was <null> but its expected type expression " +
-                              $"is {argDefinition.TypeExpression}.",
-                              Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
-                              arg.Origin);
+                        messages.Critical(
+                          $"The value supplied to argument '{argDefinition.Name}' was <null> but its expected type expression " +
+                          $"is {argDefinition.TypeExpression}.",
+                          Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
+                          arg.Origin);
 
-                            successful = false;
-                            continue;
-                        }
+                        successful = false;
+                        continue;
                     }
 
                     collection.Add(new ExecutionArgument(arg.Argument, resolvedValue));

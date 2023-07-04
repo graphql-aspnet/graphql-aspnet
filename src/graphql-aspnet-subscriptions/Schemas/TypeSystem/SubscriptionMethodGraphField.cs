@@ -27,19 +27,20 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="fieldName">Name of the field in the type declaration..</param>
         /// <param name="typeExpression">The meta data about how this type field is implemented.</param>
         /// <param name="route">The formal route to this field in the object graph.</param>
-        /// <param name="declaredMethodName">Name of the declared method.</param>
+        /// <param name="internalFullName">The fully qualified name of the method this field respresents, as it was declared
+        /// in C# code.</param>
         /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
         /// <param name="mode">The execution mode of this field.</param>
         /// <param name="resolver">The resolver.</param>
-        /// <param name="securityPolicies">The security policies.</param>
+        /// <param name="securityPolicies">The security policies applied to this field.</param>
         /// <param name="eventName">Alterante name of the event that has been assigned to this field.</param>
         /// <param name="directives">The directives to be applied to this field when its added to a schema.</param>
         public SubscriptionMethodGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
-            string declaredMethodName,
+            string internalFullName,
             Type objectType = null,
             Type declaredReturnType = null,
             Execution.FieldResolutionMode mode = Execution.FieldResolutionMode.PerSourceItem,
@@ -47,7 +48,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
             string eventName = null,
             IAppliedDirectiveCollection directives = null)
-            : base(fieldName, typeExpression, route, declaredMethodName, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
+            : base(fieldName, typeExpression, route, internalFullName, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
         {
             this.EventName = eventName;
         }
@@ -59,7 +60,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.Name,
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
-                this.InternalName,
+                this.InternalFullName,
                 this.ObjectType,
                 this.DeclaredReturnType,
                 this.Mode,

@@ -193,7 +193,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return list;
         }
 
-        internal IGraphFieldResolverMetaData CreateResolverMetaData()
+        /// <inheritdoc cref="IGraphArgumentTemplate.CreateResolverMetaData" />
+        public IGraphFieldResolverMetaData CreateResolverMetaData()
         {
             var paramSet = new FieldResolverParameterMetaDataCollection(
                 this.Arguments.Select(x => x.CreateResolverMetaData()));
@@ -244,10 +245,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public IReadOnlyList<IGraphArgumentTemplate> Arguments => _arguments;
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IGraphFieldResolverMetaData.ExpectedReturnType" />
         public Type ExpectedReturnType { get; protected set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IGraphFieldResolverMetaData.IsAsyncField" />
         public bool IsAsyncField { get; protected set; }
 
         /// <inheritdoc />
@@ -262,13 +263,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public Type SourceObjectType => this.Parent?.ObjectType;
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IGraphFieldTemplate.Parent" />
         public IGraphTypeTemplate Parent { get; }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IGraphFieldResolverMetaData.Method" />
         public MethodInfo Method { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the set of parameters declared on the <see cref="Method"/>.
+        /// </summary>
+        /// <value>The parameters.</value>
         public IReadOnlyList<ParameterInfo> Parameters { get; }
 
         /// <inheritdoc />

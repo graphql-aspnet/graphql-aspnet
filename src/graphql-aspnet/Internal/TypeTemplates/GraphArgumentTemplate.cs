@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// A template describing an argument declared a field.
@@ -66,6 +67,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             if (string.IsNullOrWhiteSpace(name))
                 name = Constants.Routing.PARAMETER_META_NAME;
+
+            // determine if the user has explicitly said this is
+            // to be consumed from a DI container
+            var fromServicesAttrib = this.Parameter.SingleAttributeOfTypeOrDefault<FromServicesAttribute>();
+            if (fromServicesAttrib != null)
+                this.ArgumentModifiers = this.ArgumentModifiers | GraphArgumentModifiers.Injected;
 
             name = name.Replace(Constants.Routing.PARAMETER_META_NAME, this.Parameter.Name);
             this.Route = new GraphArgumentFieldPath(this.Parent.Route, name);
@@ -134,6 +141,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <returns>System.Boolean.</returns>
         protected virtual bool IsSourceDataArgument()
         {
+            if (this.Parent.Arguments.Any(x => x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult)))
+                return false;
+
+            if (this.ArgumentModifiers.IsInjected())
+                return false;
+
             if (this.ObjectType == this.Parent.SourceObjectType)
             {
                 var sourceType = this.ObjectType;
@@ -141,9 +154,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 {
                     sourceType = typeof(IEnumerable<>).MakeGenericType(sourceType);
                 }
-
-                if (this.Parent.Arguments.Any(x => x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult)))
-                    return false;
 
                 return sourceType == this.DeclaredArgumentType;
             }

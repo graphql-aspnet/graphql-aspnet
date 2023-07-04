@@ -79,7 +79,6 @@ namespace GraphQL.AspNet.Execution
             return new ExecutionArgumentCollection(_arguments,  fieldContext);
         }
 
-
         /// <inheritdoc />
         public IExecutionArgumentCollection ForContext(GraphDirectiveExecutionContext directiveContext)
         {
@@ -114,42 +113,48 @@ namespace GraphQL.AspNet.Execution
             for (var i = 0; i < resolverMetadata.Parameters.Count; i++)
             {
                 var parameter = resolverMetadata.Parameters[i];
+
                 object passedValue = this.ResolveParameterFromMetadata(parameter);
 
-                var fieldArgument = _fieldContext?
-                    .Request
-                    .Field
-                    .Arguments
-                    .FindArgumentByInternalName(parameter.InternalName);
-
-                fieldArgument = fieldArgument ??
-                    _directiveContext?
-                    .Request
-                    .Directive
-                    .Arguments
-                    .FindArgumentByInternalName(parameter.InternalName);
-
-                if (fieldArgument == null)
-                    throw new GraphExecutionException($"Argument '{parameter.InternalName}' was not found on its expected parent.");
-
-                if (passedValue == null && !fieldArgument.TypeExpression.IsNullable)
+                if (parameter.ArgumentModifiers.IsPartOfTheSchema())
                 {
-                    // technically shouldn't be throwable given the validation routines
-                    // but captured here as a saftey net for users
-                    // doing custom extensions or implementations
-                    throw new GraphExecutionException(
-                        $"The parameter '{parameter.InternalName}' for field '{_fieldContext?.Request?.Field?.Route.Path}' could not be resolved from the query document " +
-                        "or variable collection and no default value was found.");
-                }
+                    // additional checks and coersion if this the value is
+                    // being supplied from a query
+                    var graphArgument = _fieldContext?
+                        .Request
+                        .Field
+                        .Arguments
+                        .FindArgumentByInternalName(parameter.InternalName);
 
-                // ensure compatible list types between the internally
-                // tracked data and the target type of the method being invoked
-                // e.g. convert List<T> =>  T[]  when needed
-                if (fieldArgument.TypeExpression.IsListOfItems)
-                {
-                    var listMangler = new ListMangler(parameter.ExpectedType);
-                    var result = listMangler.Convert(passedValue);
-                    passedValue = result.Data;
+                    graphArgument = graphArgument ??
+                        _directiveContext?
+                        .Request
+                        .Directive
+                        .Arguments
+                        .FindArgumentByInternalName(parameter.InternalName);
+
+                    if (graphArgument == null)
+                        throw new GraphExecutionException($"Argument '{parameter.InternalName}' was not found on its expected parent.");
+
+                    if (passedValue == null && !graphArgument.TypeExpression.IsNullable)
+                    {
+                        // technically shouldn't be throwable given the validation routines
+                        // but captured here as a saftey net for users
+                        // doing custom extensions or implementations
+                        throw new GraphExecutionException(
+                            $"The parameter '{parameter.InternalName}' for field '{_fieldContext?.Request?.Field?.Route.Path}' could not be resolved from the query document " +
+                            "or variable collection and no default value was found.");
+                    }
+
+                    // ensure compatible list types between the internally
+                    // tracked data and the target type of the method being invoked
+                    // e.g. convert List<T> =>  T[]  when needed
+                    if (graphArgument.TypeExpression.IsListOfItems)
+                    {
+                        var listMangler = new ListMangler(parameter.ExpectedType);
+                        var result = listMangler.Convert(passedValue);
+                        passedValue = result.Data;
+                    }
                 }
 
                 preparedParams.Add(passedValue);
@@ -168,6 +173,17 @@ namespace GraphQL.AspNet.Execution
 
             if (argDefinition.ArgumentModifiers.IsCancellationToken())
                 return _fieldContext?.CancellationToken ?? default;
+
+            if (argDefinition.ArgumentModifiers.IsInjected())
+            {
+                if (_fieldContext != null)
+                    return _fieldContext.ServiceProvider.GetService(argDefinition.ExpectedType);
+
+                if (_directiveContext != null)
+                    return _directiveContext.ServiceProvider.GetService(argDefinition.ExpectedType);
+
+                return null;
+            }
 
             if (this.ContainsKey(argDefinition.InternalName))
                 return this[argDefinition.InternalName].Value;

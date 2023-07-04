@@ -44,7 +44,6 @@ namespace GraphQL.AspNet.Engine.TypeMakers
                 formatter.FormatFieldName(template.Name),
                 template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
                 template.Route,
-                template.ArgumentModifiers,
                 template.DeclaredArgumentName,
                 template.InternalName,
                 template.ObjectType,
