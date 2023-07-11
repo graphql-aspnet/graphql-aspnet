@@ -12,11 +12,13 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     using System;
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
+    using System.Runtime.Serialization;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Engine.TypeMakers;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSteps;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
@@ -58,11 +60,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             // if the owner of this field declared top level objects append them to the
             // field for evaluation
             var securityGroups = new List<AppliedSecurityPolicyGroup>();
-
-            if (template.Parent.ObjectType.Name == "ParentWithNullableChildObject")
-            {
-                string str = "";
-            }
 
             if (template.Parent?.SecurityPolicies?.Count > 0)
                 securityGroups.Add(template.Parent.SecurityPolicies);
@@ -109,19 +106,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         }
 
         /// <summary>
-        /// Instantiates the graph field according to the data provided.
+        /// Finds and applies proper casing to the graph type name returned by this field.
         /// </summary>
-        /// <param name="formatter">The formatter.</param>
-        /// <param name="template">The template.</param>
-        /// <param name="securityGroups">The security groups.</param>
-        /// <returns>MethodGraphField.</returns>
-        protected virtual MethodGraphField InstantiateField(
-            GraphNameFormatter formatter,
-            IGraphFieldTemplate template,
-            List<AppliedSecurityPolicyGroup> securityGroups)
+        /// <param name="template">The template to inspect.</param>
+        /// <returns>System.String.</returns>
+        protected virtual string PrepareTypeName(IGraphFieldTemplate template)
         {
-            var directives = template.CreateAppliedDirectives();
-
             // all fields return either an object, interface, union, scalar or enum
             IGraphType existingGraphType;
             string fallbackTypeName;
@@ -158,8 +148,26 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             // enforce non-renaming standards in the maker since the
             // directly controls the formatter
             if (GlobalScalars.CanBeRenamed(schemaTypeName))
-                schemaTypeName = formatter.FormatGraphTypeName(schemaTypeName);
+                schemaTypeName = _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(schemaTypeName);
 
+            return schemaTypeName;
+        }
+
+        /// <summary>
+        /// Instantiates the graph field according to the data provided.
+        /// </summary>
+        /// <param name="formatter">The formatter.</param>
+        /// <param name="template">The template.</param>
+        /// <param name="securityGroups">The security groups.</param>
+        /// <returns>MethodGraphField.</returns>
+        protected virtual MethodGraphField InstantiateField(
+            GraphNameFormatter formatter,
+            IGraphFieldTemplate template,
+            List<AppliedSecurityPolicyGroup> securityGroups)
+        {
+            var directives = template.CreateAppliedDirectives();
+
+            var schemaTypeName = this.PrepareTypeName(template);
             var typeExpression = template.TypeExpression.CloneTo(schemaTypeName);
 
             switch (template.FieldSource)

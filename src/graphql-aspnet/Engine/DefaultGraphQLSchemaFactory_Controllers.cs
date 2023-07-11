@@ -65,9 +65,9 @@ namespace GraphQL.AspNet.Engine
         /// <param name="action">The action to add to the schema.</param>
         protected virtual void AddAction(IGraphFieldTemplate action)
         {
-            if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection.ToGraphOperationType()))
+            var operation = action.Route.RootCollection.ToGraphOperationType();
+            if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(operation))
             {
-                var operation = action.Route.RootCollection.ToGraphOperationType();
                 this.EnsureGraphOperationType(operation);
                 var parentField = this.AddOrRetrieveControllerRoutePath(action);
                 this.AddActionAsField(parentField, action);

@@ -21,6 +21,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void Parse_SingleSubscriptionRoute_CreatesCorrectActionTemplate()
         {
             var template = new SubscriptionGraphControllerTemplate(typeof(SimpleSubscriptionController)) as GraphControllerTemplate;
+            template.Parse();
+            template.ValidateOrThrow();
+
             Assert.IsNotNull(template);
 
             Assert.AreEqual(1, template.FieldTemplates.Count());

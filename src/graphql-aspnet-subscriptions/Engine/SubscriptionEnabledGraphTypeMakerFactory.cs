@@ -48,7 +48,12 @@ namespace GraphQL.AspNet.Engine
         public override IGraphTypeTemplate MakeTemplate(Type objectType, TypeKind? kind = null)
         {
             if (Validation.IsCastable<GraphController>(objectType))
-                return new SubscriptionGraphControllerTemplate(objectType);
+            {
+                var template = new SubscriptionGraphControllerTemplate(objectType);
+                template.Parse();
+                template.ValidateOrThrow();
+                return template;
+            }
 
             return base.MakeTemplate(objectType, kind);
         }

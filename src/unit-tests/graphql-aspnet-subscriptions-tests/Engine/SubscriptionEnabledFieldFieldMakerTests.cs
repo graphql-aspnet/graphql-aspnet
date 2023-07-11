@@ -19,6 +19,8 @@ namespace GraphQL.AspNet.Tests.Engine
     using Moq;
     using NUnit.Framework;
     using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Engine;
 
     [TestFixture]
     public class SubscriptionEnabledFieldFieldMakerTests
@@ -40,8 +42,10 @@ namespace GraphQL.AspNet.Tests.Engine
 
             var schema = new TestServerBuilder().Build().Schema;
 
-            // var factory = SchemaEnabledGraphTypeFactory();
-            var maker = new SubscriptionEnabledGraphFieldMaker(schema,  null);
+            var factory = new SubscriptionEnabledGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(schema);
+
+            var maker = new SubscriptionEnabledGraphFieldMaker(schema,  factory);
 
             var field = maker.CreateField(actionTemplate).Field;
 

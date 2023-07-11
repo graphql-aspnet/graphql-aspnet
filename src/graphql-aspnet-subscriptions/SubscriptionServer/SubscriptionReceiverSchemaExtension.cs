@@ -10,10 +10,13 @@
 namespace GraphQL.AspNet.SubscriptionServer
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -89,11 +92,25 @@ namespace GraphQL.AspNet.SubscriptionServer
                     $"authorization method. (Current authorization method is \"{_schemaBuilder.Options.AuthorizationOptions.Method}\")");
             }
 
-            // swap out the master templating provider for the one that includes
+            // swap out the master templating provider for the schema to one that includes
             // support for the subscription action type if and only if the developer has not
             // already registered their own custom one
+            var existing = _schemaBuilder.Options.ServiceCollection.FirstOrDefault(x => x.ServiceType == typeof(IGraphQLTypeMakerFactory<TSchema>));
+            if (existing != null)
+            {
+                _schemaBuilder.Options
+                    .ServiceCollection
+                    .RemoveAll(typeof(IGraphQLTypeMakerFactory<TSchema>));
+            }
 
-            // need to register the subscription enable graph type maker factory
+            _schemaBuilder.Options
+                .ServiceCollection
+                .TryAdd(
+                    new ServiceDescriptor(
+                        typeof(IGraphQLTypeMakerFactory<TSchema>),
+                        typeof(SubscriptionEnabledGraphQLTypeMakerFactory<TSchema>),
+                        ServiceLifetime.Transient));
+
 
             // Update the query execution pipeline
             // ------------------------------------------

@@ -35,11 +35,13 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     public class SubscriptionEnabledGraphFieldMaker : GraphFieldMaker
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionEnabledGraphFieldMaker"/> class.
+        /// Initializes a new instance of the <see cref="SubscriptionEnabledGraphFieldMaker" /> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
-        public SubscriptionEnabledGraphFieldMaker(ISchema schema, IGraphQLTypeMakerFactory factory)
-            : base(schema, factory)
+        /// <param name="schema">The schema instance to reference when creating fields.</param>
+        /// <param name="makerFactory">The maker factory to create dependnet makers
+        /// if and when necessary.</param>
+        public SubscriptionEnabledGraphFieldMaker(ISchema schema, IGraphQLTypeMakerFactory makerFactory)
+            : base(schema, makerFactory)
         {
         }
 
@@ -56,9 +58,12 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             {
                 var directives = template.CreateAppliedDirectives();
 
+                var schemaTypeName = this.PrepareTypeName(template);
+                var typeExpression = template.TypeExpression.CloneTo(schemaTypeName);
+
                 return new SubscriptionMethodGraphField(
                     formatter.FormatFieldName(template.Name),
-                    template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
+                    typeExpression,
                     template.Route,
                     template.InternalName,
                     template.ObjectType,

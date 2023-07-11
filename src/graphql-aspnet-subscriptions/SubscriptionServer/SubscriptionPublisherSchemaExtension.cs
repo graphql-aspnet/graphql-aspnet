@@ -10,12 +10,16 @@
 namespace GraphQL.AspNet.SubscriptionServer
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
     /// A schema extension encapsulating the ability for a given schema to publish subscription events from
@@ -49,8 +53,24 @@ namespace GraphQL.AspNet.SubscriptionServer
             // swap out the master providers for the ones that includes
             // support for the subscription action type
 
-            // need to register the schema enabled type maker factory
-            throw new NotImplementedException();
+            // swap out the master templating provider for the schema to one that includes
+            // support for the subscription action type if and only if the developer has not
+            // already registered their own custom one
+            var existing = options.ServiceCollection.FirstOrDefault(x => x.ServiceType == typeof(IGraphQLTypeMakerFactory<TSchema>));
+            if (existing != null)
+            {
+                options
+                    .ServiceCollection
+                    .RemoveAll(typeof(IGraphQLTypeMakerFactory<TSchema>));
+            }
+
+            options
+                .ServiceCollection
+                .TryAdd(
+                    new ServiceDescriptor(
+                        typeof(IGraphQLTypeMakerFactory<TSchema>),
+                        typeof(SubscriptionEnabledGraphQLTypeMakerFactory<TSchema>),
+                        ServiceLifetime.Transient));
         }
 
         /// <summary>
