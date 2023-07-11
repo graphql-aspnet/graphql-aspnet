@@ -32,7 +32,9 @@ namespace GraphQL.AspNet.Configuration
         /// Initializes a new instance of the <see cref="SchemaTypeToRegister" /> class.
         /// </summary>
         /// <param name="type">The type to be registered to the schema.</param>
-        /// <param name="typeKind">The graph type kind to register the type as.</param>
+        /// <param name="typeKind">(optional) A specific graph type kind to force the type to be
+        /// coerced into.</param>
+        [DebuggerStepperBoundary]
         public SchemaTypeToRegister(Type type, TypeKind? typeKind = null)
         {
             this.Type = Validation.ThrowIfNullOrReturn(type, nameof(type));

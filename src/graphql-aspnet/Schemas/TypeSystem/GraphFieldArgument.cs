@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public string Name { get; set; }
+        public string Name { get; }
 
         /// <inheritdoc />
         public string Description { get; set; }

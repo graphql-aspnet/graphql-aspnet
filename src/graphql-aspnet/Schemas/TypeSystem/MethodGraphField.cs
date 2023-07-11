@@ -69,7 +69,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.SecurityGroups = new AppliedSecurityPolicyGroups(securityPolicies);
 
-            this.IsLeaf = GraphQLProviders.ScalarProvider.IsLeaf(this.ObjectType);
             this.UpdateResolver(resolver, mode);
             this.Publish = true;
         }
@@ -193,9 +192,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc/>
         public FieldResolutionMode Mode { get; protected set; }
-
-        /// <inheritdoc/>
-        public bool IsLeaf { get; protected set; }
 
         /// <inheritdoc/>
         public bool IsDeprecated { get; set; }

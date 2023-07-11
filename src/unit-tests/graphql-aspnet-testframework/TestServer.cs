@@ -38,6 +38,9 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Web;
+    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
     using Microsoft.AspNetCore.Http;
@@ -177,8 +180,12 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>GraphTypeCreationResult.</returns>
         public virtual GraphTypeCreationResult CreateGraphType(Type concreteType, TypeKind kind)
         {
-            var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(this.Schema, kind);
-            return maker.CreateGraphType(concreteType);
+            var factory = new DefaultGraphQLTypeMakerFactory<TSchema>();
+            factory.Initialize(this.Schema);
+            var maker = factory.CreateTypeMaker(concreteType, kind);
+
+            var template = factory.MakeTemplate(concreteType);
+            return maker.CreateGraphType(template);
         }
 
         /// <summary>
@@ -193,7 +200,10 @@ namespace GraphQL.AspNet.Tests.Framework
             where TController : GraphController
         {
             var template = GraphQLTemplateHelper.CreateFieldTemplate<TController>(actionName);
-            var fieldMaker = new GraphFieldMaker(this.Schema);
+
+            var factory = new DefaultGraphQLTypeMakerFactory<TSchema>();
+            factory.Initialize(this.Schema);
+            var fieldMaker = new GraphFieldMaker(this.Schema, factory);
             var fieldResult = fieldMaker.CreateField(template);
 
             var builder = new FieldContextBuilder(
@@ -314,7 +324,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// generic <see cref="object" /> will be used if not supplied.</param>
         /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
         /// <returns>FieldContextBuilder.</returns>
-        public virtual FieldContextBuilder CreateGraphTypeFieldContextBuilder<TType>(string fieldName, object sourceData, TypeKind? typeKind = null)
+        public virtual FieldContextBuilder CreateGraphTypeFieldContextBuilder<TType>(string fieldName, object sourceData, TypeKind typeKind)
         {
             IGraphType graphType = this.Schema.KnownTypes.FindGraphType(typeof(TType));
 
@@ -364,7 +374,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="fieldName">Name of the field.</param>
         /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
         /// <returns>IGraphMethod.</returns>
-        public virtual IGraphFieldResolverMetaData CreateResolverMetadata<TObjectType>(string fieldName, TypeKind? typeKind = null)
+        public virtual IGraphFieldResolverMetaData CreateResolverMetadata<TObjectType>(string fieldName, TypeKind typeKind)
         {
             var template = GraphQLTemplateHelper.CreateGraphTypeTemplate<TObjectType>(typeKind);
             var fieldContainer = template as IGraphTypeFieldTemplateContainer;

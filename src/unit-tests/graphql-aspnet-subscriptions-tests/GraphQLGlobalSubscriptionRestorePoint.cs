@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests
 {
+    using System;
     using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.Tests.Framework;
 
@@ -17,13 +18,12 @@ namespace GraphQL.AspNet.Tests
     /// that were present just before this object was created. Used in conjunction with NUnit to undo any changes to
     /// the global static providers in between tests.
     /// </summary>
-    public class GraphQLGlobalSubscriptionRestorePoint : GraphQLGlobalRestorePoint
+    public class GraphQLGlobalSubscriptionRestorePoint : IDisposable
     {
         private readonly int? _maxSubConnectedClient;
         private readonly int _maxSubConcurrentReceiver;
 
         public GraphQLGlobalSubscriptionRestorePoint()
-            : base()
         {
             _maxSubConnectedClient = GraphQLSubscriptionServerSettings.MaxConnectedClientCount;
             _maxSubConcurrentReceiver = GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
@@ -32,15 +32,10 @@ namespace GraphQL.AspNet.Tests
         }
 
         /// <inheritdoc />
-        protected override void Dispose(bool disposing)
+        public void Dispose()
         {
-            base.Dispose(disposing);
-
-            if (disposing)
-            {
-                GraphQLSubscriptionServerSettings.MaxConnectedClientCount = _maxSubConnectedClient;
-                GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = _maxSubConcurrentReceiver;
-            }
+            GraphQLSubscriptionServerSettings.MaxConnectedClientCount = _maxSubConnectedClient;
+            GraphQLSubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = _maxSubConcurrentReceiver;
         }
     }
 }

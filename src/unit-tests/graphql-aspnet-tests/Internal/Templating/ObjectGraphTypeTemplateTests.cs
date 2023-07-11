@@ -296,7 +296,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(1, template.FieldTemplates.Count);
 
             var expectedTypeExpression = new GraphTypeExpression(
-                typeof(TwoPropertyObject).FriendlyName(),
+                "Type",
                 MetaGraphTypes.IsList);
 
             Assert.AreEqual(1, template.FieldTemplates.Count());
@@ -341,36 +341,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual("Property3", fieldTemplate0.Name);
             Assert.AreEqual("Property1", fieldTemplate1.Name);
             Assert.AreEqual("Property2", fieldTemplate2.Name);
-        }
-
-        [Test]
-        public void Parse_WhenStructAKnownScalar_ThrowsException()
-        {
-            using var point = new GraphQLGlobalRestorePoint();
-
-            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(SimpleScalarStructGraphType));
-
-            Assert.Throws<GraphTypeDeclarationException>(() =>
-            {
-                var template = new ObjectGraphTypeTemplate(typeof(SimpleScalarStructGraphType));
-                template.Parse();
-                template.ValidateOrThrow();
-            });
-        }
-
-        [Test]
-        public void Parse_WhenObjectIsAKnownScalar_ThrowsException()
-        {
-            using var point = new GraphQLGlobalRestorePoint();
-
-            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(SimpleScalarObjectGraphType));
-
-            Assert.Throws<GraphTypeDeclarationException>(() =>
-            {
-                var template = new ObjectGraphTypeTemplate(typeof(SimpleScalarObjectGraphType));
-                template.Parse();
-                template.ValidateOrThrow();
-            });
         }
 
         [Test]

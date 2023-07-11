@@ -12,6 +12,9 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Resolvers;
+    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
@@ -26,10 +29,14 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         {
             var builder = new TestServerBuilder();
             var server = builder.Build();
-            var typeMaker = new DefaultGraphTypeMakerProvider()
-                                .CreateTypeMaker(server.Schema, TypeKind.DIRECTIVE);
 
-            var directive = typeMaker.CreateGraphType(typeof(MultiMethodDirective)).GraphType as IDirective;
+            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(server.Schema);
+
+            var template = factory.MakeTemplate(typeof(MultiMethodDirective), TypeKind.DIRECTIVE);
+            var typeMaker = new DirectiveMaker(server.Schema.Configuration, factory.CreateArgumentMaker());
+
+            var directive = typeMaker.CreateGraphType(template).GraphType as IDirective;
 
             Assert.AreEqual("multiMethod", directive.Name);
             Assert.AreEqual("A Multi Method Directive", directive.Description);
@@ -57,10 +64,14 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         {
             var builder = new TestServerBuilder();
             var server = builder.Build();
-            var typeMaker = new DefaultGraphTypeMakerProvider()
-                                .CreateTypeMaker(server.Schema, TypeKind.DIRECTIVE);
 
-            var directive = typeMaker.CreateGraphType(typeof(RepeatableDirective)).GraphType as IDirective;
+            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(server.Schema);
+
+            var template = factory.MakeTemplate(typeof(RepeatableDirective), TypeKind.DIRECTIVE);
+            var typeMaker = new DirectiveMaker(server.Schema.Configuration, factory.CreateArgumentMaker());
+
+            var directive = typeMaker.CreateGraphType(template).GraphType as IDirective;
 
             Assert.IsTrue((bool)directive.IsRepeatable);
             Assert.AreEqual("repeatable", directive.Name);

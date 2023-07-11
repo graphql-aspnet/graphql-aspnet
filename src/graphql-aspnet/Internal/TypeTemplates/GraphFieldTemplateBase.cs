@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
@@ -85,7 +86,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             var objectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
             var typeExpression = GraphTypeExpression.FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers);
-            typeExpression = typeExpression.CloneTo(GraphTypeNames.ParseName(objectType, this.Parent.Kind));
+            typeExpression = typeExpression.CloneTo("Type");
 
             // ------------------------------------
             // Gather Possible Types and/or union definition
@@ -161,11 +162,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
 
             this.ObjectType = objectType;
-
-            if (this.UnionProxy != null)
-                this.TypeExpression = typeExpression.CloneTo(this.UnionProxy.Name);
-            else
-                this.TypeExpression = typeExpression;
+            this.TypeExpression = typeExpression;
 
             // ------------------------------------
             // Async Requirements
@@ -242,7 +239,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 if (enforceUnionRules)
                 {
-                    if (GraphQLProviders.ScalarProvider.IsScalar(type))
+                    if (type.IsEnum)
+                    {
+                        throw new GraphTypeDeclarationException(
+                            $"The field '{this.InternalFullName}' declares a union with a possible type of '{type.FriendlyName()}' " +
+                            "but that type is an enum. Only concrete, non-abstract classes may be used.  Value types, such as structs or enumerations, are not allowed.");
+                    }
+
+                    if (GraphValidation.MustBeLeafType(type))
                     {
                         throw new GraphTypeDeclarationException(
                             $"The field '{this.InternalFullName}' declares union with a possible type of '{type.FriendlyName()}' " +
@@ -254,20 +258,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                         throw new GraphTypeDeclarationException(
                             $"The field '{this.InternalFullName}'  declares union with  a possible type of '{type.FriendlyName()}' " +
                             "but that type is an interface. Interfaces cannot be included in a field's possible type collection, only object types can.");
-                    }
-
-                    if (type.IsEnum)
-                    {
-                        throw new GraphTypeDeclarationException(
-                            $"The field '{this.InternalFullName}' declares a union with a possible type of '{type.FriendlyName()}' " +
-                            "but that type is an enum. Only concrete, non-abstract classes may be used.  Value types, such as structs or enumerations, are not allowed.");
-                    }
-
-                    if (!type.IsClass)
-                    {
-                        throw new GraphTypeDeclarationException(
-                            $"The field '{this.InternalFullName}' returns an interface named '{this.ObjectType.FriendlyName()}' and declares a possible type of '{type.FriendlyName()}' " +
-                            "but that type is not a valid class. Only concrete, non-abstract classes may be used.  Value types, such as structs or enumerations, are also not allowed.");
                     }
                 }
 
@@ -421,7 +411,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 var proxyType = fieldAttribute.Types.FirstOrDefault();
                 if (proxyType != null)
-                    proxy = GraphQLProviders.GraphTypeMakerProvider.CreateUnionProxyFromType(proxyType);
+                    proxy = GraphQLProviders.CreateUnionProxyFromType(proxyType);
             }
 
             // when no proxy type is declared attempt to construct the proxy from types supplied

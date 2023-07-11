@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="fieldDefinition">A single, runtime configured, field definition
         /// to templatize for a specfic schema.</param>
-        public RuntimeGraphControllerTemplate(IGraphQLResolvableSchemaItemDefinition fieldDefinition)
+        public RuntimeGraphControllerTemplate(IGraphQLRuntimeResolvedFieldDefinition fieldDefinition)
             : base(typeof(RuntimeFieldExecutionController))
         {
             if (fieldDefinition.Resolver?.Method == null)

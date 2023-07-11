@@ -37,8 +37,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
-            GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
-            GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
             GraphQLSchemaBuilderExtensions.Clear();
 
             var serviceCollection = new ServiceCollection();
@@ -62,8 +60,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
-            GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
-            GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
             GraphQLSchemaBuilderExtensions.Clear();
 
             var serviceCollection = new ServiceCollection();
@@ -88,8 +84,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
-            GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
-            GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
             GraphQLSchemaBuilderExtensions.Clear();
 
             var serviceCollection = new ServiceCollection();
@@ -108,10 +102,6 @@ namespace GraphQL.AspNet.Tests.Configuration
         {
             // setup the server with a hard declaration of nothing
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
-
-            // ensure the runtime is in a default state (just in case the statics got messed up)
-            GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
-            GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
             GraphQLSchemaBuilderExtensions.Clear();
 
             SchemaOptions<GraphSchema> optionsSaved = null;
@@ -134,8 +124,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
-            GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
-            GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
             GraphQLSchemaBuilderExtensions.Clear();
 
             var serviceCollection = new ServiceCollection();
@@ -160,10 +148,6 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             // ensure router is registered
             Assert.IsNotNull(sp.GetService(typeof(ISubscriptionEventRouter)));
-
-            // ensure the template provider for the runtime is swapped
-            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTypeTemplateProvider);
-            Assert.IsTrue(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider);
         }
 
         [Test]
@@ -172,8 +156,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
-            GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
-            GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
 
             var serviceCollection = new ServiceCollection();
 
@@ -208,10 +190,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(ISubscriptionEventPublisher)));
             Assert.IsNotNull(sp.GetService(typeof(SubscriptionEventPublishingQueue)));
             Assert.IsNotNull(sp.GetService(typeof(IHostedService)) as SubscriptionPublicationService);
-
-            // ensure the template provider for the runtime is swapped
-            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTypeTemplateProvider);
-            Assert.IsTrue(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider);
         }
     }
 }

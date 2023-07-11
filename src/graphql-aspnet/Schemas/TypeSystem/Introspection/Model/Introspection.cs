@@ -41,6 +41,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         {
             for (var i = wrappers.Count - 1; i >= 0; i--)
             {
+                if(baseType == null)
+                {
+                    string str = "";
+                }
+
                 switch (wrappers[i])
                 {
                     case MetaGraphTypes.IsNotNull:

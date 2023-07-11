@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
@@ -26,6 +27,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns>IEnumerable&lt;ISchemaItem&gt;.</returns>
         public static IEnumerable<ISchemaItem> AllSchemaItems(this ISchema schema, bool includeDirectives = false)
         {
+            Validation.ThrowIfNull(schema, nameof(schema));
+
             // schema first
             yield return schema;
 

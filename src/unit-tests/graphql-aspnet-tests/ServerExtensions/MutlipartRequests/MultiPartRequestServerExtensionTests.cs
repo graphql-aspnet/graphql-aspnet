@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 {
     using System.Linq;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Engine;
@@ -20,7 +19,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema;
-    using GraphQL.AspNet.Tests.Execution.TestData.DirectiveProcessorTypeSystemLocationTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests.TestData;
     using Microsoft.Extensions.DependencyInjection;
@@ -33,9 +31,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void DefaultUsage_DefaultProcessorIsRegistered()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-            GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
-
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);
 
@@ -47,25 +42,17 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void DefaultUsage_ScalarIsRegistered()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-            GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
-
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);
 
-            Assert.IsFalse(GraphQLProviders.ScalarProvider.IsScalar(typeof(FileUpload)));
-
             options.RegisterExtension<MultipartRequestServerExtension>();
 
-            Assert.IsTrue(GraphQLProviders.ScalarProvider.IsScalar(typeof(FileUpload)));
+            Assert.IsTrue(options.SchemaTypesToRegister.Any(x => x.Type == typeof(FileUploadScalarGraphType)));
         }
 
         [Test]
         public void DefaultUsage_WhenProcessorIsAlreadyRegistered_ThrowsException()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-            GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
-
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);
             options.QueryHandler.HttpProcessorType = typeof(DefaultGraphQLHttpProcessor<GraphSchema>);
@@ -79,9 +66,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void DefaultUsage_CustomProcessorIsChangedToSomethingNotCompatiable_ThrowsExceptionOnUsage()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-            GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
-
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);
 
@@ -102,8 +86,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void DeclineDefaultProcessor_CustomProcessorIsSetManually_NoException()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);
 
@@ -125,8 +107,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void UseExtension_WithNoProvider_DoesNothing()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var collection = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(collection);
 
@@ -148,8 +128,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void UseExtension_CheckingForACompatiableProvider_NoConfigChanges_ProviderFirst_ThrowsException()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var extension = new MultipartRequestServerExtension((o) => { });
             var serverBuilder = new TestServerBuilder();
 
@@ -171,8 +149,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void UseExtension_CheckingForACompatiableProvider_NoConfigChanges_ProviderLast_IsValid()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var extension = new MultipartRequestServerExtension((o) => { });
             var serverBuilder = new TestServerBuilder();
 
@@ -191,8 +167,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void UseExtension_NotRegisteringProvider_CheckingForACompatiableProvider_ProviderLast_IsValid()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var extension = new MultipartRequestServerExtension((o) =>
             {
                 o.RegisterMultipartRequestHttpProcessor = false;
@@ -216,8 +190,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void UseExtension_NotRegisteringProvider_CheckingForACompatiableProvider_ProviderFirst_IsValid()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var extension = new MultipartRequestServerExtension((o) =>
             {
                 o.RegisterMultipartRequestHttpProcessor = false;

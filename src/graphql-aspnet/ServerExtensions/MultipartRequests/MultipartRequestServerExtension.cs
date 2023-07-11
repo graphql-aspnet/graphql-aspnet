@@ -94,11 +94,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests
             }
 
             // register a scalar that represents the file
-            var isRegisteredScalar = GraphQLProviders.ScalarProvider.IsScalar(typeof(FileUpload));
-            if (!isRegisteredScalar)
-            {
-                GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(FileUploadScalarGraphType));
-            }
+            options.AddGraphType<FileUploadScalarGraphType>();
 
             // register the config options for the schema
             var configurationServiceType = typeof(IMultipartRequestConfiguration<>).MakeGenericType(options.SchemaType);

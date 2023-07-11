@@ -1345,13 +1345,10 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task SpecifiedByEarlyBound_PopulateSpecifiedByURL()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-
-            GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
-            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(CustomSpecifiedScalar));
             var serverBuilder = new TestServerBuilder();
             var server = serverBuilder.AddGraphQL(o =>
             {
+                o.AddGraphType<CustomSpecifiedScalar>();
                 o.AddGraphType<ObjectWithCustomScalar>();
             })
             .Build();

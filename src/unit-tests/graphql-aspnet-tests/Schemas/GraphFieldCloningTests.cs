@@ -85,7 +85,6 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(field.Publish, clonedField.Publish);
             Assert.AreEqual("[type]/BobType/field1", clonedField.Route.Path);
             Assert.AreEqual(field.Mode, clonedField.Mode);
-            Assert.AreEqual(field.IsLeaf, clonedField.IsLeaf);
             Assert.AreEqual(field.IsDeprecated, clonedField.IsDeprecated);
             Assert.AreEqual(field.DeprecationReason, clonedField.DeprecationReason);
             Assert.AreEqual(field.Complexity, clonedField.Complexity);
@@ -168,7 +167,6 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(field.Publish, clonedField.Publish);
             Assert.AreEqual("[type]/BobType/field1", clonedField.Route.Path);
             Assert.AreEqual(field.Mode, clonedField.Mode);
-            Assert.AreEqual(field.IsLeaf, clonedField.IsLeaf);
             Assert.AreEqual(field.IsDeprecated, clonedField.IsDeprecated);
             Assert.AreEqual(field.DeprecationReason, clonedField.DeprecationReason);
             Assert.AreEqual(field.Complexity, clonedField.Complexity);

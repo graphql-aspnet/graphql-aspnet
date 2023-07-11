@@ -43,13 +43,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
         IGraphField Clone(IGraphType parent);
 
         /// <summary>
-        /// Gets a value indicating whether this instance is a leaf field; one capable of generating
-        /// a real data item vs. generating data to be used in down stream projections.
-        /// </summary>
-        /// <value><c>true</c> if this instance is a leaf field; otherwise, <c>false</c>.</value>
-        bool IsLeaf { get; }
-
-        /// <summary>
         /// <para>Gets an object that will perform some operation against an execution
         /// context to fulfill the requirements of this resolvable entity.
         /// </para>

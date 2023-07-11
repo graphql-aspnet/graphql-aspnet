@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Configuration
 
         private readonly List<ServiceToRegister> _registeredServices;
         private readonly List<IGraphQLRuntimeSchemaItemDefinition> _runtimeTemplates;
-        private List<ISchemaConfigurationExtension> _configExtensions;
+        private List<ISchemaExtension> _configExtensions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaOptions" /> class.
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Configuration
             _runtimeTemplates = new List<IGraphQLRuntimeSchemaItemDefinition>();
             _serverExtensions = new Dictionary<Type, IGraphQLServerExtension>();
             _registeredServices = new List<ServiceToRegister>();
-            _configExtensions = new List<ISchemaConfigurationExtension>();
+            _configExtensions = new List<ISchemaExtension>();
 
             this.DeclarationOptions = new SchemaDeclarationConfiguration();
             this.CacheOptions = new SchemaQueryExecutionPlanCacheConfiguration();
@@ -282,7 +282,7 @@ namespace GraphQL.AspNet.Configuration
         /// further processing after the extension executes.
         /// </summary>
         /// <param name="extension">The extension to apply.</param>
-        public void AddConfigurationExtension(ISchemaConfigurationExtension extension)
+        public void AddSchemaExtension(ISchemaExtension extension)
         {
             Validation.ThrowIfNull(extension, nameof(extension));
             _configExtensions.Add(extension);
@@ -294,7 +294,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <typeparam name="TDirectiveType">The type of the directive to apply.</typeparam>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveBindingConfiguration ApplyDirective<TDirectiveType>()
+        public DirectiveBindingSchemaExtension ApplyDirective<TDirectiveType>()
             where TDirectiveType : GraphDirective
         {
             return this.ApplyDirective(typeof(TDirectiveType));
@@ -306,14 +306,14 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="directiveType">The type of the directive to apply to schema items.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveBindingConfiguration ApplyDirective(Type directiveType)
+        public DirectiveBindingSchemaExtension ApplyDirective(Type directiveType)
         {
             Validation.ThrowIfNull(directiveType, nameof(directiveType));
             Validation.ThrowIfNotCastable<GraphDirective>(directiveType, nameof(directiveType));
 
             this.AddType(directiveType, null, null);
-            var applicator = new DirectiveBindingConfiguration(directiveType);
-            this.AddConfigurationExtension(applicator);
+            var applicator = new DirectiveBindingSchemaExtension(directiveType);
+            this.AddSchemaExtension(applicator);
 
             return applicator;
         }
@@ -325,11 +325,11 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="directiveName">Name of the directive.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveBindingConfiguration ApplyDirective(string directiveName)
+        public DirectiveBindingSchemaExtension ApplyDirective(string directiveName)
         {
             directiveName = Validation.ThrowIfNullWhiteSpaceOrReturn(directiveName, nameof(directiveName));
-            var applicator = new DirectiveBindingConfiguration(directiveName);
-            this.AddConfigurationExtension(applicator);
+            var applicator = new DirectiveBindingSchemaExtension(directiveName);
+            this.AddSchemaExtension(applicator);
 
             return applicator;
         }
@@ -386,7 +386,7 @@ namespace GraphQL.AspNet.Configuration
         /// created.
         /// </summary>
         /// <value>The configuration extensions.</value>
-        public IEnumerable<ISchemaConfigurationExtension> ConfigurationExtensions => _configExtensions;
+        public IEnumerable<ISchemaExtension> SchemaExtensions => _configExtensions;
 
         /// <summary>
         /// Gets or sets a value indicating whether any <see cref="GraphController"/>, <see cref="GraphDirective"/>  or

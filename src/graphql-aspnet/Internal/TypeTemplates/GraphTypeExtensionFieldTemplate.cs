@@ -102,11 +102,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     "All methods wishing to be treated as type extensions must define one instance of this attribute to properly configure the runtime.");
             }
 
-            if (GraphQLProviders.ScalarProvider.IsLeaf(this.SourceObjectType))
+            if (!this.SourceObjectType.IsClass && !this.SourceObjectType.IsStruct() && !this.SourceObjectType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The type extension '{this.InternalFullName}' is attempting to extend '{this.SourceObjectType.FriendlyName()}' which is a leaf type ({nameof(TypeKind.SCALAR)}, {nameof(TypeKind.ENUM)}). " +
-                    "Leaf types cannot be extended.");
+                    $"The type extension '{this.InternalFullName}' is attempting to extend '{this.SourceObjectType.FriendlyName()}'. " +
+                    "Only classes, structs and  interfaces can be extended.");
             }
 
             base.ValidateOrThrow();

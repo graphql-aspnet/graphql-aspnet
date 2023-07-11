@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System;
     using GraphQL.AspNet.Engine.TypeMakers;
+    using GraphQL.AspNet.Interfaces.Internal;
 
     /// <summary>
     /// An object that can create a specific graph type from its associated concrete type according to a set of rules
@@ -20,10 +21,11 @@ namespace GraphQL.AspNet.Interfaces.Engine
     {
         /// <summary>
         /// Inspects the given type and, in accordance with the rules of this maker, will
-        /// generate a complete set of necessary graph types required to support it.
+        /// generate a complete a graph type and a complete set of dependencies required to support it.
         /// </summary>
-        /// <param name="concreteType">The concrete type to incorporate into the schema.</param>
+        /// <param name="typeTemplate">The graph type template to use when creating
+        /// a new graph type.</param>
         /// <returns>GraphTypeCreationResult.</returns>
-        GraphTypeCreationResult CreateGraphType(Type concreteType);
+        GraphTypeCreationResult CreateGraphType(IGraphTypeTemplate typeTemplate);
     }
 }

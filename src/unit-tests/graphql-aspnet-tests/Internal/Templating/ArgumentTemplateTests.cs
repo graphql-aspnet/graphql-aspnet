@@ -186,7 +186,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var template = this.ExtractParameterTemplate("arrayOfObjects", out var paramInfo);
             Assert.AreEqual(typeof(Person[]), template.Parameter.ParameterType);
-            Assert.AreEqual("[Input_Person]", template.TypeExpression.ToString());
+            Assert.AreEqual("[Type]", template.TypeExpression.ToString());
             Assert.AreEqual(null, template.DefaultValue);
         }
 
@@ -195,7 +195,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var template = this.ExtractParameterTemplate("arrayOfEnumerableOfObject", out var paramInfo);
             Assert.AreEqual(typeof(IEnumerable<Person>[]), template.Parameter.ParameterType);
-            Assert.AreEqual("[[Input_Person]]", template.TypeExpression.ToString());
+            Assert.AreEqual("[[Type]]", template.TypeExpression.ToString());
             Assert.AreEqual(null, template.DefaultValue);
         }
 
@@ -204,7 +204,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var template = this.ExtractParameterTemplate("enumerableOfArrayOfObjects", out var paramInfo);
             Assert.AreEqual(typeof(IEnumerable<Person[]>), template.Parameter.ParameterType);
-            Assert.AreEqual("[[Input_Person]]", template.TypeExpression.ToString());
+            Assert.AreEqual("[[Type]]", template.TypeExpression.ToString());
             Assert.AreEqual(null, template.DefaultValue);
         }
 
@@ -213,7 +213,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var template = this.ExtractParameterTemplate("arrayOfEnumerableOfArrayOfObjects", out var paramInfo);
             Assert.AreEqual(typeof(IEnumerable<Person[]>[]), template.Parameter.ParameterType);
-            Assert.AreEqual("[[[Input_Person]]]", template.TypeExpression.ToString());
+            Assert.AreEqual("[[[Type]]]", template.TypeExpression.ToString());
             Assert.AreEqual(null, template.DefaultValue);
         }
 
@@ -222,7 +222,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var template = this.ExtractParameterTemplate("deepArray", out var paramInfo);
             Assert.AreEqual(typeof(Person[][][][][][][][][][][][][][][][][][][]), template.Parameter.ParameterType);
-            Assert.AreEqual("[[[[[[[[[[[[[[[[[[[Input_Person]]]]]]]]]]]]]]]]]]]", template.TypeExpression.ToString());
+            Assert.AreEqual("[[[[[[[[[[[[[[[[[[[Type]]]]]]]]]]]]]]]]]]]", template.TypeExpression.ToString());
             Assert.AreEqual(null, template.DefaultValue);
         }
 
@@ -243,7 +243,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             // actual type expression "Int"
             // declared as Int!
             var template = this.ExtractParameterTemplate("compatiableTypeExpressionSingle", out var paramInfo);
-            Assert.AreEqual("Int!", template.TypeExpression.ToString());
+            Assert.AreEqual("Type!", template.TypeExpression.ToString());
         }
 
         [Test]
@@ -252,7 +252,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             // actual type expression [Int]
             // declared as [Int!]!
             var template = this.ExtractParameterTemplate("compatiableTypeExpressionList", out var paramInfo);
-            Assert.AreEqual("[Int!]!", template.TypeExpression.ToString());
+            Assert.AreEqual("[Type!]!", template.TypeExpression.ToString());
         }
 
         [Test]

@@ -10,8 +10,6 @@
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
     using System.Linq;
-    using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData;
     using NUnit.Framework;
@@ -19,12 +17,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     [TestFixture]
     public class GraphControllerTemplateTests
     {
-        public IGraphTypeTemplateProvider SubscriptionTemplateProvider => new SubscriptionEnabledTypeTemplateProvider();
-
         [Test]
         public void Parse_SingleSubscriptionRoute_CreatesCorrectActionTemplate()
         {
-            var template = this.SubscriptionTemplateProvider.ParseType<SimpleSubscriptionController>() as GraphControllerTemplate;
+            var template = new SubscriptionGraphControllerTemplate(typeof(SimpleSubscriptionController)) as GraphControllerTemplate;
             Assert.IsNotNull(template);
 
             Assert.AreEqual(1, template.FieldTemplates.Count());

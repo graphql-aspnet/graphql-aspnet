@@ -20,9 +20,11 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     using System.Collections.Generic;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
@@ -36,8 +38,8 @@ namespace GraphQL.AspNet.Engine.TypeMakers
         /// Initializes a new instance of the <see cref="SubscriptionEnabledGraphFieldMaker"/> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        public SubscriptionEnabledGraphFieldMaker(ISchema schema)
-            : base(schema)
+        public SubscriptionEnabledGraphFieldMaker(ISchema schema, IGraphQLTypeMakerFactory factory)
+            : base(schema, factory)
         {
         }
 

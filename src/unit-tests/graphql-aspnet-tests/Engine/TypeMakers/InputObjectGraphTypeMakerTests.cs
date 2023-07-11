@@ -40,8 +40,8 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 
             // string, OneMarkedProperty
             Assert.AreEqual(2, Enumerable.Count<DependentType>(typeResult.DependentTypes));
-            Assert.IsTrue(Enumerable.Any<DependentType>(typeResult.DependentTypes, x => x.Type == typeof(OneMarkedProperty) && x.ExpectedKind == TypeKind.INPUT_OBJECT));
-            Assert.IsTrue(Enumerable.Any<DependentType>(typeResult.DependentTypes, x => x.Type == typeof(string) && x.ExpectedKind == TypeKind.SCALAR));
+            Assert.IsTrue(Enumerable.Any<DependentType>(typeResult.DependentTypes, x => x.Type == typeof(OneMarkedProperty)));
+            Assert.IsTrue(Enumerable.Any<DependentType>(typeResult.DependentTypes, x => x.Type == typeof(string)));
         }
 
         [Test]

@@ -134,7 +134,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc/>
-        protected override GraphArgumentTemplate CreateInputArgument(ParameterInfo paramInfo)
+        protected override GraphArgumentTemplate CreateArgument(ParameterInfo paramInfo)
         {
             if (this.Route.RootCollection == Execution.SchemaItemCollections.Subscription)
             {
@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     _explicitlyDeclaredAsSubscriptionSourceType != null);
             }
 
-            return base.CreateInputArgument(paramInfo);
+            return base.CreateArgument(paramInfo);
         }
 
         /// <inheritdoc />

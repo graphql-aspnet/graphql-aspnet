@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             // set appropriate meta data about this parameter for inclusion in the type system
             this.TypeExpression = GraphTypeExpression.FromType(this.DeclaredArgumentType, this.DeclaredTypeWrappers);
-            this.TypeExpression = this.TypeExpression.CloneTo(GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT));
+            this.TypeExpression = this.TypeExpression.CloneTo("Type");
 
             // when this argument accepts the same data type as the data returned by its owners target source type
             // i.e. if the source data supplied to the field for resolution is the same as this argument
@@ -229,7 +229,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 .FromType(this.DeclaredArgumentType)
                 .CloneTo(GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT));
 
-            if (!GraphTypeExpression.AreTypesCompatiable(actualTypeExpression, this.TypeExpression))
+            if (!GraphTypeExpression.AreTypesCompatiable(actualTypeExpression, this.TypeExpression, false))
             {
                 throw new GraphTypeDeclarationException(
                     $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' that " +

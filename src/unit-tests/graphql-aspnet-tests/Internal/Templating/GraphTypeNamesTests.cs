@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Internal.Templating.GraphTypeNameTestData;
     using NUnit.Framework;
 
@@ -62,22 +63,16 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Item_ScalarParsesToScalarName_Always()
+        public void ScalarNames_AreUnique()
         {
-            foreach (var scalarType in GraphQLProviders.ScalarProvider.ScalarInstanceTypes)
+            var nameSet = new HashSet<string>();
+            foreach (var scalarType in GlobalScalars.ScalarInstanceTypes)
             {
                 var scalar = InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
-                var nameSet = new HashSet<string>();
-                var concreteType = GraphQLProviders.ScalarProvider.RetrieveConcreteType(scalar.Name);
-                foreach (var typeKind in Enum.GetValues(typeof(TypeKind)).Cast<TypeKind>())
-                {
-                    var name = GraphTypeNames.ParseName(concreteType, typeKind);
-                    if (!nameSet.Contains(name))
-                        nameSet.Add(name);
-
-                    Assert.AreEqual(1, nameSet.Count);
-                }
+                nameSet.Add(scalar.Name.ToLowerInvariant());
             }
+
+            Assert.AreEqual(GlobalScalars.ScalarInstanceTypes.Count(), nameSet.Count);
         }
 
         [Test]

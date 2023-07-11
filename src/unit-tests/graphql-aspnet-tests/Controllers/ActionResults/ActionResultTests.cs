@@ -19,6 +19,8 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Tests.Controllers.ActionResults.ActuionResultTestData;
     using GraphQL.AspNet.Tests.Framework;
     using Moq;
@@ -46,6 +48,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var argTemplate = methodTemplate.Arguments[0];
 
             var mockedOwner = new Mock<ISchemaItem>();
+
             var fieldArg = new GraphArgumentMaker(server.Schema).CreateArgument(mockedOwner.Object, argTemplate).Argument;
 
             // name is marked required, will fail

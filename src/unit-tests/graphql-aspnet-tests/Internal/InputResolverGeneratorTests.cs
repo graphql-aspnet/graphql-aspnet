@@ -47,12 +47,9 @@ namespace GraphQL.AspNet.Tests.Internal
         private ISchema CreateSchema()
         {
             var builder = new TestServerBuilder();
-            var defaultScalars = new DefaultScalarGraphTypeProvider();
 
-            foreach (var scalarConcreteType in defaultScalars.ConcreteTypes)
-            {
+            foreach (var scalarConcreteType in GlobalScalars.ScalarInstanceTypes)
                 builder.AddType(scalarConcreteType);
-            }
 
             builder.AddType(typeof(TestEnum));
             builder.AddType(typeof(Telephone), TypeKind.INPUT_OBJECT);

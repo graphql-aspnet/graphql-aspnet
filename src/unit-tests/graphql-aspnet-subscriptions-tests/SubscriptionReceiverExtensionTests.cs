@@ -72,7 +72,6 @@ namespace GraphQL.AspNet.Tests
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             var serviceCollection = new ServiceCollection();
-            GraphQLProviders.TemplateProvider = null;
 
             var primaryOptions = new SchemaOptions<GraphSchema>(serviceCollection);
             var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();
@@ -99,8 +98,6 @@ namespace GraphQL.AspNet.Tests
             // legacy graphql-ws objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GraphqlWsLegacySubscriptionClientProxyFactory)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GraphqlWsLegacySubscriptionClientProxyFactoryAlternate)));
-
-            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTypeTemplateProvider);
         }
 
         [Test]
@@ -135,7 +132,6 @@ namespace GraphQL.AspNet.Tests
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             var serviceCollection = new ServiceCollection();
-            GraphQLProviders.TemplateProvider = null;
 
             var primaryOptions = new SchemaOptions<GraphSchema>(serviceCollection);
             var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();

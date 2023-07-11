@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Tests
         {
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
-            GraphQLProviders.TemplateProvider = null;
             var collection = new ServiceCollection();
 
             var primaryOptions = new SchemaOptions<GraphSchema>(collection);
@@ -38,7 +37,6 @@ namespace GraphQL.AspNet.Tests
             extension.Configure(primaryOptions);
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphOperationType.Subscription));
-            Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTypeTemplateProvider);
         }
     }
 }

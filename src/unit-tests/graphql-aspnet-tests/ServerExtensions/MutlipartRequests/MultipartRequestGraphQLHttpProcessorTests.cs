@@ -93,10 +93,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var builder = new TestServerBuilder();
 
-            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(FileUploadScalarGraphType));
             builder.AddSingleton<IFileUploadScalarValueMaker, DefaultFileUploadScalarValueMaker>();
             builder.AddGraphQL(o =>
             {
+                o.AddType<FileUploadScalarGraphType>();
                 o.AddController<MultiPartFileController>();
                 o.ResponseOptions.TimeStampLocalizer = (d) => _staticFailDate;
             });
@@ -130,8 +130,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public async Task NotAMultiPartRequest_ParsesAsNormal()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var (context, processor) = this.CreateTestObjects();
 
             var _options = new JsonSerializerOptions();
@@ -172,8 +170,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public async Task NonBatchedQuery_NoFiles_ReturnsStandardResult()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var (context, processor) = this.CreateTestObjects(
                 fields: new[]
                 {
@@ -207,8 +203,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public async Task NonBatchedQuery_SingleFile_ReturnsStandardResult()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var query1 = @"
                 query($inboundFile: Upload!)
                 {
@@ -255,8 +249,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public async Task NonBatchedQuery_SingleFile_InvalidMapField_Errors()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var query1 = @"
                 query($inboundFile: Upload!)
                 {
@@ -292,7 +284,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public async Task InvalidOperationsJson_HandlesParsingException()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
             var (context, processor) = this.CreateTestObjects(
                 fields: new[]
                 {
@@ -309,7 +300,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public async Task NoQueriesOnBatch_HandlesParsingException()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
             var (context, processor) = this.CreateTestObjects(
                 fields: new[]
                 {
@@ -323,8 +313,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public async Task MultiPartForm_NoFiles_ReturnsStandardResult()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var query1 = @"
                 query
                 {
@@ -383,8 +371,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public async Task RuntimeThrowsException_CustomResultIsGenerated()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var runtime = new Mock<IGraphQLRuntime<GraphSchema>>();
             runtime.Setup(x => x.ExecuteRequestAsync(
                 It.IsAny<IServiceProvider>(),

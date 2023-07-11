@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
-                typeof(TwoPropertyObject).FriendlyName(),
+                "Type",
                 MetaGraphTypes.IsList);
 
             var parent = obj.Object;

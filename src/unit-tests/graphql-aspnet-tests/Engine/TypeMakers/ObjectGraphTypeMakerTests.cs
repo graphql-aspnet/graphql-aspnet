@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
@@ -40,13 +41,16 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         }
 
         [Test]
-        public void Interface_CreateGraphType_ParsesCorrectly()
+        public void Object_CreateGraphType_ParsesCorrectly()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames).Build();
-            var template = GraphQLTemplateHelper.CreateGraphTypeTemplate<TypeCreationItem>();
-            var typeMaker = new DefaultGraphTypeMakerProvider();
+            var template = GraphQLTemplateHelper.CreateGraphTypeTemplate<TypeCreationItem>(TypeKind.OBJECT);
+            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(server.Schema);
 
-            var objectGraphType = typeMaker.CreateTypeMaker(server.Schema, TypeKind.OBJECT).CreateGraphType(typeof(TypeCreationItem)).GraphType as IObjectGraphType;
+            var objectGraphType = factory
+                .CreateTypeMaker(typeof(TypeCreationItem))
+                .CreateGraphType(template).GraphType as IObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
             Assert.AreEqual(nameof(TypeCreationItem), objectGraphType.Name);

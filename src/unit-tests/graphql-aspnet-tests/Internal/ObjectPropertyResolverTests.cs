@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Internal
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.Resolvers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.Extensions.DiExtensionTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
@@ -32,7 +33,8 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.Address1),
-                null);
+                null,
+                TypeKind.OBJECT);
 
             fieldContextBuilder.AddSourceData(null);
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
@@ -55,7 +57,8 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.Address1),
-                null);
+                null,
+                TypeKind.OBJECT);
 
             var item = new ResolverObject();
             item.Address1 = "15th Street";
@@ -85,7 +88,8 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.Address1),
-                null);
+                null,
+                TypeKind.OBJECT);
 
             fieldContextBuilder.AddSourceData(new TwoPropertyObject());
 
@@ -115,7 +119,8 @@ namespace GraphQL.AspNet.Tests.Internal
             // resolving structA, but supplying structB as source
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverStructA>(
                 nameof(ResolverStructA.Prop1),
-                new ResolverStructB("struct"));
+                new ResolverStructB("struct"),
+                TypeKind.OBJECT);
 
             // source data is not of the type the resolver is for
             var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
@@ -136,7 +141,8 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.PropertyThrowException),
-                new ResolverObject());
+                new ResolverObject(),
+                TypeKind.OBJECT);
 
             // source data is not of the type the resolver is for
             fieldContextBuilder.AddSourceData(new ResolverObject());
@@ -160,7 +166,8 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.Address1Async),
-                new ResolverObject());
+                new ResolverObject(),
+                TypeKind.OBJECT);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
@@ -181,7 +188,8 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.AsyncPropException),
-                new ResolverObject());
+                new ResolverObject(),
+                TypeKind.OBJECT);
 
             // source data is not of the type the resolver is for
             fieldContextBuilder.AddSourceData(new ResolverObject());

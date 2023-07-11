@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.Common;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// Updates the status of the data item on the context based on its current state.
@@ -32,10 +33,18 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
                 if (context.DataItem.Status == FieldDataItemResolutionStatus.ResultAssigned)
                 {
                     // if a data value was set ensure any potnetial children are processed
-                    if (context.DataItem.ResultData == null || context.DataItem.FieldContext.Field.IsLeaf)
+                    if (context.DataItem.ResultData == null)
+                    {
                         context.DataItem.Complete();
+                    }
                     else
-                        context.DataItem.RequireChildResolution();
+                    {
+                        var graphType = context.Schema.KnownTypes.FindGraphType(context.Field.TypeExpression.TypeName);
+                        if (graphType != null && graphType.Kind.IsLeafKind())
+                            context.DataItem.Complete();
+                        else
+                            context.DataItem.RequireChildResolution();
+                    }
                 }
                 else
                 {

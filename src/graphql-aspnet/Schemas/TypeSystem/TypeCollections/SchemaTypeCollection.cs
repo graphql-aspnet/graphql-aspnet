@@ -95,6 +95,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             // they can now be safely included
             if (associatedType != null)
             {
+
                 var unregisteredFields = _typeQueue.DequeueFields(associatedType);
                 if (graphType is IExtendableGraphType objType)
                 {
@@ -162,7 +163,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 return null;
 
             if (data is Type type)
-                return this.FindGraphType(type, TypeKind.OBJECT);
+            {
+                this.DenySearchForListAndKVP(type);
+                return _concreteTypes.FindGraphType(type, null);
+            }
 
             if (data is VirtualResolvedObject virtualFieldObject)
             {
@@ -251,10 +255,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             if (concreteType == null)
                 return;
 
-            if (GraphQLProviders.ScalarProvider.IsScalar(concreteType))
-                return;
-
-            if (concreteType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(concreteType))
+            if (concreteType != typeof(string) && Validation.IsCastable(concreteType, typeof(IEnumerable)))
             {
                 throw new GraphTypeDeclarationException(
                     $"Schema Type Collection search, graph type mismatch, {concreteType.FriendlyName()}. Collections and KeyValuePair enumerable types " +

@@ -57,7 +57,8 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// if no <see cref="IGraphType" /> is found.
         /// </summary>
         /// <param name="concreteType">The concrete type to search for.</param>
-        /// <param name="kind">The graph type to search for an association of.</param>
+        /// <param name="kind">An optional kind of graph type to search for. Only used in a tie breaker scenario
+        /// such as if a concrete type is registered as both an OBJECT and INPUT_OBJECT.</param>
         /// <returns>IGraphType.</returns>
         IGraphType FindGraphType(Type concreteType, TypeKind kind);
 

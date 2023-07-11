@@ -172,7 +172,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
-                typeof(TwoPropertyObject).FriendlyName(),
+                "Type",
                 MetaGraphTypes.IsList);
 
             var parent = obj.Object;
@@ -194,7 +194,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
-                typeof(KeyValuePair<string, string>).FriendlyGraphTypeName(),
+                "Type",  // expression is expected to be unnamed at the template level
                 MetaGraphTypes.IsList,
                 MetaGraphTypes.IsNotNull); // structs can't be null
 

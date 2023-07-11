@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             schema.SetNoAlterationConfiguration();
 
             var action = GraphQLTemplateHelper.CreateActionMethodTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
-            var unionResult = new UnionGraphTypeMaker(schema).CreateUnionFromProxy(action.UnionProxy);
+            var unionResult = new UnionGraphTypeMaker(schema.Configuration).CreateUnionFromProxy(action.UnionProxy);
             var union = unionResult.GraphType as IUnionGraphType;
 
             Assert.IsNotNull(union);
@@ -52,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var schema = new GraphSchema();
             schema.SetNoAlterationConfiguration();
 
-            var maker = new UnionGraphTypeMaker(schema);
+            var maker = new UnionGraphTypeMaker(schema.Configuration);
             var unionResult = maker.CreateUnionFromProxy(new UnionProxyWithDirective());
             var unionType = unionResult.GraphType as IUnionGraphType;
 
@@ -71,7 +72,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         {
             var schema = new GraphSchema();
             schema.SetNoAlterationConfiguration();
-            var maker = new UnionGraphTypeMaker(schema);
+            var maker = new UnionGraphTypeMaker(schema.Configuration);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -84,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         {
             var schema = new GraphSchema();
             schema.SetNoAlterationConfiguration();
-            var maker = new UnionGraphTypeMaker(schema);
+            var maker = new UnionGraphTypeMaker(schema.Configuration);
 
             var unionType = maker.CreateUnionFromProxy(null);
             Assert.IsNull(unionType);

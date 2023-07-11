@@ -11,11 +11,17 @@ namespace GraphQL.AspNet.Tests.Framework
 {
     using System;
     using System.Linq;
+    using System.Runtime.CompilerServices;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
 
     /// <summary>
@@ -31,8 +37,7 @@ namespace GraphQL.AspNet.Tests.Framework
         public static IGraphControllerTemplate CreateControllerTemplate<TController>()
              where TController : GraphController
         {
-            GraphQLProviders.TemplateProvider.Clear();
-            return GraphQLProviders.TemplateProvider.ParseType<TController>() as IGraphControllerTemplate;
+            return CreateGraphTypeTemplate<TController>(TypeKind.CONTROLLER) as IGraphControllerTemplate;
         }
 
         /// <summary>
@@ -62,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>IGraphTypeFieldTemplate.</returns>
         public static IGraphFieldTemplate CreateFieldTemplate<TType>(string fieldOrMethodName)
         {
-            var template = CreateGraphTypeTemplate<TType>() as IGraphTypeFieldTemplateContainer;
+            var template = CreateGraphTypeTemplate<TType>(TypeKind.OBJECT) as IGraphTypeFieldTemplateContainer;
 
             // bit of a hack but it solves a lot of schema configuration differences that
             // can occur when setting up a test do to references occuring out of process
@@ -83,11 +88,51 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <typeparam name="TType">The graph type to template.</typeparam>
         /// <param name="kind">The kind.</param>
+        /// <param name="autoParse">if set to <c>true</c> the template will be parsed and validated before
+        /// being returned. Exceptions may be thrown if it does not parse correctly.</param>
         /// <returns>IGraphItemTemplate.</returns>
-        public static ISchemaItemTemplate CreateGraphTypeTemplate<TType>(TypeKind? kind = null)
+        public static IGraphTypeTemplate CreateGraphTypeTemplate<TType>(TypeKind? kind = null, bool autoParse = true)
         {
-            GraphQLProviders.TemplateProvider.CacheTemplates = false;
-            return GraphQLProviders.TemplateProvider.ParseType<TType>(kind);
+            return CreateGraphTypeTemplate(typeof(TType), kind, autoParse);
+        }
+
+        /// <summary>
+        /// Generates a schema template for a give type and kind combination.
+        /// </summary>
+        /// <param name="objectType">The graph type to template.</param>
+        /// <param name="kind">The kind.</param>
+        /// <param name="autoParse">if set to <c>true</c> the template will be parsed and validated before
+        /// being returned. Exceptions may be thrown if it does not parse correctly.</param>
+        /// <returns>IGraphItemTemplate.</returns>
+        public static IGraphTypeTemplate CreateGraphTypeTemplate(Type objectType, TypeKind? kind = null, bool autoParse = true)
+        {
+            objectType = GlobalScalars.FindBuiltInScalarType(objectType) ?? objectType;
+
+            IGraphTypeTemplate template;
+            if (Validation.IsCastable<IScalarGraphType>(objectType))
+                template = new ScalarGraphTypeTemplate(objectType);
+            else if (Validation.IsCastable<IGraphUnionProxy>(objectType))
+                template = new UnionGraphTypeTemplate(objectType);
+            else if (objectType.IsEnum)
+                template = new EnumGraphTypeTemplate(objectType);
+            else if (objectType.IsInterface)
+                template = new InterfaceGraphTypeTemplate(objectType);
+            else if (Validation.IsCastable<GraphDirective>(objectType))
+                template = new GraphDirectiveTemplate(objectType);
+            else if (Validation.IsCastable<GraphController>(objectType))
+                template = new GraphControllerTemplate(objectType);
+            else if (kind.HasValue && kind.Value == TypeKind.INPUT_OBJECT)
+                template = new InputObjectGraphTypeTemplate(objectType);
+            else
+                template = new ObjectGraphTypeTemplate(objectType);
+
+            if (autoParse)
+            {
+                template.Parse();
+                template.ValidateOrThrow();
+            }
+
+            return template;
         }
 
         /// <summary>

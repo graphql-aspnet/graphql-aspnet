@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
     /// A formatter class capable of altering a graph item name before its added to a schema.
@@ -87,10 +88,6 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <returns>System.String.</returns>
         public virtual string FormatGraphTypeName(string name)
         {
-            // scalar names are considered fixed constants and can't be changed
-            if (name == null || GraphQLProviders.ScalarProvider.IsScalar(name))
-                return name;
-
             return this.FormatName(name, _typeNameStrategy);
         }
 

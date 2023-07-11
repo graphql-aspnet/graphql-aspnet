@@ -17,6 +17,8 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas;
 
     public abstract class GraphTypeMakerTestBase
     {
@@ -34,16 +36,26 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                 });
             }
 
-            var typeMaker = new DefaultGraphTypeMakerProvider();
             var testServer = builder.Build();
-            var maker = typeMaker.CreateTypeMaker(testServer.Schema, kind);
-            return maker.CreateGraphType(type);
+
+            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(testServer.Schema);
+
+            var template = factory.MakeTemplate(type, kind);
+            var maker = factory.CreateTypeMaker(type, kind);
+
+            return maker.CreateGraphType(template);
         }
 
         protected IGraphField MakeGraphField(IGraphFieldTemplate fieldTemplate)
         {
             var testServer = new TestServerBuilder().Build();
-            var maker = new GraphFieldMaker(testServer.Schema);
+
+            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(testServer.Schema);
+
+            var maker = factory.CreateFieldMaker();
+
             return maker.CreateField(fieldTemplate).Field;
         }
     }

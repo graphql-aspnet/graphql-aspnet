@@ -52,9 +52,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 rejectionReason = $"The type '{objectType.FriendlyName()}' is an enumeration and cannot be parsed as an {nameof(TypeKind.INPUT_OBJECT)} graph type. Use an {typeof(IEnumGraphType).FriendlyName()} instead.";
             }
-            else if (GraphQLProviders.ScalarProvider.IsScalar(objectType))
+            else if (objectType.IsPrimitive)
             {
-                rejectionReason = $"The type '{objectType.FriendlyName()}' is a registered {nameof(TypeKind.SCALAR)} and cannot be parsed as an {nameof(TypeKind.INPUT_OBJECT)} graph type. Try using the scalar definition instead.";
+                rejectionReason = $"The type '{objectType.FriendlyName()}' is a primative data type and cannot be parsed as an {nameof(TypeKind.INPUT_OBJECT)} graph type.";
             }
             else if (objectType == typeof(string))
             {

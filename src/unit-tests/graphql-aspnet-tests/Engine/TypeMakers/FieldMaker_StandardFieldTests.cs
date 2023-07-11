@@ -12,6 +12,9 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
@@ -60,7 +63,10 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.AreEqual(1, template.SecurityPolicies.Count());
             Assert.AreEqual(0, actionMethod.SecurityPolicies.Count());
 
-            var graphField = new GraphFieldMaker(server.Schema).CreateField(actionMethod).Field;
+            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(server.Schema);
+
+            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(actionMethod).Field;
             Assert.AreEqual(1, Enumerable.Count<AppliedSecurityPolicyGroup>(graphField.SecurityGroups));
 
             var group = Enumerable.First<AppliedSecurityPolicyGroup>(graphField.SecurityGroups);
@@ -80,7 +86,10 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.AreEqual(1, template.SecurityPolicies.Count());
             Assert.AreEqual(1, actionMethod.SecurityPolicies.Count());
 
-            var graphField = new GraphFieldMaker(server.Schema).CreateField(actionMethod).Field;
+            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(server.Schema);
+
+            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(actionMethod).Field;
 
             Assert.AreEqual(2, Enumerable.Count<AppliedSecurityPolicyGroup>(graphField.SecurityGroups));
 
@@ -107,7 +116,10 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.AreEqual(typeof(NullableEnumController.LengthType), arg.ObjectType);
             Assert.AreEqual(NullableEnumController.LengthType.Yards, arg.DefaultValue);
 
-            var graphField = new GraphFieldMaker(server.Schema).CreateField(field).Field;
+            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(server.Schema);
+
+            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(field).Field;
             Assert.IsNotNull(graphField);
 
             var graphArg = Enumerable.FirstOrDefault(graphField.Arguments);

@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Configuration.Startup
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.SchemaItemSecurity;
+    using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
@@ -160,6 +161,8 @@ namespace GraphQL.AspNet.Configuration.Startup
 
             // "per request per schema" components
             _options.ServiceCollection.TryAddTransient(typeof(IGraphQLHttpProcessor<TSchema>), _options.QueryHandler.HttpProcessorType);
+            _options.ServiceCollection.TryAddTransient<IGraphQLSchemaFactory<TSchema>, DefaultGraphQLSchemaFactory<TSchema>>();
+            _options.ServiceCollection.TryAddTransient<IGraphQLTypeMakerFactory<TSchema>, DefaultGraphQLTypeMakerFactory<TSchema>>();
 
             // "per application server" instance
             _options.ServiceCollection.TryAddScoped<IGraphLogger>(sp => sp?.GetService<IGraphEventLogger>());
@@ -180,9 +183,17 @@ namespace GraphQL.AspNet.Configuration.Startup
         /// <returns>TSchema.</returns>
         private TSchema BuildNewSchemaInstance(IServiceProvider serviceProvider)
         {
-            var schemaInstance = GraphSchemaBuilder.BuildSchema<TSchema>(serviceProvider);
-            var initializer = new GraphSchemaInitializer<TSchema>(_options, serviceProvider);
-            initializer.Initialize(schemaInstance);
+            var scope = serviceProvider.CreateScope();
+
+            var schemaConfig = _options.CreateConfiguration();
+
+            var factory = scope.ServiceProvider.GetRequiredService<IGraphQLSchemaFactory<TSchema>>();
+            var schemaInstance = factory.CreateInstance(
+                scope,
+                schemaConfig,
+                _options.SchemaTypesToRegister,
+                _options.RuntimeTemplates,
+                _options.SchemaExtensions);
 
             serviceProvider.WriteLogEntry(
                   (l) => l.SchemaInstanceCreated(schemaInstance));
@@ -239,10 +250,6 @@ namespace GraphQL.AspNet.Configuration.Startup
         /// server options on this instance are invoked with just the service provider.</param>
         private void UseSchema(IServiceProvider serviceProvider, bool invokeServerExtensions)
         {
-            // pre-parse any types known to this schema
-            var preCacher = new SchemaPreCacher();
-            preCacher.PreCacheTemplates(_options.SchemaTypesToRegister.Select(x => x.Type));
-
             // only when the service provider is used for final configuration do we
             // invoke extensions with just the service provider
             // (mostly just for test harnessing, but may be used by developers as well)

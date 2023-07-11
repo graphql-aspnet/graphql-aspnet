@@ -12,13 +12,14 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using NUnit.Framework;
 
     [TestFixture]
     public class DefaultTypeTests
     {
         [Test]
-        public void Scalars_EnsureAllScalarNamesHaveAnAssociatedType()
+        public void Scalars_EnsureAllGlobalScalarNamesHaveAnAssociatedType()
         {
             var fields = typeof(Constants.ScalarNames)
                 .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
@@ -27,8 +28,8 @@ namespace GraphQL.AspNet.Tests.Schemas
             foreach (FieldInfo fi in fields)
             {
                 Assert.IsTrue(
-                    GraphQLProviders.ScalarProvider.IsScalar(fi.GetRawConstantValue()?.ToString()),
-                    $"The scalar name '{fi.GetRawConstantValue()}' does not exist in the {{{nameof(DefaultScalarGraphTypeProvider)}}} collection.");
+                    GlobalScalars.IsBuiltInScalar(fi.GetRawConstantValue()?.ToString()),
+                    $"The scalar name '{fi.GetRawConstantValue()}' does not exist in the {{{nameof(GlobalScalars)}}} collection.");
             }
         }
     }

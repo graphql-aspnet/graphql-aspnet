@@ -48,11 +48,9 @@ namespace GraphQL.AspNet.SubscriptionServer
 
             // swap out the master providers for the ones that includes
             // support for the subscription action type
-            if (!(GraphQLProviders.TemplateProvider is SubscriptionEnabledTypeTemplateProvider))
-                GraphQLProviders.TemplateProvider = new SubscriptionEnabledTypeTemplateProvider();
 
-            if (!(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider))
-                GraphQLProviders.GraphTypeMakerProvider = new SubscriptionEnabledGraphTypeMakerProvider();
+            // need to register the schema enabled type maker factory
+            throw new NotImplementedException();
         }
 
         /// <summary>

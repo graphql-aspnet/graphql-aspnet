@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
@@ -41,17 +42,25 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         /// method will perform a <see cref="TypeKind"/> coersion if possible.
         /// </summary>
         /// <param name="type">The concrete type to search with.</param>
-        /// <param name="kind">The kind of graph type to search for. If not supplied the schema will attempt to automatically
-        /// resolve the correct kind from the given <see cref="Type"/>.</param>
+        /// <param name="kind">An optional kind of graph type to search for. Only used in a tie breaker scenario
+        /// such as if a concrete type is registered as both an OBJECT and INPUT_OBJECT.</param>
         /// <returns>IGraphType.</returns>
         public IGraphType FindGraphType(Type type, TypeKind? kind = null)
         {
             Validation.ThrowIfNull(type, nameof(type));
 
-            type = GraphQLProviders.ScalarProvider.EnsureBuiltInTypeReference(type);
-            var resolvedKind = GraphValidation.ResolveTypeKind(type, kind);
+            type = GraphValidation.EliminateNextWrapperFromCoreType(type);
+
             if (_graphTypesByConcreteType.TryGetValue(type, out var typeSet))
             {
+                if (typeSet.Count == 1)
+                {
+                    var value = typeSet.First().Value;
+                    if (!kind.HasValue || value.Kind.IsLeafKind())
+                        return value;
+                }
+
+                var resolvedKind = kind ?? TypeKind.OBJECT;
                 if (typeSet.TryGetValue(resolvedKind, out var graphType))
                     return graphType;
             }
@@ -90,20 +99,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         /// passed when adding a <see cref="IScalarGraphType"/>.</returns>
         public IGraphType EnsureRelationship(IGraphType graphType, Type concreteType)
         {
-            // ensure a type association for scalars to its root type
-            concreteType = GraphQLProviders.ScalarProvider.EnsureBuiltInTypeReference(concreteType);
-            if (graphType.Kind == TypeKind.SCALAR)
-            {
-                concreteType = concreteType ?? GraphQLProviders.ScalarProvider.RetrieveConcreteType(graphType.Name);
-
-                // if a type was provided make sure it COULD be a scalar type
-                if (!GraphQLProviders.ScalarProvider.IsScalar(concreteType))
-                {
-                    throw new GraphTypeDeclarationException(
-                        $"The scalar '{graphType.Name}' attempted to associate itself to a concrete type of {concreteType.FriendlyName()}. " +
-                        "Scalars cannot be associated with non scalar concrete types.");
-                }
-            }
+            // the registered concrete etype of a scalar must always be the primary declaration
+            if (graphType is IScalarGraphType scalarType)
+                concreteType = concreteType ?? scalarType.ObjectType;
 
             this.EnsureGraphTypeToConcreteTypeAssociationOrThrow(graphType, concreteType);
             if (concreteType == null)
@@ -153,16 +151,17 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         /// <returns><c>true</c> if a graph type exists, <c>false</c> otherwise.</returns>
         public bool Contains(Type type, TypeKind? kind = null)
         {
-            type = GraphQLProviders.ScalarProvider.EnsureBuiltInTypeReference(type);
+            Validation.ThrowIfNull(type, nameof(type));
+
             if (_graphTypesByConcreteType.TryGetValue(type, out var typeSet))
             {
-                var resolvedKind = kind ?? GraphValidation.ResolveTypeKind(type);
-                return typeSet.ContainsKey(resolvedKind);
+                if (!kind.HasValue)
+                    return true;
+
+                return typeSet.ContainsKey(kind.Value);
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         /// <summary>
@@ -175,12 +174,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         {
             // scalars must be assigned to their pre-defined and accepted concrete type
             // instances of scalar graph types must be their pre-defined instance as well
-            if (graphType.Kind == TypeKind.SCALAR)
+            if (graphType is IScalarGraphType scalarType)
             {
-                if (associatedType == null || GraphQLProviders.ScalarProvider.RetrieveScalarName(associatedType) != graphType.Name)
+                if (associatedType == null ||
+                    (associatedType != scalarType.ObjectType &&
+                    !scalarType.OtherKnownTypes.Contains(associatedType)))
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The scalar type '{graphType.Name}' cannot be added and associated to the concrete type '{associatedType?.FriendlyName() ?? "-null-"}' it is not an approved scalar type.");
+                        $"The scalar type '{graphType.Name}' cannot be associated to the concrete type '{associatedType?.FriendlyName() ?? "-null-"}' " +
+                        $"on the target schema. Only explicitly declared concrete types on the scalar declaration are " +
+                        $"allowed to represent the to be used for the schema.");
                 }
             }
 

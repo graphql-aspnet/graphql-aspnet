@@ -19,6 +19,9 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData.InterfaceRegistrationTestData;
     using NUnit.Framework;
+    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas;
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
@@ -75,7 +78,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             _donut = this.MakeGraphType(typeof(Donut), TypeKind.OBJECT) as IObjectGraphType;
 
             // type extension
-            var template = GraphQLProviders.TemplateProvider.ParseType(typeof(PastryExtensionController)) as IGraphControllerTemplate;
+            var template = new GraphControllerTemplate(typeof(PastryExtensionController)) as IGraphControllerTemplate;
+            template.Parse();
+            template.ValidateOrThrow();
+
             var hasSugarTemplate = template.Extensions.FirstOrDefault(x => x.InternalName == nameof(PastryExtensionController.HasSugarExtension));
             var hasGlazeTemplate = template.Extensions.FirstOrDefault(x => x.InternalName == nameof(PastryExtensionController.HasGlazeExtension));
             var hasDoubleGlazeTemplate = template.Extensions.FirstOrDefault(x => x.InternalName == nameof(PastryExtensionController.HasDoubleGlazeExtension));
@@ -94,14 +100,22 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             var testServer = new TestServerBuilder().Build();
 
-            var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(testServer.Schema, kind);
-            return maker.CreateGraphType(type).GraphType;
+            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(testServer.Schema);
+
+            var template = factory.MakeTemplate(type, kind);
+            var maker = factory.CreateTypeMaker(type, kind);
+            return maker.CreateGraphType(template).GraphType;
         }
 
         private IGraphField MakeGraphField(IGraphFieldTemplate fieldTemplate)
         {
             var testServer = new TestServerBuilder().Build();
-            var maker = new GraphFieldMaker(testServer.Schema);
+
+            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
+            factory.Initialize(testServer.Schema);
+
+            var maker = factory.CreateFieldMaker();
             return maker.CreateField(fieldTemplate).Field;
         }
 
