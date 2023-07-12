@@ -31,12 +31,11 @@ namespace GraphQL.AspNet.Configuration
     /// </summary>
     public abstract class SchemaOptions
     {
-        private readonly Dictionary<Type, IGraphQLServerExtension> _serverExtensions;
+        private readonly List<IGraphQLServerExtension> _serverExtensions;
         private readonly HashSet<SchemaTypeToRegister> _possibleTypes;
 
         private readonly List<ServiceToRegister> _registeredServices;
         private readonly List<IGraphQLRuntimeSchemaItemDefinition> _runtimeTemplates;
-        private List<ISchemaExtension> _configExtensions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaOptions" /> class.
@@ -53,9 +52,8 @@ namespace GraphQL.AspNet.Configuration
 
             _possibleTypes = new HashSet<SchemaTypeToRegister>(SchemaTypeToRegister.DefaultEqualityComparer);
             _runtimeTemplates = new List<IGraphQLRuntimeSchemaItemDefinition>();
-            _serverExtensions = new Dictionary<Type, IGraphQLServerExtension>();
+            _serverExtensions = new List<IGraphQLServerExtension>();
             _registeredServices = new List<ServiceToRegister>();
-            _configExtensions = new List<ISchemaExtension>();
 
             this.DeclarationOptions = new SchemaDeclarationConfiguration();
             this.CacheOptions = new SchemaQueryExecutionPlanCacheConfiguration();
@@ -272,20 +270,7 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNull(extension, nameof(extension));
 
             extension.Configure(this);
-            _serverExtensions.Add(extension.GetType(), extension);
-        }
-
-        /// <summary>
-        /// Adds an extension to allow processing of schema instance by an extenal object
-        /// before the schema is complete. The state of the schema is not garunteed
-        /// when then extension is executed. It is highly likely that the schema will undergo
-        /// further processing after the extension executes.
-        /// </summary>
-        /// <param name="extension">The extension to apply.</param>
-        public void AddSchemaExtension(ISchemaExtension extension)
-        {
-            Validation.ThrowIfNull(extension, nameof(extension));
-            _configExtensions.Add(extension);
+            _serverExtensions.Add(extension);
         }
 
         /// <summary>
@@ -313,7 +298,7 @@ namespace GraphQL.AspNet.Configuration
 
             this.AddType(directiveType, null, null);
             var applicator = new DirectiveBindingSchemaExtension(directiveType);
-            this.AddSchemaExtension(applicator);
+            this.RegisterExtension(applicator);
 
             return applicator;
         }
@@ -329,7 +314,7 @@ namespace GraphQL.AspNet.Configuration
         {
             directiveName = Validation.ThrowIfNullWhiteSpaceOrReturn(directiveName, nameof(directiveName));
             var applicator = new DirectiveBindingSchemaExtension(directiveName);
-            this.AddSchemaExtension(applicator);
+            this.RegisterExtension(applicator);
 
             return applicator;
         }
@@ -382,13 +367,6 @@ namespace GraphQL.AspNet.Configuration
         public IEnumerable<SchemaTypeToRegister> SchemaTypesToRegister => _possibleTypes;
 
         /// <summary>
-        /// Gets the configuration extensions that will be applied to the schema instance when its
-        /// created.
-        /// </summary>
-        /// <value>The configuration extensions.</value>
-        public IEnumerable<ISchemaExtension> SchemaExtensions => _configExtensions;
-
-        /// <summary>
         /// Gets or sets a value indicating whether any <see cref="GraphController"/>, <see cref="GraphDirective"/>  or
         /// any classes that implement at least one graph attribute, that are part of the entry assembly, are automatically
         /// added to the <see cref="ISchema"/>. (Default: true).
@@ -438,7 +416,7 @@ namespace GraphQL.AspNet.Configuration
         /// Gets the set of options extensions added to this schema configuration.
         /// </summary>
         /// <value>The extensions.</value>
-        public IReadOnlyDictionary<Type, IGraphQLServerExtension> ServerExtensions => _serverExtensions;
+        public IEnumerable<IGraphQLServerExtension> ServerExtensions => _serverExtensions;
 
         /// <summary>
         /// Gets the service collection which contains all the required entries for

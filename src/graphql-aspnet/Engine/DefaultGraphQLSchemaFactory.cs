@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Engine
             ISchemaConfiguration configuration,
             IEnumerable<SchemaTypeToRegister> typesToRegister = null,
             IEnumerable<IGraphQLRuntimeSchemaItemDefinition> runtimeItemDefinitions = null,
-            IEnumerable<ISchemaExtension> schemaExtensions = null)
+            IEnumerable<IGraphQLServerExtension> schemaExtensions = null)
         {
             Validation.ThrowIfNull(serviceScope, nameof(serviceScope));
             Validation.ThrowIfNull(configuration, nameof(configuration));
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Engine
 
             runtimeItemDefinitions = runtimeItemDefinitions ?? Enumerable.Empty<IGraphQLRuntimeSchemaItemDefinition>();
             typesToRegister = typesToRegister ?? Enumerable.Empty<SchemaTypeToRegister>();
-            schemaExtensions = schemaExtensions ?? Enumerable.Empty<ISchemaExtension>();
+            schemaExtensions = schemaExtensions ?? Enumerable.Empty<IGraphQLServerExtension>();
 
             this.Schema = GraphSchemaBuilder.BuildSchema<TSchema>(this.ServiceProvider);
 
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Engine
             var nonScalarsToRegister = new List<SchemaTypeToRegister>();
             foreach (var regType in typesToRegister)
             {
-                if (Validation.IsCastable<IScalarGraphType>(GlobalScalars.FindBuiltInScalarType(regType.Type) ?? regType.Type))
+                if (Validation.IsCastable<IScalarGraphType>(GlobalTypes.FindBuiltInScalarType(regType.Type) ?? regType.Type))
                     scalarsToRegister.Add(regType);
                 else
                     nonScalarsToRegister.Add(regType);
@@ -126,7 +126,7 @@ namespace GraphQL.AspNet.Engine
             // --------------------------------------
             // this includes any late bound directives added to the type system via .ApplyDirective()
             foreach (var extension in schemaExtensions)
-                extension.Extend(this.Schema);
+                extension.EnsureSchema(this.Schema);
 
             // Step 5: apply all queued type system directives to the now filled schema
             // --------------------------------------

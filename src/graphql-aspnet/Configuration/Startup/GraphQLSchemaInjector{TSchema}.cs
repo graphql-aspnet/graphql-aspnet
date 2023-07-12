@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Configuration.Startup
                 schemaConfig,
                 _options.SchemaTypesToRegister,
                 _options.RuntimeTemplates,
-                _options.SchemaExtensions);
+                _options.ServerExtensions);
 
             serviceProvider.WriteLogEntry(
                   (l) => l.SchemaInstanceCreated(schemaInstance));
@@ -214,7 +214,7 @@ namespace GraphQL.AspNet.Configuration.Startup
             if (_options.ServerExtensions != null)
             {
                 foreach (var additionalOptions in _options.ServerExtensions)
-                    additionalOptions.Value.UseExtension(appBuilder, appBuilder.ApplicationServices);
+                    additionalOptions.UseExtension(appBuilder, appBuilder.ApplicationServices);
             }
 
             if (!_options.QueryHandler.DisableDefaultRoute)
@@ -256,7 +256,7 @@ namespace GraphQL.AspNet.Configuration.Startup
             if (invokeServerExtensions)
             {
                 foreach (var additionalOptions in _options.ServerExtensions)
-                    additionalOptions.Value.UseExtension(serviceProvider: serviceProvider);
+                    additionalOptions.UseExtension(serviceProvider: serviceProvider);
             }
 
             // try and build the schema

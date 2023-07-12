@@ -28,8 +28,8 @@ namespace GraphQL.AspNet.Tests.Schemas
             foreach (FieldInfo fi in fields)
             {
                 Assert.IsTrue(
-                    GlobalScalars.IsBuiltInScalar(fi.GetRawConstantValue()?.ToString()),
-                    $"The scalar name '{fi.GetRawConstantValue()}' does not exist in the {{{nameof(GlobalScalars)}}} collection.");
+                    GlobalTypes.IsBuiltInScalar(fi.GetRawConstantValue()?.ToString()),
+                    $"The scalar name '{fi.GetRawConstantValue()}' does not exist in the {{{nameof(GlobalTypes)}}} collection.");
             }
         }
     }

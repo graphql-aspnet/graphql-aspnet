@@ -34,13 +34,13 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="typesToRegister">The explicit types register
         /// on the schema.</param>
         /// <param name="runtimeItemDefinitions">The runtime field and type definitions (i.e. minimal api) to add to the schema.</param>
-        /// <param name="schemaExtensions">The schema extensions to apply to the schema.</param>
+        /// <param name="extensionsToExecute">The schema extensions to apply to the schema.</param>
         /// <returns>The completed schema instance.</returns>
         TSchema CreateInstance(
             IServiceScope serviceScope,
             ISchemaConfiguration configuration,
             IEnumerable<SchemaTypeToRegister> typesToRegister = null,
             IEnumerable<IGraphQLRuntimeSchemaItemDefinition> runtimeItemDefinitions = null,
-            IEnumerable<ISchemaExtension> schemaExtensions = null);
+            IEnumerable<IGraphQLServerExtension> extensionsToExecute = null);
     }
 }

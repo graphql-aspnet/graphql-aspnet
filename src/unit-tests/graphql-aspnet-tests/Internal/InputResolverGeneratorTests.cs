@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Internal
         {
             var builder = new TestServerBuilder();
 
-            foreach (var scalarConcreteType in GlobalScalars.ScalarInstanceTypes)
+            foreach (var scalarConcreteType in GlobalTypes.ScalarInstanceTypes)
                 builder.AddType(scalarConcreteType);
 
             builder.AddType(typeof(TestEnum));

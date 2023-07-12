@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .WithArguments(CreateArgs)
                 .ToItems(x => x is IGraphField);
 
-            ((ISchemaExtension)applicator).Extend(schema);
+            ((IGraphQLServerExtension)applicator).EnsureSchema(schema);
 
             for (var i = 0; i < matchedSchemaItems.Count; i++)
             {
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .WithArguments(CreateArgsOther)
                 .ToItems(x => x is IGraphField);
 
-            ((ISchemaExtension)applicator).Extend(schema);
+            ((IGraphQLServerExtension)applicator).EnsureSchema(schema);
 
             // count would be greater than zero fi and only if the last
             // supplied function was executed and any fields were found
@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .WithArguments(argSet)
                 .ToItems(x => x is IGraphField);
 
-            ((ISchemaExtension)applicator).Extend(schema);
+            ((IGraphQLServerExtension)applicator).EnsureSchema(schema);
 
             foreach (var item in schema.AllSchemaItems())
             {

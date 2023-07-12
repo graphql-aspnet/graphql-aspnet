@@ -28,6 +28,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -411,7 +412,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 var proxyType = fieldAttribute.Types.FirstOrDefault();
                 if (proxyType != null)
-                    proxy = GraphQLProviders.CreateUnionProxyFromType(proxyType);
+                    proxy = GlobalTypes.CreateUnionProxyFromType(proxyType);
             }
 
             // when no proxy type is declared attempt to construct the proxy from types supplied

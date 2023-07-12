@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Schemas.SchemaItemValidators
     {
         public override void ValidateOrThrow(ISchemaItem schemaItem, ISchema schema)
         {
-
         }
     }
 }

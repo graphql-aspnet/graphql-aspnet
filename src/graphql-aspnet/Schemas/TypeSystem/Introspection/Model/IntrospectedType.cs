@@ -115,16 +115,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             foreach (var field in fieldContainer.Fields.Where(x => x.Publish))
             {
                 IntrospectedType introspectedType = schema.FindIntrospectedType(field.TypeExpression.TypeName);
-                if (introspectedType == null)
-                {
-                    string str = "";
-                }
-
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, field.TypeExpression);
-                if(introspectedType == null)
-                {
-                    string str = "";
-                }
                 var introField = new IntrospectedField(field, introspectedType);
                 fields.Add(introField);
                 introField.Initialize(schema);

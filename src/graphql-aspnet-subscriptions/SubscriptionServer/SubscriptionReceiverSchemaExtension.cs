@@ -111,7 +111,6 @@ namespace GraphQL.AspNet.SubscriptionServer
                         typeof(SubscriptionEnabledGraphQLTypeMakerFactory<TSchema>),
                         ServiceLifetime.Transient));
 
-
             // Update the query execution pipeline
             // ------------------------------------------
             // Wipe out the current execution pipeline and rebuild with

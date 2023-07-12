@@ -66,13 +66,13 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void ScalarNames_AreUnique()
         {
             var nameSet = new HashSet<string>();
-            foreach (var scalarType in GlobalScalars.ScalarInstanceTypes)
+            foreach (var scalarType in GlobalTypes.ScalarInstanceTypes)
             {
                 var scalar = InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
                 nameSet.Add(scalar.Name.ToLowerInvariant());
             }
 
-            Assert.AreEqual(GlobalScalars.ScalarInstanceTypes.Count(), nameSet.Count);
+            Assert.AreEqual(GlobalTypes.ScalarInstanceTypes.Count(), nameSet.Count);
         }
 
         [Test]

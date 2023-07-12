@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Schemas.SchemaItemValidators
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A validator of a completed and schema-attached graph argument that ensures it can function as

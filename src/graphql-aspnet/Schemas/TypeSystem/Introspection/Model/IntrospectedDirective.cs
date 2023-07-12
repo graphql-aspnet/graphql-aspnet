@@ -41,10 +41,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             foreach (var arg in directiveArguments)
             {
                 var introspectedType = introspectedSchema.FindIntrospectedType(arg.TypeExpression.TypeName);
-                if(introspectedType == null)
-                {
-                    var str = "";
-                }
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, arg.TypeExpression);
                 var inputValue = new IntrospectedInputValueType(arg, introspectedType);
                 list.Add(inputValue);

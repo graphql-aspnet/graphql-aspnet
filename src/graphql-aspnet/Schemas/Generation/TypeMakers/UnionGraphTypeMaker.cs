@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
     /// An object responsible for generating a union graph type from a proxy.
@@ -50,7 +51,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             if (!(typeTemplate is IUnionGraphTypeTemplate template))
                 return null;
 
-            var proxy = GraphQLProviders.CreateUnionProxyFromType(template.ProxyType);
+            var proxy = GlobalTypes.CreateUnionProxyFromType(template.ProxyType);
             return this.CreateUnionFromProxy(proxy);
         }
 

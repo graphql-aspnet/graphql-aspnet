@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
         public virtual IScalarGraphType Clone(string newName)
         {
             newName = Validation.ThrowIfNullWhiteSpaceOrReturn(newName, nameof(newName));
-            var newInstance = GlobalScalars.CreateScalarInstanceOrThrow(this.GetType()) as ScalarTestBase;
+            var newInstance = GlobalTypes.CreateScalarInstanceOrThrow(this.GetType()) as ScalarTestBase;
             newInstance.Name = newName;
             return newInstance;
         }

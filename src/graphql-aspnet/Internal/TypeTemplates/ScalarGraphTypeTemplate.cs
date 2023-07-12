@@ -32,10 +32,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="typeToTemplate">The type to template.</param>
         public ScalarGraphTypeTemplate(Type typeToTemplate)
-            : base(GlobalScalars.FindBuiltInScalarType(typeToTemplate) ?? typeToTemplate)
+            : base(GlobalTypes.FindBuiltInScalarType(typeToTemplate) ?? typeToTemplate)
         {
             Validation.ThrowIfNull(typeToTemplate, nameof(typeToTemplate));
-            _scalarType = GlobalScalars.FindBuiltInScalarType(typeToTemplate) ?? typeToTemplate;
+            _scalarType = GlobalTypes.FindBuiltInScalarType(typeToTemplate) ?? typeToTemplate;
         }
 
         /// <inheritdoc />
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             base.ParseTemplateDefinition();
 
-            var instance = GlobalScalars.CreateScalarInstance(this.ScalarType);
+            var instance = GlobalTypes.CreateScalarInstance(this.ScalarType);
 
             if (instance != null)
             {
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override void ValidateOrThrow()
         {
             base.ValidateOrThrow();
-            GlobalScalars.ValidateScalarTypeOrThrow(this.ScalarType);
+            GlobalTypes.ValidateScalarTypeOrThrow(this.ScalarType);
         }
 
         /// <inheritdoc />

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
@@ -19,40 +20,50 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Internal;
 
     /// <summary>
-    /// A map of .NET types and their related built in scalar types.
+    /// A map of .NET types and their related built in scalar types and unions.
     /// </summary>
-    public static class GlobalScalars
+    public static class GlobalTypes
     {
         private static readonly Dictionary<Type, Type> _scalarGraphTypeTypesByConcreteType;
         private static readonly Dictionary<string, Type> _scalarsByName;
         private static readonly HashSet<Type> _fixedNamedScalars;
 
-        static GlobalScalars()
+        static GlobalTypes()
         {
             _scalarGraphTypeTypesByConcreteType = new Dictionary<Type, Type>();
             _scalarsByName = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
             _fixedNamedScalars = new HashSet<Type>();
 
+            // specification defined scalars (cannot be altered)
             ValidateAndRegisterBuiltInScalar<IntScalarType>(true);
-            ValidateAndRegisterBuiltInScalar<LongScalarType>();
-            ValidateAndRegisterBuiltInScalar<UIntScalarType>();
-            ValidateAndRegisterBuiltInScalar<ULongScalarType>();
             ValidateAndRegisterBuiltInScalar<FloatScalarType>(true);
-            ValidateAndRegisterBuiltInScalar<DoubleScalarType>();
-            ValidateAndRegisterBuiltInScalar<DecimalScalarType>();
             ValidateAndRegisterBuiltInScalar<BooleanScalarType>(true);
             ValidateAndRegisterBuiltInScalar<StringScalarType>(true);
+            ValidateAndRegisterBuiltInScalar<GraphIdScalarType>(true);
+
+            // other helpful scalars added to the library for
+            // convience with .NET
+            ValidateAndRegisterBuiltInScalar<LongScalarType>();
+
+            ValidateAndRegisterBuiltInScalar<UIntScalarType>();
+            ValidateAndRegisterBuiltInScalar<ULongScalarType>();
+
+            ValidateAndRegisterBuiltInScalar<DoubleScalarType>();
+            ValidateAndRegisterBuiltInScalar<DecimalScalarType>();
+
+            ValidateAndRegisterBuiltInScalar<DateOnlyScalarType>();
             ValidateAndRegisterBuiltInScalar<DateTimeScalarType>();
             ValidateAndRegisterBuiltInScalar<DateTimeOffsetScalarType>();
+            ValidateAndRegisterBuiltInScalar<TimeOnlyScalarType>();
+
             ValidateAndRegisterBuiltInScalar<ByteScalarType>();
             ValidateAndRegisterBuiltInScalar<SByteScalarType>();
-            ValidateAndRegisterBuiltInScalar<GuidScalarType>();
-            ValidateAndRegisterBuiltInScalar<UriScalarType>();
-            ValidateAndRegisterBuiltInScalar<GraphIdScalarType>(true);
+
             ValidateAndRegisterBuiltInScalar<ShortScalarType>();
             ValidateAndRegisterBuiltInScalar<UShortScalarType>();
-            ValidateAndRegisterBuiltInScalar<DateOnlyScalarType>();
-            ValidateAndRegisterBuiltInScalar<TimeOnlyScalarType>();
+
+            ValidateAndRegisterBuiltInScalar<GuidScalarType>();
+            ValidateAndRegisterBuiltInScalar<UriScalarType>();
         }
 
         private static void ValidateAndRegisterBuiltInScalar<T>(bool isFixedName = false)
@@ -299,13 +310,40 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         }
 
         /// <summary>
-        /// Gets the list of concrete types that represent all known scalars.
+        /// attempts to instnatiate the provided type as a union proxy.
         /// </summary>
-        /// <value>The set of concrete types for all the global scalars.</value>
-        public static IEnumerable<Type> ConcreteTypes => _scalarGraphTypeTypesByConcreteType.Keys;
+        /// <param name="proxyType">Type of the proxy to create.</param>
+        /// <returns>IGraphUnionProxy.</returns>
+        public static IGraphUnionProxy CreateUnionProxyFromType(Type proxyType)
+        {
+            if (proxyType == null)
+                return null;
+
+            IGraphUnionProxy proxy = null;
+            if (Validation.IsCastable<IGraphUnionProxy>(proxyType))
+            {
+                var paramlessConstructor = proxyType.GetConstructor(BindingFlags.Instance | BindingFlags.Public, null, Type.EmptyTypes, null);
+                if (paramlessConstructor == null)
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The union proxy type '{proxyType.FriendlyName()}' could not be instantiated. " +
+                        "All union proxy types must declare a parameterless constructor.");
+                }
+
+                proxy = InstanceFactory.CreateInstance(proxyType) as IGraphUnionProxy;
+            }
+
+            return proxy;
+        }
 
         /// <summary>
-        /// Gets the types that represent the <see cref="IScalarGraphType"/> object for all known scalars.
+        /// Gets the list of concrete types that represent all internally defined, global scalars.
+        /// </summary>
+        /// <value>The set of concrete types for all the global scalars.</value>
+        public static IEnumerable<Type> ScalarConcreteTypes => _scalarGraphTypeTypesByConcreteType.Keys;
+
+        /// <summary>
+        /// Gets the types that represent the <see cref="IScalarGraphType"/> objects for all internally defined, global scalars.
         /// </summary>
         /// <value>The set of scalar instance types for all global scalars.</value>
         public static IEnumerable<Type> ScalarInstanceTypes => _scalarGraphTypeTypesByConcreteType.Values;

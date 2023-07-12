@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 return null;
 
 
-            var scalarType = GlobalScalars.CreateScalarInstanceOrThrow(scalarTemplate.ScalarType);
+            var scalarType = GlobalTypes.CreateScalarInstanceOrThrow(scalarTemplate.ScalarType);
             scalarType = scalarType.Clone(_config.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(scalarType.Name));
 
             var result = new GraphTypeCreationResult()

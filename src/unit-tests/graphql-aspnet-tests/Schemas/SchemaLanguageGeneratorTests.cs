@@ -235,7 +235,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // ensure all scalars represented
             _unUsedScalarTypes = new List<Type>();
-            foreach (var type in GlobalScalars.ConcreteTypes)
+            foreach (var type in GlobalTypes.ScalarConcreteTypes)
             {
                 if (Validation.IsNullableOfT(type))
                     continue;

@@ -10,17 +10,18 @@
 namespace GraphQL.AspNet.Interfaces.Schema
 {
     /// <summary>
-    /// A runtime validator to check <see cref="ISchemaItem"/> instances to ensure they are
+    /// A runtime validator to check that an <see cref="ISchemaItem"/> instance and ensure that it is
     /// usable at runtime.
     /// </summary>
     internal interface ISchemaItemValidator
     {
         /// <summary>
         /// Validates that the given <paramref name="schemaItem"/> is valid and internally consistant
-        /// with the provided schema instance.
+        /// with the provided schema instance. If the <paramref name="schemaItem"/> is invalid in anyway an
+        /// exception must be thrown.
         /// </summary>
-        /// <param name="schemaItem">The schema item to check.</param>
-        /// <param name="schema">The schema to check against.</param>
+        /// <param name="schemaItem">The schema item to validate.</param>
+        /// <param name="schema">The schema instance that owns <paramref name="schemaItem"/>.</param>
         void ValidateOrThrow(ISchemaItem schemaItem, ISchema schema);
     }
 }

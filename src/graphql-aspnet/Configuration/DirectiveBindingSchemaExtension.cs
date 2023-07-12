@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Configuration
     /// A configuration class used to apply a late-bound directive to a set of schema items
     /// matching a filter.
     /// </summary>
-    public sealed class DirectiveBindingSchemaExtension : ISchemaExtension
+    public sealed class DirectiveBindingSchemaExtension : IGraphQLServerExtension
     {
         // a set of default filters applied to any directive applicator unless explicitly removed
         // by the developer. Used to auto filter items down to those reasonably assumed
@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <inheritdoc />
-        void ISchemaExtension.Extend(ISchema schema)
+        void IGraphQLServerExtension.EnsureSchema(ISchema schema)
         {
             var allFilters = _defaultFilters.Concat(_customFilters).ToList();
             foreach (var schemaItem in schema.AllSchemaItems(includeDirectives: false))

@@ -303,7 +303,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 Assert.AreEqual(thrownException, ex.InnerException);
                 Assert.IsNull(ex.InnerException.InnerException);
             }
-            catch(Exception ex)
+            catch
             {
                 Assert.Fail("Unexpected exception was thrown");
             }

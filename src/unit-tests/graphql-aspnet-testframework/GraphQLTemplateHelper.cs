@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>IGraphItemTemplate.</returns>
         public static IGraphTypeTemplate CreateGraphTypeTemplate(Type objectType, TypeKind? kind = null, bool autoParse = true)
         {
-            objectType = GlobalScalars.FindBuiltInScalarType(objectType) ?? objectType;
+            objectType = GlobalTypes.FindBuiltInScalarType(objectType) ?? objectType;
 
             IGraphTypeTemplate template;
             if (Validation.IsCastable<IScalarGraphType>(objectType))

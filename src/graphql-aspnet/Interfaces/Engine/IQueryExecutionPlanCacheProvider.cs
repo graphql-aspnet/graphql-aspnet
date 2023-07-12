@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
 
     /// <summary>
     /// An interface describing the query plan cache. Build your own cache against any technology you wish
-    /// and subsitute it in the <see cref="GraphQLProviders"/> at start up. This cache instance is a singleton reference
+    /// and subsitute it in the <see cref="GlobalUnions"/> at start up. This cache instance is a singleton reference
     /// per server instance.
     /// </summary>
     public interface IQueryExecutionPlanCacheProvider

@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Schemas.Generation
                 return null;
 
             // attempt to turn "int" into "IntScalarType" when necessary
-            objectType = GlobalScalars.FindBuiltInScalarType(objectType) ?? objectType;
+            objectType = GlobalTypes.FindBuiltInScalarType(objectType) ?? objectType;
 
             IGraphTypeTemplate template;
             if (Validation.IsCastable<IScalarGraphType>(objectType))
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Schemas.Generation
             if (objectType == null)
                 return null;
 
-            objectType = GlobalScalars.FindBuiltInScalarType(objectType) ?? objectType;
+            objectType = GlobalTypes.FindBuiltInScalarType(objectType) ?? objectType;
 
             if (Validation.IsCastable<IScalarGraphType>(objectType))
                 return new ScalarGraphTypeMaker(this.Schema.Configuration);

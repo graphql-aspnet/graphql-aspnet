@@ -95,7 +95,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             // they can now be safely included
             if (associatedType != null)
             {
-
                 var unregisteredFields = _typeQueue.DequeueFields(associatedType);
                 if (graphType is IExtendableGraphType objType)
                 {

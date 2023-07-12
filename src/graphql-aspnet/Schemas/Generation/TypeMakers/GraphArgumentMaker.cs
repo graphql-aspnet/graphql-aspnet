@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
             // enforce non-renaming standards in the maker since the
             // directly controls the formatter
-            if (GlobalScalars.CanBeRenamed(schemaTypeName))
+            if (GlobalTypes.CanBeRenamed(schemaTypeName))
                 schemaTypeName = formatter.FormatGraphTypeName(schemaTypeName);
 
             var typeExpression = template.TypeExpression.CloneTo(schemaTypeName);

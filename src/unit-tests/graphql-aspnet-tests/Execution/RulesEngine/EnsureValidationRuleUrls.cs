@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using NUnit.Framework;
 
     [TestFixture]
@@ -27,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             // for all links to specification rules ensure that
             // each rule number has a valid link and that it is
             // unique
-            var ruleTypes = typeof(GraphQLProviders)
+            var ruleTypes = typeof(GlobalTypes)
                 .Assembly
                 .GetTypes()
                 .Where(Validation.IsCastable<IValidationRule>)

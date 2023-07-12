@@ -156,9 +156,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public string DepreciationReason { get; set; }
 
         /// <inheritdoc />
-        public bool IsLeaf => false;
-
-        /// <inheritdoc />
         public bool IsDeprecated { get; set; }
 
         /// <inheritdoc />
