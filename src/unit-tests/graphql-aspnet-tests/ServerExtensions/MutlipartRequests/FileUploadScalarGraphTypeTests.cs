@@ -82,12 +82,5 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.IsTrue(scalar.ValueType.HasFlag(ScalarValueType.String));
             Assert.IsTrue(scalar.ValueType.HasFlag(ScalarValueType.Boolean));
         }
-
-        [Test]
-        public void Scalar_HasNoOtherKnownTypes()
-        {
-            var scalar = new FileUploadScalarGraphType();
-            Assert.AreEqual(0, scalar.OtherKnownTypes.Count);
-        }
     }
 }

@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
                 return true;
 
             var itemType = item.GetType();
-            return itemType == this.ObjectType || this.OtherKnownTypes.Contains(itemType);
+            return itemType == this.ObjectType;
         }
 
         /// <inheritdoc />
@@ -136,9 +136,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
         /// <inheritdoc />
         public virtual ILeafValueResolver SourceResolver { get; set; }
-
-        /// <inheritdoc />
-        public abstract TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public virtual bool IsVirtual => false;

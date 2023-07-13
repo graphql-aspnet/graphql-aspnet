@@ -177,8 +177,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             if (graphType is IScalarGraphType scalarType)
             {
                 if (associatedType == null ||
-                    (associatedType != scalarType.ObjectType &&
-                    !scalarType.OtherKnownTypes.Contains(associatedType)))
+                    (associatedType != scalarType.ObjectType))
                 {
                     throw new GraphTypeDeclarationException(
                         $"The scalar type '{graphType.Name}' cannot be associated to the concrete type '{associatedType?.FriendlyName() ?? "-null-"}' " +

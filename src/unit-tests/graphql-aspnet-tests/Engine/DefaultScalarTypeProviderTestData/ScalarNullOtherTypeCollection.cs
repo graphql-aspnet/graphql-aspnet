@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
     {
         public ScalarNullOtherTypeCollection()
         {
-            this.OtherKnownTypes = null;
         }
     }
 }

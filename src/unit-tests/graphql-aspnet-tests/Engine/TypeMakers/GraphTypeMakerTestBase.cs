@@ -19,6 +19,8 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas;
+    using Microsoft.AspNetCore.Hosting.Server;
+    using GraphQL.AspNet.Tests.CommonHelpers;
 
     public abstract class GraphTypeMakerTestBase
     {
@@ -38,8 +40,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 
             var testServer = builder.Build();
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(testServer.Schema);
+            var factory = testServer.CreateMakerFactory();
 
             var template = factory.MakeTemplate(type, kind);
             var maker = factory.CreateTypeMaker(type, kind);
@@ -51,8 +52,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         {
             var testServer = new TestServerBuilder().Build();
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(testServer.Schema);
+            var factory = testServer.CreateMakerFactory();
 
             var maker = factory.CreateFieldMaker();
 

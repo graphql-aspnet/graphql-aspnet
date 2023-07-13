@@ -19,15 +19,12 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultSchemaFactoryTestData
         public TwoPropertyObjectAsScalar()
             : base(nameof(TwoPropertyObjectAsScalar), typeof(TwoPropertyObject))
         {
-            this.OtherKnownTypes = TypeCollection.Empty;
         }
 
         public override object Resolve(ReadOnlySpan<char> data)
         {
             return null;
         }
-
-        public override TypeCollection OtherKnownTypes { get; }
 
         public override ScalarValueType ValueType => ScalarValueType.String;
     }

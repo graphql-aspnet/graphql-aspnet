@@ -182,8 +182,8 @@ namespace GraphQL.AspNet.Tests.Framework
         {
             var factory = new DefaultGraphQLTypeMakerFactory<TSchema>();
             factory.Initialize(this.Schema);
-            var maker = factory.CreateTypeMaker(concreteType, kind);
 
+            var maker = factory.CreateTypeMaker(concreteType, kind);
             var template = factory.MakeTemplate(concreteType);
             return maker.CreateGraphType(template);
         }
@@ -203,6 +203,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
             var factory = new DefaultGraphQLTypeMakerFactory<TSchema>();
             factory.Initialize(this.Schema);
+
             var fieldMaker = new GraphFieldMaker(this.Schema, factory);
             var fieldResult = fieldMaker.CreateField(template);
 

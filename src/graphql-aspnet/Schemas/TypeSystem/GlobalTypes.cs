@@ -44,24 +44,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             // other helpful scalars added to the library for
             // convience with .NET
             ValidateAndRegisterBuiltInScalar<LongScalarType>();
-
             ValidateAndRegisterBuiltInScalar<UIntScalarType>();
             ValidateAndRegisterBuiltInScalar<ULongScalarType>();
-
             ValidateAndRegisterBuiltInScalar<DoubleScalarType>();
             ValidateAndRegisterBuiltInScalar<DecimalScalarType>();
-
-            ValidateAndRegisterBuiltInScalar<DateOnlyScalarType>();
-            ValidateAndRegisterBuiltInScalar<DateTimeScalarType>();
             ValidateAndRegisterBuiltInScalar<DateTimeOffsetScalarType>();
+            ValidateAndRegisterBuiltInScalar<DateTimeScalarType>();
+            ValidateAndRegisterBuiltInScalar<DateOnlyScalarType>();
             ValidateAndRegisterBuiltInScalar<TimeOnlyScalarType>();
-
             ValidateAndRegisterBuiltInScalar<ByteScalarType>();
             ValidateAndRegisterBuiltInScalar<SByteScalarType>();
-
             ValidateAndRegisterBuiltInScalar<ShortScalarType>();
             ValidateAndRegisterBuiltInScalar<UShortScalarType>();
-
             ValidateAndRegisterBuiltInScalar<GuidScalarType>();
             ValidateAndRegisterBuiltInScalar<UriScalarType>();
         }
@@ -155,7 +149,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         /// </summary>
         /// <remarks>
         /// The five specification-defined scalars (Int, Float, String, Boolean, ID) cannot be renamed and are used
-        /// as part of the introspection system. All other internal scalars can be renamed to match any casing rules
+        /// as part of the introspection system. All other internal scalars can be renamed or "re-cased" to match any rules
         /// for a target schema.
         /// </remarks>
         /// <param name="scalarName">Name of the scalar.</param>
@@ -185,23 +179,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         /// <param name="scalarType">The type representing an <see cref="IScalarGraphType"/>.</param>
         public static void ValidateScalarTypeOrThrow(Type scalarType)
         {
-            Validation.ThrowIfNull(scalarType, nameof(scalarType));
-
-            if (!Validation.IsCastable<IScalarGraphType>(scalarType))
-            {
-                throw new GraphTypeDeclarationException(
-                    $"The scalar must implement the interface '{typeof(IScalarGraphType).FriendlyName()}'.");
-            }
-
-            var paramlessConstructor = scalarType.GetConstructor(new Type[0]);
-            if (paramlessConstructor == null)
-            {
-                throw new GraphTypeDeclarationException(
-                    "The scalar must declare a public, parameterless constructor.");
-            }
-
-            var graphType = InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
-            ValidateScalarTypeOrThrow(graphType);
+            CreateAndValidateScalarType(scalarType, true);
         }
 
         /// <summary>
@@ -211,32 +189,89 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         /// <param name="graphType">The graph type instance to check.</param>
         public static void ValidateScalarTypeOrThrow(IScalarGraphType graphType)
         {
+            ValidateScalarType(graphType, true);
+        }
+
+        /// <summary>
+        /// Validates that the supplied type can be used to build a scalar instance
+        /// that is usable by a schema.
+        /// </summary>
+        /// <param name="scalarType">The type representing an <see cref="IScalarGraphType" />.</param>
+        /// <param name="shouldThrow">if set to <c>true</c> this method will throw a <see cref="GraphTypeDeclarationException"/>
+        /// if the sclar is not valid.</param>
+        /// <returns>System.ValueTuple&lt;System.Boolean, IScalarGraphType&gt;.</returns>
+        private static (bool IsValid, IScalarGraphType Instance) CreateAndValidateScalarType(Type scalarType, bool shouldThrow = true)
+        {
+            Validation.ThrowIfNull(scalarType, nameof(scalarType));
+
+            if (!Validation.IsCastable<IScalarGraphType>(scalarType))
+            {
+                if (!shouldThrow)
+                    return (false, null);
+
+                throw new GraphTypeDeclarationException(
+                    $"The scalar must implement the interface '{typeof(IScalarGraphType).FriendlyName()}'.");
+            }
+
+            var paramlessConstructor = scalarType.GetConstructor(new Type[0]);
+            if (paramlessConstructor == null)
+            {
+                if (!shouldThrow)
+                    return (false, null);
+
+                throw new GraphTypeDeclarationException(
+                    "The scalar must declare a public, parameterless constructor.");
+            }
+
+            var graphType = InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
+            return ValidateScalarType(graphType, shouldThrow);
+        }
+
+        /// <summary>
+        /// Validates that the supplied scalar instance is valid and could be used by a schema
+        /// instance.
+        /// </summary>
+        /// <param name="graphType">The graph type instance to check.</param>
+        /// <param name="shouldThrow">if set to <c>true</c> this method will throw a <see cref="GraphTypeDeclarationException"/>
+        /// if the sclar is not valid.</param>
+        private static (bool IsValid, IScalarGraphType Instance) ValidateScalarType(IScalarGraphType graphType, bool shouldThrow)
+        {
             if (string.IsNullOrWhiteSpace(graphType.Name))
             {
+                if (!shouldThrow)
+                    return (false, null);
                 throw new GraphTypeDeclarationException(
                     "The scalar must supply a name that is not null or whitespace.");
             }
 
             if (!GraphValidation.IsValidGraphName(graphType.Name))
             {
+                if (!shouldThrow)
+                    return (false, null);
                 throw new GraphTypeDeclarationException(
                     $"The scalar must supply a name that that conforms to the standard rules for GraphQL. (Regex: {Constants.RegExPatterns.NameRegex})");
             }
 
             if (graphType.Kind != TypeKind.SCALAR)
             {
+                if (!shouldThrow)
+                    return (false, null);
                 throw new GraphTypeDeclarationException(
                     $"The '{graphType.Name}' scalar's type kind must be set to '{nameof(TypeKind.SCALAR)}'.");
             }
 
             if (graphType.ObjectType == null)
             {
+                if (!shouldThrow)
+                    return (false, null);
                 throw new GraphTypeDeclarationException(
                     $"The scalar '{graphType.Name}' must supply a value for '{nameof(graphType.ObjectType)}', is cannot be null.");
             }
 
             if (Validation.IsNullableOfT(graphType.ObjectType))
             {
+                if (!shouldThrow)
+                    return (false, null);
                 throw new GraphTypeDeclarationException(
                     $"The scalar '{graphType.Name}' must supply the root,non-nullable type derivation for '{nameof(graphType.ObjectType)}' (e.g. 'int' not 'int?'). " +
                     $" The current value of {nameof(IScalarGraphType.ObjectType)} is a nullable type derivation.");
@@ -244,6 +279,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             if (graphType.SourceResolver == null)
             {
+                if (!shouldThrow)
+                    return (false, null);
                 throw new GraphTypeDeclarationException(
                     $"The scalar must supply a value for '{nameof(graphType.SourceResolver)}' that can convert data from a " +
                     $"query into the primary object type of '{graphType.ObjectType.FriendlyName()}'.");
@@ -251,24 +288,33 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             if (graphType.ValueType == ScalarValueType.Unknown)
             {
+                if (!shouldThrow)
+                    return (false, null);
                 throw new GraphTypeDeclarationException(
                     $"The scalar must supply a value for '{nameof(graphType.ValueType)}'. This lets the validation engine " +
                     "know what data types submitted on a user query could be parsed into a value for this scale.");
             }
 
-            if (graphType.OtherKnownTypes == null)
-            {
-                throw new GraphTypeDeclarationException(
-                    $"Custom scalars must supply a value for '{nameof(graphType.OtherKnownTypes)}', it cannot be null. " +
-                    $"Use '{nameof(TypeCollection)}.{nameof(TypeCollection.Empty)}' if there are no other known types.");
-            }
-
             if (graphType.AppliedDirectives == null || graphType.AppliedDirectives.Parent != graphType)
             {
+                if (!shouldThrow)
+                    return (false, null);
                 throw new GraphTypeDeclarationException(
                     $"Custom scalars must supply a value for '{nameof(graphType.AppliedDirectives)}', it cannot be null. " +
                     $"The '{nameof(IAppliedDirectiveCollection.Parent)}' property of the directive collection must also be set to the scalar itself.");
             }
+
+            return (true, graphType);
+        }
+
+        /// <summary>
+        /// Determines whether the provided type represents an object that is a properly constructed scalar graph type.
+        /// </summary>
+        /// <param name="typeToCheck">The type to check.</param>
+        /// <returns><c>true</c> if the type represents a valid scalar; otherwise, <c>false</c>.</returns>
+        public static bool IsValidScalarType(Type typeToCheck)
+        {
+            return CreateAndValidateScalarType(typeToCheck, false).IsValid;
         }
 
         /// <summary>
@@ -282,8 +328,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             scalarType = GraphValidation.EliminateNextWrapperFromCoreType(scalarType);
             scalarType = FindBuiltInScalarType(scalarType) ?? scalarType;
 
-            ValidateScalarTypeOrThrow(scalarType);
-            return InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
+            var (isValid, instance) = CreateAndValidateScalarType(scalarType, true);
+            return isValid ? instance : null;
         }
 
         /// <summary>
@@ -297,16 +343,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             scalarType = GraphValidation.EliminateNextWrapperFromCoreType(scalarType);
             scalarType = FindBuiltInScalarType(scalarType) ?? scalarType;
 
-            try
-            {
-                ValidateScalarTypeOrThrow(scalarType);
-            }
-            catch
-            {
-                return null;
-            }
-
-            return InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
+            var (isValid, instance) = CreateAndValidateScalarType(scalarType, false);
+            return isValid ? instance : null;
         }
 
         /// <summary>

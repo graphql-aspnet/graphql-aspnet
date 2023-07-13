@@ -6,16 +6,23 @@
 // --
 // License:  MIT
 // *************************************************************
+
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
 namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System.Linq;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
@@ -29,8 +36,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var server = new TestServerBuilder().Build();
             var template = GraphQLTemplateHelper.CreateInterfaceTemplate<ISimpleInterface>();
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var typeMaker = new InterfaceGraphTypeMaker(server.Schema.Configuration, factory.CreateFieldMaker());
 

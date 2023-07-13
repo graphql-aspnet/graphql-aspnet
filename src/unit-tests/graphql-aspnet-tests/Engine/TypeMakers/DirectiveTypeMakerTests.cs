@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
@@ -30,8 +31,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var builder = new TestServerBuilder();
             var server = builder.Build();
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var template = factory.MakeTemplate(typeof(MultiMethodDirective), TypeKind.DIRECTIVE);
             var typeMaker = new DirectiveMaker(server.Schema.Configuration, factory.CreateArgumentMaker());
@@ -65,8 +65,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var builder = new TestServerBuilder();
             var server = builder.Build();
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var template = factory.MakeTemplate(typeof(RepeatableDirective), TypeKind.DIRECTIVE);
             var typeMaker = new DirectiveMaker(server.Schema.Configuration, factory.CreateArgumentMaker());

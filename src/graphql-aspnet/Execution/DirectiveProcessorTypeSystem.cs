@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="schema">The schema to apply directives too.</param>
         public void ApplyDirectives(TSchema schema)
         {
-            Validation.ThrowIfNull(schema, nameof(schema)); 
+            Validation.ThrowIfNull(schema, nameof(schema));
 
             // all schema items
             var anyDirectivesApplied = false;

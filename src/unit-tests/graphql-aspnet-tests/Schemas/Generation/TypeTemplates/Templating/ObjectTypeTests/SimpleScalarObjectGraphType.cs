@@ -23,8 +23,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
 
         public override ScalarValueType ValueType => ScalarValueType.String;
 
-        public override TypeCollection OtherKnownTypes { get; } = new TypeCollection();
-
         public override object Resolve(ReadOnlySpan<char> data)
         {
             return null;

@@ -10,15 +10,14 @@
 namespace GraphQL.AspNet.Schemas.Generation
 {
     using System;
-    using System.Data;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
@@ -30,44 +29,10 @@ namespace GraphQL.AspNet.Schemas.Generation
     public class DefaultGraphQLTypeMakerFactory<TSchema> : IGraphQLTypeMakerFactory<TSchema>
         where TSchema : class, ISchema
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultGraphQLTypeMakerFactory{TSchema}" /> class.
-        /// </summary>
-        public DefaultGraphQLTypeMakerFactory()
-        {
-        }
-
         /// <inheritdoc />
         public virtual IGraphTypeTemplate MakeTemplate(Type objectType, TypeKind? kind = null)
         {
-            if (objectType == null)
-                return null;
-
-            // attempt to turn "int" into "IntScalarType" when necessary
-            objectType = GlobalTypes.FindBuiltInScalarType(objectType) ?? objectType;
-
-            IGraphTypeTemplate template;
-            if (Validation.IsCastable<IScalarGraphType>(objectType))
-                template = new ScalarGraphTypeTemplate(objectType);
-            else if (Validation.IsCastable<IGraphUnionProxy>(objectType))
-                template = new UnionGraphTypeTemplate(objectType);
-            else if (objectType.IsEnum)
-                template = new EnumGraphTypeTemplate(objectType);
-            else if (objectType.IsInterface)
-                template = new InterfaceGraphTypeTemplate(objectType);
-            else if (Validation.IsCastable<GraphDirective>(objectType))
-                template = new GraphDirectiveTemplate(objectType);
-            else if (Validation.IsCastable<GraphController>(objectType))
-                template = new GraphControllerTemplate(objectType);
-            else if (kind.HasValue && kind.Value == TypeKind.INPUT_OBJECT)
-                template = new InputObjectGraphTypeTemplate(objectType);
-            else
-                template = new ObjectGraphTypeTemplate(objectType);
-
-            template.Parse();
-            template.ValidateOrThrow();
-
-            return template;
+            return GraphTypeTemplates.CreateTemplate(objectType, kind);
         }
 
         /// <inheritdoc />

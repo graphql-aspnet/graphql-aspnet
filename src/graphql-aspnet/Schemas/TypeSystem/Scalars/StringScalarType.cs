@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.STRING, typeof(string))
         {
             this.Description = "A UTF-8 encoded string of characters.";
-            this.OtherKnownTypes = TypeCollection.Empty;
         }
 
         /// <inheritdoc />
@@ -51,9 +50,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return GraphQLStrings.Escape(item.ToString()).AsQuotedString();
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.String;

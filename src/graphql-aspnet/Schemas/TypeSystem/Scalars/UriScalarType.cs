@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.URI, typeof(Uri))
         {
             this.Description = "A uri pointing to a location on the web (a.k.a. URL).";
-            this.OtherKnownTypes = TypeCollection.Empty;
         }
 
         /// <inheritdoc />
@@ -66,9 +65,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return Constants.QueryLanguage.NULL;
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.String;

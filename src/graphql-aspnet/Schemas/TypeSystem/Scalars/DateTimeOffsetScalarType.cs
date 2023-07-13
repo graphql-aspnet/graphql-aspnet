@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.DATETIMEOFFSET, typeof(DateTimeOffset))
         {
             this.Description = "A point in time relative to Coordinated Universal Time (UTC).";
-            this.OtherKnownTypes = new TypeCollection(typeof(DateTimeOffset?));
         }
 
         /// <inheritdoc />
@@ -59,9 +58,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return Constants.QueryLanguage.NULL;
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.StringOrNumber;

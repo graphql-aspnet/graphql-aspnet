@@ -22,7 +22,6 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
     {
         protected ScalarTestBase()
         {
-            this.OtherKnownTypes = new TypeCollection();
             this.Kind = TypeKind.SCALAR;
             this.ValueType = ScalarValueType.Number;
             this.Publish = true;
@@ -45,8 +44,6 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
             newInstance.Name = newName;
             return newInstance;
         }
-
-        public TypeCollection OtherKnownTypes { get; set; }
 
         public ScalarValueType ValueType { get; set; }
 

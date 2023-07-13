@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Internal.TypeTemplates;
     using Microsoft.AspNetCore.Hosting.Server;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.CommonHelpers;
 
     [TestFixture]
     public class SchemaTypeCollectionTests
@@ -43,8 +44,8 @@ namespace GraphQL.AspNet.Tests.Schemas
         private IGraphType MakeGraphType(Type type, TypeKind kind)
         {
             var testServer = new TestServerBuilder().Build();
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(testServer.Schema);
+
+            var factory = testServer.CreateMakerFactory();
 
             var template = GraphQLTemplateHelper.CreateGraphTypeTemplate(type, kind);
             return factory.CreateTypeMaker(type, kind).CreateGraphType(template).GraphType;
@@ -53,9 +54,8 @@ namespace GraphQL.AspNet.Tests.Schemas
         private IGraphField MakeGraphField(IGraphFieldTemplate fieldTemplate)
         {
             var testServer = new TestServerBuilder().Build();
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(testServer.Schema);
 
+            var factory = testServer.CreateMakerFactory();
 
             var maker = new GraphFieldMaker(testServer.Schema, factory);
             return maker.CreateField(fieldTemplate).Field;

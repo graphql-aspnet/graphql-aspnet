@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.DATETIME, typeof(DateTime))
         {
             this.Description = "A calendar date that does include a time component.";
-            this.OtherKnownTypes = new TypeCollection(typeof(DateTime?));
         }
 
         /// <inheritdoc />
@@ -59,9 +58,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return Constants.QueryLanguage.NULL;
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.StringOrNumber;

@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.ID, typeof(GraphId))
         {
             this.Description = "The id scalar type represents a unique identifier in graphql.";
-            this.OtherKnownTypes = TypeCollection.Empty;
         }
 
         /// <inheritdoc />
@@ -77,9 +76,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return Constants.QueryLanguage.NULL;
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.StringOrNumber;

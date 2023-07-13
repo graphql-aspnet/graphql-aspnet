@@ -37,7 +37,5 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
         }
 
         public override ScalarValueType ValueType => ScalarValueType.String;
-
-        public override TypeCollection OtherKnownTypes { get; } = new TypeCollection();
     }
 }

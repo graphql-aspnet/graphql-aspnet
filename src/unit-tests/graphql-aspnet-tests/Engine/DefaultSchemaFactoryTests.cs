@@ -28,11 +28,17 @@ namespace GraphQL.AspNet.Tests.Engine
     [TestFixture]
     public class DefaultSchemaFactoryTests
     {
-        [Test]
-        public void OneScalarType_GeneratesCorrectly()
+        private IServiceCollection SetupCollection()
         {
             var collection = new ServiceCollection();
             collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            return collection;
+        }
+
+        [Test]
+        public void OneScalarType_GeneratesCorrectly()
+        {
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -66,8 +72,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void CustomScalar_AllAssociatedTypesAreRegistered()
         {
-            var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -101,8 +106,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void OneEnum_AllAssociatedTypesAreRegistered()
         {
-            var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -140,8 +144,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void OneObjectType_NoArgumentsOnFields_GeneratesCorrectly()
         {
-            var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -181,8 +184,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void OneInputObjectType_GeneratesCorrectly()
         {
-            var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -220,8 +222,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void OneInterfaceType_NoArgumentsOnFields_GeneratesCorrectly()
         {
-            var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -259,8 +260,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void OneObjectType_ArgumentsOnField_GeneratesCorrectly()
         {
-            var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -306,8 +306,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void OneDirective_GeneratesCorrectly()
         {
-            var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -347,8 +346,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void OneController_GeneratesCorrectly()
         {
-            var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -380,8 +378,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void ClassArgumentToAField_ThatIsRegisteredAsAScalar_IsNamedProperly()
         {
-            var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);
@@ -419,8 +416,7 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void ReturnValueOfAField_ThatIsRegisteredAsAScalar_IsNamedProperly()
         {
-            var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
+            var collection = this.SetupCollection();
 
             var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
             var options = new SchemaOptions<GraphSchema>(collection);

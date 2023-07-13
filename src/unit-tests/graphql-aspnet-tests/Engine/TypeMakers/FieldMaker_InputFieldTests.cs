@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
+    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
@@ -32,8 +33,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.NotRequiredValueTypeField));
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
 
@@ -62,8 +62,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.RequiredValueTypeField));
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
 
@@ -89,8 +88,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.NotRequiredReferenceTypeField));
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
 
@@ -118,8 +116,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.RequiredReferenceTypeField));
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
 
@@ -149,9 +146,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.RequiredReferenceExplicitNonNullTypeField));
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
-
+            var factory = server.CreateMakerFactory();
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("requiredReferenceExplicitNonNullTypeField", graphField.Name);
@@ -178,8 +173,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.GraphIdRequired));
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
 
@@ -206,8 +200,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.GraphIdNotRequired));
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
 
@@ -233,8 +226,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.GraphIdNullable));
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
 

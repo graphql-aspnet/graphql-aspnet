@@ -56,9 +56,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema
         public override ScalarValueType ValueType => ScalarValueType.Boolean | ScalarValueType.String | ScalarValueType.Number;
 
         /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes => TypeCollection.Empty;
-
-        /// <inheritdoc />
         public override object Resolve(ReadOnlySpan<char> data)
         {
             throw new NotSupportedException(

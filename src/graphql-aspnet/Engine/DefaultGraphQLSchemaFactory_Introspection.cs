@@ -22,7 +22,6 @@ namespace GraphQL.AspNet.Engine
     /// </summary>
     public partial class DefaultGraphQLSchemaFactory<TSchema>
     {
-
         /// <summary>
         /// Clears, builds and caches the introspection metadata used to describe this schema. If introspection
         /// fields have not been added to the schema this method does nothing. No changes to the schema

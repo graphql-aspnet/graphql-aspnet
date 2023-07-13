@@ -27,11 +27,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.INT, typeof(int))
         {
             this.Description = $"A 32-bit integer. (Min: {int.MinValue}, Max: {int.MaxValue})";
-            this.OtherKnownTypes = new TypeCollection(typeof(int?));
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.Number;

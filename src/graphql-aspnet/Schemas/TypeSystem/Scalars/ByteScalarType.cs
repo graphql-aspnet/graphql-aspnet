@@ -27,7 +27,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.BYTE, typeof(byte))
         {
             this.Description = $"A unsigned byte. (Min: {byte.MinValue}, Max: {byte.MaxValue})";
-            this.OtherKnownTypes = new TypeCollection(typeof(byte?));
         }
 
         /// <inheritdoc />
@@ -38,9 +37,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             throw new UnresolvedValueException(data, typeof(byte));
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.Number;

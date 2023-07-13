@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
+    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using Moq;
@@ -63,8 +64,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.AreEqual(1, template.SecurityPolicies.Count());
             Assert.AreEqual(0, actionMethod.SecurityPolicies.Count());
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(actionMethod).Field;
             Assert.AreEqual(1, Enumerable.Count<AppliedSecurityPolicyGroup>(graphField.SecurityGroups));
@@ -86,8 +86,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.AreEqual(1, template.SecurityPolicies.Count());
             Assert.AreEqual(1, actionMethod.SecurityPolicies.Count());
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(actionMethod).Field;
 
@@ -116,8 +115,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.AreEqual(typeof(NullableEnumController.LengthType), arg.ObjectType);
             Assert.AreEqual(NullableEnumController.LengthType.Yards, arg.DefaultValue);
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(server.Schema);
+            var factory = server.CreateMakerFactory();
 
             var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(field).Field;
             Assert.IsNotNull(graphField);

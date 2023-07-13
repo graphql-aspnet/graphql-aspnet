@@ -27,11 +27,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.SHORT, typeof(short))
         {
             this.Description = $"A 16-bit integer. (Min: {short.MinValue}, Max: {short.MaxValue})";
-            this.OtherKnownTypes = new TypeCollection(typeof(short?));
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.Number;

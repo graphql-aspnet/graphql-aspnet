@@ -22,6 +22,8 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
+    using Microsoft.AspNetCore.Hosting.Server;
+    using GraphQL.AspNet.Tests.CommonHelpers;
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
@@ -100,8 +102,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             var testServer = new TestServerBuilder().Build();
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(testServer.Schema);
+            var factory = testServer.CreateMakerFactory();
 
             var template = factory.MakeTemplate(type, kind);
             var maker = factory.CreateTypeMaker(type, kind);
@@ -112,8 +113,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             var testServer = new TestServerBuilder().Build();
 
-            var factory = new DefaultGraphQLTypeMakerFactory<GraphSchema>();
-            factory.Initialize(testServer.Schema);
+            var factory = testServer.CreateMakerFactory();
 
             var maker = factory.CreateFieldMaker();
             return maker.CreateField(fieldTemplate).Field;

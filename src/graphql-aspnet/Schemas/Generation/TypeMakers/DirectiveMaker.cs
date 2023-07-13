@@ -38,7 +38,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         {
             _config = Validation.ThrowIfNullOrReturn(config, nameof(config));
             _argMaker = Validation.ThrowIfNullOrReturn(argumentMaker, nameof(argumentMaker));
-
         }
 
         /// <inheritdoc />

@@ -42,7 +42,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             if (!(typeTemplate is IScalarGraphTypeTemplate scalarTemplate))
                 return null;
 
-
             var scalarType = GlobalTypes.CreateScalarInstanceOrThrow(scalarTemplate.ScalarType);
             scalarType = scalarType.Clone(_config.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(scalarType.Name));
 

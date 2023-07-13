@@ -67,9 +67,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// When this method is called, construction of the DI container is complete. The schema has not been
         /// generated yet.
         /// </remarks>
-        /// <param name="serviceProvider">The configured service provider completed during setup. In
-        /// most instances, this will be the <see cref="IApplicationBuilder.ApplicationServices"/> instances
-        /// from <paramref name="app"/>.</param>
+        /// <param name="serviceProvider">The configured service provider created during setup.</param>
         public void UseExtension(IServiceProvider serviceProvider)
         {
             this.UseExtension(null, serviceProvider);
@@ -86,7 +84,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// </remarks>
         /// <param name="app">The application builder to register against. May be <c>null</c> in some rare instances
         /// where the middleware pipeline is not being setup. Usually during some unit testing edge cases.</param>
-        /// <param name="serviceProvider">The configured service provider completed during setup. In
+        /// <param name="serviceProvider">The configured service provider created  during setup. In
         /// most instances, this will be the <see cref="IApplicationBuilder.ApplicationServices"/> instances
         /// from <paramref name="app"/>.</param>
         public void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null)
