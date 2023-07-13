@@ -128,6 +128,18 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
+        public virtual ITestServerBuilder<TSchema> AddGraphType<TType>(TypeKind? typeKind = null)
+        {
+            return this.AddType(typeof(TType), typeKind, null);
+        }
+
+        /// <inheritdoc />
+        public virtual ITestServerBuilder<TSchema> AddGraphType(Type type, TypeKind? typeKind = null)
+        {
+            return this.AddType(type, typeKind, null);
+        }
+
+        /// <inheritdoc />
         public virtual ITestServerBuilder<TSchema> AddType<TType>(TypeKind? typeKind = null)
         {
             return this.AddType(typeof(TType), typeKind, null);

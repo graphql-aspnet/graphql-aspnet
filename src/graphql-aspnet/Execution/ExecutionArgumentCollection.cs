@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Execution
 
                 object passedValue = this.ResolveParameterValue(parameter);
 
-                var schemaListItem = false;
+                bool schemaListItem;
                 if (parameter.ArgumentModifiers.IsPartOfTheSchema())
                 {
                     // additional checks and coersion if this the value is
