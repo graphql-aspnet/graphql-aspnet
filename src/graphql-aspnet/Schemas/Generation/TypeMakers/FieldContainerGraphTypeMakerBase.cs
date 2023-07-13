@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// A base type maker for those types that generate fields. Used to centralize common code.

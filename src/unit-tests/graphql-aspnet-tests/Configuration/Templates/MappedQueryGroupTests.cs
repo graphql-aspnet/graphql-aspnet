@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Tests.Configuration.Templates
     using System.Linq;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Schemas;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.DependencyInjection;

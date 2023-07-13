@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using Moq;
     using NUnit.Framework;
 

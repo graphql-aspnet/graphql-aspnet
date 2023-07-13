@@ -7,15 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal
+namespace GraphQL.AspNet.Tests.Execution.Resolvers
 {
     using System;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Internal.Resolvers;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
+    using GraphQL.AspNet.Tests.Execution.Resolvers.ValueResolversTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.AspNet.Tests.Internal.ValueResolversTestData;
     using NUnit.Framework;
 
     [TestFixture]

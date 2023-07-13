@@ -12,11 +12,11 @@ namespace GraphQL.AspNet.Configuration
     using System;
     using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Configuration.Templates;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
+    using GraphQL.AspNet.Schemas.RuntimeSchemaItemDefinitions;
     using Microsoft.AspNetCore.Authorization;
 
     /// <summary>

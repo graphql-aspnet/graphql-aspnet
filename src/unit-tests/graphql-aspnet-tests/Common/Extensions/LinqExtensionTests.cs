@@ -13,7 +13,8 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.Interfaces;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using NUnit.Framework;
 

@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
+namespace GraphQL.AspNet.Tests.Common.CommonHelpers
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Tests.Framework.Interfaces;
+    using GraphQL.AspNet.Tests.Common.Interfaces;
 
     /// <summary>
     /// A represenstion of some data struct with two properties, both declared as graph exposed items.

@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans.ArgumentGeneratorTestData
     using System.Linq;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class InputController : GraphController
     {

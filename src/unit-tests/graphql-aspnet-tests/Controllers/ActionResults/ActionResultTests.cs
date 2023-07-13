@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
     using System.Threading.Tasks;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Controllers.InputModel;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;

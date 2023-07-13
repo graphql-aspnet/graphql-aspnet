@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [Description("A Multi Method Directive")]
     public class MultiMethodDirective : GraphDirective

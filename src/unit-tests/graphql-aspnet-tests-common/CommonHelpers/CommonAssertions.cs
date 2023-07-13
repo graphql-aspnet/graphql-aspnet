@@ -7,12 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
+namespace GraphQL.AspNet.Tests.Common.CommonHelpers
 {
     using System.Collections.Generic;
     using System.Text.Json;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing;
-    using NUnit;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers.JsonComparing;
     using NUnit.Framework;
 
     /// <summary>

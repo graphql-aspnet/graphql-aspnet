@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Web
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.JsonNodes;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Exceptions;

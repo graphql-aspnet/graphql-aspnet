@@ -10,9 +10,9 @@ namespace GraphQL.AspNet.Tests.Directives
 {
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Exceptions;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Directives.DirectiveTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 

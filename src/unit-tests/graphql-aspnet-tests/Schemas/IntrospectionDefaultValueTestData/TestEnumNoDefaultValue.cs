@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.IntrospectionDefaultValueTestData
+namespace GraphQL.AspNet.Tests.Schemas.IntrospectionDefaultValueTestData
 {
     public enum TestEnumNoDefaultValue
     {

@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// An interface representing the collection of dependencies rendered during the creation of an item related to the object graph.

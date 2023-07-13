@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet.Engine
 {
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.Configuration.Templates;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// The default schema factory, capable of creating singleton instances of

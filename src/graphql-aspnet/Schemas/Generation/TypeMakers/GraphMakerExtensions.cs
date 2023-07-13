@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Engine.TypeMakers
+namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;

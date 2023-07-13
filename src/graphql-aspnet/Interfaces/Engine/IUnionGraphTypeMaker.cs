@@ -8,8 +8,8 @@
 // *************************************************************
 namespace GraphQL.AspNet.Interfaces.Engine
 {
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
 
     /// <summary>
     /// A type maker targeting the generation of unions from pre-configured proxy classes.

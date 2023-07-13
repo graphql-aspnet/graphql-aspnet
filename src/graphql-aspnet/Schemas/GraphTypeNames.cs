@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal
+namespace GraphQL.AspNet.Schemas
 {
     using System;
     using System.Collections.Concurrent;
@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Internal
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
     /// A global collection of known graph type names and their concrete type references.

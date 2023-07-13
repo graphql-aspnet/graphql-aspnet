@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
     using System.Diagnostics;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Internal.Resolvers.Introspeection;
+    using GraphQL.AspNet.Execution.Resolvers.Introspeection;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;

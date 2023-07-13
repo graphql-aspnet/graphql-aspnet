@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
 {
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Tests.Common.Interfaces;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
 
     public class PocoWithInterfaceArgument

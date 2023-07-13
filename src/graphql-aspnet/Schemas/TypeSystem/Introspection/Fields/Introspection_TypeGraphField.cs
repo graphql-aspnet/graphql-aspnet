@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Resolvers.Introspeection;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Resolvers.Introspeection;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;

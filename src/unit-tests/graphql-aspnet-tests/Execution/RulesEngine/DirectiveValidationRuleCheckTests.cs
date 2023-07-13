@@ -15,9 +15,9 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
     using GraphQL.AspNet.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.RulesEngine.DirectiveTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Moq;
     using NUnit.Framework;
 

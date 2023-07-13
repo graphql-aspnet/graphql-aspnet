@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Configuration.Templates
+namespace GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions
 {
     /// <summary>
     /// An intermediate template that utilizies a key/value pair system to build up a set of component parts

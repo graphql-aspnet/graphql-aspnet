@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
+namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
     /// A map of .NET types and their related built in scalar types and unions.

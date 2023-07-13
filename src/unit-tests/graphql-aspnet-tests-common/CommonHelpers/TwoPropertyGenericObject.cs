@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
+namespace GraphQL.AspNet.Tests.Common.CommonHelpers
 {
     /// <summary>
     /// A test object that has two properties of any type, both generic.

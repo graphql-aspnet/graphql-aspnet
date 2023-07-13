@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>

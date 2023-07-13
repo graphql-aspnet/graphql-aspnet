@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 {
     using System.Linq;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData;
     using NUnit.Framework;
 

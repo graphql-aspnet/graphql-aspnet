@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Web.WebTestData
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class ItemInjectorHttpProcessor : DefaultGraphQLHttpProcessor<GraphSchema>
     {

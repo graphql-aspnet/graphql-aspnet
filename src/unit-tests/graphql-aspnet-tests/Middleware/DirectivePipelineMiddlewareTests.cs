@@ -16,8 +16,8 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Middleware.DirectiveMiddlewareTestData;
     using NUnit.Framework;
 

@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Resolvers
+namespace GraphQL.AspNet.Execution.Resolvers
 {
     using System;
-    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;

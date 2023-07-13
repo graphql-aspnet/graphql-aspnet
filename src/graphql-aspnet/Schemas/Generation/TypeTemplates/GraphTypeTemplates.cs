@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 

@@ -10,10 +10,9 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Engine.TypeMakers;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 

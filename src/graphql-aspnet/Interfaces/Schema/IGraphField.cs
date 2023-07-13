@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
 {
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// Describes a single field in the type system. This describes how a given field is to be represented with its

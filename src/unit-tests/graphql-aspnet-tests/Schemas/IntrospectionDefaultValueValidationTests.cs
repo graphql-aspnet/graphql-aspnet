@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal
+namespace GraphQL.AspNet.Tests.Schemas
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution;
@@ -17,9 +17,9 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.AspNet.Tests.Internal.IntrospectionDefaultValueTestData;
+    using GraphQL.AspNet.Tests.Schemas.IntrospectionDefaultValueTestData;
     using Moq;
     using NUnit.Framework;
 

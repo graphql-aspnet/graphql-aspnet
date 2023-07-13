@@ -7,13 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Configuration.Templates
+namespace GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using GraphQL.AspNet.Configuration;
-
     /// <summary>
     /// An intermediate template that utilizies a key/value pair system to build up a set of component parts
     /// that the templating engine will use to generate a full fledged field in a schema.

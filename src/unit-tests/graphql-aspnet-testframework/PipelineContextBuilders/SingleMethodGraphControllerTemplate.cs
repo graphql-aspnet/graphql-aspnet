@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// A mocked controller template that will selectively parse actions instead of the whole template.

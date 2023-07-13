@@ -16,11 +16,11 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Startup;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using Microsoft.Extensions.DependencyInjection;

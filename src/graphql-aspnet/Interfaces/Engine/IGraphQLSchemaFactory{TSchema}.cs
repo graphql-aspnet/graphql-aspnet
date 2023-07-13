@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.Interfaces.Engine
     using System.Collections.Generic;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

@@ -7,9 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Resolvers
+namespace GraphQL.AspNet.Execution.Resolvers
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;

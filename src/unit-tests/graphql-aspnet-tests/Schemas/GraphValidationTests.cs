@@ -7,16 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal
+namespace GraphQL.AspNet.Tests.Schemas
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.AspNet.Tests.Internal.GraphValidationTestData;
+    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
+    using GraphQL.AspNet.Tests.Schemas.GraphValidationTestData;
+    using Microsoft.AspNetCore.Authorization;
     using NUnit.Framework;
 
     [TestFixture]
@@ -128,7 +129,7 @@ namespace GraphQL.AspNet.Tests.Internal
         public void RetrieveSecurityPolicies_NullAttributeProvider_YieldsNoPolicies()
         {
             var policies = GraphValidation.RetrieveSecurityPolicies(null);
-            Assert.AreEqual(0, policies.Count());
+            Assert.AreEqual(0, Enumerable.Count<IAuthorizeData>(policies));
         }
 
         [Test]
@@ -137,7 +138,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var info = typeof(ControllerWithNoSecurityPolicies).GetMethod(nameof(ControllerWithNoSecurityPolicies.SomeMethod));
 
             var policies = GraphValidation.RetrieveSecurityPolicies(info);
-            Assert.AreEqual(0, policies.Count());
+            Assert.AreEqual(0, Enumerable.Count<IAuthorizeData>(policies));
         }
 
         [Test]
@@ -146,7 +147,7 @@ namespace GraphQL.AspNet.Tests.Internal
             var info = typeof(ControllerWithSecurityPolicies).GetMethod(nameof(ControllerWithSecurityPolicies.SomeMethod));
 
             var policies = GraphValidation.RetrieveSecurityPolicies(info);
-            Assert.AreEqual(1, policies.Count());
+            Assert.AreEqual(1, Enumerable.Count<IAuthorizeData>(policies));
         }
     }
 }

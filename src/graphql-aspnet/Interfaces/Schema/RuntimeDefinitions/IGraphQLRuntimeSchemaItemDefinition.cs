@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Configuration.Templates
+namespace GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions
 {
     using System;
     using System.Collections.Generic;

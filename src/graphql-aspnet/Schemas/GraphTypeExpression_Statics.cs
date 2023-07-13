@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps;
-    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

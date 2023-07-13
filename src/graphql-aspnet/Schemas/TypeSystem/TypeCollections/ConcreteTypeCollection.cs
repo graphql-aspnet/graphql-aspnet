@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
 
     /// <summary>
     /// A colleciton of <see cref="IGraphType"/> and their associated concrete .NET <see cref="Type"/>.

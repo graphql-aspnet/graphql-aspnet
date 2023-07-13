@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Configuration.ConfigurationTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]

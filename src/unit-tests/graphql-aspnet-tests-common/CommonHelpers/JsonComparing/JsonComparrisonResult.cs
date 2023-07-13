@@ -7,10 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
+namespace GraphQL.AspNet.Tests.Common.CommonHelpers.JsonComparing
 {
-    using System;
-
     /// <summary>
     /// A result containing the details of a json string comparrison.
     /// </summary>

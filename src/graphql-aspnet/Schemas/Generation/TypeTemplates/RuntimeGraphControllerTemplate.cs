@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.TypeTemplates
+namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Configuration.Templates;
     using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
 
     /// <summary>
     /// A "controller template" representing a single runtime configured field (e.g. minimal api).

@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Configuration
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.Configuration.Templates;
+    using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

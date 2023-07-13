@@ -18,9 +18,9 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.QueryPlans.ArgumentGeneratorTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]

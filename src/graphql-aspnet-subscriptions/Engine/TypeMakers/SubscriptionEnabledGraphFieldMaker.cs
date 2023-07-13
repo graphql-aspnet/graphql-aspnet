@@ -25,6 +25,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 

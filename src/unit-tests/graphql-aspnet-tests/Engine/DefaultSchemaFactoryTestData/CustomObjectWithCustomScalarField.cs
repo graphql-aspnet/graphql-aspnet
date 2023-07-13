@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Engine.DefaultSchemaFactoryTestData
 {
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class CustomObjectWithCustomScalarField
     {

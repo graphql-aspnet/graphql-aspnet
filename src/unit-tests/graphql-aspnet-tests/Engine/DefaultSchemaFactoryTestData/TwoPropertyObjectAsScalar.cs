@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultSchemaFactoryTestData
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class TwoPropertyObjectAsScalar : ScalarGraphTypeBase
     {

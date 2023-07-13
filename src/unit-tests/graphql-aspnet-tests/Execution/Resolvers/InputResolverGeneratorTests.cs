@@ -7,12 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal
+namespace GraphQL.AspNet.Tests.Execution.Resolvers
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Execution.Parsing.Lexing;
@@ -21,19 +20,18 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
+    using GraphQL.AspNet.Tests.Execution.Resolvers.InputValueNodeTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Internal.InputValueNodeTestData;
     using Moq;
     using NUnit.Framework;
-    using NUnit.Framework.Constraints;
 
     [TestFixture]
     public class InputResolverGeneratorTests

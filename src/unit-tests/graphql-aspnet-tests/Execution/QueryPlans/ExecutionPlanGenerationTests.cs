@@ -13,14 +13,15 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.Interfaces;
     using GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using NUnit.Framework;
 

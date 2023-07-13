@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.Templates
+namespace GraphQL.AspNet.Schemas.RuntimeSchemaItemDefinitions
 {
     using System;
     using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Configuration.Templates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.Configuration.Templates;
+    using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>

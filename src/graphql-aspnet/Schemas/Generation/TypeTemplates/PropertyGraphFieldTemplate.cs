@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.TypeTemplates
+namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 {
     using System;
     using System.Collections.Generic;
@@ -18,9 +18,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (this.ExpectedReturnType == null)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The graph property '{this.InternalFullName}' has no valid {nameof(ExpectedReturnType)}. An expected " +
+                    $"The graph property '{this.InternalFullName}' has no valid {nameof(this.ExpectedReturnType)}. An expected " +
                     "return type must be assigned from the declared return type.");
             }
         }

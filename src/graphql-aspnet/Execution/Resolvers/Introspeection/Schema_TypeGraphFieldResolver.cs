@@ -7,9 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
+namespace GraphQL.AspNet.Execution.Resolvers.Introspeection
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;

@@ -24,7 +24,6 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Internal;
 
     /// <summary>
     /// An ecapsulation of a piece of real data supplied to, or resolved from, a graph field.

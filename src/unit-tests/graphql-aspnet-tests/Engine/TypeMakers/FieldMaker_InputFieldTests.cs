@@ -10,14 +10,13 @@
 namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System.Linq;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     public class FieldMaker_InputFieldTests : GraphTypeMakerTestBase

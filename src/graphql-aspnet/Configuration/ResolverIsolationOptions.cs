@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// A set of options indicating the various resolver types that may be

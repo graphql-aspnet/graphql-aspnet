@@ -14,9 +14,9 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Configuration.SchemaItemExtensionTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Moq;
     using NUnit.Framework;
 

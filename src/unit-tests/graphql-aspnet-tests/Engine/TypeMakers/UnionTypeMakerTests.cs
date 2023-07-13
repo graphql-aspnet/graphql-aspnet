@@ -10,7 +10,6 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System;
     using System.Linq;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;

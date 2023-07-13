@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Direc
     using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Common;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// A rule to ensure that the location where the directive is being

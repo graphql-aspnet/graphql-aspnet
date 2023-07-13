@@ -7,14 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal
+namespace GraphQL.AspNet.Schemas
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -22,7 +21,6 @@ namespace GraphQL.AspNet.Internal
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.AspNetCore.Authorization;
 
@@ -108,6 +106,9 @@ namespace GraphQL.AspNet.Internal
 
                 if (Validation.IsCastable<GraphDirective>(type))
                     return TypeKind.DIRECTIVE;
+
+                if (GlobalTypes.IsBuiltInScalar(type))
+                    return TypeKind.SCALAR;
             }
 
             return overrideValue ?? TypeKind.OBJECT;

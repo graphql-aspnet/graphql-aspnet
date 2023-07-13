@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using NUnit.Framework;
 

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [GraphRoute("simple")]
     public class SimpleExecutionController : GraphController

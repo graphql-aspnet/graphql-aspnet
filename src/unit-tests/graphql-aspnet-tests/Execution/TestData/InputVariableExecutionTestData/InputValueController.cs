@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
     using System.Linq;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [GraphRoot]
     public class InputValueController : GraphController

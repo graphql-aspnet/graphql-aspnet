@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
 
     /// <summary>
     /// An basic implementation of <see cref="IGraphUnionProxy"/> that can be

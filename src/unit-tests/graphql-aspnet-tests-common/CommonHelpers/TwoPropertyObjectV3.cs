@@ -6,11 +6,11 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
+namespace GraphQL.AspNet.Tests.Common.CommonHelpers
 {
     using System;
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Tests.Framework.Interfaces;
+    using GraphQL.AspNet.Tests.Common.Interfaces;
 
     /// <summary>
     /// A representation of a data object with two properties.

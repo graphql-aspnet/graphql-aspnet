@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.ValueResolversTestData
+namespace GraphQL.AspNet.Tests.Execution.Resolvers.ValueResolversTestData
 {
     using System;
     using System.Threading.Tasks;

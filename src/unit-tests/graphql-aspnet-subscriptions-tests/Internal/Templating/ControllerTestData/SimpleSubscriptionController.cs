@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using NUnit.Framework;
 
     public class SimpleSubscriptionController : GraphController

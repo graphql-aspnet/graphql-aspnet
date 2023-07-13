@@ -9,9 +9,9 @@
 
 namespace GraphQL.AspNet.Interfaces.Engine
 {
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
 
     /// <summary>
     /// A "maker" that can generate fully qualified graph fields from a given template.

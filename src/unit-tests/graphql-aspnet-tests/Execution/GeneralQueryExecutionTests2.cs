@@ -11,9 +11,9 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Linq;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
 

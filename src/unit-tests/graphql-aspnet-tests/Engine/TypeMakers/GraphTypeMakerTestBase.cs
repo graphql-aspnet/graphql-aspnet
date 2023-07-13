@@ -12,13 +12,13 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using System;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using Microsoft.AspNetCore.Hosting.Server;
     using GraphQL.AspNet.Tests.CommonHelpers;
 

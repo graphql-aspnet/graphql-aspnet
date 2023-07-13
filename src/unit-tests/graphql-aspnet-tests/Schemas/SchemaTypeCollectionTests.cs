@@ -12,23 +12,23 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.GraphTypeCollectionTestData;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
     using NUnit.Framework;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using Microsoft.AspNetCore.Hosting.Server;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.Interfaces;
     using GraphQL.AspNet.Tests.CommonHelpers;
 
     [TestFixture]

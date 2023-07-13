@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Internal
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// A special marker interface that identifies a valid <see cref="IObjectGraphTypeTemplate"/>

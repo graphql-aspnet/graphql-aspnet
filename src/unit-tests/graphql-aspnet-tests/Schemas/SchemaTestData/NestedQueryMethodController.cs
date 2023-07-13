@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
     using System;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [GraphRoute("path0")]
     public class NestedQueryMethodController : GraphController

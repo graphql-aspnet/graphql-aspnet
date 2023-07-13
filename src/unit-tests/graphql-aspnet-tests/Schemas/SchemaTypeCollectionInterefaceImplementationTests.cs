@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -20,8 +19,8 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData.InterfaceRegistrationTestData;
     using NUnit.Framework;
     using GraphQL.AspNet.Schemas.Generation;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using Microsoft.AspNetCore.Hosting.Server;
     using GraphQL.AspNet.Tests.CommonHelpers;
 

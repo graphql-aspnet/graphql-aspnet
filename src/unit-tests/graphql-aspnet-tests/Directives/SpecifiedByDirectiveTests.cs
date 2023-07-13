@@ -29,11 +29,11 @@ namespace GraphQL.AspNet.Tests.Directives
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputValueSteps;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]

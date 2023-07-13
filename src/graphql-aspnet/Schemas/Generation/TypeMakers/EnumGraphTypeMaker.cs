@@ -13,13 +13,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>

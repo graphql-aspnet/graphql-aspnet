@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Engine.TypeMakers
+namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 {
     using System;
     using System.Diagnostics;

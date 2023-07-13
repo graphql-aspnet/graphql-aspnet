@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
     using System.ComponentModel.DataAnnotations;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class InputTestObject
     {

@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using NUnit.Framework;
 

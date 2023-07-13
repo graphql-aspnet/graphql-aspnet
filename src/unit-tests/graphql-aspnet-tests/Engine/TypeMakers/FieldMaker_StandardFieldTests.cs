@@ -9,12 +9,11 @@
 namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System.Linq;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
@@ -138,7 +137,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Name));
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -159,7 +158,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Age));
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -184,7 +183,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 
             var parent = obj.Object;
             var propInfo = typeof(ObjectDirectiveTestItem).GetProperty(nameof(ObjectDirectiveTestItem.Prop1));
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 

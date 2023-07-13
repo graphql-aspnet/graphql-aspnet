@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using NUnit.Framework;
     using MGT = GraphQL.AspNet.Schemas.TypeSystem.MetaGraphTypes;
 

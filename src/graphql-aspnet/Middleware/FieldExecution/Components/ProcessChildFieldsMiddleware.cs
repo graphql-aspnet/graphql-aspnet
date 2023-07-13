@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Internal;
 
     /// <summary>
     /// A middleware component that, when a result exists on the context, invokes the next set

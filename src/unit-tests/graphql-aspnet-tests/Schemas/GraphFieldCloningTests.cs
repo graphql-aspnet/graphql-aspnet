@@ -11,15 +11,16 @@ namespace GraphQL.AspNet.Tests.Schemas
 {
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using Microsoft.AspNetCore.Authorization;
     using Moq;
     using NUnit.Framework;
@@ -129,7 +130,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 "Prop1",
                 typeof(TwoPropertyObject),
                 typeof(List<TwoPropertyObject>),
-                AspNet.Execution.FieldResolutionMode.PerSourceItem,
+                FieldResolutionMode.PerSourceItem,
                 resolver.Object,
                 polices,
                 appliedDirectives);
@@ -150,7 +151,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             field.IsDeprecated = true;
             field.DeprecationReason = "Because I said so";
             field.Publish = false;
-            field.FieldSource = AspNet.Internal.TypeTemplates.GraphFieldSource.Method;
+            field.FieldSource = GraphFieldSource.Method;
 
             var clonedParent = new Mock<IGraphType>();
             clonedParent.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/BobType"));

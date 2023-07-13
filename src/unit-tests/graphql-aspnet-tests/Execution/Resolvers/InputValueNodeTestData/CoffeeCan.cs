@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.InputValueNodeTestData
+namespace GraphQL.AspNet.Tests.Execution.Resolvers.InputValueNodeTestData
 {
     using GraphQL.AspNet.Attributes;
 

@@ -7,15 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Configuration.Templates
+namespace GraphQL.AspNet.Schemas.RuntimeSchemaItemDefinitions
 {
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.Configuration.Templates;
-    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 

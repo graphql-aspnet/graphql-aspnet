@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.ValueResolversTestData
+namespace GraphQL.AspNet.Tests.Execution.Resolvers.ValueResolversTestData
 {
     public enum ResolvableEnum
     {

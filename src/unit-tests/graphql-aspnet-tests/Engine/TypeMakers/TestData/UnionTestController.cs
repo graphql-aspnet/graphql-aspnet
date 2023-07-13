@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [GraphRoute("unionTest")]
     public class UnionTestController : GraphController

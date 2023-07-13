@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Framework.Interfaces
+namespace GraphQL.AspNet.Tests.Common.Interfaces
 {
     using GraphQL.AspNet.Attributes;
 

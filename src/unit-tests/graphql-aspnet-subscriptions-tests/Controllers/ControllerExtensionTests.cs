@@ -16,8 +16,8 @@ namespace GraphQL.AspNet.Tests.Controllers
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.SubscriptionServer;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Controllers.ControllerTestData;
     using NUnit.Framework;
 

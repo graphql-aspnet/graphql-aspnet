@@ -10,7 +10,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     // not a directive
     [ApplyDirective(typeof(TwoPropertyObject), 121, "union directive")]

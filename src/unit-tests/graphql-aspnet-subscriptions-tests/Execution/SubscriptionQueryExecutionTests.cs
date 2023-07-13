@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Security.Cryptography;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.SubscriptionQueryExecutionData;
     using GraphQL.AspNet.Tests.Mocks;
     using NuGet.Frameworks;

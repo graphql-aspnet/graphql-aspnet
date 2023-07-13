@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.TypeTemplates
+namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 {
     using System;
     using System.Collections.Generic;
     using System.Reflection;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.Configuration.Templates;
+    using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
 
     /// <summary>
     /// A custom <see cref="ICustomAttributeProvider"/> that can provide runtime declared attributes

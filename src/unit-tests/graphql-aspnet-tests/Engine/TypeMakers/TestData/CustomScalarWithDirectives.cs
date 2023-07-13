@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [ApplyDirective(typeof(DirectiveWithArgs), 87, "scalar arg")]
     public class CustomScalarWithDirectives : ScalarGraphTypeBase

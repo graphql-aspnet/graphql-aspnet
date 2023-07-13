@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
 {
     using System.ComponentModel.DataAnnotations;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class InputTestObjectWithDefaultFieldValues
     {

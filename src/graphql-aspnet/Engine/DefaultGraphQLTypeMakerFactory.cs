@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.Generation
+namespace GraphQL.AspNet.Engine
 {
     using System;
     using GraphQL.AspNet.Common;
@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Schemas.Generation
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     /// <summary>
     /// An object used during schema generation to organize and expose the various

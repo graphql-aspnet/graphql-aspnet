@@ -13,10 +13,10 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTest;
     using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
