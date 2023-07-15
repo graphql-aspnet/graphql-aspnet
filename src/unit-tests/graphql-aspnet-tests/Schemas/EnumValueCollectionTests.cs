@@ -174,7 +174,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             collection.Add(enumValue.Object);
 
             var result = collection.TryGetValue(name, out var item);
-            if(shouldBeFound)
+            if (shouldBeFound)
             {
                 Assert.IsTrue(result);
                 Assert.IsNotNull(item);

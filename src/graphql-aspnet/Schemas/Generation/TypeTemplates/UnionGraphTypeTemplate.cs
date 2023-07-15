@@ -10,11 +10,9 @@
 namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 {
     using System;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
@@ -49,8 +47,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             {
                 if (_proxyType != null)
                 {
-
-                    _instance = InstanceFactory.CreateInstance(_proxyType) as IGraphUnionProxy;
+                    _instance = GlobalTypes.CreateUnionProxyFromType(_proxyType);
                     if (_instance != null)
                     {
                         this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, _instance.Name));

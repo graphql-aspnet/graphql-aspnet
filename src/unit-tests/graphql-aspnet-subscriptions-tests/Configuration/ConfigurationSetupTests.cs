@@ -156,7 +156,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
-
             var serviceCollection = new ServiceCollection();
 
             // the internal publisher (added by default)

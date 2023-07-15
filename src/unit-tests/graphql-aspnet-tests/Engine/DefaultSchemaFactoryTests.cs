@@ -7,6 +7,15 @@
 // License:  MIT
 // *************************************************************
 
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
 namespace GraphQL.AspNet.Tests.Engine
 {
     using System;
@@ -16,13 +25,11 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Common.Interfaces;
     using GraphQL.AspNet.Tests.Engine.DefaultSchemaFactoryTestData;
-    using GraphQL.AspNet.Tests.Framework.Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 

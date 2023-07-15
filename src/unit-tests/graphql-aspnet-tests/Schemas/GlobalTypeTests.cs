@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
                 Assert.Fail("Threw when it shouldnt");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.Fail("Threw invalid exception type");
             }
@@ -200,7 +200,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
                 Assert.Fail("Threw when it shouldnt");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.Fail("Threw invalid exception type");
             }
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         }
 
         [TestCase(null, false)]
-        [TestCase(typeof(TwoPropertyObject), false )] // not a union proxy
+        [TestCase(typeof(TwoPropertyObject), false)] // not a union proxy
         [TestCase(typeof(NoParameterelessConstructorProxy), false)]
         [TestCase(typeof(NoNameUnionProxy), false)]
         [TestCase(typeof(InvalidNameUnionProxy), false)]

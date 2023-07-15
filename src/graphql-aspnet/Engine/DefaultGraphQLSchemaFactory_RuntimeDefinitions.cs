@@ -27,6 +27,8 @@ namespace GraphQL.AspNet.Engine
         {
             if (itemDefinition is IGraphQLRuntimeResolvedFieldDefinition fieldDef)
                 this.AddRuntimeFieldDefinition(fieldDef);
+
+            // TODO: Add support for directives
         }
 
         /// <summary>
