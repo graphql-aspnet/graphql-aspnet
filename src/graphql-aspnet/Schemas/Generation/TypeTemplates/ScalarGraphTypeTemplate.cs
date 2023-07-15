@@ -10,9 +10,13 @@
 namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
@@ -23,6 +27,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     public class ScalarGraphTypeTemplate : GraphTypeTemplateBase, IScalarGraphTypeTemplate
     {
         private readonly Type _scalarType;
+        private IScalarGraphType _instance;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarGraphTypeTemplate"/> class.
@@ -33,6 +38,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
             Validation.ThrowIfNull(typeToTemplate, nameof(typeToTemplate));
             _scalarType = GlobalTypes.FindBuiltInScalarType(typeToTemplate) ?? typeToTemplate;
+            _instance = GlobalTypes.CreateScalarInstance(_scalarType);
         }
 
         /// <inheritdoc />
@@ -40,20 +46,35 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
             base.ParseTemplateDefinition();
 
-            var instance = GlobalTypes.CreateScalarInstance(this.ScalarType);
-
-            if (instance != null)
+            if (_instance != null)
             {
-                this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, instance.Name));
-                this.ObjectType = instance.ObjectType;
+                this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, _instance.Name));
+                this.ObjectType = _instance.ObjectType;
             }
         }
 
         /// <inheritdoc />
         public override void ValidateOrThrow()
         {
-            base.ValidateOrThrow();
             GlobalTypes.ValidateScalarTypeOrThrow(this.ScalarType);
+            base.ValidateOrThrow();
+        }
+
+        /// <inheritdoc />
+        protected override IEnumerable<IAppliedDirectiveTemplate> ParseAppliedDiretives()
+        {
+            if (_instance != null)
+            {
+                return _instance.AppliedDirectives.Select(x => new AppliedDirectiveTemplate(
+                    this,
+                    x.DirectiveName,
+                    x.ArgumentValues)
+                {
+                    DirectiveType = x.DirectiveType,
+                });
+            }
+
+            return Enumerable.Empty<IAppliedDirectiveTemplate>();
         }
 
         /// <inheritdoc />
@@ -63,10 +84,27 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public override TypeKind Kind => TypeKind.SCALAR;
 
         /// <inheritdoc />
-        public override string InternalFullName => _scalarType.Name;
+        public override string InternalFullName => _instance?.InternalFullName;
 
         /// <inheritdoc />
-        public override string InternalName => _scalarType.Name;
+        public override string InternalName => _scalarType?.Name;
+
+        /// <inheritdoc />
+        public override string Name => _instance?.Name;
+
+        /// <inheritdoc />
+        public override string Description
+        {
+            get
+            {
+                return _instance?.Description;
+            }
+
+            protected set
+            {
+                // description is fixed to that in the scalar instance.
+            }
+        }
 
         /// <inheritdoc />
         public Type ScalarType => _scalarType;

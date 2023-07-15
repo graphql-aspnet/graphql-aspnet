@@ -14,8 +14,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ParameterTestDat
     using System.Collections.Generic;
     using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
+    using Microsoft.AspNetCore.Mvc;
 
     public class ParameterTestClass
     {
@@ -46,6 +48,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ParameterTestDat
             [FromGraphQL(TypeExpression = "[Type]")] int incompatiableTypeExpressionListToSingle,
             [FromGraphQL(TypeExpression = "Type!")] int[] incompatiableTypeExpressionSingleToList,
             [FromGraphQL(TypeExpression = "Type")] int incompatiableTypeExpressionNullToNotNull, // nullable expression, actual type is not nullable
+            [FromGraphQL] [FromServices] TwoPropertyObject doubleDeclaredObject,
             Person defaultValueObjectArg = null,
             string defaultValueStringArg = null,
             string defaultValueStringArgWithValue = "abc",

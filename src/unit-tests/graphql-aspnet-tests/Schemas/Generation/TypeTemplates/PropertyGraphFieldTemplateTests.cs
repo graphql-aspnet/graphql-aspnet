@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -171,7 +171,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
-                "Type",
+                Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME,
                 MetaGraphTypes.IsList);
 
             var parent = obj.Object;
@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
-                "Type",  // expression is expected to be unnamed at the template level
+                Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME,  // expression is expected to be unnamed at the template level
                 MetaGraphTypes.IsList,
                 MetaGraphTypes.IsNotNull); // structs can't be null
 

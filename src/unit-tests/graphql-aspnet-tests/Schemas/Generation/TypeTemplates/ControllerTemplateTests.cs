@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_ReturnArrayOnAction_ParsesCorrectly()
         {
             var expectedTypeExpression = new GraphTypeExpression(
-                "Type",
+                Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME,
                 MetaGraphTypes.IsList);
 
             var template = new GraphControllerTemplate(typeof(ArrayReturnController));
@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_ArrayOnInputParameter_ParsesCorrectly()
         {
             var expectedTypeExpression = new GraphTypeExpression(
-                "Type",
+                Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME,
                 MetaGraphTypes.IsList);
 
             var template = new GraphControllerTemplate(typeof(ArrayInputParamController));

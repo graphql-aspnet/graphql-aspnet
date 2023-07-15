@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 {
     using System;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -26,6 +27,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     public class UnionGraphTypeTemplate : GraphTypeTemplateBase, IUnionGraphTypeTemplate
     {
         private readonly Type _proxyType;
+        private IGraphUnionProxy _instance;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnionGraphTypeTemplate" /> class.
@@ -34,8 +36,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public UnionGraphTypeTemplate(Type proxyType)
             : base(proxyType)
         {
-            Validation.ThrowIfNull(proxyType, nameof(proxyType));
             _proxyType = proxyType;
+            this.ObjectType = null;
         }
 
         /// <inheritdoc />
@@ -47,12 +49,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             {
                 if (_proxyType != null)
                 {
-                    var instance = InstanceFactory.CreateInstance(_proxyType) as IGraphUnionProxy;
 
-                    if (instance != null)
+                    _instance = InstanceFactory.CreateInstance(_proxyType) as IGraphUnionProxy;
+                    if (_instance != null)
                     {
-                        this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, instance.Name));
-                        this.ObjectType = null;
+                        this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, _instance.Name));
                     }
                 }
             }
@@ -65,33 +66,31 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public override void ValidateOrThrow()
         {
             base.ValidateOrThrow();
-            if (_proxyType == null)
-            {
-                throw new GraphTypeDeclarationException(
-                    "Unable to create a union graph type template from a null supplied proxy type.");
-            }
-
-            if (!Validation.IsCastable<IGraphUnionProxy>(_proxyType))
-            {
-                throw new GraphTypeDeclarationException(
-                    $"The type {_proxyType.FriendlyGraphTypeName()} does not implement {nameof(IGraphUnionProxy)}. All " +
-                    $"types being used as a declaration of a union must implement {nameof(IGraphUnionProxy)}.");
-            }
+            GlobalTypes.ValidateUnionProxyOrThrow(_proxyType);
         }
 
         /// <inheritdoc />
-        public override AppliedSecurityPolicyGroup SecurityPolicies { get; }
+        public override AppliedSecurityPolicyGroup SecurityPolicies => null;
 
         /// <inheritdoc />
-        public override TypeKind Kind => TypeKind.SCALAR;
+        public override string Name => _instance?.Name;
 
         /// <inheritdoc />
-        public override string InternalFullName => _proxyType?.Name;
+        public override string Description => _instance?.Description;
+
+        /// <inheritdoc />
+        public override TypeKind Kind => TypeKind.UNION;
+
+        /// <inheritdoc />
+        public override string InternalFullName => _proxyType?.FriendlyName(true);
 
         /// <inheritdoc />
         public override string InternalName => _proxyType?.Name;
 
         /// <inheritdoc />
         public Type ProxyType => _proxyType;
+
+        /// <inheritdoc />
+        public override bool Publish => _instance?.Publish ?? false;
     }
 }

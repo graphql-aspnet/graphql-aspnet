@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.Collections.Generic;
-    using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
@@ -22,17 +21,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// <summary>
     /// A map of .NET types and their related built in scalar types and unions.
     /// </summary>
-    public static class GlobalTypes
+    public static partial class GlobalTypes
     {
         private static readonly Dictionary<Type, Type> _scalarGraphTypeTypesByConcreteType;
         private static readonly Dictionary<string, Type> _scalarsByName;
         private static readonly HashSet<Type> _fixedNamedScalars;
+        private static readonly HashSet<Type> _allBuiltInScalars;
 
         static GlobalTypes()
         {
             _scalarGraphTypeTypesByConcreteType = new Dictionary<Type, Type>();
             _scalarsByName = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
             _fixedNamedScalars = new HashSet<Type>();
+            _allBuiltInScalars = new HashSet<Type>();
 
             // specification defined scalars (cannot be altered)
             ValidateAndRegisterBuiltInScalar<IntScalarType>(true);
@@ -64,17 +65,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             where T : IScalarGraphType
         {
             var instance = CreateScalarInstanceOrThrow(typeof(T));
-            if (_scalarGraphTypeTypesByConcreteType.ContainsKey(instance.ObjectType))
+            if (_scalarGraphTypeTypesByConcreteType.TryGetValue(instance.ObjectType, out Type registeredType1))
             {
-                var registeredType = _scalarGraphTypeTypesByConcreteType[instance.ObjectType];
                 throw new GraphTypeDeclarationException(
                     $"The scalar '{typeof(T).FriendlyName()}' is attempting to register a known type of '{instance.ObjectType.FriendlyName()}' but it is " +
-                    $"already reserved by the scalar '{registeredType.FriendlyName()}'. Built in scalar type mappings must be unique.");
+                    $"already reserved by the scalar '{registeredType1.FriendlyName()}'. Built in scalar type mappings must be unique.");
             }
 
-            if (_scalarsByName.ContainsKey(instance.Name))
+            if (_scalarsByName.TryGetValue(instance.Name, out Type registeredType))
             {
-                var registeredType = _scalarsByName[instance.Name];
                 throw new GraphTypeDeclarationException(
                     $"The scalar '{typeof(T).FriendlyName()}' is attempting to register with the name '{instance.Name}' but it is " +
                     $"already reserved by the scalar '{registeredType.FriendlyName()}'. Built in scalar type names must be globally unique.");
@@ -83,6 +82,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             _scalarGraphTypeTypesByConcreteType.Add(instance.ObjectType, typeof(T));
             _scalarsByName.Add(instance.Name, typeof(T));
 
+            _allBuiltInScalars.Add(typeof(T));
             if (isFixedName)
                 _fixedNamedScalars.Add(typeof(T));
         }
@@ -114,8 +114,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                     eliminateNullableT: true);
             }
 
-            if (_scalarGraphTypeTypesByConcreteType.ContainsKey(typeToCheck))
-                return _scalarGraphTypeTypesByConcreteType[typeToCheck];
+            if (_scalarGraphTypeTypesByConcreteType.TryGetValue(typeToCheck, out Type type))
+                return type;
+
+            if (_allBuiltInScalars.Contains(typeToCheck))
+                return typeToCheck;
 
             return null;
         }
@@ -163,9 +166,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             // if the name represents a globally defined scalar
             // and if that scalar is declared as a fixed name
             // then don't allow it to be renamed named
-            if (_scalarsByName.ContainsKey(scalarName))
+            if (_scalarsByName.TryGetValue(scalarName, out Type scalarType))
             {
-                var scalarType = _scalarsByName[scalarName];
                 return !_fixedNamedScalars.Contains(scalarType);
             }
 
@@ -202,7 +204,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns>System.ValueTuple&lt;System.Boolean, IScalarGraphType&gt;.</returns>
         private static (bool IsValid, IScalarGraphType Instance) CreateAndValidateScalarType(Type scalarType, bool shouldThrow = true)
         {
-            Validation.ThrowIfNull(scalarType, nameof(scalarType));
+            if (scalarType == null)
+            {
+                if (!shouldThrow)
+                    return (false, null);
+
+                throw new GraphTypeDeclarationException("~null~ is an invalid scalar type");
+            }
 
             if (!Validation.IsCastable<IScalarGraphType>(scalarType))
             {
@@ -249,7 +257,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 if (!shouldThrow)
                     return (false, null);
                 throw new GraphTypeDeclarationException(
-                    $"The scalar must supply a name that that conforms to the standard rules for GraphQL. (Regex: {Constants.RegExPatterns.NameRegex})");
+                    $"The scalar {graphType.GetType().FriendlyName()} must supply a name that that conforms to the standard rules for GraphQL. (Regex: {Constants.RegExPatterns.NameRegex})");
             }
 
             if (graphType.Kind != TypeKind.SCALAR)
@@ -345,33 +353,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             var (isValid, instance) = CreateAndValidateScalarType(scalarType, false);
             return isValid ? instance : null;
-        }
-
-        /// <summary>
-        /// attempts to instnatiate the provided type as a union proxy.
-        /// </summary>
-        /// <param name="proxyType">Type of the proxy to create.</param>
-        /// <returns>IGraphUnionProxy.</returns>
-        public static IGraphUnionProxy CreateUnionProxyFromType(Type proxyType)
-        {
-            if (proxyType == null)
-                return null;
-
-            IGraphUnionProxy proxy = null;
-            if (Validation.IsCastable<IGraphUnionProxy>(proxyType))
-            {
-                var paramlessConstructor = proxyType.GetConstructor(BindingFlags.Instance | BindingFlags.Public, null, Type.EmptyTypes, null);
-                if (paramlessConstructor == null)
-                {
-                    throw new GraphTypeDeclarationException(
-                        $"The union proxy type '{proxyType.FriendlyName()}' could not be instantiated. " +
-                        "All union proxy types must declare a parameterless constructor.");
-                }
-
-                proxy = InstanceFactory.CreateInstance(proxyType) as IGraphUnionProxy;
-            }
-
-            return proxy;
         }
 
         /// <summary>

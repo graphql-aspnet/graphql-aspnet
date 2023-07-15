@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation.Templating
+namespace GraphQL.AspNet.Tests.Schemas.Generation
 {
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.Templating
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
-                "Type",
+                Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME,
                 MetaGraphTypes.IsList);
 
             var parent = obj.Object;

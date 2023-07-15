@@ -44,41 +44,6 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
-        /// Determines whether the given type is parsable and usable by this graphql library.
-        /// </summary>
-        /// <param name="type">The type to parse.</param>
-        /// <returns><c>true</c> if the type is parsable; otherwise, <c>false</c>.</returns>
-        public static bool IsParseableType(Type type)
-        {
-            if (Validation.IsCastable<IGraphUnionProxy>(type))
-                return false;
-
-            return GraphValidation.IsValidGraphType(type);
-        }
-
-        /// <summary>
-        /// Resolves the <see cref="TypeKind" /> of the provided concrete type. If provided, the override
-        /// value will be used by default if the type does not represent a reserved <see cref="TypeKind"/>. If an override value is supplied
-        /// but the type cannot be corerced into said kind an exception is thrown.
-        /// </summary>
-        /// <param name="type">The type to check.</param>
-        /// <param name="overrideValue">The override value to use. Pass null to attempt default resolution.</param>
-        /// <returns>TypeKind.</returns>
-        public static TypeKind ResolveTypeKindOrThrow(Type type, TypeKind? overrideValue = null)
-        {
-            var outKind = ResolveTypeKind(type, overrideValue);
-            if (overrideValue.HasValue && outKind != overrideValue.Value && !overrideValue.Value.CanBecome(outKind))
-            {
-                throw new GraphTypeDeclarationException(
-                    $"The concrete type '{type.FriendlyName()}' was to be resolved as a graph type of kind '{overrideValue.Value}' but " +
-                    $"can only be assigned as '{outKind.ToString()}'",
-                    type);
-            }
-
-            return outKind;
-        }
-
-        /// <summary>
         /// Attempts to classify the provided <see cref="Type"/> to determine its <see cref="TypeKind" />
         /// (enum, scalar, object etc.). If provided, the override
         /// value will be used if allowed by the core <see cref="TypeKind"/> for the provided <see cref="Type"/>.
@@ -205,6 +170,9 @@ namespace GraphQL.AspNet.Schemas
         /// <returns><c>true</c> if the supplied name represents a valid graph name; otherwise, <c>false</c>.</returns>
         public static bool IsValidGraphName(string nameToTest)
         {
+            if (nameToTest == null)
+                return false;
+
             return Constants.RegExPatterns.NameRegex.IsMatch(nameToTest);
         }
 

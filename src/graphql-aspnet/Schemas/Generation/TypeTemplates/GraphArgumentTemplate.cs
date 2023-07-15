@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             // set appropriate meta data about this parameter for inclusion in the type system
             this.TypeExpression = GraphTypeExpression.FromType(this.DeclaredArgumentType, this.DeclaredTypeWrappers);
-            this.TypeExpression = this.TypeExpression.CloneTo("Type");
+            this.TypeExpression = this.TypeExpression.CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
             // when this argument accepts the same data type as the data returned by its owners target source type
             // i.e. if the source data supplied to the field for resolution is the same as this argument

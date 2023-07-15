@@ -60,9 +60,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public abstract TypeKind Kind { get; }
 
         /// <inheritdoc />
-        public TemplateDeclarationRequirements? DeclarationRequirements => _fieldDeclarationOverrides;
+        public virtual TemplateDeclarationRequirements? DeclarationRequirements => _fieldDeclarationOverrides;
 
         /// <inheritdoc />
-        public bool Publish { get; private set; }
+        public virtual bool Publish { get; private set; }
     }
 }

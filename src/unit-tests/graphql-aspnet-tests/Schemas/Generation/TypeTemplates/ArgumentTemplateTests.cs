@@ -292,5 +292,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 var template = this.ExtractParameterTemplate("incompatiableTypeExpressionNullToNotNull", out var paramInfo);
             });
         }
+
+        [Test]
+        public void ArgumentAttributedasFromGraphQLAndFromServices_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("doubleDeclaredObject", out var paramInfo);
+            });
+        }
     }
 }

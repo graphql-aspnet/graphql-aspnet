@@ -83,6 +83,26 @@ namespace GraphQL.AspNet.Tests.Schemas
                 Assert.IsNull(result);
         }
 
+        [Test]
+        public void FindEnumValue_NullPassed_RetunsNull()
+        {
+            var owner = new Mock<IEnumGraphType>();
+            owner.Setup(x => x.Name).Returns("graphType");
+            owner.Setup(x => x.ValidateObject(It.IsAny<object>())).Returns(true);
+            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+
+            var enumValue = new Mock<IEnumValue>();
+            enumValue.Setup(x => x.Name).Returns("VALUE1");
+            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+
+            var collection = new EnumValueCollection(owner.Object);
+            collection.Add(enumValue.Object);
+
+            var result = collection.FindByEnumValue(null);
+            Assert.IsNull(result);
+        }
+
         [TestCase("VALUE1", true)]
         [TestCase("ValUE1", true)] // not case sensitive
         [TestCase("VALUE2", false)]
@@ -135,6 +155,76 @@ namespace GraphQL.AspNet.Tests.Schemas
                         var item = collection[name];
                     });
             }
+        }
+
+        [TestCase("VALUE1", true)]
+        [TestCase("VALUE2", false)]
+        public void TryGetValue(string name, bool shouldBeFound)
+        {
+            var owner = new Mock<IEnumGraphType>();
+            owner.Setup(x => x.Name).Returns("graphType");
+            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+
+            var enumValue = new Mock<IEnumValue>();
+            enumValue.Setup(x => x.Name).Returns("VALUE1");
+            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+
+            var collection = new EnumValueCollection(owner.Object);
+            collection.Add(enumValue.Object);
+
+            var result = collection.TryGetValue(name, out var item);
+            if(shouldBeFound)
+            {
+                Assert.IsTrue(result);
+                Assert.IsNotNull(item);
+                Assert.AreEqual(enumValue.Object, item);
+            }
+            else
+            {
+                Assert.IsFalse(result);
+                Assert.IsNull(item);
+            }
+        }
+
+        [Test]
+        public void Remove_ValidValueIsRemoved()
+        {
+            var owner = new Mock<IEnumGraphType>();
+            owner.Setup(x => x.Name).Returns("graphType");
+            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+
+            var enumValue = new Mock<IEnumValue>();
+            enumValue.Setup(x => x.Name).Returns("VALUE1");
+            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+
+            var collection = new EnumValueCollection(owner.Object);
+            collection.Add(enumValue.Object);
+
+            Assert.AreEqual(1, collection.Count);
+            collection.Remove("VALUE1");
+            Assert.AreEqual(0, collection.Count);
+        }
+
+        [Test]
+        public void Remove_InvalidValueIsIgnored()
+        {
+            var owner = new Mock<IEnumGraphType>();
+            owner.Setup(x => x.Name).Returns("graphType");
+            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+
+            var enumValue = new Mock<IEnumValue>();
+            enumValue.Setup(x => x.Name).Returns("VALUE1");
+            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+
+            var collection = new EnumValueCollection(owner.Object);
+            collection.Add(enumValue.Object);
+
+            Assert.AreEqual(1, collection.Count);
+            collection.Remove("VALUE1DDD");
+            Assert.AreEqual(1, collection.Count);
         }
     }
 }

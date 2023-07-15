@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
+namespace GraphQL.AspNet.Tests.Schemas.Generation
 {
     using System;
     using System.Collections.Generic;
@@ -295,7 +295,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(1, template.FieldTemplates.Count);
 
             var expectedTypeExpression = new GraphTypeExpression(
-                "Type",
+                Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME,
                 MetaGraphTypes.IsList);
 
             Assert.AreEqual(1, template.FieldTemplates.Count());

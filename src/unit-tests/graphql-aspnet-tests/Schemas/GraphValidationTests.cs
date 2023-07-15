@@ -149,5 +149,15 @@ namespace GraphQL.AspNet.Tests.Schemas
             var policies = GraphValidation.RetrieveSecurityPolicies(info);
             Assert.AreEqual(1, Enumerable.Count<IAuthorizeData>(policies));
         }
+
+        [TestCase("BobSmith", true)]
+        [TestCase("Bob##Smith", false)]
+        [TestCase("", false)]
+        [TestCase(null, false)]
+        public void IsValidName(string name, bool isValid)
+        {
+            var result = GraphValidation.IsValidGraphName(name);
+            Assert.AreEqual(isValid, result);
+        }
     }
 }

@@ -107,12 +107,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public Type DirectiveType { get; }
+        public Type DirectiveType { get; init; }
 
         /// <inheritdoc />
         public string DirectiveName { get; private set; }
 
         /// <inheritdoc />
-        public object[] Arguments { get; }
+        public object[] Arguments { get; init; }
     }
 }

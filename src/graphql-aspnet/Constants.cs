@@ -36,6 +36,19 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
+        /// Other constants that don't fit into a category.
+        /// </summary>
+        public static class Other
+        {
+            /// <summary>
+            /// When a type expression for a field or argument is first parsed, the graph type name is
+            /// set to this value as a placeholder until such a time as the actual, case-sensitive graph type name
+            /// is determined.
+            /// </summary>
+            public const string DEFAULT_TYPE_EXPRESSION_TYPE_NAME = "Type";
+        }
+
+        /// <summary>
         /// Constants related to the graphql logging framework.
         /// </summary>
         public static class Logging
@@ -211,11 +224,8 @@ namespace GraphQL.AspNet
             public const string ID = "ID";
             public const string SHORT = "Short";
             public const string USHORT = "UShort";
-
-#if NET6_0_OR_GREATER
             public const string DATEONLY = "DateOnly";
             public const string TIMEONLY = "TimeOnly";
-#endif
         }
 
         /// <summary>
