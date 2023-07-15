@@ -8,7 +8,7 @@
 // *************************************************************
 
 // ReSharper disable All
-namespace GraphQL.AspNet.Tests.Parsing
+namespace GraphQL.AspNet.Tests.Execution.Parsing
 {
     using System;
     using System.Linq;
@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Tests.Parsing
 
             // Note: expectedResult is ignored if null.
             if (expectedResult != null)
-                Assert.AreEqual(expectedResult,  source.RetrieveText(result).ToString());
+                Assert.AreEqual(expectedResult, source.RetrieveText(result).ToString());
         }
 
         [TestCase("", 0, -1, -1, -1)] // nothing

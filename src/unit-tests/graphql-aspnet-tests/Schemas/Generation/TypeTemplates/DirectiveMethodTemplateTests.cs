@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             Assert.AreEqual("IGraphActionResult (object source, int arg1, string arg2)", template.MethodSignature);
             Assert.AreEqual(nameof(SimpleExecutableDirective.Execute), template.Name);
             Assert.AreEqual($"Simple.{nameof(SimpleExecutableDirective.Execute)}", template.InternalFullName);
-            Assert.IsTrue((bool)template.IsAsyncField);
+            Assert.IsTrue(template.IsAsyncField);
             Assert.AreEqual(typeof(IGraphActionResult), template.ObjectType);
             Assert.AreEqual(DirectiveLocation.FIELD, template.Locations);
             Assert.AreEqual(3, template.Arguments.Count);
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             Assert.AreEqual(typeof(int), template.Arguments[1].ObjectType);
             Assert.AreEqual("arg2", template.Arguments[2].Name);
             Assert.AreEqual(typeof(string), template.Arguments[2].ObjectType);
-            Assert.IsTrue((bool)template.IsExplicitDeclaration);
+            Assert.IsTrue(template.IsExplicitDeclaration);
             Assert.AreEqual(GraphFieldSource.Method, template.FieldSource);
 
             Assert.AreEqual(null, template.DeclaredTypeWrappers);

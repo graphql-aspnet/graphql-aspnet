@@ -29,19 +29,15 @@ namespace GraphQL.AspNet.Configuration
         public SchemaDeclarationConfiguration()
         {
             this.AllowedOperations = new HashSet<GraphOperationType>();
-            this.ArgumentBindingRules = new HashSet<SchemaArgumentBindingRules>();
-
             this.AllowedOperations.Add(GraphOperationType.Query);
             this.AllowedOperations.Add(GraphOperationType.Mutation);
-
-            this.ArgumentBindingRules
-                .Add(Configuration.SchemaArgumentBindingRules.ArgumentsPreferQueryResolution);
+            this.ArgumentBindingRule = SchemaArgumentBindingRules.ParametersPreferQueryResolution;
         }
 
         /// <summary>
         /// Merges the specified configuration setttings into this instance.
         /// </summary>
-        /// <param name="config">The configuration.</param>
+        /// <param name="config">The configuration values to merge into this instance.</param>
         public void Merge(ISchemaDeclarationConfiguration config)
         {
             if (config == null)
@@ -50,17 +46,12 @@ namespace GraphQL.AspNet.Configuration
             this.DisableIntrospection = config.DisableIntrospection;
             this.FieldDeclarationRequirements = config.FieldDeclarationRequirements;
             this.GraphNamingFormatter = config.GraphNamingFormatter;
+            this.ArgumentBindingRule = config.ArgumentBindingRule;
 
             if (config.AllowedOperations != null)
             {
                 foreach (var op in config.AllowedOperations)
                     this.AllowedOperations.Add(op);
-            }
-
-            if (config.ArgumentBindingRules != null)
-            {
-                foreach (var rule in config.ArgumentBindingRules)
-                    this.ArgumentBindingRules.Add(rule);
             }
         }
 
@@ -68,7 +59,7 @@ namespace GraphQL.AspNet.Configuration
         public bool DisableIntrospection { get; set; }
 
         /// <inheritdoc />
-        public HashSet<SchemaArgumentBindingRules> ArgumentBindingRules { get;  }
+        public SchemaArgumentBindingRules ArgumentBindingRule { get; set; }
 
         /// <inheritdoc />
         public TemplateDeclarationRequirements FieldDeclarationRequirements { get; set; } = TemplateDeclarationRequirements.Default;

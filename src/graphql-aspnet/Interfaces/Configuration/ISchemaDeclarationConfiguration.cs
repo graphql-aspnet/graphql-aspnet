@@ -42,12 +42,10 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         TemplateDeclarationRequirements FieldDeclarationRequirements { get; }
 
         /// <summary>
-        /// Gets the defined rules this schema should use when inspecting implicit or late bound
-        /// field arguments before the schema is placed online. These rules do not effect explicitly
-        /// declared arguments that use <c>[FromGraphQL]</c> or <c>[FromServices]</c>.
+        /// Gets the tie-breaker selection rule this schema should use when determining how to handle unattributed method parameters.
         /// </summary>
-        /// <value>The schema item binding rules to obey.</value>
-        HashSet<SchemaArgumentBindingRules> ArgumentBindingRules { get; }
+        /// <value>The tie breaker rule to use when evaluating method parameters as potential field arguments.</value>
+        SchemaArgumentBindingRules ArgumentBindingRule { get; }
 
         /// <summary>
         /// <para>Gets an object used to format the declared names in your C# code as various items in the type system

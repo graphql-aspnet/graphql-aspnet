@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
     using System.Linq;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -39,10 +39,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             Assert.AreEqual("[type]/Item0/Name", template.Route.ToString());
             Assert.AreEqual("name desc", template.Description);
             Assert.AreEqual(typeof(string), template.ObjectType);
-            Assert.IsFalse((bool)template.IsRequired);
+            Assert.IsFalse(template.IsRequired);
             Assert.AreEqual("String", template.TypeExpression.ToString());
-            Assert.AreEqual(1, Enumerable.Count<IAppliedDirectiveTemplate>(template.AppliedDirectives));
-            Assert.AreEqual("nameDirective", Enumerable.Single<IAppliedDirectiveTemplate>(template.AppliedDirectives).DirectiveName);
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
+            Assert.AreEqual("nameDirective", template.AppliedDirectives.Single().DirectiveName);
             Assert.AreEqual("Name", template.InternalName);
         }
 
@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
 
             // field does not declare [Required] therefore must
             // have a default value
-            Assert.IsFalse((bool)template.IsRequired);
+            Assert.IsFalse(template.IsRequired);
         }
 
         [Test]
@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             template.ValidateOrThrow();
 
             // field does declare [Required] there for cannot have a default value
-            Assert.IsTrue((bool)template.IsRequired);
+            Assert.IsTrue(template.IsRequired);
         }
 
         [Test]

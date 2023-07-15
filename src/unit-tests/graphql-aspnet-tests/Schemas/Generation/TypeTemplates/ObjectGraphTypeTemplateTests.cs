@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
     using System;
     using System.Collections.Generic;

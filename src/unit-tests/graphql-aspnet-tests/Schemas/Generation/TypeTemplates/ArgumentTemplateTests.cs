@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ParameterTestData;
@@ -291,6 +292,22 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             {
                 var template = this.ExtractParameterTemplate("incompatiableTypeExpressionNullToNotNull", out var paramInfo);
             });
+        }
+
+        [Test]
+        public void FromGraphQLDeclaration_SetsParamModifierAppropriately()
+        {
+            var template = this.ExtractParameterTemplate("justFromGraphQLDeclaration", out var paramInfo);
+            Assert.AreEqual(GraphArgumentModifiers.ExplicitSchemaItem, template.ArgumentModifiers);
+        }
+
+        [Test]
+        public void FromServiceDeclaration_SetsParamModifierAppropriately()
+        {
+            // actual type expression [Int]
+            // declared as [Int!]!
+            var template = this.ExtractParameterTemplate("compatiableTypeExpressionList", out var paramInfo);
+            Assert.AreEqual(GraphArgumentModifiers.ExplicitInjected, template.ArgumentModifiers);
         }
 
         [Test]

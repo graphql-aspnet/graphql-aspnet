@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_argDeclaration != null)
             {
                 name = _argDeclaration?.ArgumentName?.Trim();
-                this.ArgumentModifiers = this.ArgumentModifiers | GraphArgumentModifiers.ExplicitSchemaItem;
+                this.ArgumentModifiers = GraphArgumentModifiers.ExplicitSchemaItem;
             }
 
             if (string.IsNullOrWhiteSpace(name))
@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // to be consumed from a DI container
             var fromServicesAttrib = this.Parameter.SingleAttributeOfTypeOrDefault<FromServicesAttribute>();
             if (fromServicesAttrib != null)
-                this.ArgumentModifiers = this.ArgumentModifiers | GraphArgumentModifiers.ExplicitInjected;
+                this.ArgumentModifiers = GraphArgumentModifiers.ExplicitInjected;
 
             name = name.Replace(Constants.Routing.PARAMETER_META_NAME, this.Parameter.Name);
             this.Route = new GraphArgumentFieldPath(this.Parent.Route, name);
@@ -129,11 +129,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // since the source data will be an OBJECT type (not INPUT_OBJECT) there is no way the user could have supplied it
             if (this.IsSourceDataArgument())
             {
-                this.ArgumentModifiers = this.ArgumentModifiers | GraphArgumentModifiers.ParentFieldResult;
+                this.ArgumentModifiers = GraphArgumentModifiers.ParentFieldResult;
             }
             else if (this.IsCancellationTokenArgument())
             {
-                this.ArgumentModifiers = this.ArgumentModifiers | GraphArgumentModifiers.CancellationToken;
+                this.ArgumentModifiers = GraphArgumentModifiers.CancellationToken;
             }
         }
 
@@ -147,7 +147,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.Parent.Arguments.Any(x => x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult)))
                 return false;
 
-            if (this.ArgumentModifiers.IsInjected())
+            if (this.ArgumentModifiers != GraphArgumentModifiers.None)
                 return false;
 
             if (this.ObjectType == this.Parent.SourceObjectType)

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
     using System;
     using System.Linq;
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             Assert.AreEqual($"{Constants.Routing.ENUM_ROOT}/{nameof(SimpleEnum)}", template.Route.Path);
             Assert.AreEqual(nameof(SimpleEnum), template.Name);
             Assert.AreEqual(null, template.Description);
-            Assert.AreEqual(1, Enumerable.Count<IEnumValueTemplate>(template.Values));
+            Assert.AreEqual(1, template.Values.Count());
             Assert.AreEqual("Value1", template.Values[0].Name);
             Assert.AreEqual(null, template.Values[0].Description);
         }
@@ -63,10 +63,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value1" && x.Description == null));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value2" && x.Description == "Value2 Description"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value3" && x.Description == null));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value4" && x.Description == "Value4 Description"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value1" && x.Description == null));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value2" && x.Description == "Value2 Description"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value3" && x.Description == null));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value4" && x.Description == "Value4 Description"));
         }
 
         [Test]
@@ -88,9 +88,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value1"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "AnotherName"));
-            Assert.IsTrue(Enumerable.All<IEnumValueTemplate>(template.Values, x => x.Name != "Value2"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value1"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "AnotherName"));
+            Assert.IsTrue(template.Values.All(x => x.Name != "Value2"));
         }
 
         [Test]
@@ -112,9 +112,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(3, template.Values.Count);
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value1"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value2"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name != "Value3"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value1"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value2"));
+            Assert.IsTrue(template.Values.Any(x => x.Name != "Value3"));
         }
 
         [Test]
@@ -152,12 +152,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(6, template.Values.Count);
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value1"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value2"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name != "Value3"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value4"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value5"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name != "Value6"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value1"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value2"));
+            Assert.IsTrue(template.Values.Any(x => x.Name != "Value3"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value4"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value5"));
+            Assert.IsTrue(template.Values.Any(x => x.Name != "Value6"));
         }
 
         [TestCase(typeof(EnumFromByte))]
@@ -171,9 +171,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(3, template.Values.Count);
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value1"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name == "Value2"));
-            Assert.IsTrue(Enumerable.Any<IEnumValueTemplate>(template.Values, x => x.Name != "Value3"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value1"));
+            Assert.IsTrue(template.Values.Any(x => x.Name == "Value2"));
+            Assert.IsTrue(template.Values.Any(x => x.Name != "Value3"));
         }
 
         [Test]
@@ -209,9 +209,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual(1, Enumerable.Count<IAppliedDirectiveTemplate>(template.AppliedDirectives));
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
 
-            var appliedDirective = Enumerable.First<IAppliedDirectiveTemplate>(template.AppliedDirectives);
+            var appliedDirective = template.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 5, "bob" }, appliedDirective.Arguments);
         }
@@ -223,12 +223,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual(0, Enumerable.Count<IAppliedDirectiveTemplate>(template.AppliedDirectives));
+            Assert.AreEqual(0, template.AppliedDirectives.Count());
 
-            var optionTemplate = Enumerable.FirstOrDefault<IEnumValueTemplate>(template.Values, x => x.Name == "Value1");
+            var optionTemplate = template.Values.FirstOrDefault(x => x.Name == "Value1");
             Assert.AreEqual(0, optionTemplate.AppliedDirectives.Count());
 
-            optionTemplate = Enumerable.FirstOrDefault<IEnumValueTemplate>(template.Values, x => x.Name == "Value2");
+            optionTemplate = template.Values.FirstOrDefault(x => x.Name == "Value2");
             Assert.AreEqual(1, optionTemplate.AppliedDirectives.Count());
 
             var appliedDirective = optionTemplate.AppliedDirectives.First();

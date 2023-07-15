@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
@@ -184,9 +184,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation
             var parent = obj.Object;
             var template = this.CreateMethodTemplate<MethodClassWithDirective>(nameof(MethodClassWithDirective.Counter));
 
-            Assert.AreEqual(1, Enumerable.Count<IAppliedDirectiveTemplate>(template.AppliedDirectives));
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
 
-            var appliedDirective = Enumerable.First<IAppliedDirectiveTemplate>(template.AppliedDirectives);
+            var appliedDirective = template.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 44, "method arg" }, appliedDirective.Arguments);
         }
@@ -201,12 +201,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation
             var parent = obj.Object;
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.DefaultNonNullableParameter));
 
-            Assert.AreEqual(0, Enumerable.Count<IAppliedDirectiveTemplate>(template.AppliedDirectives));
+            Assert.AreEqual(0, template.AppliedDirectives.Count());
 
             Assert.AreEqual(1, template.Arguments.Count);
 
             var arg = template.Arguments[0];
-            Assert.IsTrue((bool)arg.HasDefaultValue);
+            Assert.IsTrue(arg.HasDefaultValue);
             Assert.AreEqual(5, arg.DefaultValue);
         }
 

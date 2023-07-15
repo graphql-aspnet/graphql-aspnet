@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
     using System.Linq;
     using GraphQL.AspNet.Controllers;
@@ -60,8 +60,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             Assert.AreEqual("path0", action.Parent.Name);
             Assert.AreEqual(methodInfo, action.Method);
             Assert.AreEqual(0, action.Arguments.Count);
-            Assert.IsFalse((bool)action.Route.IsTopLevelField);
-            Assert.IsFalse((bool)action.IsAsyncField);
+            Assert.IsFalse(action.Route.IsTopLevelField);
+            Assert.IsFalse(action.IsAsyncField);
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
 
             Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
             Assert.AreEqual(0, action.Arguments.Count);
-            Assert.IsFalse((bool)action.IsAsyncField);
+            Assert.IsFalse(action.IsAsyncField);
             Assert.AreEqual("[query]/path22", action.Route.Path);
         }
 
@@ -84,9 +84,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             Assert.IsNotNull(action.UnionProxy);
             Assert.AreEqual(2, action.UnionProxy.Types.Count);
             Assert.AreEqual(action.ObjectType, typeof(object));
-            Assert.IsTrue((bool)action.TypeExpression.IsListOfItems);
-            Assert.IsTrue((bool)action.UnionProxy.Types.Contains(typeof(UnionDataA)));
-            Assert.IsTrue((bool)action.UnionProxy.Types.Contains(typeof(UnionDataB)));
+            Assert.IsTrue(action.TypeExpression.IsListOfItems);
+            Assert.IsTrue(action.UnionProxy.Types.Contains(typeof(UnionDataA)));
+            Assert.IsTrue(action.UnionProxy.Types.Contains(typeof(UnionDataB)));
             Assert.IsNull(action.UnionProxy.Description);
             Assert.AreEqual("FragmentData", action.UnionProxy.Name);
         }
@@ -145,7 +145,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             var action = this.CreateActionTemplate<ActionResultReturnTypeController>(nameof(ActionResultReturnTypeController.ActionResultMethodWithListReturnType));
 
             Assert.AreEqual(typeof(TwoPropertyObject), action.ObjectType);
-            Assert.IsTrue((bool)action.TypeExpression.IsListOfItems);
+            Assert.IsTrue(action.TypeExpression.IsListOfItems);
         }
 
         [Test]
@@ -189,11 +189,11 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
 
             var types = action.RetrieveRequiredTypes();
             Assert.IsNotNull(types);
-            Assert.AreEqual(3, Enumerable.Count(types));
+            Assert.AreEqual(3, types.Count());
 
-            Assert.IsTrue(Enumerable.Any(types, x => x.Type == typeof(TestItemA)));
-            Assert.IsTrue(Enumerable.Any(types, x => x.Type == typeof(TestItemB)));
-            Assert.IsTrue(Enumerable.Any(types, x => x.Type == typeof(ITestItem)));
+            Assert.IsTrue(types.Any(x => x.Type == typeof(TestItemA)));
+            Assert.IsTrue(types.Any(x => x.Type == typeof(TestItemB)));
+            Assert.IsTrue(types.Any(x => x.Type == typeof(ITestItem)));
         }
 
         [Test]
@@ -203,9 +203,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
 
             var types = action.RetrieveRequiredTypes();
             Assert.IsNotNull(types);
-            Assert.AreEqual(1, Enumerable.Count(types));
+            Assert.AreEqual(1, types.Count());
 
-            Assert.IsTrue(Enumerable.Any(types, x => x.Type == typeof(ITestItem)));
+            Assert.IsTrue(types.Any(x => x.Type == typeof(ITestItem)));
         }
 
         [Test]
@@ -252,7 +252,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             var types = action.RetrieveRequiredTypes();
             Assert.IsNotNull(types);
 
-            Assert.IsTrue(Enumerable.Any(types, x => x.Type == typeof(string)));
+            Assert.IsTrue(types.Any(x => x.Type == typeof(string)));
 
             Assert.AreEqual(1, action.Arguments.Count);
             Assert.AreEqual(typeof(TwoPropertyObject[]), action.Arguments[0].DeclaredArgumentType);
@@ -264,9 +264,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
         {
             var action = this.CreateActionTemplate<ActionMethodWithDirectiveController>(nameof(ActionMethodWithDirectiveController.Execute));
 
-            Assert.AreEqual(1, Enumerable.Count<IAppliedDirectiveTemplate>(action.AppliedDirectives));
+            Assert.AreEqual(1, action.AppliedDirectives.Count());
 
-            var appliedDirective = Enumerable.First<IAppliedDirectiveTemplate>(action.AppliedDirectives);
+            var appliedDirective = action.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 202, "controller action arg" }, appliedDirective.Arguments);
         }

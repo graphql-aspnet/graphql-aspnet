@@ -6,11 +6,13 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
+
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
     using System;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
+
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using Moq;

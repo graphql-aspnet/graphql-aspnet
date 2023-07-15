@@ -9,12 +9,13 @@
 
 namespace GraphQL.AspNet.Engine
 {
+    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
-    /// The default schema factory, capable of creating singleton instances of
+    /// The default schema factory, capable of creating instances of
     /// schemas, fully populated and ready to serve requests.
     /// </summary>
     public partial class DefaultGraphQLSchemaFactory<TSchema>
@@ -25,14 +26,32 @@ namespace GraphQL.AspNet.Engine
         /// <param name="itemDefinition">The runtime defined item to add to the schema.</param>
         protected virtual void AddRuntimeSchemaItemDefinition(IGraphQLRuntimeSchemaItemDefinition itemDefinition)
         {
-            if (itemDefinition is IGraphQLRuntimeResolvedFieldDefinition fieldDef)
-                this.AddRuntimeFieldDefinition(fieldDef);
+            switch (itemDefinition)
+            {
+                case IGraphQLRuntimeResolvedFieldDefinition fieldDef:
+                    this.AddRuntimeFieldDefinition(fieldDef);
+                    break;
 
-            // TODO: Add support for directives
+                case IGraphQLRuntimeDirectiveDefinition directiveDef:
+                    this.AddRuntimeDirectiveDefinition(directiveDef);
+                    break;
+
+                    // TODO: Add support for directives
+                    // TODO: Add warning log entries for unsupported item defs.
+            }
         }
 
         /// <summary>
-        /// Adds the runtime defined field into the schema.
+        /// Adds a new directive to the schema based on the runtime definition created during program startup.
+        /// </summary>
+        /// <param name="directiveDef">The directive definition to  add.</param>
+        protected virtual void AddRuntimeDirectiveDefinition(IGraphQLRuntimeDirectiveDefinition directiveDef)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Adds a new field to the schema based on the runtime definition created during program startup.
         /// </summary>
         /// <param name="fieldDefinition">The field definition to add.</param>
         protected virtual void AddRuntimeFieldDefinition(IGraphQLRuntimeResolvedFieldDefinition fieldDefinition)

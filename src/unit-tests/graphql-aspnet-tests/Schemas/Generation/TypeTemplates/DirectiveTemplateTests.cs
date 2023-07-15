@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
@@ -33,12 +33,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             Assert.AreEqual(typeof(SimpleExecutableDirective).FriendlyName(true), template.InternalFullName);
             Assert.AreEqual("Simple Description", template.Description);
             Assert.AreEqual(1, template.Methods.Count);
-            Assert.IsTrue((bool)template.Locations.HasFlag(DirectiveLocation.FIELD));
+            Assert.IsTrue(template.Locations.HasFlag(DirectiveLocation.FIELD));
             Assert.AreEqual(typeof(SimpleExecutableDirective), template.ObjectType);
             Assert.AreEqual("[directive]/SimpleExecutable", template.Route.Path);
             Assert.AreEqual(DirectiveLocation.FIELD, template.Locations);
             Assert.IsNotNull(template.Methods.FindMetaData(DirectiveLocation.FIELD));
-            Assert.IsFalse((bool)template.IsRepeatable);
+            Assert.IsFalse(template.IsRepeatable);
         }
 
         [Test]
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.IsTrue((bool)template.IsRepeatable);
+            Assert.IsTrue(template.IsRepeatable);
         }
 
         [Test]
@@ -118,13 +118,13 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.Templating
 
             Assert.AreEqual(2, template.SecurityPolicies.Count);
 
-            Assert.IsFalse((bool)template.SecurityPolicies.AllowAnonymous);
+            Assert.IsFalse(template.SecurityPolicies.AllowAnonymous);
 
-            Assert.IsTrue(Enumerable.ElementAt<AppliedSecurityPolicy>(template.SecurityPolicies, 0).IsNamedPolicy);
-            Assert.AreEqual("CustomPolicy", Enumerable.ElementAt<AppliedSecurityPolicy>(template.SecurityPolicies, 0).PolicyName);
+            Assert.IsTrue(template.SecurityPolicies.ElementAt(0).IsNamedPolicy);
+            Assert.AreEqual("CustomPolicy", template.SecurityPolicies.ElementAt(0).PolicyName);
 
-            Assert.IsFalse(Enumerable.ElementAt<AppliedSecurityPolicy>(template.SecurityPolicies, 1).IsNamedPolicy);
-            CollectionAssert.AreEquivalent(new string[] { "CustomRole1", "CustomRole2" }, Enumerable.ElementAt<AppliedSecurityPolicy>(template.SecurityPolicies, 1).AllowedRoles);
+            Assert.IsFalse(template.SecurityPolicies.ElementAt(1).IsNamedPolicy);
+            CollectionAssert.AreEquivalent(new string[] { "CustomRole1", "CustomRole2" }, template.SecurityPolicies.ElementAt(1).AllowedRoles);
         }
     }
 }
