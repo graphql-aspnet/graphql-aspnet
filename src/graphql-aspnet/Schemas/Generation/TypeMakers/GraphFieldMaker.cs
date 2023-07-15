@@ -11,20 +11,16 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.Serialization;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSteps;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -34,19 +30,18 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     {
         private readonly ISchema _schema;
         private readonly ISchemaConfiguration _config;
-        private readonly IGraphQLTypeMakerFactory _makerFactory;
+        private readonly IGraphArgumentMaker _argMaker;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldMaker" /> class.
         /// </summary>
         /// <param name="schema">The schema instance to reference when creating fields.</param>
-        /// <param name="makerFactory">The maker factory to create dependnet makers
-        /// if and when necessary.</param>
-        public GraphFieldMaker(ISchema schema, IGraphQLTypeMakerFactory makerFactory)
+        /// <param name="argMaker">A maker that can make arguments declared on this field.</param>
+        public GraphFieldMaker(ISchema schema, IGraphArgumentMaker argMaker)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            _argMaker = Validation.ThrowIfNullOrReturn(argMaker, nameof(argMaker));
             _config = _schema.Configuration;
-            _makerFactory = Validation.ThrowIfNullOrReturn(makerFactory, nameof(makerFactory));
         }
 
         /// <inheritdoc />
@@ -65,7 +60,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             if (template.SecurityPolicies?.Count > 0)
                 securityGroups.Add(template.SecurityPolicies);
 
-            MethodGraphField field = this.InstantiateField(formatter, template, securityGroups);
+            MethodGraphField field = this.CreateFieldInstance(formatter, template, securityGroups);
 
             field.Description = template.Description;
             field.Complexity = template.Complexity;
@@ -73,12 +68,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
             if (template.Arguments != null && template.Arguments.Count > 0)
             {
-                var argMaker = _makerFactory.CreateArgumentMaker();
                 foreach (var argTemplate in template.Arguments)
                 {
-                    if (argTemplate.ArgumentModifiers.IsPartOfTheSchema())
+                    if (this.IsArgumentPartOfSchema(argTemplate))
                     {
-                        var argumentResult = argMaker.CreateArgument(field, argTemplate);
+                        var argumentResult = _argMaker.CreateArgument(field, argTemplate);
                         field.Arguments.AddArgument(argumentResult.Argument);
 
                         result.MergeDependents(argumentResult);
@@ -87,17 +81,49 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             }
 
             result.AddDependentRange(template.RetrieveRequiredTypes());
-
             if (template.UnionProxy != null)
             {
-                var unionMaker = _makerFactory.CreateUnionMaker();
-                var unionResult = unionMaker.CreateUnionFromProxy(template.UnionProxy);
-                if (unionResult != null)
-                {
-                    result.AddAbstractDependent(unionResult.GraphType);
-                    result.MergeDependents(unionResult);
-                }
+                var dependentUnion = new DependentType(template.UnionProxy, TypeKind.UNION);
+                result.AddDependent(dependentUnion);
             }
+
+            result.Field = field;
+            return result;
+        }
+
+        /// <inheritdoc />
+        public GraphFieldCreationResult<IInputGraphField> CreateField(IInputGraphFieldTemplate template)
+        {
+            var formatter = _config.DeclarationOptions.GraphNamingFormatter;
+
+            var defaultInputObject = InstanceFactory.CreateInstance(template.Parent.ObjectType);
+            var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(template.Parent.ObjectType);
+
+            object defaultValue = null;
+
+            if (!template.IsRequired && propGetters.ContainsKey(template.InternalName))
+            {
+                defaultValue = propGetters[template.InternalName](ref defaultInputObject);
+            }
+
+            var result = new GraphFieldCreationResult<IInputGraphField>();
+
+            var directives = template.CreateAppliedDirectives();
+
+            var field = new InputGraphField(
+                    formatter.FormatFieldName(template.Name),
+                    template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
+                    template.Route,
+                    template.DeclaredName,
+                    template.ObjectType,
+                    template.DeclaredReturnType,
+                    template.IsRequired,
+                    defaultValue,
+                    directives);
+
+            field.Description = template.Description;
+
+            result.AddDependentRange(template.RetrieveRequiredTypes());
 
             result.Field = field;
             return result;
@@ -158,7 +184,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         /// <param name="template">The template.</param>
         /// <param name="securityGroups">The security groups.</param>
         /// <returns>MethodGraphField.</returns>
-        protected virtual MethodGraphField InstantiateField(
+        protected virtual MethodGraphField CreateFieldInstance(
             GraphNameFormatter formatter,
             IGraphFieldTemplate template,
             List<AppliedSecurityPolicyGroup> securityGroups)
@@ -202,42 +228,44 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             }
         }
 
-        /// <inheritdoc />
-        public GraphFieldCreationResult<IInputGraphField> CreateField(IInputGraphFieldTemplate template)
+        /// <summary>
+        /// Determines whether the provided argument template should be included as part of the schema.
+        /// </summary>
+        /// <param name="argTemplate">The argument template to evaluate.</param>
+        /// <returns><c>true</c> if the template should be rendered into the schema; otherwise, <c>false</c>.</returns>
+        protected virtual bool IsArgumentPartOfSchema(IGraphArgumentTemplate argTemplate)
         {
-            var formatter = _config.DeclarationOptions.GraphNamingFormatter;
+            if (argTemplate.ArgumentModifier.IsExplicitlyPartOfTheSchema())
+                return true;
 
-            var defaultInputObject = InstanceFactory.CreateInstance(template.Parent.ObjectType);
-            var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(template.Parent.ObjectType);
+            if (!argTemplate.ArgumentModifier.CouldBePartOfTheSchema())
+                return false;
 
-            object defaultValue = null;
-
-            if (!template.IsRequired && propGetters.ContainsKey(template.InternalName))
+            // teh argument contains no explicit inclusion or exclusion modifiers
+            // what do we do with it?
+            switch (_schema.Configuration.DeclarationOptions.ArgumentBindingRule)
             {
-                defaultValue = propGetters[template.InternalName](ref defaultInputObject);
+                case Configuration.SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration:
+
+                    // arg didn't explicitly have [FromGraphQL] so it should NOT be part of the schema
+                    return false;
+
+                case Configuration.SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration:
+
+                    // arg didn't explicitly have [FromServices] so it should be part of the schema
+                    return true;
+
+                case Configuration.SchemaArgumentBindingRules.ParametersPreferQueryResolution:
+                default:
+
+                    // only exclude types that could never be correct as an input argument
+                    // ---
+                    // interfaces can never be valid input object types
+                    if (argTemplate.ObjectType.IsInterface)
+                        return false;
+
+                    return true;
             }
-
-            var result = new GraphFieldCreationResult<IInputGraphField>();
-
-            var directives = template.CreateAppliedDirectives();
-
-            var field = new InputGraphField(
-                    formatter.FormatFieldName(template.Name),
-                    template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
-                    template.Route,
-                    template.DeclaredName,
-                    template.ObjectType,
-                    template.DeclaredReturnType,
-                    template.IsRequired,
-                    defaultValue,
-                    directives);
-
-            field.Description = template.Description;
-
-            result.AddDependentRange(template.RetrieveRequiredTypes());
-
-            result.Field = field;
-            return result;
         }
     }
 }

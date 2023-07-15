@@ -7,33 +7,32 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.SchemaItemValidators
+namespace GraphQL.AspNet.Schemas.Generation.SchemaItemValidators
 {
-    using System;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
-    /// A runtime validator that will inspect and ensure the integrity of a <see cref="IGraphField"/>
-    /// before a schema is placed online.
+    /// A runtime schema item validator that performs no validation.
     /// </summary>
-    internal class GraphFieldValidator : BaseSchemaItemValidator
+    internal class NoValidationSchemaItemValidator : BaseSchemaItemValidator
     {
         /// <summary>
         /// Gets the singular instnace of this validator.
         /// </summary>
         /// <value>The instance.</value>
-        public static ISchemaItemValidator Instance { get; } = new GraphFieldValidator();
+        public static ISchemaItemValidator Instance { get; } = new NoValidationSchemaItemValidator();
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="GraphFieldValidator"/> class from being created.
+        /// Prevents a default instance of the <see cref="NoValidationSchemaItemValidator"/> class from being created.
         /// </summary>
-        private GraphFieldValidator()
+        private NoValidationSchemaItemValidator()
         {
         }
 
         /// <inheritdoc />
         public override void ValidateOrThrow(ISchemaItem schemaItem, ISchema schema)
         {
+            // do nothing
         }
     }
 }

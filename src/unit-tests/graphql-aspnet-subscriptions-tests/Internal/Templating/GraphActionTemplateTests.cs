@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var action = this.CreateActionTemplate<SubscriptionMethodController>(nameof(SubscriptionMethodController.SingleMethod));
 
             Assert.AreEqual(1, action.Arguments.Count);
-            Assert.IsTrue(action.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            Assert.IsTrue(action.Arguments[0].ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var action = this.CreateActionTemplate<SubscriptionMethodController>(nameof(SubscriptionMethodController.ExplicitSourceReference));
 
             Assert.AreEqual(1, action.Arguments.Count);
-            Assert.IsTrue(action.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            Assert.IsTrue(action.Arguments[0].ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             Assert.AreEqual(2, action.Arguments.Count);
 
-            var sourceDataParam = action.Arguments.SingleOrDefault(x => x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            var sourceDataParam = action.Arguments.SingleOrDefault(x => x.ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
             Assert.IsNotNull(sourceDataParam);
             Assert.AreEqual(typeof(TwoPropertyObjectV2), sourceDataParam.DeclaredArgumentType);
         }
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             Assert.AreEqual(2, action.Arguments.Count);
 
-            var sourceDataParam = action.Arguments.SingleOrDefault(x => x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            var sourceDataParam = action.Arguments.SingleOrDefault(x => x.ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
             Assert.IsNotNull(sourceDataParam);
             Assert.AreEqual(typeof(TwoPropertyObjectV2), sourceDataParam.DeclaredArgumentType);
         }

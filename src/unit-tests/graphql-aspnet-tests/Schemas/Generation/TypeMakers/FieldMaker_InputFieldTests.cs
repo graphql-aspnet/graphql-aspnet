@@ -10,11 +10,8 @@
 namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 {
     using System.Linq;
-    using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers.TestData;
     using NUnit.Framework;
@@ -32,9 +29,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.NotRequiredValueTypeField));
 
-            var factory = server.CreateMakerFactory();
-
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("notRequiredValueTypeField", graphField.Name);
             Assert.IsFalse(graphField.IsRequired);
@@ -61,9 +56,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.RequiredValueTypeField));
 
-            var factory = server.CreateMakerFactory();
-
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("requiredValueTypeField", graphField.Name);
             Assert.IsTrue(graphField.IsRequired);
@@ -87,9 +80,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.NotRequiredReferenceTypeField));
 
-            var factory = server.CreateMakerFactory();
-
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("notRequiredReferenceTypeField", graphField.Name);
             Assert.IsFalse(graphField.IsRequired);
@@ -115,9 +106,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.RequiredReferenceTypeField));
 
-            var factory = server.CreateMakerFactory();
-
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("requiredReferenceTypeField", graphField.Name);
 
@@ -145,8 +134,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.RequiredReferenceExplicitNonNullTypeField));
 
-            var factory = server.CreateMakerFactory();
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("requiredReferenceExplicitNonNullTypeField", graphField.Name);
             Assert.IsTrue(graphField.IsRequired);
@@ -172,9 +160,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.GraphIdRequired));
 
-            var factory = server.CreateMakerFactory();
-
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("graphIdRequired", graphField.Name);
             Assert.IsTrue(graphField.IsRequired);
@@ -199,9 +185,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.GraphIdNotRequired));
 
-            var factory = server.CreateMakerFactory();
-
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("graphIdNotRequired", graphField.Name);
             Assert.IsFalse(graphField.IsRequired);
@@ -225,9 +209,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.GraphIdNullable));
 
-            var factory = server.CreateMakerFactory();
-
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(fieldTemplate).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("graphIdNullable", graphField.Name);
             Assert.IsFalse(graphField.IsRequired);

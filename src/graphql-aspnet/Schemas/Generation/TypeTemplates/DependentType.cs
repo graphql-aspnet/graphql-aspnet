@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -40,10 +41,27 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DependentType"/> class.
+        /// </summary>
+        /// <param name="union">The union instance that needs to be turned into a graph type.</param>
+        /// <param name="expectedKind">The expected kind.</param>
+        public DependentType(IGraphUnionProxy union, TypeKind expectedKind)
+        {
+            this.UnionDeclaration = Validation.ThrowIfNullOrReturn(union, nameof(union));
+            this.ExpectedKind = expectedKind;
+        }
+
+        /// <summary>
         /// Gets the dependent type this instance points to.
         /// </summary>
         /// <value>The type.</value>
         public Type Type { get; }
+
+        /// <summary>
+        /// Gets a union proxy that must be added to the schema.
+        /// </summary>
+        /// <value>The union declaration.</value>
+        public IGraphUnionProxy UnionDeclaration { get; }
 
         /// <summary>
         /// Gets the expected type kind that the target <see cref="Type"/> should be

@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
 
             // ensure there is only one param marked as the source object
-            var sourceArgument = this.Arguments.SingleOrDefault(x => x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            var sourceArgument = this.Arguments.SingleOrDefault(x => x.ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
             if (sourceArgument == null)
             {
                 throw new GraphTypeDeclarationException(

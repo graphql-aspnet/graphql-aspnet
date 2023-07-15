@@ -44,12 +44,11 @@ namespace GraphQL.AspNet.Interfaces.Internal
         GraphTypeExpression TypeExpression { get; }
 
         /// <summary>
-        /// Gets a value indicating that this argument represents the resolved data item created
-        /// by the resolution of the parent field to this field. If true, this argument will not be available
-        /// on the object graph.
+        /// Gets a value indicating what role this argument plays in a resolver, whether it be part of the schema,
+        /// a parent resolved data value, an injected value from a service provider etc.
         /// </summary>
-        /// <value><c>true</c> if this instance is source data field; otherwise, <c>false</c>.</value>
-        GraphArgumentModifiers ArgumentModifiers { get; }
+        /// <value>The argument modifier value applied to this parameter.</value>
+        GraphArgumentModifiers ArgumentModifier { get; }
 
         /// <summary>
         /// Gets the name of the argument as its declared in the server side code.

@@ -116,39 +116,6 @@ namespace GraphQL.AspNet.Execution
 
                 object passedValue = this.ResolveParameterValue(parameter);
 
-                bool schemaListItem;
-                if (parameter.ArgumentModifiers.IsPartOfTheSchema())
-                {
-                    // additional checks and coersion if this the value is
-                    // being supplied from a query
-                    var graphArgument = _fieldContext?
-                        .Request
-                        .Field
-                        .Arguments
-                        .FindArgumentByParameterName(parameter.InternalName);
-
-                    graphArgument = graphArgument ??
-                        _directiveContext?
-                        .Request
-                        .Directive
-                        .Arguments
-                        .FindArgumentByParameterName(parameter.InternalName);
-
-                    if (graphArgument == null)
-                        throw new GraphExecutionException($"Argument '{parameter.InternalName}' was not found on its expected parent.");
-
-                    schemaListItem = graphArgument.TypeExpression.IsListOfItems;
-                    if (passedValue == null && !graphArgument.TypeExpression.IsNullable)
-                    {
-                        // technically shouldn't be possible given the validation routines
-                        // but captured here as a saftey net for users
-                        // doing custom extensions or implementations
-                        throw new GraphExecutionException(
-                            $"The parameter '{parameter.InternalName}' for field '{_fieldContext?.Request?.Field?.Route.Path}' could not be resolved from the query document " +
-                            "or variable collection and no default value was found.");
-                    }
-                }
-
                 // ensure compatible list types between the internally
                 // tracked data and the target type of the method being invoked
                 // e.g. convert List<T> =>  T[]  when needed
@@ -165,32 +132,87 @@ namespace GraphQL.AspNet.Execution
             return preparedParams;
         }
 
-        private object ResolveParameterValue(IGraphFieldResolverParameterMetaData parameterDefinition)
+        private object ResolveParameterValue(IGraphFieldResolverParameterMetaData paramDef)
         {
-            if (parameterDefinition == null)
-                return null;
+            Validation.ThrowIfNull(paramDef, nameof(paramDef));
 
-            if (parameterDefinition.ArgumentModifiers.IsSourceParameter())
+            if (paramDef.ArgumentModifiers.IsSourceParameter())
                 return this.SourceData;
 
-            if (parameterDefinition.ArgumentModifiers.IsCancellationToken())
+            if (paramDef.ArgumentModifiers.IsCancellationToken())
                 return _fieldContext?.CancellationToken ?? default;
 
-            if (parameterDefinition.ArgumentModifiers.IsInjected())
+            // if there an argument supplied on the query for this parameter, use that
+            if (this.TryGetValue(paramDef.InternalName, out var arg))
+                return arg.Value;
+
+            // if the parameter is part of the graph, use the related argument's default value
+            if (paramDef.ArgumentModifiers.CouldBePartOfTheSchema())
             {
-                if (_fieldContext != null)
-                    return _fieldContext.ServiceProvider.GetService(parameterDefinition.ExpectedType);
+                // additional checks and coersion if this the value is
+                // being supplied from a query
+                var graphArgument = _fieldContext?
+                    .Request
+                    .Field
+                    .Arguments
+                    .FindArgumentByParameterName(paramDef.InternalName);
 
-                if (_directiveContext != null)
-                    return _directiveContext.ServiceProvider.GetService(parameterDefinition.ExpectedType);
+                graphArgument = graphArgument ??
+                    _directiveContext?
+                    .Request
+                    .Directive
+                    .Arguments
+                    .FindArgumentByParameterName(paramDef.InternalName);
 
-                return null;
+                if (graphArgument != null)
+                {
+                    if (graphArgument.HasDefaultValue)
+                        return graphArgument.DefaultValue;
+
+                    if (graphArgument.TypeExpression.IsNullable)
+                        return null;
+
+                    // When an argument is found on the schema
+                    //   and no value was supplied on the query
+                    //   and that argument has no default value defined
+                    //   and that argument is not allowed to be null
+                    //   then error out
+                    //
+                    // This situation is technically not possible given the validation routines in place at runtime
+                    // but captured here as a saftey net for users
+                    // doing custom extensions or implementations
+                    // this prevents resolver execution with indeterminate or unexpected data
+                    var path = _fieldContext?.Request?.Field?.Route.Path ?? _directiveContext?.Request?.Directive?.Route.Path ?? "~unknown~";
+                    throw new GraphExecutionException(
+                        $"The parameter '{paramDef.InternalName}' for schema item '{path}' could not be resolved from the query document " +
+                        "or variable collection and no default value was found.");
+                }
             }
 
-            if (this.ContainsKey(parameterDefinition.InternalName))
-                return this[parameterDefinition.InternalName].Value;
+            // its not a formal argument in the schema, try and resolve from DI container
+            object serviceResolvedValue = null;
+            if (_fieldContext != null)
+                serviceResolvedValue = _fieldContext.ServiceProvider?.GetService(paramDef.ExpectedType);
+            else if (_directiveContext != null)
+                serviceResolvedValue = _directiveContext.ServiceProvider?.GetService(paramDef.ExpectedType);
 
-            return parameterDefinition.DefaultValue;
+            // the service was found in the DI container!! *happy*
+            if (serviceResolvedValue != null)
+                return serviceResolvedValue;
+
+            // it wasn't found but the developer declared a fall back. *thankful*
+            if (paramDef.HasDefaultValue)
+                return paramDef.DefaultValue;
+
+            var schemaItem = _fieldContext?.Request.Field.Route.Path
+                ?? _directiveContext?.Request.Directive.Route.Path
+                ?? paramDef.InternalFullName;
+
+            // error unable to resolve correctly. *womp womp*
+            throw new GraphExecutionException(
+                   $"The parameter '{paramDef.InternalName}' targeting '{schemaItem}' was expected to be resolved from a " +
+                   $"service provider but a suitable instance could not be obtained from the current invocation context " +
+                   $"and no default value was declared.");
         }
 
         /// <inheritdoc />

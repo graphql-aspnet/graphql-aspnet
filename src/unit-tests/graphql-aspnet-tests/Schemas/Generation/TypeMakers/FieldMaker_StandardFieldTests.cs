@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 {
     using System.Linq;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Generation;
@@ -64,9 +65,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             Assert.AreEqual(1, template.SecurityPolicies.Count());
             Assert.AreEqual(0, actionMethod.SecurityPolicies.Count());
 
-            var factory = server.CreateMakerFactory();
-
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(actionMethod).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(actionMethod).Field;
             Assert.AreEqual(1, graphField.SecurityGroups.Count());
 
             var group = graphField.SecurityGroups.First();
@@ -86,9 +85,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             Assert.AreEqual(1, template.SecurityPolicies.Count());
             Assert.AreEqual(1, actionMethod.SecurityPolicies.Count());
 
-            var factory = server.CreateMakerFactory();
-
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(actionMethod).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(actionMethod).Field;
 
             Assert.AreEqual(2, graphField.SecurityGroups.Count());
 
@@ -115,9 +112,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             Assert.AreEqual(typeof(NullableEnumController.LengthType), arg.ObjectType);
             Assert.AreEqual(NullableEnumController.LengthType.Yards, arg.DefaultValue);
 
-            var factory = server.CreateMakerFactory();
-
-            var graphField = new GraphFieldMaker(server.Schema, factory).CreateField(field).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(field).Field;
             Assert.IsNotNull(graphField);
 
             var graphArg = graphField.Arguments.FirstOrDefault();
@@ -253,6 +248,87 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 15, "arg arg" }, appliedDirective.ArgumentValues);
+        }
+
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithExplicitServiceArg),
+            false)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithExplicitServiceArg),
+            false)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithExplicitServiceArg),
+            false)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithExplicitSchemArg),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithExplicitSchemArg),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithExplicitSchemArg),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithImplicitArgThatShouldBeServiceInjected),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithImplicitArgThatShouldBeServiceInjected),
+            false)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithImplicitArgThatShouldBeServiceInjected),
+            false)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithImplicitArgThatShouldBeInGraph),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithImplicitArgThatShouldBeInGraph),
+            false)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
+            nameof(ObjectWithAttributedFieldArguments.FieldWithImplicitArgThatShouldBeInGraph),
+            true)]
+        public void Arguments_ArgumentBindingRuleTests(SchemaArgumentBindingRules bindingRule, string fieldName, bool argumentShouldBeIncluded)
+        {
+            var server = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.DeclarationOptions.ArgumentBindingRule = bindingRule;
+                })
+                .Build();
+
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
+            obj.Setup(x => x.ObjectType).Returns(typeof(ObjectWithAttributedFieldArguments));
+
+            var parent = obj.Object;
+            var methodInfo = typeof(ObjectWithAttributedFieldArguments).GetMethod(fieldName);
+            var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+
+            // Fact: The field has no attributes on it but could be included in the schema.
+            // Fact: The schema is defined to require [FromGraphQL] for things to be included.
+            // Conclusion: the argument should be ignored.
+            var maker = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema));
+            var field = maker.CreateField(template).Field;
+
+            if (argumentShouldBeIncluded)
+                Assert.AreEqual(1, field.Arguments.Count);
+            else
+                Assert.AreEqual(0, field.Arguments.Count);
         }
     }
 }

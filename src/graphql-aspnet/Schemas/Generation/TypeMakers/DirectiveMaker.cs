@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             // can use any method to fill the arg field list
             foreach (var argTemplate in template.Arguments)
             {
-                if (argTemplate.ArgumentModifiers.IsPartOfTheSchema())
+                if (argTemplate.ArgumentModifier.CouldBePartOfTheSchema())
                 {
                     var argumentResult = _argMaker.CreateArgument(directive, argTemplate);
                     directive.Arguments.AddArgument(argumentResult.Argument);

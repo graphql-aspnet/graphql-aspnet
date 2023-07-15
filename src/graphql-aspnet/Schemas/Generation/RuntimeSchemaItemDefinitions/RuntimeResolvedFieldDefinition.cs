@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.RuntimeSchemaItemDefinitions
+namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
 {
     using System;
     using System.Diagnostics;
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Schemas.RuntimeSchemaItemDefinitions
             SchemaOptions schemaOptions,
             SchemaItemCollections collection,
             string pathTemplate)
-            : base(schemaOptions,  collection, pathTemplate)
+            : base(schemaOptions, collection, pathTemplate)
         {
         }
 

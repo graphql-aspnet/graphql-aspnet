@@ -298,16 +298,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void FromGraphQLDeclaration_SetsParamModifierAppropriately()
         {
             var template = this.ExtractParameterTemplate("justFromGraphQLDeclaration", out var paramInfo);
-            Assert.AreEqual(GraphArgumentModifiers.ExplicitSchemaItem, template.ArgumentModifiers);
+            Assert.AreEqual(GraphArgumentModifiers.ExplicitSchemaItem, template.ArgumentModifier);
         }
 
         [Test]
         public void FromServiceDeclaration_SetsParamModifierAppropriately()
         {
-            // actual type expression [Int]
-            // declared as [Int!]!
-            var template = this.ExtractParameterTemplate("compatiableTypeExpressionList", out var paramInfo);
-            Assert.AreEqual(GraphArgumentModifiers.ExplicitInjected, template.ArgumentModifiers);
+            var template = this.ExtractParameterTemplate("justFromServicesDeclaration", out var paramInfo);
+            Assert.AreEqual(GraphArgumentModifiers.ExplicitInjected, template.ArgumentModifier);
         }
 
         [Test]

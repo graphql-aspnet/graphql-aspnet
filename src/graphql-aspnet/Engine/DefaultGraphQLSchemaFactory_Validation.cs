@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Engine
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Schemas.SchemaItemValidators;
+    using GraphQL.AspNet.Schemas.Generation.SchemaItemValidators;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

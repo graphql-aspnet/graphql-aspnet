@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.RuntimeSchemaItemDefinitions
+namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
 {
     using System;
     using System.Diagnostics;
@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Schemas.RuntimeSchemaItemDefinitions
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 

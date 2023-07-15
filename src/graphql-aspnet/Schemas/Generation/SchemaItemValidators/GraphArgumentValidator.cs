@@ -7,9 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.SchemaItemValidators
+namespace GraphQL.AspNet.Schemas.Generation.SchemaItemValidators
 {
     using System;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -36,6 +37,9 @@ namespace GraphQL.AspNet.Schemas.SchemaItemValidators
         /// <inheritdoc />
         public override void ValidateOrThrow(ISchemaItem schemaItem, ISchema schema)
         {
+            Validation.ThrowIfNull(schemaItem, nameof(schemaItem));
+            Validation.ThrowIfNull(schema, nameof(schema));
+
             var argument = schemaItem as IGraphArgument;
             if (argument == null)
             {
@@ -44,11 +48,20 @@ namespace GraphQL.AspNet.Schemas.SchemaItemValidators
                     $"'{typeof(IGraphArgument).FriendlyName()}' but got '{schema?.GetType().FriendlyName() ?? "-none-"}'");
             }
 
-            if (argument.ObjectType.IsInterface)
+            if (argument.ObjectType == null || argument.ObjectType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The argument '{argument.Name}' on  '{argument.Parent.Route.Path}' is of type  '{argument.ObjectType.FriendlyName()}', " +
+                    $"The argument '{argument.Name}' on  '{argument.Parent?.Route.Path ?? "~unknown~"}' is of type  '{argument.ObjectType?.FriendlyName() ?? "~null~"}', " +
                     $"which is an interface. Interfaces cannot be used as input arguments to any graph type.");
+            }
+
+            // the type MUST be in the schema
+            var foundItem = schema.KnownTypes.FindGraphType(argument.ObjectType, TypeSystem.TypeKind.INPUT_OBJECT);
+            if (foundItem == null)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The argument '{argument.Name}' on  '{argument.Parent?.Route.Path ?? "~unknown~"}' is declared as a {argument.ObjectType.FriendlyName()}, " +
+                    $"which is not included in the schema as an acceptable input type (e.g. Scalar, Enum or Input Object). Ensure your type is included in the schema.");
             }
         }
     }

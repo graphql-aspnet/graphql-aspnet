@@ -34,6 +34,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
         /// at runtime by the target schema.</param>
         /// <param name="isListBasedParameter">if set to <c>true</c> this parameter is expecting a list
         /// of items to be passed to it at runtime.</param>
+        /// <param name="hasDefaultValue">if set to <c>true</c> this parameter was declared with an explicitly set default value.</param>
         /// <param name="defaultValue">The default value assigned to this parameter in source code when the parameter
         /// was declared.</param>
         public FieldResolverParameterMetaData(
@@ -42,6 +43,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             string internalFullName,
             GraphArgumentModifiers modifiers,
             bool isListBasedParameter,
+            bool hasDefaultValue,
             object defaultValue = null)
         {
             this.ParameterInfo = Validation.ThrowIfNullOrReturn(paramInfo, nameof(paramInfo));
@@ -56,6 +58,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
             this.DefaultValue = defaultValue;
             this.ArgumentModifiers = modifiers;
+            this.HasDefaultValue = hasDefaultValue;
             this.IsList = isListBasedParameter;
         }
 
@@ -82,5 +85,8 @@ namespace GraphQL.AspNet.Execution.Resolvers
 
         /// <inheritdoc />
         public bool IsList { get; }
+
+        /// <inheritdoc />
+        public bool HasDefaultValue { get; }
     }
 }

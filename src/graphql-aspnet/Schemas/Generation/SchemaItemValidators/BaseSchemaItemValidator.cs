@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.SchemaItemValidators
+namespace GraphQL.AspNet.Schemas.Generation.SchemaItemValidators
 {
     using GraphQL.AspNet.Interfaces.Schema;
 

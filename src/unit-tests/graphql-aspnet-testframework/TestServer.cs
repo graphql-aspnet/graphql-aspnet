@@ -200,10 +200,7 @@ namespace GraphQL.AspNet.Tests.Framework
         {
             var template = GraphQLTemplateHelper.CreateFieldTemplate<TController>(actionName);
 
-            var factory = new DefaultGraphQLTypeMakerFactory<TSchema>();
-            factory.Initialize(this.Schema);
-
-            var fieldMaker = new GraphFieldMaker(this.Schema, factory);
+            var fieldMaker = new GraphFieldMaker(this.Schema, new GraphArgumentMaker(this.Schema));
             var fieldResult = fieldMaker.CreateField(template);
 
             var builder = new FieldContextBuilder(

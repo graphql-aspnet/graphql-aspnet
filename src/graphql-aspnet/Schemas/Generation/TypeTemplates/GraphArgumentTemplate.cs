@@ -36,6 +36,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     {
         private FromGraphQLAttribute _argDeclaration;
         private bool _invalidTypeExpression;
+        private HashSet<GraphArgumentModifiers> _foundModifiers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphArgumentTemplate" /> class.
@@ -47,6 +48,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
             Validation.ThrowIfNull(parent, nameof(parent));
             Validation.ThrowIfNull(parameter, nameof(parameter));
+
+            _foundModifiers = new HashSet<GraphArgumentModifiers>();
 
             this.Parent = parent;
             this.Parameter = parameter;
@@ -65,7 +68,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_argDeclaration != null)
             {
                 name = _argDeclaration?.ArgumentName?.Trim();
-                this.ArgumentModifiers = GraphArgumentModifiers.ExplicitSchemaItem;
+                _foundModifiers.Add(GraphArgumentModifiers.ExplicitSchemaItem);
             }
 
             if (string.IsNullOrWhiteSpace(name))
@@ -75,7 +78,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // to be consumed from a DI container
             var fromServicesAttrib = this.Parameter.SingleAttributeOfTypeOrDefault<FromServicesAttribute>();
             if (fromServicesAttrib != null)
-                this.ArgumentModifiers = GraphArgumentModifiers.ExplicitInjected;
+                _foundModifiers.Add(GraphArgumentModifiers.ExplicitInjected);
 
             name = name.Replace(Constants.Routing.PARAMETER_META_NAME, this.Parameter.Name);
             this.Route = new GraphArgumentFieldPath(this.Parent.Route, name);
@@ -123,18 +126,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.TypeExpression = GraphTypeExpression.FromType(this.DeclaredArgumentType, this.DeclaredTypeWrappers);
             this.TypeExpression = this.TypeExpression.CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
-            // when this argument accepts the same data type as the data returned by its owners target source type
-            // i.e. if the source data supplied to the field for resolution is the same as this argument
-            // then assume this argument is to contain the source data
-            // since the source data will be an OBJECT type (not INPUT_OBJECT) there is no way the user could have supplied it
             if (this.IsSourceDataArgument())
-            {
-                this.ArgumentModifiers = GraphArgumentModifiers.ParentFieldResult;
-            }
-            else if (this.IsCancellationTokenArgument())
-            {
-                this.ArgumentModifiers = GraphArgumentModifiers.CancellationToken;
-            }
+                _foundModifiers.Add(GraphArgumentModifiers.ParentFieldResult);
+
+            if (this.IsCancellationTokenArgument())
+                _foundModifiers.Add(GraphArgumentModifiers.CancellationToken);
+
+            if (_foundModifiers.Count == 1)
+                this.ArgumentModifier = _foundModifiers.First();
         }
 
         /// <summary>
@@ -144,12 +143,17 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <returns>System.Boolean.</returns>
         protected virtual bool IsSourceDataArgument()
         {
-            if (this.Parent.Arguments.Any(x => x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult)))
+            if (this.Parent.Arguments.Any(x => x.ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult)))
                 return false;
 
-            if (this.ArgumentModifiers != GraphArgumentModifiers.None)
+            if (_foundModifiers.Count > 0)
                 return false;
 
+            // when this argument accepts the same data type as the data returned by its owner's resolver
+            // i.e. if the source data supplied to the field for resolution is the same as this parameter
+            // then assume this argument is to contain the source data
+            // since the source data will be an OBJECT type (not INPUT_OBJECT)
+            // there is no way the user could have supplied it
             if (this.ObjectType == this.Parent.SourceObjectType)
             {
                 var sourceType = this.ObjectType;
@@ -173,7 +177,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
             if (this.ObjectType == typeof(CancellationToken))
             {
-                if (this.Parent.Arguments.All(x => !x.ArgumentModifiers.IsCancellationToken()))
+                if (this.Parent.Arguments.All(x => !x.ArgumentModifier.IsCancellationToken()))
                     return true;
             }
 
@@ -186,7 +190,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <returns>IEnumerable&lt;Type&gt;.</returns>
         public IEnumerable<DependentType> RetrieveRequiredTypes()
         {
-            if (this.ArgumentModifiers.IsNotPartOfTheSchema())
+            if (!this.ArgumentModifier.CouldBePartOfTheSchema())
             {
                 // internal parameters should not be injected into the object graph
                 // so they have no dependents
@@ -217,7 +221,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_invalidTypeExpression)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' that " +
+                    $"The item '{this.Parent.InternalFullName}' declares a parameter '{this.Name}' that " +
                     $"defines an invalid {nameof(FromGraphQLAttribute.TypeExpression)} (Value = '{_argDeclaration.TypeExpression}'). " +
                     $"The provided type expression must be a valid query language type expression or null.");
             }
@@ -231,18 +235,30 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (!GraphTypeExpression.AreTypesCompatiable(actualTypeExpression, this.TypeExpression, false))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' that " +
+                    $"The item '{this.Parent.InternalFullName}' declares a parameter '{this.Name}' that " +
                     $"defines a {nameof(FromGraphQLAttribute.TypeExpression)} that is incompatiable with the " +
                     $".NET parameter. (Declared '{this.TypeExpression}' is incompatiable with '{actualTypeExpression}') ");
             }
 
-            if (this.ArgumentModifiers.IsPartOfTheSchema() && this.ArgumentModifiers.IsInjected())
+            // the most common scenario, throw an exception with explicit text
+            // on how to fix it
+            if (_foundModifiers.Contains(GraphArgumentModifiers.ExplicitInjected)
+                && _foundModifiers.Contains(GraphArgumentModifiers.ExplicitSchemaItem))
             {
                 throw new GraphTypeDeclarationException(
-                       $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' that " +
+                       $"The item '{this.Parent.InternalFullName}' declares a parameter '{this.Name}' that " +
                        $"is defined to be supplied from a graphql query AND from a DI services container. " +
                        $"An argument can not be supplied from a graphql query and from a DI container. If declaring argument attributes, supply " +
                        $"{nameof(FromGraphQLAttribute)} or {nameof(FromServicesAttribute)}, but not both.");
+            }
+
+            if (_foundModifiers.Count > 1)
+            {
+                var flags = string.Join(", ", _foundModifiers);
+                throw new GraphTypeDeclarationException(
+                    $"The item '{this.Parent.InternalFullName}' declares a parameter '{this.Name}' that " +
+                    $"is declares more than one behavior modification flag. Each parameter must declare only one" +
+                    $"behavioral role within a given resolver method. Flags Declared: {flags}");
             }
 
             foreach (var directive in this.AppliedDirectives)
@@ -253,7 +269,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public IGraphFieldResolverParameterMetaData CreateResolverMetaData()
         {
             var isValidList = this.TypeExpression.IsListOfItems;
-            if (!isValidList && this.ArgumentModifiers.IsSourceParameter())
+            if (!isValidList && this.ArgumentModifier.IsSourceParameter())
             {
                 if (this.Parent is IGraphFieldTemplate gft)
                     isValidList = gft.Mode == FieldResolutionMode.Batch;
@@ -263,8 +279,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 this.Parameter,
                 this.InternalName,
                 this.InternalFullName,
-                this.ArgumentModifiers,
+                this.ArgumentModifier,
                 isValidList,
+                this.HasDefaultValue,
                 this.DefaultValue);
         }
 
@@ -308,7 +325,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public Type ObjectType { get; private set; }
 
         /// <inheritdoc />
-        public GraphArgumentModifiers ArgumentModifiers { get; protected set; }
+        public GraphArgumentModifiers ArgumentModifier { get; protected set; }
 
         /// <inheritdoc />
         public string ParameterName => this.Parameter.Name;

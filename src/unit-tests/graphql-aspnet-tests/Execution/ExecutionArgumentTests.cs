@@ -9,8 +9,17 @@
 
 namespace GraphQL.AspNet.Tests.Execution
 {
+    using System.Linq;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
+    using GraphQL.AspNet.Tests.Execution.ExecutionArgumentTestData;
+    using GraphQL.AspNet.Tests.Framework;
+    using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
 
@@ -56,6 +65,244 @@ namespace GraphQL.AspNet.Tests.Execution
             var success = col.TryGetArgument<int>("test1", out var value);
             Assert.IsFalse(success);
             Assert.AreEqual(0, value); // default of int
+        }
+
+        [Test]
+        public void PrepareArguments_WhenArgumentShouldComeFromDI_AndExistsInDI_IsPreparedCorrectly()
+        {
+            var serviceInstance = new ServiceForExecutionArgumentTest();
+
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
+            builder.AddGraphQL(o =>
+                {
+                    o.AddType<ObjectWithFields>();
+                    o.DeclarationOptions.ArgumentBindingRule = SchemaArgumentBindingRules.ParametersPreferQueryResolution;
+                });
+            builder.AddSingleton<IServiceForExecutionArgumentTest>(serviceInstance);
+
+            var testServer = builder.Build();
+
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var fieldMetadata = template
+                .FieldTemplates
+                .Values
+                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithInjectedArgument))
+                .CreateResolverMetaData();
+
+            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
+                nameof(ObjectWithFields.FieldWithInjectedArgument),
+                new ObjectWithFields());
+
+            // mimic a situation where no values are parsed from a query (no execution args)
+            var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
+            argSet = argSet.ForContext(context);
+
+            var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+
+            Assert.IsNotNull(resolvedArgs);
+            Assert.AreEqual(1, resolvedArgs.Length);
+            Assert.AreEqual(resolvedArgs[0], serviceInstance);
+        }
+
+        [Test]
+        public void PrepareArguments_WhenArgumentShouldComeFromDI_AndDoesNotExistInDI_AndHasNoDefaultValue_ExecutionExceptionIsThrown()
+        {
+            var serviceInstance = new ServiceForExecutionArgumentTest();
+
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
+            builder.AddGraphQL(o =>
+            {
+                o.AddType<ObjectWithFields>();
+                o.DeclarationOptions.ArgumentBindingRule = SchemaArgumentBindingRules.ParametersPreferQueryResolution;
+            });
+
+            var testServer = builder.Build();
+
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var fieldMetadata = template
+                .FieldTemplates
+                .Values
+                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithInjectedArgument))
+                .CreateResolverMetaData();
+
+            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
+                nameof(ObjectWithFields.FieldWithInjectedArgument),
+                new ObjectWithFields());
+
+            // mimic a situation where no values are parsed from a query (no execution args)
+            // and no default value is present
+            var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
+            argSet = argSet.ForContext(context);
+
+            Assert.Throws<GraphExecutionException>(() =>
+            {
+                var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+            });
+        }
+
+        [Test]
+        public void PrepareArguments_WhenArgumentShouldComeFromDI_AndDoesNotExistInDI_AndHasADefaultValue_ValueIsResolved()
+        {
+            var serviceInstance = new ServiceForExecutionArgumentTest();
+
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
+            builder.AddGraphQL(o =>
+            {
+                o.AddType<ObjectWithFields>();
+                o.DeclarationOptions.ArgumentBindingRule = SchemaArgumentBindingRules.ParametersPreferQueryResolution;
+            });
+
+            var testServer = builder.Build();
+
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var fieldMetadata = template
+                .FieldTemplates
+                .Values
+                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithInjectedArgumentWithDefaultValue))
+                .CreateResolverMetaData();
+
+            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
+                nameof(ObjectWithFields.FieldWithInjectedArgumentWithDefaultValue),
+                new ObjectWithFields());
+
+            // mimic a situation where no values are parsed from a query (no execution args)
+            // and nothing is available from DI
+            // but the parameter declares a default value
+            var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
+            argSet = argSet.ForContext(context);
+
+            var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+            Assert.IsNotNull(resolvedArgs);
+            Assert.AreEqual(1, resolvedArgs.Length);
+            Assert.IsNull(resolvedArgs[0]);
+        }
+
+        [Test]
+        public void PrepareArguments_WhenArgumentShouldComeFromSchema_HasNoSuppliedValueHasNoDefaultValueIsNullable_ValueIsResolved()
+        {
+            var serviceInstance = new ServiceForExecutionArgumentTest();
+
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
+            builder.AddGraphQL(o =>
+            {
+                o.AddType<ObjectWithFields>();
+                o.DeclarationOptions.ArgumentBindingRule = SchemaArgumentBindingRules.ParametersPreferQueryResolution;
+            });
+
+            var testServer = builder.Build();
+
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var fieldMetadata = template
+                .FieldTemplates
+                .Values
+                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithNullableSchemaArgument))
+                .CreateResolverMetaData();
+
+            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
+                nameof(ObjectWithFields.FieldWithNullableSchemaArgument),
+                new ObjectWithFields());
+
+            // mimic a situation where no values are parsed from a query (no execution args)
+            // and nothing is available from DI
+            // but the parameter declares a default value
+            var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
+            argSet = argSet.ForContext(context);
+
+            var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+            Assert.IsNotNull(resolvedArgs);
+            Assert.AreEqual(1, resolvedArgs.Length);
+            Assert.IsNull(resolvedArgs[0]);
+        }
+
+        [Test]
+        public void PrepareArguments_WhenArgumentShouldComeFromSchema_HasNoSuppliedValueAndIsNotNullableHasDefaultValue_ValueIsResolved()
+        {
+            var serviceInstance = new ServiceForExecutionArgumentTest();
+
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
+            builder.AddGraphQL(o =>
+            {
+                o.AddType<ObjectWithFields>();
+                o.DeclarationOptions.ArgumentBindingRule = SchemaArgumentBindingRules.ParametersPreferQueryResolution;
+            });
+
+            var testServer = builder.Build();
+
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var fieldMetadata = template
+                .FieldTemplates
+                .Values
+                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithNonNullableSchemaArgumentThatHasDefaultValue))
+                .CreateResolverMetaData();
+
+            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
+                nameof(ObjectWithFields.FieldWithNonNullableSchemaArgumentThatHasDefaultValue),
+                new ObjectWithFields());
+
+            // mimic a situation where no values are parsed from a query (no execution args)
+            // and nothing is available from DI
+            // but the parameter declares a default value
+            var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
+            argSet = argSet.ForContext(context);
+
+            var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+            Assert.IsNotNull(resolvedArgs);
+            Assert.AreEqual(1, resolvedArgs.Length);
+            Assert.AreEqual(3, resolvedArgs[0]);
+        }
+
+        [Test]
+        public void PrepareArguments_WhenArgumentShouldComeFromQuery_AndIsNotSupplied_AndIsNotNullable_ExecutionExceptionOccurs()
+        {
+            var serviceInstance = new ServiceForExecutionArgumentTest();
+
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
+            builder.AddGraphQL(o =>
+            {
+                o.AddType<ObjectWithFields>();
+                o.DeclarationOptions.ArgumentBindingRule = SchemaArgumentBindingRules.ParametersPreferQueryResolution;
+            });
+
+            var testServer = builder.Build();
+
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var fieldMetadata = template
+                .FieldTemplates
+                .Values
+                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithNotNullableQueryArgument))
+                .CreateResolverMetaData();
+
+            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
+                nameof(ObjectWithFields.FieldWithNotNullableQueryArgument),
+                new ObjectWithFields());
+
+            // mimic a situation where no values are parsed from a query (no execution args)
+            // but the argument expected there to be
+            var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
+            argSet = argSet.ForContext(context);
+
+            Assert.Throws<GraphExecutionException>(() =>
+            {
+                var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+            });
         }
     }
 }

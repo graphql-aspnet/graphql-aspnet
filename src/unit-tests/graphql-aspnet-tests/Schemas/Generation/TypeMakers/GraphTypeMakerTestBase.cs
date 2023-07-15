@@ -47,10 +47,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         protected IGraphField MakeGraphField(IGraphFieldTemplate fieldTemplate)
         {
             var testServer = new TestServerBuilder().Build();
-
-            var factory = testServer.CreateMakerFactory();
-
-            var maker = factory.CreateFieldMaker();
+            var maker = new GraphFieldMaker(testServer.Schema, new GraphArgumentMaker(testServer.Schema));
 
             return maker.CreateField(fieldTemplate).Field;
         }

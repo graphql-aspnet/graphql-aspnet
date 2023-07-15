@@ -32,48 +32,44 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             // schema first
             yield return schema;
 
-            // all declared operations
-            foreach (var operationEntry in schema.Operations)
-                yield return operationEntry.Value;
-
             // process each graph item except directives unless allowed
             var graphTypesToProcess = schema.KnownTypes.Where(x =>
-                (includeDirectives || x.Kind != TypeKind.DIRECTIVE)
-                && !(x is IGraphOperation)); // dont let operations get included twice
+                (includeDirectives || x.Kind != TypeKind.DIRECTIVE));
 
             foreach (var graphType in graphTypesToProcess)
             {
                 yield return graphType;
 
-                if (graphType is IEnumGraphType enumType)
+                switch (graphType)
                 {
-                    // each option on each enum
-                    foreach (var option in enumType.Values)
-                        yield return option.Value;
-                }
-                else if (graphType is IInputObjectGraphType inputObject)
-                {
-                    // each input field
-                    foreach (var inputField in inputObject.Fields)
-                        yield return inputField;
-                }
-                else if (graphType is IGraphFieldContainer fieldContainer)
-                {
-                    // each field on OBJECT and INTERFACE graph type
-                    foreach (var field in fieldContainer.Fields)
-                    {
-                        yield return field;
+                    case IEnumGraphType enumType:
+                        // each option on each enum
+                        foreach (var option in enumType.Values)
+                            yield return option.Value;
+                        break;
 
-                        // each argument on each field
-                        foreach (var argument in field.Arguments)
+                    case IInputObjectGraphType inputObject:
+                        foreach (var inputField in inputObject.Fields)
+                            yield return inputField;
+                        break;
+
+                    // object graph types and interface graph types
+                    case IGraphFieldContainer fieldContainer:
+                        foreach (var field in fieldContainer.Fields)
+                        {
+                            yield return field;
+
+                            // each argument on each field
+                            foreach (var argument in field.Arguments)
+                                yield return argument;
+                        }
+
+                        break;
+
+                    case IDirective directive:
+                        foreach (var argument in directive.Arguments)
                             yield return argument;
-                    }
-                }
-                else if (graphType is IDirective directive)
-                {
-                    // directive arguments
-                    foreach (var argument in directive.Arguments)
-                        yield return argument;
+                        break;
                 }
             }
         }

@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Engine
         /// <inheritdoc />
         public virtual IGraphFieldMaker CreateFieldMaker()
         {
-            return new GraphFieldMaker(this.Schema, this);
+            return new GraphFieldMaker(this.Schema, this.CreateArgumentMaker());
         }
 
         /// <inheritdoc />

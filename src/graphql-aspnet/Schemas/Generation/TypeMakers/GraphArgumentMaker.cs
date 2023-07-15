@@ -57,7 +57,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             else
             {
                 // guess on what the name of the schema item will be
-                // this is guaranteed correct for all but scalars
+                // this is guaranteed correct for all but scalars and scalars should be
+                // added first
                 schemaTypeName = GraphTypeNames.ParseName(template.ObjectType, TypeKind.INPUT_OBJECT);
             }
 

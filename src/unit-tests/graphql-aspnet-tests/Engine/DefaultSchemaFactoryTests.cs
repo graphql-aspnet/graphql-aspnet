@@ -11,8 +11,10 @@ namespace GraphQL.AspNet.Tests.Engine
 {
     using System;
     using System.Linq;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
@@ -21,6 +23,7 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Common.Interfaces;
     using GraphQL.AspNet.Tests.Engine.DefaultSchemaFactoryTestData;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
@@ -444,6 +447,131 @@ namespace GraphQL.AspNet.Tests.Engine
             // ensure the type expression points to the scalar name
             // not the name as if it was an input object
             Assert.AreEqual(nameof(TwoPropertyObjectAsScalar), field.TypeExpression.TypeName);
+        }
+
+        [Test]
+        public void SimpleRuntimeField_NoArguments_IsMappedCorrectly()
+        {
+            var collection = this.SetupCollection();
+
+            var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
+            var options = new SchemaOptions<GraphSchema>(collection);
+            options.DeclarationOptions.DisableIntrospection = true;
+
+            options.MapQuery("field1", () => 0);
+
+            var provider = collection.BuildServiceProvider();
+            var scope = provider.CreateScope();
+            var config = options.CreateConfiguration();
+
+            var instance = factory.CreateInstance(
+                scope,
+                config,
+                runtimeItemDefinitions: options.RuntimeTemplates);
+
+            Assert.IsNotNull(instance);
+
+            // the root query object should contain the field
+            var query = instance.Operations[GraphOperationType.Query];
+
+            // field1 & __typename
+            Assert.AreEqual(2, query.Fields.Count);
+            Assert.IsNotNull(query.Fields["field1"]);
+        }
+
+        [Test]
+        public void SimpleRuntimeField_OneExplicitSchemaArgument_IsMappedCorrectly()
+        {
+            var collection = this.SetupCollection();
+
+            var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
+            var options = new SchemaOptions<GraphSchema>(collection);
+            options.DeclarationOptions.DisableIntrospection = true;
+
+            options.MapQuery("field1", (string arg1) => 0);
+
+            var provider = collection.BuildServiceProvider();
+            var scope = provider.CreateScope();
+            var config = options.CreateConfiguration();
+
+            var instance = factory.CreateInstance(
+                scope,
+                config,
+                runtimeItemDefinitions: options.RuntimeTemplates);
+
+            Assert.IsNotNull(instance);
+
+            // the root query object should contain the field
+            var query = instance.Operations[GraphOperationType.Query];
+
+            // field1 & __typename
+            Assert.AreEqual(2, query.Fields.Count);
+
+            var field = query.Fields["field1"];
+            Assert.IsNotNull(field);
+            Assert.AreEqual(1, field.Arguments.Count);
+            Assert.IsNotNull(field.Arguments["arg1"]);
+            Assert.AreEqual(typeof(string), field.Arguments["arg1"].ObjectType);
+        }
+
+        [Test]
+        public void SimpleRuntimeField_OneExplicitServiceArgument_IsMappedCorrectly()
+        {
+            var collection = this.SetupCollection();
+
+            var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
+            var options = new SchemaOptions<GraphSchema>(collection);
+            options.DeclarationOptions.DisableIntrospection = true;
+
+            options.MapQuery("field1", ([FromServices] IInjectedService service) => 0);
+
+            var provider = collection.BuildServiceProvider();
+            var scope = provider.CreateScope();
+            var config = options.CreateConfiguration();
+
+            var instance = factory.CreateInstance(
+                scope,
+                config,
+                runtimeItemDefinitions: options.RuntimeTemplates);
+
+            Assert.IsNotNull(instance);
+
+            // the root query object should contain the field
+            var query = instance.Operations[GraphOperationType.Query];
+
+            // field1 & __typename
+            Assert.AreEqual(2, query.Fields.Count);
+
+            var field = query.Fields["field1"];
+            Assert.IsNotNull(field);
+
+            // no argument should be registered to the schema
+            Assert.AreEqual(0, field.Arguments.Count);
+        }
+
+        [Test]
+        public void SchemaItemValidators_AreInvoked()
+        {
+            var collection = this.SetupCollection();
+
+            var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
+            var options = new SchemaOptions<GraphSchema>(collection);
+            options.DeclarationOptions.DisableIntrospection = true;
+
+            // incorrect explicit schema item, enforced by runtime argument validator
+            options.MapQuery("field1", ([FromGraphQL] IInjectedService service) => 0);
+
+            var provider = collection.BuildServiceProvider();
+            var scope = provider.CreateScope();
+            var config = options.CreateConfiguration();
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var instance = factory.CreateInstance(
+                    scope,
+                    config,
+                    runtimeItemDefinitions: options.RuntimeTemplates);
+            });
         }
     }
 }

@@ -353,6 +353,8 @@ namespace GraphQL.AspNet.Tests.Execution
 
             serverBuilder.AddGraphQL(o =>
             {
+                o.DeclarationOptions.ArgumentBindingRule = SchemaArgumentBindingRules.ParametersPreferQueryResolution;
+
                 o.MapQuery("/field1/field2")
                     .AddResolver<int>((int a, int b, IInjectedService injectedService) =>
                     {

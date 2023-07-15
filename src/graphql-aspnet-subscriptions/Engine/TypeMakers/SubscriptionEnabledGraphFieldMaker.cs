@@ -39,15 +39,14 @@ namespace GraphQL.AspNet.Engine.TypeMakers
         /// Initializes a new instance of the <see cref="SubscriptionEnabledGraphFieldMaker" /> class.
         /// </summary>
         /// <param name="schema">The schema instance to reference when creating fields.</param>
-        /// <param name="makerFactory">The maker factory to create dependnet makers
-        /// if and when necessary.</param>
-        public SubscriptionEnabledGraphFieldMaker(ISchema schema, IGraphQLTypeMakerFactory makerFactory)
-            : base(schema, makerFactory)
+        /// <param name="argMaker">A maker that can make arguments declared on this field.</param>
+        public SubscriptionEnabledGraphFieldMaker(ISchema schema, IGraphArgumentMaker argMaker)
+            : base(schema, argMaker)
         {
         }
 
         /// <inheritdoc />
-        protected override MethodGraphField InstantiateField(
+        protected override MethodGraphField CreateFieldInstance(
             GraphNameFormatter formatter,
             IGraphFieldTemplate template,
             List<AppliedSecurityPolicyGroup> securityGroups)
@@ -76,7 +75,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
                     directives);
             }
 
-            return base.InstantiateField(formatter, template, securityGroups);
+            return base.CreateFieldInstance(formatter, template, securityGroups);
         }
     }
 }

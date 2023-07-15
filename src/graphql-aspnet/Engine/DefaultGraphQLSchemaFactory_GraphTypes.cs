@@ -104,6 +104,20 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <summary>
+        /// Ensures the union proxy is incorporated into the schema appropriately. This method is used
+        /// when a union is discovered when parsing various field declarations.
+        /// </summary>
+        /// <param name="union">The union to include.</param>
+        protected virtual void EnsureUnion(IGraphUnionProxy union)
+        {
+            Validation.ThrowIfNull(union, nameof(union));
+            var maker = this.MakerFactory.CreateUnionMaker();
+            var result = maker.CreateUnionFromProxy(union);
+
+            this.Schema.KnownTypes.EnsureGraphType(result.GraphType, result.ConcreteType);
+        }
+
+        /// <summary>
         /// Ensures the dependents in the provided collection are part of the target <see cref="Schema"/>.
         /// </summary>
         /// <param name="dependencySet">The dependency set to inspect.</param>
@@ -116,7 +130,10 @@ namespace GraphQL.AspNet.Engine
 
             foreach (var dependent in dependencySet.DependentTypes)
             {
-                this.EnsureGraphType(dependent.Type, dependent.ExpectedKind);
+                if (dependent.Type != null)
+                    this.EnsureGraphType(dependent.Type, dependent.ExpectedKind);
+                else if (dependent.UnionDeclaration != null)
+                    this.EnsureUnion(dependent.UnionDeclaration);
             }
         }
     }

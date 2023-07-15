@@ -55,9 +55,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             var testServer = new TestServerBuilder().Build();
 
-            var factory = testServer.CreateMakerFactory();
-
-            var maker = new GraphFieldMaker(testServer.Schema, factory);
+            var maker = new GraphFieldMaker(testServer.Schema, new GraphArgumentMaker(testServer.Schema));
             return maker.CreateField(fieldTemplate).Field;
         }
 

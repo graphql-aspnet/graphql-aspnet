@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, template.Mode);
 
             // first arg should be declared for the source data
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            Assert.IsTrue(template.Arguments[0].ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(FieldResolutionMode.Batch, template.Mode);
 
             // first arg should be declared for the source data
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            Assert.IsTrue(template.Arguments[0].ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
         }
 
         [Test]
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, template.Mode);
 
             // first arg should be declared for the source data
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            Assert.IsTrue(template.Arguments[0].ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
         }
 
         [Test]
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(FieldResolutionMode.Batch, template.Mode);
 
             // first arg should be declared for the source data
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            Assert.IsTrue(template.Arguments[0].ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
         }
 
         [Test]
@@ -157,7 +157,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, template.Mode);
 
             // first arg should be declared for the source data
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            Assert.IsTrue(template.Arguments[0].ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
         }
 
         [Test]
@@ -177,7 +177,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(FieldResolutionMode.Batch, template.Mode);
 
             // first arg should be declared for the source data
-            Assert.IsTrue(template.Arguments[0].ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            Assert.IsTrue(template.Arguments[0].ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
         }
 
         [Test]

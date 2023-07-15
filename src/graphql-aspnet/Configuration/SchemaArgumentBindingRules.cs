@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Configuration
         /// Undecorated parameters WILL NOT be included as part of the schema.
         /// </para>
         /// </summary>
-        ParametersRequireGraphQlDeclaration = 1,
+        ParametersRequireFromGraphQLDeclaration = 1,
 
         /// <summary>
         /// <para>
@@ -55,6 +55,6 @@ namespace GraphQL.AspNet.Configuration
         /// generated and the server failing to start.
         /// </para>
         /// </summary>
-        ParametersRequireDiDeclaration = 2,
+        ParametersRequireFromServicesDeclaration = 2,
     }
 }

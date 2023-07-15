@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Engine
         /// <inheritdoc />
         public override IGraphFieldMaker CreateFieldMaker()
         {
-            return new SubscriptionEnabledGraphFieldMaker(this.Schema, this);
+            return new SubscriptionEnabledGraphFieldMaker(this.Schema, this.CreateArgumentMaker());
         }
     }
 }
