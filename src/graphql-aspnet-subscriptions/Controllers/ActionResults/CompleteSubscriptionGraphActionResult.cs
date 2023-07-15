@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     /// additional events will be raised.
     /// </summary>
     [DebuggerDisplay("Has Object: {_result?.GetType().FriendlyName()}")]
-    public class CompleteSubscriptionGraphActionResult : ObjectReturnedGraphActionResult
+    public class CompleteSubscriptionGraphActionResult : OperationCompleteGraphActionResult
     {
         /// <summary>
         /// Applies the appropriate session information to the field context to instruct

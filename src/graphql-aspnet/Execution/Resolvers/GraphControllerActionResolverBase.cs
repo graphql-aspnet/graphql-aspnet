@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             if (result is IGraphActionResult actionResult)
                 return actionResult;
 
-            return new ObjectReturnedGraphActionResult(result);
+            return new OperationCompleteGraphActionResult(result);
         }
     }
 }

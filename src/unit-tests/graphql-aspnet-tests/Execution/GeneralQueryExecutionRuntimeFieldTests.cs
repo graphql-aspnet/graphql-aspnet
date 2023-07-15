@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Controllers.ActionResults;
-    using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTest;
     using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTestData;
@@ -24,6 +24,8 @@ namespace GraphQL.AspNet.Tests.Execution
     [TestFixture]
     public class GeneralQueryExecutionRuntimeFieldTests
     {
+        private static int _resolvedDirectiveValue = 0;
+
         [Test]
         public async Task BasicMappedQuery_ExecutesMethod()
         {
@@ -377,6 +379,55 @@ namespace GraphQL.AspNet.Tests.Execution
                     }
                 }",
                 result);
+        }
+
+        [Test]
+        public async Task ServiceInjectedOnControllerAction_ResolvesCorrectly()
+        {
+            var serverBuilder = new TestServerBuilder();
+            serverBuilder.AddTransient<IInjectedService, InjectedService>();
+            serverBuilder.AddController<ControllerWithInjectedService>();
+
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+
+            // injected service will supply 23
+            builder.AddQueryText(@"query { add(arg1: 5) }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                    ""data"": {
+                        ""add"" : 28
+                    }
+                }",
+                result);
+        }
+
+        [Test]
+        public void Runtime_TypeSystemDirective_IsInvokedCorrectly()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            var refData = new TwoPropertyObject();
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.AddType<TwoPropertyObject>();
+                o.MapDirective("@myObjectDirective")
+                    .RestrictLocations(DirectiveLocation.OBJECT)
+                    .AddResolver<int>((int a, int b) =>
+                    {
+                        _resolvedDirectiveValue = a + b;
+                        return GraphActionResult.Ok();
+                    });
+
+                o.ApplyDirective("myObjectDirective")
+                    .ToItems(x => x.IsObjectGraphType<TwoPropertyObject>())
+                    .WithArguments(5, 18);
+            });
+
+            var server = serverBuilder.Build();
+            Assert.AreEqual(23, _resolvedDirectiveValue);
         }
     }
 }

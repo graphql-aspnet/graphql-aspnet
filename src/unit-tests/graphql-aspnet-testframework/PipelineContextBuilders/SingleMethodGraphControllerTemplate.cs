@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// </summary>
         /// <param name="memberInfo">The member information to check.</param>
         /// <returns><c>true</c> if the info represents a possible graph field; otherwise, <c>false</c>.</returns>
-        protected override bool CouldBeGraphField(IFieldMemberInfoProvider memberInfo)
+        protected override bool CouldBeGraphField(IMemberInfoProvider memberInfo)
         {
             if (_methodName != null && memberInfo.MemberInfo.Name != _methodName)
                 return false;

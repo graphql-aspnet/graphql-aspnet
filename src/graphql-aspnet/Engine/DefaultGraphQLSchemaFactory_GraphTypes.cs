@@ -96,6 +96,15 @@ namespace GraphQL.AspNet.Engine
                 makerResult = maker.CreateGraphType(template);
             }
 
+            this.AddMakerResult(makerResult);
+        }
+
+        /// <summary>
+        /// Processes the result of creating a graph type from a template and adds its contents to the schema.
+        /// </summary>
+        /// <param name="makerResult">The maker result to process.</param>
+        protected virtual void AddMakerResult(GraphTypeCreationResult makerResult)
+        {
             if (makerResult != null)
             {
                 this.Schema.KnownTypes.EnsureGraphType(makerResult.GraphType, makerResult.ConcreteType);

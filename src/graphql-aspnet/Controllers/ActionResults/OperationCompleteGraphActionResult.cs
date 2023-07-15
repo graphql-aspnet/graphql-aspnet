@@ -18,15 +18,15 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     /// A result indicating an ok return status and an object to be rendered to the graph.
     /// </summary>
     [DebuggerDisplay("Has Object: {_result?.GetType().FriendlyName()}")]
-    public class ObjectReturnedGraphActionResult : IGraphActionResult
+    public class OperationCompleteGraphActionResult : IGraphActionResult
     {
         private readonly object _result;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectReturnedGraphActionResult"/> class.
+        /// Initializes a new instance of the <see cref="OperationCompleteGraphActionResult"/> class.
         /// </summary>
         /// <param name="objectToReturn">The object to return.</param>
-        public ObjectReturnedGraphActionResult(object objectToReturn)
+        public OperationCompleteGraphActionResult(object objectToReturn)
         {
             _result = objectToReturn;
         }

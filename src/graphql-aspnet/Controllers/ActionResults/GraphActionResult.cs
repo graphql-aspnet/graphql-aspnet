@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
         public static IGraphActionResult Ok(object item)
         {
-            return new ObjectReturnedGraphActionResult(item);
+            return new OperationCompleteGraphActionResult(item);
         }
 
         /// <summary>
@@ -143,6 +143,15 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         {
             Validation.ThrowIfNull(targetField, nameof(targetField));
             return new BatchBuilder(targetField);
+        }
+
+        /// <summary>
+        /// Silently cancels the current execution context without supplying an error or reason code.
+        /// </summary>
+        /// <returns>IGraphActionResult.</returns>
+        public static IGraphActionResult Cancel()
+        {
+            return new UnspecifiedCancellationResult();
         }
     }
 }

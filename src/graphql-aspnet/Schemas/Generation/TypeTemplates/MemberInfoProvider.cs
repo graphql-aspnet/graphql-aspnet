@@ -14,10 +14,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Interfaces.Internal;
 
     /// <summary>
-    /// A <see cref="IFieldMemberInfoProvider"/> for to abstract out appropriate pieces
+    /// A <see cref="IMemberInfoProvider"/> for to abstract out appropriate pieces
     /// of <see cref="MemberInfo"/> that are exposed to the templating system.
     /// </summary>
-    public class MemberInfoProvider : IFieldMemberInfoProvider
+    public class MemberInfoProvider : IMemberInfoProvider
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MemberInfoProvider"/> class.

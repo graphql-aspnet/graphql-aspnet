@@ -35,42 +35,64 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual IGraphTypeMaker CreateTypeMaker(Type objectType, TypeKind? kind = null)
+        public virtual IGraphTypeMaker CreateTypeMaker(Type objectType = null, TypeKind? kind = null)
         {
             if (objectType == null)
-                return null;
-
-            objectType = GlobalTypes.FindBuiltInScalarType(objectType) ?? objectType;
-
-            if (Validation.IsCastable<IScalarGraphType>(objectType))
-                return new ScalarGraphTypeMaker(this.Schema.Configuration);
-
-            if (objectType.IsEnum)
-                return new EnumGraphTypeMaker(this.Schema.Configuration);
-
-            if (objectType.IsInterface)
-                return new InterfaceGraphTypeMaker(this.Schema.Configuration, this.CreateFieldMaker());
-
-            if (Validation.IsCastable<GraphDirective>(objectType))
-                return new DirectiveMaker(this.Schema.Configuration, this.CreateArgumentMaker());
-
-            if (Validation.IsCastable<GraphController>(objectType))
-                return null;
-
-            if (Validation.IsCastable<IGraphUnionProxy>(objectType))
-                return new UnionGraphTypeMaker(this.Schema.Configuration);
-
-            if (kind.HasValue && kind.Value == TypeKind.INPUT_OBJECT)
             {
-                return new InputObjectGraphTypeMaker(
-                    this.Schema.Configuration,
-                    this.CreateFieldMaker());
+                if (!kind.HasValue)
+                    return null;
+            }
+            else
+            {
+                objectType = GlobalTypes.FindBuiltInScalarType(objectType) ?? objectType;
+
+                if (Validation.IsCastable<IScalarGraphType>(objectType))
+                    kind = TypeKind.SCALAR;
+                else if (objectType.IsEnum)
+                    kind = TypeKind.ENUM;
+                else if (objectType.IsInterface)
+                    kind = TypeKind.INTERFACE;
+                else if (Validation.IsCastable<GraphDirective>(objectType))
+                    kind = TypeKind.DIRECTIVE;
+                else if (Validation.IsCastable<GraphController>(objectType))
+                    kind = TypeKind.CONTROLLER;
+                else if (Validation.IsCastable<IGraphUnionProxy>(objectType))
+                    kind = TypeKind.UNION;
+                else if (!kind.HasValue || kind.Value != TypeKind.INPUT_OBJECT)
+                    kind = TypeKind.OBJECT;
             }
 
-            // when all else fails just use an object maker
-            return new ObjectGraphTypeMaker(
-                this.Schema.Configuration,
-                this.CreateFieldMaker());
+            switch (kind.Value)
+            {
+                case TypeKind.SCALAR:
+                    return new ScalarGraphTypeMaker(this.Schema.Configuration);
+
+                case TypeKind.INTERFACE:
+                    return new InterfaceGraphTypeMaker(this.Schema.Configuration, this.CreateFieldMaker());
+
+                case TypeKind.UNION:
+                    return new UnionGraphTypeMaker(this.Schema.Configuration);
+
+                case TypeKind.ENUM:
+                    return new EnumGraphTypeMaker(this.Schema.Configuration);
+
+                case TypeKind.INPUT_OBJECT:
+                    return new InputObjectGraphTypeMaker(
+                        this.Schema.Configuration,
+                        this.CreateFieldMaker());
+
+                case TypeKind.OBJECT:
+                    return new ObjectGraphTypeMaker(
+                        this.Schema.Configuration,
+                        this.CreateFieldMaker());
+
+                case TypeKind.DIRECTIVE:
+                    return new DirectiveMaker(this.Schema.Configuration, this.CreateArgumentMaker());
+
+                case TypeKind.CONTROLLER:
+                default:
+                    return null;
+            }
         }
 
         /// <inheritdoc />

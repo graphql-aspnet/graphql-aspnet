@@ -573,5 +573,31 @@ namespace GraphQL.AspNet.Tests.Engine
                     runtimeItemDefinitions: options.RuntimeTemplates);
             });
         }
+
+        [Test]
+        public void RuntimeFieldDefs_HaveSamePath_ThrowException()
+        {
+            var collection = this.SetupCollection();
+
+            var factory = new DefaultGraphQLSchemaFactory<GraphSchema>(includeBuiltInDirectives: false);
+            var options = new SchemaOptions<GraphSchema>(collection);
+            options.DeclarationOptions.DisableIntrospection = true;
+
+            // same field path
+            options.MapQuery("field1", (int arg1) => 0);
+            options.MapQuery("field1", (int arg1) => 0);
+
+            var provider = collection.BuildServiceProvider();
+            var scope = provider.CreateScope();
+            var config = options.CreateConfiguration();
+
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var instance = factory.CreateInstance(
+                    scope,
+                    config,
+                    runtimeItemDefinitions: options.RuntimeTemplates);
+            });
+        }
     }
 }

@@ -12,10 +12,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
@@ -80,7 +82,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             }
 
             result.GraphType = directive;
-            result.ConcreteType = template.ObjectType;
+
+            // only assign a concrete type if one was declared
+            if (template.ObjectType != typeof(RuntimeExecutionDirective))
+                result.ConcreteType = template.ObjectType;
+
             return result;
         }
     }

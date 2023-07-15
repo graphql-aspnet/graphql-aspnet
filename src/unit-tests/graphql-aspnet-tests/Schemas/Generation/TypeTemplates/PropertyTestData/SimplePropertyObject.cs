@@ -70,6 +70,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.PropertyTestData
 
         public PropertyProxy UnionProxyProperty { get; set; }
 
-        public ObjectReturnedGraphActionResult ActionResultProperty { get; set; }
+        public OperationCompleteGraphActionResult ActionResultProperty { get; set; }
     }
 }

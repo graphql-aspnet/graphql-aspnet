@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<IFieldMemberInfoProvider> GatherPossibleFieldTemplates()
+        protected override IEnumerable<IMemberInfoProvider> GatherPossibleFieldTemplates()
         {
             return this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
               .Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override bool CouldBeGraphField(IFieldMemberInfoProvider fieldProvider)
+        protected override bool CouldBeGraphField(IMemberInfoProvider fieldProvider)
         {
             if (fieldProvider?.MemberInfo == null || !(fieldProvider.MemberInfo is MethodInfo methodInfo))
                 return false;
@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override IGraphFieldTemplate CreateFieldTemplate(IFieldMemberInfoProvider member)
+        protected override IGraphFieldTemplate CreateFieldTemplate(IMemberInfoProvider member)
         {
             // safety check to ensure properites on controllers can never be parsed as fields
             if (member?.MemberInfo == null || !(member.MemberInfo is MethodInfo))

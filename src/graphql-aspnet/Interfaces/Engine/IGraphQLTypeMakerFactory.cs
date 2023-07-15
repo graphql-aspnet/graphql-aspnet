@@ -40,11 +40,11 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <summary>
         /// Parses the provided type, extracting the metadata used in type generation for the object graph.
         /// </summary>
-        /// <param name="objectType">The type of the object to parse.</param>
+        /// <param name="objectType">The type of the object to inspect and determine a valid type maker.</param>
         /// <param name="kind">The graph <see cref="TypeKind" /> to create a template for. If not supplied the template provider
-        /// will attempt to assign the best graph type possible.</param>
+        /// will attempt to assign the best graph type possible for the supplied <paramref name="objectType"/>.</param>
         /// <returns>IGraphTypeTemplate.</returns>
-        IGraphTypeMaker CreateTypeMaker(Type objectType, TypeKind? kind = null);
+        IGraphTypeMaker CreateTypeMaker(Type objectType = null, TypeKind? kind = null);
 
         /// <summary>
         /// Creates a maker that can generate valid graph fields

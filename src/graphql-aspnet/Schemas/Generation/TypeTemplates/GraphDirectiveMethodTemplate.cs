@@ -41,12 +41,26 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// </summary>
         /// <param name="parent">The owner of this method.</param>
         /// <param name="method">The method information.</param>
-        internal GraphDirectiveMethodTemplate(IGraphTypeTemplate parent, MethodInfo method)
+        public GraphDirectiveMethodTemplate(IGraphTypeTemplate parent, MethodInfo method)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
             this.Parameters = this.Method.GetParameters().ToList();
             _arguments = new List<GraphArgumentTemplate>();
+            this.AttributeProvider = this.Method;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphDirectiveMethodTemplate" /> class.
+        /// </summary>
+        /// <param name="parent">The owner of this method.</param>
+        /// <param name="method">The method information.</param>
+        /// <param name="attributeProvider">A custom attribute provider this template will use
+        /// to perform its configuration.</param>
+        public GraphDirectiveMethodTemplate(IGraphTypeTemplate parent, MethodInfo method, ICustomAttributeProvider attributeProvider)
+            : this(parent, method)
+        {
+            this.AttributeProvider = Validation.ThrowIfNullOrReturn(attributeProvider, nameof(attributeProvider));
         }
 
         /// <summary>
@@ -58,13 +72,13 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredType);
             this.TypeExpression = new GraphTypeExpression(this.ObjectType.FriendlyName());
 
-            this.Description = this.Method.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
+            this.Description = this.AttributeProvider.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.IsAsyncField = Validation.IsCastable<Task>(this.Method.ReturnType);
             this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();
 
             // deteremine all the directive locations where this method should be invoked
             var locations = DirectiveLocation.NONE;
-            foreach (var attrib in this.Method.AttributesOfType<DirectiveLocationsAttribute>())
+            foreach (var attrib in this.AttributeProvider.AttributesOfType<DirectiveLocationsAttribute>())
             {
                 locations = locations | attrib.Locations;
             }
@@ -284,7 +298,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public string InternalName => this.Method.Name;
 
         /// <inheritdoc />
-        public ICustomAttributeProvider AttributeProvider => this.Method;
+        public ICustomAttributeProvider AttributeProvider { get; }
 
         /// <inheritdoc />
         public IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; private set; }

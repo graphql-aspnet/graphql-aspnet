@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override IGraphFieldTemplate CreateFieldTemplate(IFieldMemberInfoProvider member)
+        protected override IGraphFieldTemplate CreateFieldTemplate(IMemberInfoProvider member)
         {
             if (member?.MemberInfo == null || !(member.MemberInfo is MethodInfo))
                 return null;

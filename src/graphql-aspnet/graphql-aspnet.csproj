@@ -12,4 +12,8 @@
     <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Directives\ActionResults\" />
+  </ItemGroup>
+
 </Project>

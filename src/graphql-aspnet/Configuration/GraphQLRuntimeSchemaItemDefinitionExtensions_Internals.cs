@@ -57,13 +57,14 @@ namespace GraphQL.AspNet.Configuration
             return field;
         }
 
-        private static IGraphQLRuntimeDirectiveDefinition MapDirectiveInternal(this SchemaOptions schemaOptions, string directiveName)
+        private static IGraphQLRuntimeDirectiveDefinition MapDirectiveInternal(
+            this SchemaOptions schemaOptions,
+            string directiveName)
         {
             while (directiveName != null && directiveName.StartsWith(TokenTypeNames.STRING_AT_SYMBOL))
                 directiveName = directiveName.Substring(1);
 
             var directive = new RuntimeDirectiveActionDefinition(schemaOptions, directiveName);
-
             schemaOptions.AddRuntimeSchemaItem(directive);
             return directive;
         }

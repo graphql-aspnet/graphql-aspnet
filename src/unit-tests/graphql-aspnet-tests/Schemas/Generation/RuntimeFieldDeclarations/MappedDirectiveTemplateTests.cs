@@ -38,6 +38,13 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             Assert.AreEqual("[directive]/myDirective", directive.Route.Path);
             Assert.IsNull(directive.ReturnType);
             Assert.IsNull(directive.Resolver);
+
+            // by default ALL locations are allowed
+            Assert.AreEqual(1, directive.Attributes.Count());
+            var locationAttib = directive.Attributes.First() as DirectiveLocationsAttribute;
+            Assert.IsNotNull(locationAttib);
+
+            Assert.AreEqual(DirectiveLocation.AllExecutionLocations | DirectiveLocation.AllTypeSystemLocations, locationAttib.Locations);
         }
 
         [Test]
@@ -100,7 +107,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             directive.AllowAnonymous();
 
-            Assert.AreEqual(1, directive.Attributes.Count());
+            // [AllowANonymous] [DirectiveLocations]
+            Assert.AreEqual(2, directive.Attributes.Count());
             Assert.IsNotNull(directive.Attributes.FirstOrDefault(x => x is AllowAnonymousAttribute));
         }
 
@@ -114,7 +122,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             directive.RequireAuthorization("policy1", "roles1");
 
-            Assert.AreEqual(1, directive.Attributes.Count());
+            // [AllowANonymous] [DirectiveLocations]
+            Assert.AreEqual(2, directive.Attributes.Count());
             var attrib = directive.Attributes.FirstOrDefault(x => x is AuthorizeAttribute) as AuthorizeAttribute;
             Assert.IsNotNull(attrib);
             Assert.AreEqual("policy1", attrib.Policy);
@@ -148,7 +157,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             directive.IsRepeatable();
 
-            Assert.AreEqual(1, directive.Attributes.Count());
+            // [AllowANonymous] [DirectiveLocations]
+            Assert.AreEqual(2, directive.Attributes.Count());
             var attrib = directive.Attributes.FirstOrDefault(x => x is RepeatableAttribute) as RepeatableAttribute;
             Assert.IsNotNull(attrib);
         }

@@ -15,9 +15,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps;
     using GraphQL.AspNet.Interfaces.Schema;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A colleciton of <see cref="IGraphType"/> and their associated concrete .NET <see cref="Type"/>.
@@ -200,8 +203,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                     $"The concrete type '{associatedType.FriendlyName()}' is an enum. It cannot be associated to a graph type of '{graphType.Kind.ToString()}'.");
             }
 
-            // directives must be assigned to a concrete type and it must inherit from GraphDirective.
-            if (graphType.Kind == TypeKind.DIRECTIVE && (associatedType == null || !Validation.IsCastable<GraphDirective>(associatedType)))
+            // if a directive is assigned to a concrete type
+            // it must inherit from GraphDirective.
+            if (graphType.Kind == TypeKind.DIRECTIVE && associatedType != null && !Validation.IsCastable<GraphDirective>(associatedType))
             {
                 throw new GraphTypeDeclarationException(
                     $"The directive type '{graphType.Name}' cannnot be associated to the concrete type '{associatedType.FriendlyName()}'. Directive graph types " +

@@ -10,9 +10,12 @@
 namespace GraphQL.AspNet.Engine
 {
     using System;
+    using System.Reflection.Metadata;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
+    using GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// The default schema factory, capable of creating instances of
@@ -44,10 +47,18 @@ namespace GraphQL.AspNet.Engine
         /// <summary>
         /// Adds a new directive to the schema based on the runtime definition created during program startup.
         /// </summary>
-        /// <param name="directiveDef">The directive definition to  add.</param>
-        protected virtual void AddRuntimeDirectiveDefinition(IGraphQLRuntimeDirectiveDefinition directiveDef)
+        /// <param name="directiveDefinition">The directive definition.</param>
+        protected virtual void AddRuntimeDirectiveDefinition(IGraphQLRuntimeDirectiveDefinition directiveDefinition)
         {
-            throw new NotImplementedException();
+            Validation.ThrowIfNull(directiveDefinition, nameof(directiveDefinition));
+            var template = new RuntimeGraphDirectiveTemplate(directiveDefinition);
+
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var maker = this.MakerFactory.CreateTypeMaker(kind: TypeKind.DIRECTIVE);
+            var result = maker.CreateGraphType(template);
+            this.AddMakerResult(result);
         }
 
         /// <summary>

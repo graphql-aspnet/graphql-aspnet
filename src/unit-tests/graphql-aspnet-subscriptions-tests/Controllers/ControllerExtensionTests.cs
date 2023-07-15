@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Controllers
 
             // ensure the method executed completely
             Assert.IsNotNull(result);
-            Assert.IsTrue(result is ObjectReturnedGraphActionResult);
+            Assert.IsTrue(result is OperationCompleteGraphActionResult);
 
             // ensure the event collection was created on the context
             Assert.IsTrue(resolutionContext.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION));
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Tests.Controllers
 
             // ensure the method executed completely
             Assert.IsNotNull(result);
-            Assert.IsTrue(result is ObjectReturnedGraphActionResult);
+            Assert.IsTrue(result is OperationCompleteGraphActionResult);
 
             Assert.AreEqual(1, eventCollection.Count);
         }

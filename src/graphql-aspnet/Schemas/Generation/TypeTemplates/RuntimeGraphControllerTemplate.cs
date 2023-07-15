@@ -21,7 +21,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     /// </summary>
     internal class RuntimeGraphControllerTemplate : GraphControllerTemplate
     {
-        private readonly IFieldMemberInfoProvider _fieldProvider;
+        private readonly IMemberInfoProvider _fieldProvider;
+        private readonly IGraphQLRuntimeResolvedFieldDefinition _fieldDefinition;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeGraphControllerTemplate" /> class.
@@ -31,28 +32,38 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public RuntimeGraphControllerTemplate(IGraphQLRuntimeResolvedFieldDefinition fieldDefinition)
             : base(typeof(RuntimeFieldExecutionController))
         {
-            if (fieldDefinition.Resolver?.Method == null)
+            _fieldDefinition = fieldDefinition;
+            if (fieldDefinition.Resolver?.Method != null)
             {
-                throw new GraphTypeDeclarationException(
-                    $"Unable to templatize the runtime field definition of '{fieldDefinition.Route}' the resolver " +
-                    $"is not properly configured.");
+                _fieldProvider = new MemberInfoProvider(
+                    fieldDefinition.Resolver.Method,
+                    new RuntimeSchemaItemAttributeProvider(fieldDefinition));
             }
-
-            _fieldProvider = new MemberInfoProvider(
-                fieldDefinition.Resolver.Method,
-                new RuntimeSchemaItemAttributeProvider(fieldDefinition));
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<IFieldMemberInfoProvider> GatherPossibleFieldTemplates()
+        protected override IEnumerable<IMemberInfoProvider> GatherPossibleFieldTemplates()
         {
             yield return _fieldProvider;
         }
 
         /// <inheritdoc />
-        protected override bool CouldBeGraphField(IFieldMemberInfoProvider fieldProvider)
+        protected override bool CouldBeGraphField(IMemberInfoProvider fieldProvider)
         {
             return fieldProvider != null && fieldProvider == _fieldProvider;
+        }
+
+        /// <inheritdoc />
+        public override void ValidateOrThrow()
+        {
+            if (_fieldDefinition?.Resolver?.Method == null)
+            {
+                throw new GraphTypeDeclarationException(
+                $"Unable to templatize the runtime field definition of '{_fieldDefinition?.Route.Path ?? "~null~"}' the resolver " +
+                    $"is not properly configured.");
+            }
+
+            base.ValidateOrThrow();
         }
     }
 }

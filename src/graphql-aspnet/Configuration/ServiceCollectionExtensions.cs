@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -28,7 +29,10 @@ namespace GraphQL.AspNet.Configuration
         public static IServiceCollection AddRuntimeFieldExecutionSupport(this IServiceCollection serviceCollection)
         {
             if (serviceCollection != null)
+            {
                 serviceCollection.TryAddTransient<RuntimeFieldExecutionController>();
+                serviceCollection.TryAddTransient<RuntimeExecutionDirective>();
+            }
 
             return serviceCollection;
         }

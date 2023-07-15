@@ -37,11 +37,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         private AppliedSecurityPolicyGroup _securityPolicies;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphDirectiveTemplate"/> class.
+        /// Initializes a new instance of the <see cref="GraphDirectiveTemplate" /> class.
         /// </summary>
         /// <param name="graphDirectiveType">Type of the graph directive being described.</param>
-        public GraphDirectiveTemplate(Type graphDirectiveType)
-            : base(graphDirectiveType)
+        /// <param name="attributeProvider">The attribute provider that will supply the attributes needed to parse
+        /// and configure this template.  <paramref name="graphDirectiveType"/> is used if this parameter
+        /// is not supplied.</param>
+        public GraphDirectiveTemplate(Type graphDirectiveType, ICustomAttributeProvider attributeProvider = null)
+            : base(attributeProvider ?? graphDirectiveType)
         {
             Validation.ThrowIfNotCastable<GraphDirective>(graphDirectiveType, nameof(graphDirectiveType));
 
@@ -67,20 +70,55 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.Description = this.AttributeProvider.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.IsRepeatable = this.AttributeProvider.SingleAttributeOrDefault<RepeatableAttribute>() != null;
 
-            var routeName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
+            var routeName = this.DetermineDirectiveName();
             this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Directives, routeName));
-
-            foreach (var methodInfo in this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+            var potentialMethods = this.GatherPossibleDirectiveExecutionMethods();
+            foreach (var methodData in potentialMethods)
             {
-                if (methodInfo.FirstAttributeOfTypeOrDefault<DirectiveLocationsAttribute>() != null)
+                if (this.CouldBeDirectiveExecutionMethod(methodData))
                 {
-                    var methodTemplate = new GraphDirectiveMethodTemplate(this, methodInfo);
+                    var methodTemplate = new GraphDirectiveMethodTemplate(this, methodData.MemberInfo as MethodInfo, methodData.AttributeProvider);
                     methodTemplate.Parse();
                     this.Methods.RegisterMethod(methodTemplate);
                 }
             }
 
             _securityPolicies = AppliedSecurityPolicyGroup.FromAttributeCollection(this.AttributeProvider);
+        }
+
+        /// <summary>
+        /// Determines the name of the directive. (e.g. <c>@name</c>).
+        /// </summary>
+        /// <returns>System.String.</returns>
+        protected virtual string DetermineDirectiveName()
+        {
+            return GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
+        }
+
+        /// <summary>
+        /// Inspects the templated object and gathers all the methods with the right attribute declarations such that
+        /// they should be come execution methods on the directive instance.
+        /// </summary>
+        /// <returns>IEnumerable&lt;IMemberInfoProvider&gt;.</returns>
+        protected virtual IEnumerable<IMemberInfoProvider> GatherPossibleDirectiveExecutionMethods()
+        {
+            return this.ObjectType
+                   .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                   .Select(x => new MemberInfoProvider(x));
+        }
+
+        /// <summary>
+        /// Inspects the member data and determines if it can be successfully parsed into a directive action method
+        /// for thi template.
+        /// </summary>
+        /// <param name="memberInfo">The member information to inspect.</param>
+        /// <returns><c>true</c> if the member data can be parsed, <c>false</c> otherwise.</returns>
+        protected virtual bool CouldBeDirectiveExecutionMethod(IMemberInfoProvider memberInfo)
+        {
+            return memberInfo?.MemberInfo is MethodInfo &&
+                   memberInfo
+                    .AttributeProvider
+                    .FirstAttributeOfTypeOrDefault<DirectiveLocationsAttribute>() != null;
         }
 
         /// <inheritdoc />

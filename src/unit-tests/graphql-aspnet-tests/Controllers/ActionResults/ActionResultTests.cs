@@ -157,7 +157,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         {
             var testObject = new object();
 
-            var actionResult = new ObjectReturnedGraphActionResult(testObject);
+            var actionResult = new OperationCompleteGraphActionResult(testObject);
 
             var context = this.CreateResolutionContext();
             await actionResult.CompleteAsync(context);

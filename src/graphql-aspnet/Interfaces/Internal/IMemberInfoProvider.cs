@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     /// A common interface that exposes the various attributes of a
     /// <see cref="MethodInfo"/> and <see cref="PropertyInfo"/> to the templating system.
     /// </summary>
-    public interface IFieldMemberInfoProvider
+    public interface IMemberInfoProvider
     {
         /// <summary>
         /// Gets the member info object that defines a field.

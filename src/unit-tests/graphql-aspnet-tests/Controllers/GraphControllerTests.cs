@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData.Object, resolutionContext);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result is ObjectReturnedGraphActionResult);
+            Assert.IsTrue(result is OperationCompleteGraphActionResult);
 
             Assert.AreEqual(3, controller.CapturedItems.Count);
 
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData.Object, resolutionContext);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result is ObjectReturnedGraphActionResult);
+            Assert.IsTrue(result is OperationCompleteGraphActionResult);
         }
 
         [Test]

@@ -161,7 +161,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// that might be includable in this template.
         /// </summary>
         /// <returns>IEnumerable&lt;IFieldMemberInfoProvider&gt;.</returns>
-        protected abstract IEnumerable<IFieldMemberInfoProvider> GatherPossibleFieldTemplates();
+        protected abstract IEnumerable<IMemberInfoProvider> GatherPossibleFieldTemplates();
 
         /// <summary>
         /// Creates the member template from the given info. If a provided <paramref name="fieldProvider"/>
@@ -169,7 +169,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// </summary>
         /// <param name="fieldProvider">The member to templatize.</param>
         /// <returns>GraphQL.AspNet.Internal.Interfaces.IGraphFieldTemplate.</returns>
-        protected virtual IGraphFieldTemplate CreateFieldTemplate(IFieldMemberInfoProvider fieldProvider)
+        protected virtual IGraphFieldTemplate CreateFieldTemplate(IMemberInfoProvider fieldProvider)
         {
             if (fieldProvider?.MemberInfo == null)
                 return null;
@@ -194,7 +194,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <param name="fieldProvider">The member information to check.</param>
         /// <returns>
         ///   <c>true</c> if the info represents a possible graph field; otherwise, <c>false</c>.</returns>
-        protected virtual bool CouldBeGraphField(IFieldMemberInfoProvider fieldProvider)
+        protected virtual bool CouldBeGraphField(IMemberInfoProvider fieldProvider)
         {
             // always skip those marked as such regardless of anything else
             if (fieldProvider.AttributeProvider.HasAttribute<GraphSkipAttribute>())

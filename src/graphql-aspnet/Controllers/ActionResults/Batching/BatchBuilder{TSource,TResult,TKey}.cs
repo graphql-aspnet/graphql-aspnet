@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
                 dictionary.Add(sourceItem, sourceResults);
             }
 
-            return new ObjectReturnedGraphActionResult(dictionary);
+            return new OperationCompleteGraphActionResult(dictionary);
         }
 
         /// <summary>
