@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputValueSteps;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
@@ -23,7 +24,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     /// An internal implementation of the <see cref="IGraphQLRuntimeFieldDefinition"/>
     /// used to generate new type extensions via a minimal api style of coding.
     /// </summary>
-    [DebuggerDisplay("{Template}")]
+    [DebuggerDisplay("{Route.Path}")]
     internal class RuntimeTypeExtensionDefinition : RuntimeResolvedFieldDefinition, IGraphQLRuntimeTypeExtensionDefinition
     {
         /// <summary>
@@ -46,6 +47,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
                         GraphTypeNames.ParseName(typeToExtend, TypeKind.OBJECT),
                         fieldName))
         {
+            _fieldName = fieldName;
             this.ExecutionMode = resolutionMode;
             this.TargetType = typeToExtend;
         }
@@ -56,10 +58,10 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
             switch (this.ExecutionMode)
             {
                 case FieldResolutionMode.PerSourceItem:
-                    return new TypeExtensionAttribute(this.TargetType, this.Route.Name, this.ReturnType);
+                    return new TypeExtensionAttribute(this.TargetType, _fieldName, this.ReturnType);
 
                 case FieldResolutionMode.Batch:
-                    return new BatchTypeExtensionAttribute(this.TargetType, this.Route.Name, this.ReturnType);
+                    return new BatchTypeExtensionAttribute(this.TargetType, _fieldName, this.ReturnType);
 
                 default:
                     throw new NotSupportedException(
@@ -67,6 +69,8 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
                         $"primary type extension attribute.");
             }
         }
+
+        private readonly string _fieldName;
 
         /// <inheritdoc />
         public FieldResolutionMode ExecutionMode { get; set; }

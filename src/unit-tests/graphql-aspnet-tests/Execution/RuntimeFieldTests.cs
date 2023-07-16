@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Controllers.ActionResults;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTest;
@@ -400,6 +401,90 @@ namespace GraphQL.AspNet.Tests.Execution
                     }
                 }",
                 result);
+        }
+
+        [Test]
+        public async Task Runtime_StandardField_WithSecurityParams_AndAllowedUser_ResolvesCorrectly()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("secureField", () => 3)
+                 .RequireAuthorization("policy1");
+            });
+
+            serverBuilder.Authorization.AddClaimPolicy("policy1", "policy1Claim", "policy1Value");
+            serverBuilder.UserContext
+                .Authenticate()
+                .AddUserClaim("policy1Claim", "policy1Value");
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { secureField }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                    ""data"": {
+                        ""secureField"": 3
+                    }
+                }",
+                result);
+        }
+
+        [Test]
+        public async Task Runtime_StandardField_WithSecurityParams_AndUnAuthenticatedUser_RendersAccessDenied()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("secureField", () => 3)
+                 .RequireAuthorization("policy1");
+            });
+
+            // no user authentication added
+            serverBuilder.Authorization.AddClaimPolicy("policy1", "policy1Claim", "policy1Value");
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { secureField }");
+
+            var result = await server.ExecuteQuery(builder);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages[0].Severity);
+            Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task Runtime_StandardField_WithSecurityParams_AndUnAuthorizedUser_RendersAccessDenied()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("secureField", () => 3)
+                 .RequireAuthorization("policy1");
+            });
+
+            // wrong claim value on user
+            serverBuilder.Authorization.AddClaimPolicy("policy1", "policy1Claim", "policy1Value");
+            serverBuilder.UserContext
+                .Authenticate()
+                .AddUserClaim("policy1Claim", "policy2Value");
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { secureField }");
+
+            var result = await server.ExecuteQuery(builder);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages[0].Severity);
+            Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
         }
     }
 }

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 {
     using System;
+    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
@@ -106,6 +107,16 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 throw new GraphTypeDeclarationException(
                     $"The type extension '{this.InternalFullName}' is attempting to extend '{this.SourceObjectType.FriendlyName()}'. " +
                     "Only classes, structs and  interfaces can be extended.");
+            }
+
+            // a specialized redeclaration of this rule on the type extension to
+            // better contextualize the message to be just the template value
+            if (this.Route == null || !this.Route.IsValid)
+            {
+                throw new GraphTypeDeclarationException(
+                        $"The type extension '{this.InternalFullName}' declares an invalid field name of '{_typeAttrib.Template ?? "<null>"}'. " +
+                        $"Each segment of the route must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )",
+                        this.ObjectType);
             }
 
             base.ValidateOrThrow();

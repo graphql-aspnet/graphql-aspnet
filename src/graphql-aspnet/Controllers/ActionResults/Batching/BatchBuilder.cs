@@ -21,9 +21,8 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
         /// <summary>
         /// Initializes a new instance of the <see cref="BatchBuilder" /> class.
         /// </summary>
-        /// <param name="field">The field for witch this batch is being produced.</param>
-        public BatchBuilder(IGraphField field)
-            : base(field, null, null, null, null)
+        public BatchBuilder()
+            : base(null, null, null, null)
         {
         }
 
@@ -39,7 +38,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
         /// <returns>A batch builder with a given set of source data.</returns>
         public BatchBuilder<TSource, TKey> FromSource<TSource, TKey>(IEnumerable<TSource> sourceData, Func<TSource, TKey> sourceKeySelector)
         {
-            return new BatchBuilder<TSource, TKey>(this.Field, sourceData, sourceKeySelector);
+            return new BatchBuilder<TSource, TKey>(sourceData, sourceKeySelector);
         }
     }
 }

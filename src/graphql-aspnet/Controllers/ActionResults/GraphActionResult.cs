@@ -137,12 +137,10 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         /// generated indicating an issue if the batch produced cannot fulfill the requirements of the field.
         /// This method will not throw an exception.
         /// </summary>
-        /// <param name="targetField">The graph field the batch will be built for.</param>
         /// <returns>IGraphActionResult.</returns>
-        public static BatchBuilder StartBatch(IGraphField targetField)
+        public static BatchBuilder StartBatch()
         {
-            Validation.ThrowIfNull(targetField, nameof(targetField));
-            return new BatchBuilder(targetField);
+            return new BatchBuilder();
         }
 
         /// <summary>

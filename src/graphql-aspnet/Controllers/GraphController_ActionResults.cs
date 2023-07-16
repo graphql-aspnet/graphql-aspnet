@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult.</returns>
         protected virtual BatchBuilder StartBatch()
         {
-            return GraphActionResult.StartBatch(this.Request.InvocationContext.Field);
+            return GraphActionResult.StartBatch();
         }
     }
 }

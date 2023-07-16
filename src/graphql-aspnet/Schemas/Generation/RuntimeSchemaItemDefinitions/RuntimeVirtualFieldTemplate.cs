@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     /// An internal implementation of the <see cref="IGraphQLRuntimeFieldDefinition"/>
     /// used to generate new graphql fields via a minimal api style of coding.
     /// </summary>
-    [DebuggerDisplay("{Template}")]
+    [DebuggerDisplay("{Route.Path}")]
     internal class RuntimeVirtualFieldTemplate : BaseRuntimeControllerActionDefinition, IGraphQLRuntimeFieldDefinition
     {
         /// <summary>

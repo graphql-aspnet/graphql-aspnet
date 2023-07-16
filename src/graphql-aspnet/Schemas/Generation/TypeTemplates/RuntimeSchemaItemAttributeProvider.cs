@@ -70,10 +70,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <inheritdoc />
         public bool IsDefined(Type attributeType, bool inherit)
         {
+            // MemberInfo defines this method to be the type or one that inherits from it
             var attribs = this.GetCustomAttributes(inherit);
             foreach (var attrib in attribs)
             {
-                if (attrib?.GetType() == attributeType)
+                if (attrib?.GetType() != null && Validation.IsCastable(attrib.GetType(), attributeType))
                     return true;
             }
 

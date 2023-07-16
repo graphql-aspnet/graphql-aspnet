@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using Microsoft.AspNetCore.Authorization;
@@ -100,7 +101,34 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Registers a new type extension to a given type for the target schema.
+        /// Registers a new type extension to a given OBJECT or INTERFACE type for the target schema.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method is synonymous with using the <see cref="TypeExtensionAttribute"/> on
+        /// a controller action.
+        /// </para>
+        /// <para>
+        /// The supplied resolver must declare a parameter that is of the same type as <typeparamref name="TOwnerType"/>.
+        /// </para>
+        /// </remarks>
+        /// <typeparam name="TOwnerType">The concrete interface, class or struct to extend with a new field.</typeparam>
+        /// <param name="builder">The schema builder to append the field to.</param>
+        /// <param name="fieldName">Name of the field to add to the <typeparamref name="TOwnerType"/>.</param>
+        /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
+        /// <returns>IGraphQLResolvedFieldTemplate.</returns>
+        public static IGraphQLRuntimeTypeExtensionDefinition MapField<TOwnerType>(this ISchemaBuilder builder, string fieldName, Delegate resolverMethod = null)
+        {
+            Validation.ThrowIfNull(builder, nameof(builder));
+
+            return builder.Options.MapField(
+                typeof(TOwnerType),
+                fieldName,
+                resolverMethod);
+        }
+
+        /// <summary>
+        /// Registers a new type extension to a given OBJECT or INTERFACE type for the target schema.
         /// </summary>
         /// <remarks>
         /// <para>

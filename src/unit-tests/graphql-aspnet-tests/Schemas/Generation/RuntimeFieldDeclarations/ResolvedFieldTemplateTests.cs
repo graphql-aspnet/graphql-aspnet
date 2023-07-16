@@ -97,5 +97,17 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             Assert.IsNotNull(possibleTypesAttrib.PossibleTypes.FirstOrDefault(x => x == typeof(TwoPropertyObject)));
             Assert.IsNotNull(possibleTypesAttrib.PossibleTypes.FirstOrDefault(x => x == typeof(TwoPropertyObjectV2)));
         }
+
+        [Test]
+        public void ResolvedField_ResolverReturnsNullableT_ItsPreserved()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options.MapQuery("/path1/path2", (string a) => (int?)1);
+
+            // nullable int
+            Assert.AreEqual(typeof(int?), field.Resolver.Method.ReturnType);
+        }
     }
 }

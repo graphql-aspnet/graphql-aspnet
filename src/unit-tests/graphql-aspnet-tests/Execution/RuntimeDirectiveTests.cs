@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Controllers.ActionResults;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
@@ -114,7 +115,6 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task Runtime_ExecutionDirective_IsInvokedCorrectly()
         {
             var serverBuilder = new TestServerBuilder();
-            serverBuilder.AddTransient<IInjectedService, InjectedService>();
 
             serverBuilder.AddGraphQL(o =>
             {
@@ -149,7 +149,6 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task Runtime_ExecutionDirective_OnMinimalApiField_IsInvokedCorrectly()
         {
             var serverBuilder = new TestServerBuilder();
-            serverBuilder.AddTransient<IInjectedService, InjectedService>();
 
             serverBuilder.AddGraphQL(o =>
             {
@@ -179,6 +178,118 @@ namespace GraphQL.AspNet.Tests.Execution
                 result);
 
             Assert.AreEqual(11, _values["fieldDirective"]);
+        }
+
+        [Test]
+        public async Task Runtime_ExecutionDirective_WithSecurityParams_AndAllowedUser_ResolvesCorrectly()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", () => 3);
+
+                o.MapDirective("@secureDirective")
+                    .RestrictLocations(DirectiveLocation.FIELD)
+                    .RequireAuthorization("policy1")
+                    .AddResolver<int>(() =>
+                    {
+                        _values["secureDirective1"] = 11;
+                        return GraphActionResult.Ok();
+                    });
+            });
+
+            serverBuilder.Authorization.AddClaimPolicy("policy1", "policy1Claim", "policy1Value");
+            serverBuilder.UserContext
+                .Authenticate()
+                .AddUserClaim("policy1Claim", "policy1Value");
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field @secureDirective }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                    ""data"": {
+                        ""field"": 3
+                    }
+                }",
+                result);
+
+            Assert.AreEqual(11, _values["secureDirective1"]);
+        }
+
+        [Test]
+        public async Task Runtime_ExecutionDirective_WithSecurityParams_AndUnAuthenticatedUser_RendersAccessDenied()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", () => 3);
+
+                o.MapDirective("@secureDirective")
+                    .RestrictLocations(DirectiveLocation.FIELD)
+                    .RequireAuthorization("policy1")
+                    .AddResolver<int>(() =>
+                    {
+                        _values["secureDirective2"] = 11;
+                        return GraphActionResult.Ok();
+                    });
+            });
+
+            // no user authentication added
+            serverBuilder.Authorization.AddClaimPolicy("policy1", "policy1Claim", "policy1Value");
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field @secureDirective }");
+
+            var result = await server.ExecuteQuery(builder);
+            Assert.IsFalse(_values.ContainsKey("secureDirective2"));
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages[0].Severity);
+            Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task Runtime_ExecutionDirective_WithSecurityParams_AndUnAuthorizedUser_RendersAccessDenied()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", () => 3);
+
+                o.MapDirective("@secureDirective")
+                    .RestrictLocations(DirectiveLocation.FIELD)
+                    .RequireAuthorization("policy1")
+                    .AddResolver<int>(() =>
+                    {
+                        _values["secureDirective3"] = 11;
+                        return GraphActionResult.Ok();
+                    });
+            });
+
+            // wrong policy value
+            serverBuilder.Authorization.AddClaimPolicy("policy1", "policy1Claim", "policy1Value");
+            serverBuilder.UserContext
+                .Authenticate()
+                .AddUserClaim("policy1Claim", "policy2Value");
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field @secureDirective }");
+
+            var result = await server.ExecuteQuery(builder);
+            Assert.IsFalse(_values.ContainsKey("secureDirective3"));
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages[0].Severity);
+            Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
         }
     }
 }

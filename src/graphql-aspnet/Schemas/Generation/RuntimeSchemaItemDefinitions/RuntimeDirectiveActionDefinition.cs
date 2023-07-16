@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     /// An internal implementation of the <see cref="IGraphQLRuntimeDirectiveDefinition"/>
     /// used to generate new graphql directives via a minimal api style of coding.
     /// </summary>
-    [DebuggerDisplay("{Template}")]
+    [DebuggerDisplay("{Route.Path}")]
     internal class RuntimeDirectiveActionDefinition : BaseRuntimeControllerActionDefinition, IGraphQLRuntimeDirectiveDefinition
     {
         /// <summary>

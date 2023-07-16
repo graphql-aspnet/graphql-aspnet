@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.Route == null || !this.Route.IsValid)
             {
                 throw new GraphTypeDeclarationException(
-                        $"The template item '{this.InternalFullName}' declares an invalid route of '{this.Route?.Path ?? "<null>"}'. " +
+                        $"The template item '{this.InternalFullName}' declares an invalid route of '{this.Route?.Raw ?? "<null>"}'. " +
                         $"Each segment of the route must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )",
                         this.ObjectType);
             }
