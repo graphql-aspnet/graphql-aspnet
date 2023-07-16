@@ -128,16 +128,24 @@ namespace GraphQL.AspNet.Engine
             foreach (var extension in schemaExtensions)
                 extension.EnsureSchema(this.Schema);
 
-            // Step 5: apply all queued type system directives to the now filled schema
-            // --------------------------------------
-            if (this.ProcessTypeSystemDirectives)
-                this.ApplyTypeSystemDirectives();
-
-            // Step 6: Run final validations to ensure the schema is internally consistant
+            // VALIDATE: Run initial validation checks to ensure schema integrity BEFORE type
+            // system directives are applied
             // --------------------------------------
             this.ValidateSchemaIntegrity();
 
-            // Step 7: Rebuild introspection data to match the now completed schema instance
+            // Step 5: apply all queued type system directives to the now filled schema
+            // --------------------------------------
+            if (this.ProcessTypeSystemDirectives)
+            {
+                var totalApplied = this.ApplyTypeSystemDirectives();
+
+                // VALIDATE: Run final validations to ensure the schema is internally consistant
+                // --------------------------------------
+                if (totalApplied > 0)
+                    this.ValidateSchemaIntegrity();
+            }
+
+            // Step 6: Rebuild introspection data to match the now completed schema instance
             // --------------------------------------
             if (!this.Schema.Configuration.DeclarationOptions.DisableIntrospection)
                 this.RebuildIntrospectionData();

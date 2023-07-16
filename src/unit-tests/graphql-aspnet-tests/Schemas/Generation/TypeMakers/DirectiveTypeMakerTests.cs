@@ -9,13 +9,13 @@
 
 namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 {
+    using System;
     using System.Linq;
-    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.CommonHelpers;
@@ -34,8 +34,11 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             var factory = server.CreateMakerFactory();
 
-            var template = factory.MakeTemplate(typeof(MultiMethodDirective), TypeKind.DIRECTIVE);
-            var typeMaker = new DirectiveMaker(server.Schema.Configuration, factory.CreateArgumentMaker());
+            var template = new GraphDirectiveTemplate(typeof(MultiMethodDirective));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var typeMaker = new DirectiveMaker(server.Schema, new GraphArgumentMaker(server.Schema));
 
             var directive = typeMaker.CreateGraphType(template).GraphType as IDirective;
 
@@ -66,10 +69,11 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var builder = new TestServerBuilder();
             var server = builder.Build();
 
-            var factory = server.CreateMakerFactory();
+            var template = new GraphDirectiveTemplate(typeof(RepeatableDirective));
+            template.Parse();
+            template.ValidateOrThrow();
 
-            var template = factory.MakeTemplate(typeof(RepeatableDirective), TypeKind.DIRECTIVE);
-            var typeMaker = new DirectiveMaker(server.Schema.Configuration, factory.CreateArgumentMaker());
+            var typeMaker = new DirectiveMaker(server.Schema, new GraphArgumentMaker(server.Schema));
 
             var directive = typeMaker.CreateGraphType(template).GraphType as IDirective;
 
@@ -91,6 +95,93 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             Assert.IsNotNull(arg1);
             Assert.AreEqual("secondArg", arg1.Name);
             Assert.AreEqual(typeof(TwoPropertyObject), arg1.ObjectType);
+        }
+
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
+            typeof(ArgCheckImplicitSchemaItemDirective),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
+            typeof(ArgCheckImplicitInjectedItemDirective),
+            false)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
+            typeof(ArgCheckExplicitValidSchemaItemDirective),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
+            typeof(ArgCheckExplicitInvalidSchemaItemDirective),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
+            typeof(ArgCheckExplicitInjectedItemDirective),
+            false)]
+
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
+            typeof(ArgCheckImplicitSchemaItemDirective),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
+            typeof(ArgCheckImplicitInjectedItemDirective),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
+            typeof(ArgCheckExplicitValidSchemaItemDirective),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
+            typeof(ArgCheckExplicitInvalidSchemaItemDirective),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
+            typeof(ArgCheckExplicitInjectedItemDirective),
+            false)]
+
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
+            typeof(ArgCheckImplicitSchemaItemDirective),
+            false)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
+            typeof(ArgCheckImplicitInjectedItemDirective),
+            false)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
+            typeof(ArgCheckExplicitValidSchemaItemDirective),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
+            typeof(ArgCheckExplicitInvalidSchemaItemDirective),
+            true)]
+        [TestCase(
+            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
+            typeof(ArgCheckExplicitInjectedItemDirective),
+            false)]
+        public void ArgInclusionCheck(SchemaArgumentBindingRules bindingRule, Type directiveType, bool shouldBeIncluded)
+        {
+            var server = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.DeclarationOptions.ArgumentBindingRule = bindingRule;
+                })
+                .Build();
+
+            var template = new GraphDirectiveTemplate(directiveType);
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var typeMaker = new DirectiveMaker(server.Schema, new GraphArgumentMaker(server.Schema));
+
+            var directive = typeMaker.CreateGraphType(template).GraphType as IDirective;
+
+            Assert.AreEqual(TypeKind.DIRECTIVE, directive.Kind);
+
+            if (shouldBeIncluded)
+                Assert.AreEqual(1, directive.Arguments.Count);
+            else
+                Assert.AreEqual(0, directive.Arguments.Count);
         }
     }
 }

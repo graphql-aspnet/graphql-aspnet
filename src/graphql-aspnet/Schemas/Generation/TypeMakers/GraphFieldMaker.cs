@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             {
                 foreach (var argTemplate in template.Arguments)
                 {
-                    if (this.IsArgumentPartOfSchema(argTemplate))
+                    if (GraphArgumentMaker.IsArgumentPartOfSchema(argTemplate, _schema))
                     {
                         var argumentResult = _argMaker.CreateArgument(field, argTemplate);
                         field.Arguments.AddArgument(argumentResult.Argument);
@@ -225,46 +225,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
                 default:
                     throw new ArgumentOutOfRangeException($"Template field source of {template.FieldSource.ToString()} is not supported by {this.GetType().FriendlyName()}.");
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the provided argument template should be included as part of the schema.
-        /// </summary>
-        /// <param name="argTemplate">The argument template to evaluate.</param>
-        /// <returns><c>true</c> if the template should be rendered into the schema; otherwise, <c>false</c>.</returns>
-        protected virtual bool IsArgumentPartOfSchema(IGraphArgumentTemplate argTemplate)
-        {
-            if (argTemplate.ArgumentModifier.IsExplicitlyPartOfTheSchema())
-                return true;
-
-            if (!argTemplate.ArgumentModifier.CouldBePartOfTheSchema())
-                return false;
-
-            // teh argument contains no explicit inclusion or exclusion modifiers
-            // what do we do with it?
-            switch (_schema.Configuration.DeclarationOptions.ArgumentBindingRule)
-            {
-                case Configuration.SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration:
-
-                    // arg didn't explicitly have [FromGraphQL] so it should NOT be part of the schema
-                    return false;
-
-                case Configuration.SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration:
-
-                    // arg didn't explicitly have [FromServices] so it should be part of the schema
-                    return true;
-
-                case Configuration.SchemaArgumentBindingRules.ParametersPreferQueryResolution:
-                default:
-
-                    // only exclude types that could never be correct as an input argument
-                    // ---
-                    // interfaces can never be valid input object types
-                    if (argTemplate.ObjectType.IsInterface)
-                        return false;
-
-                    return true;
             }
         }
     }

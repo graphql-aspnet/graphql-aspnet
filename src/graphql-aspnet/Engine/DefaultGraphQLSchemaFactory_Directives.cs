@@ -24,13 +24,14 @@ namespace GraphQL.AspNet.Engine
         /// type system directives. When found, applies each directive as approprate to the
         /// target schema item.
         /// </summary>
-        protected virtual void ApplyTypeSystemDirectives()
+        /// <returns>The total number of type system directives across the entire schema.</returns>
+        protected virtual int ApplyTypeSystemDirectives()
         {
             var processor = new DirectiveProcessorTypeSystem<TSchema>(
                 this.ServiceProvider,
                 new QuerySession());
 
-            processor.ApplyDirectives(this.Schema);
+            return processor.ApplyDirectives(this.Schema);
         }
     }
 }

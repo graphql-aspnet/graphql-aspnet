@@ -89,5 +89,49 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
             return result;
         }
+
+        /// <summary>
+        /// Determines whether the provided argument template should be included as part of the schema.
+        /// </summary>
+        /// <param name="argTemplate">The argument template to evaluate.</param>
+        /// <param name="schema">The schema to evaluate against.</param>
+        /// <returns><c>true</c> if the template should be rendered into the schema; otherwise, <c>false</c>.</returns>
+        public static bool IsArgumentPartOfSchema(IGraphArgumentTemplate argTemplate, ISchema schema)
+        {
+            Validation.ThrowIfNull(argTemplate, nameof(argTemplate));
+            Validation.ThrowIfNull(schema, nameof(schema));
+
+            if (argTemplate.ArgumentModifier.IsExplicitlyPartOfTheSchema())
+                return true;
+
+            if (!argTemplate.ArgumentModifier.CouldBePartOfTheSchema())
+                return false;
+
+            // teh argument contains no explicit inclusion or exclusion modifiers
+            // what do we do with it?
+            switch (schema.Configuration.DeclarationOptions.ArgumentBindingRule)
+            {
+                case Configuration.SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration:
+
+                    // arg didn't explicitly have [FromGraphQL] so it should NOT be part of the schema
+                    return false;
+
+                case Configuration.SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration:
+
+                    // arg didn't explicitly have [FromServices] so it should be part of the schema
+                    return true;
+
+                case Configuration.SchemaArgumentBindingRules.ParametersPreferQueryResolution:
+                default:
+
+                    // only exclude types that could never be correct as an input argument
+                    // ---
+                    // interfaces can never be valid input object types
+                    if (argTemplate.ObjectType.IsInterface)
+                        return false;
+
+                    return true;
+            }
+        }
     }
 }

@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Engine
                         this.CreateFieldMaker());
 
                 case TypeKind.DIRECTIVE:
-                    return new DirectiveMaker(this.Schema.Configuration, this.CreateArgumentMaker());
+                    return new DirectiveMaker(this.Schema, this.CreateArgumentMaker());
 
                 case TypeKind.CONTROLLER:
                 default:

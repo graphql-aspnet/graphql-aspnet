@@ -177,6 +177,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
             if (this.ObjectType == typeof(CancellationToken))
             {
+                // only one captured cancel token allowed
                 if (this.Parent.Arguments.All(x => !x.ArgumentModifier.IsCancellationToken()))
                     return true;
             }

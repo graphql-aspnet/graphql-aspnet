@@ -9,18 +9,16 @@
 
 namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers.TestData
 {
-    using System.Threading;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Common.CommonHelpers;
+    using Microsoft.AspNetCore.Mvc;
 
-    [Repeatable]
-    public class RepeatableDirective : GraphDirective
+    public class ArgCheckExplicitInjectedItemDirective : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.SCALAR)]
-        public IGraphActionResult ForTypeSystem(int firstArg, TwoPropertyObject secondArg)
+        public IGraphActionResult ForTypeSystem([FromServices] ITestInterface1 arg1)
         {
             return null;
         }

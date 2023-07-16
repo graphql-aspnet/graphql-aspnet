@@ -22,10 +22,8 @@ namespace GraphQL.AspNet.Tests.Execution
     using NUnit.Framework;
 
     [TestFixture]
-    public class GeneralQueryExecutionRuntimeFieldTests
+    public class RuntimeFieldTests
     {
-        private static int _resolvedDirectiveValue = 0;
-
         [Test]
         public async Task BasicMappedQuery_ExecutesMethod()
         {
@@ -402,32 +400,6 @@ namespace GraphQL.AspNet.Tests.Execution
                     }
                 }",
                 result);
-        }
-
-        [Test]
-        public void Runtime_TypeSystemDirective_IsInvokedCorrectly()
-        {
-            var serverBuilder = new TestServerBuilder();
-
-            var refData = new TwoPropertyObject();
-            serverBuilder.AddGraphQL(o =>
-            {
-                o.AddType<TwoPropertyObject>();
-                o.MapDirective("@myObjectDirective")
-                    .RestrictLocations(DirectiveLocation.OBJECT)
-                    .AddResolver<int>((int a, int b) =>
-                    {
-                        _resolvedDirectiveValue = a + b;
-                        return GraphActionResult.Ok();
-                    });
-
-                o.ApplyDirective("myObjectDirective")
-                    .ToItems(x => x.IsObjectGraphType<TwoPropertyObject>())
-                    .WithArguments(5, 18);
-            });
-
-            var server = serverBuilder.Build();
-            Assert.AreEqual(23, _resolvedDirectiveValue);
         }
     }
 }

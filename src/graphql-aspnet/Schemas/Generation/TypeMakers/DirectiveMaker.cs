@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 {
-    using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
@@ -17,7 +16,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
@@ -26,17 +24,17 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     /// </summary>
     public class DirectiveMaker : IGraphTypeMaker
     {
-        private readonly ISchemaConfiguration _config;
+        private readonly ISchema _schema;
         private readonly IGraphArgumentMaker _argMaker;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectiveMaker" /> class.
         /// </summary>
-        /// <param name="config">The configuration used when setting up new directive types.</param>
+        /// <param name="schema">The schema this maker will create directives for.</param>
         /// <param name="argumentMaker">The maker used to generate new arguments on any created directives.</param>
-        public DirectiveMaker(ISchemaConfiguration config, IGraphArgumentMaker argumentMaker)
+        public DirectiveMaker(ISchema schema, IGraphArgumentMaker argumentMaker)
         {
-            _config = Validation.ThrowIfNullOrReturn(config, nameof(config));
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _argMaker = Validation.ThrowIfNullOrReturn(argumentMaker, nameof(argumentMaker));
         }
 
@@ -46,7 +44,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             if (!(typeTemplate is IGraphDirectiveTemplate template))
                 return null;
 
-            var formatter = _config.DeclarationOptions.GraphNamingFormatter;
+            var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
 
             var securityGroups = new List<AppliedSecurityPolicyGroup>();
 
@@ -72,7 +70,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             // can use any method to fill the arg field list
             foreach (var argTemplate in template.Arguments)
             {
-                if (argTemplate.ArgumentModifier.CouldBePartOfTheSchema())
+                if (GraphArgumentMaker.IsArgumentPartOfSchema(argTemplate, _schema))
                 {
                     var argumentResult = _argMaker.CreateArgument(directive, argTemplate);
                     directive.Arguments.AddArgument(argumentResult.Argument);
