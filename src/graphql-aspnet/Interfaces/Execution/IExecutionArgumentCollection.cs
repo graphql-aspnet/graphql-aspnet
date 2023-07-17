@@ -20,32 +20,24 @@ namespace GraphQL.AspNet.Interfaces.Execution
     public interface IExecutionArgumentCollection : IReadOnlyDictionary<string, ExecutionArgument>
     {
         /// <summary>
-        /// Augments the collection with a source data object for a specific field execution and returns
-        /// a copy of itself with that data attached.
+        /// Augments the collection with data related the specific resolution. This is used to extract and apply
+        /// execution arguments supplied on the query to the target resolver.
         /// </summary>
-        /// <param name="fieldExecutionContext">The field context being executed.</param>
+        /// <param name="resolutionContext">The field or directive context being executed.</param>
         /// <returns>IExecutionArgumentCollection.</returns>
-        IExecutionArgumentCollection ForContext(GraphFieldExecutionContext fieldExecutionContext);
+        IExecutionArgumentCollection ForContext(SchemaItemResolutionContext resolutionContext);
 
         /// <summary>
-        /// Augments the collection with a source data object for a specific field execution and returns
-        /// a copy of itself with that data attached.
+        /// Adds the specified argument value found at runtime.
         /// </summary>
-        /// <param name="directiveContext">The directive context being executed.</param>
-        /// <returns>IExecutionArgumentCollection.</returns>
-        IExecutionArgumentCollection ForContext(GraphDirectiveExecutionContext directiveContext);
-
-        /// <summary>
-        /// Adds the specified argument to the collection.
-        /// </summary>
-        /// <param name="argument">The argument.</param>
+        /// <param name="argument">The argument value.</param>
         void Add(ExecutionArgument argument);
 
         /// <summary>
         /// Attempts to retrieve and cast the given argument to the value provided.
         /// </summary>
         /// <typeparam name="T">The type to cast to.</typeparam>
-        /// <param name="argumentName">Name of the argument.</param>
+        /// <param name="argumentName">Name of the argument as it appears in the schema.</param>
         /// <param name="value">The value to be filled if cast.</param>
         /// <returns><c>true</c> if the argument was found and cast, <c>false</c> otherwise.</returns>
         bool TryGetArgument<T>(string argumentName, out T value);
@@ -57,11 +49,5 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="graphMethod">The graph method.</param>
         /// <returns>System.Object[].</returns>
         object[] PrepareArguments(IGraphFieldResolverMetaData graphMethod);
-
-        /// <summary>
-        /// Gets the source data, if any, that is supplying values for this execution run.
-        /// </summary>
-        /// <value>The source data.</value>
-        object SourceData { get; }
     }
 }

@@ -18,6 +18,13 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldValidation;
     using GraphQL.AspNet.Interfaces.Controllers;
 
+    /// <summary>
+    /// A graph action result that is built from a batch builder and can turn said builder into an
+    /// appropriate dictionary of items to resolve a type extension.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the source item identified in the type extension.</typeparam>
+    /// <typeparam name="TResult">The type of the result item identified in the type extension.</typeparam>
+    /// <typeparam name="TKey">The type of the key that links <typeparamref name="TSource"/> to <typeparamref name="TResult"/>.</typeparam>
     public class CompleteBatchOperationGraphActionResult<TSource, TResult, TKey> : IGraphActionResult
     {
         private readonly BatchBuilder<TSource, TResult, TKey> _batchBuilder;

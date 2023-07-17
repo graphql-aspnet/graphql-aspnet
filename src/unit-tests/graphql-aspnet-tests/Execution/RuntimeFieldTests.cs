@@ -9,10 +9,13 @@
 
 namespace GraphQL.AspNet.Tests.Execution
 {
+    using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTest;
@@ -485,6 +488,132 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages[0].Severity);
             Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task Runtime_StandardField_ReturnsNullableT_RendersValue()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", () => new int?(3));
+            });
+
+            var server = serverBuilder.Build();
+
+            var field = server.Schema.Operations[GraphOperationType.Query].Fields.Single(x => x.Name == "field");
+            Assert.AreEqual(typeof(int), field.ObjectType);
+            Assert.AreEqual("Int", field.TypeExpression.ToString()); // no !, not required
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                  ""data"": {
+                    ""field"": 3
+                  }
+                }",
+                result);
+        }
+
+        [Test]
+        public async Task Runtime_StandardField_ReturnsNullableT_RendersNull()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", () =>
+                {
+                    int? value = null;
+                    return value;
+                });
+            });
+
+            var server = serverBuilder.Build();
+
+            var field = server.Schema.Operations[GraphOperationType.Query].Fields.Single(x => x.Name == "field");
+            Assert.AreEqual(typeof(int), field.ObjectType);
+            Assert.AreEqual("Int", field.TypeExpression.ToString()); // no !, not required
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                  ""data"": {
+                    ""field"": null
+                  }
+                }",
+                result);
+        }
+
+        [Test]
+        public async Task Runtime_StandardField_ReturnsNullableT_ThroughActionResult()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", () =>
+                {
+                    return GraphActionResult.Ok(3);
+                })
+                .AddPossibleTypes(typeof(int?));
+            });
+
+            var server = serverBuilder.Build();
+
+            var field = server.Schema.Operations[GraphOperationType.Query].Fields.Single(x => x.Name == "field");
+            Assert.AreEqual(typeof(int), field.ObjectType);
+            Assert.AreEqual("Int", field.TypeExpression.ToString()); // no !, not required
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                  ""data"": {
+                    ""field"": 3
+                  }
+                }",
+                result);
+        }
+
+        [Test]
+        public async Task Runtime_StandardField_FieldResolutionContext_IsInjected_WhenRequested()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", (FieldResolutionContext context) =>
+                {
+                    if (context != null && context.Request.Field != null)
+                        return 1;
+
+                    return 0;
+                });
+            });
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                  ""data"": {
+                    ""field"": 1
+                  }
+                }",
+                result);
         }
     }
 }

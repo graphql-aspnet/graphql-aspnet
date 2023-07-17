@@ -107,14 +107,18 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 return false;
             }
 
-            executionArguments = executionArguments.ForContext(context);
-
+            // resolution context messages are independent
             var resolutionContext = new FieldResolutionContext(
+                context.ServiceProvider,
+                context.Session,
                 _schema,
-                context,
+                context.QueryRequest,
                 context.Request,
                 executionArguments,
-                context.User);
+                new GraphMessageCollection(),
+                context.Logger,
+                context.User,
+                context.CancellationToken);
 
             // Step 2: Resolve the field
             context.Logger?.FieldResolutionStarted(resolutionContext);

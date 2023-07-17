@@ -56,7 +56,9 @@ namespace GraphQL.AspNet.Tests.Framework
             var template = new SingleMethodGraphControllerTemplate<TController>(methodName);
             template.Parse();
             template.ValidateOrThrow();
-            return template.FieldTemplates.FirstOrDefault(x => x.Value.InternalName.Equals(methodName, StringComparison.OrdinalIgnoreCase)).Value;
+            return template
+                .FieldTemplates
+                .FirstOrDefault(x => x.Value.InternalName.Equals(methodName, StringComparison.OrdinalIgnoreCase)).Value;
         }
 
         /// <summary>
@@ -143,7 +145,6 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <typeparam name="TObject">The type to create a template of.</typeparam>
         /// <returns>IObjectGraphTypeTemplate.</returns>
         public static IObjectGraphTypeTemplate CreateObjectTemplate<TObject>()
-           where TObject : class
         {
             return CreateGraphTypeTemplate<TObject>(TypeKind.OBJECT) as IObjectGraphTypeTemplate;
         }
@@ -154,7 +155,6 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <typeparam name="TObject">The type to create a template of.</typeparam>
         /// <returns>IInputObjectGraphTypeTemplate.</returns>
         public static IInputObjectGraphTypeTemplate CreateInputObjectTemplate<TObject>()
-           where TObject : class
         {
             return CreateGraphTypeTemplate<TObject>(TypeKind.INPUT_OBJECT) as IInputObjectGraphTypeTemplate;
         }

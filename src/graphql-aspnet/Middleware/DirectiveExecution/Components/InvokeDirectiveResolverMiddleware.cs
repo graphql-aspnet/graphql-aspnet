@@ -44,14 +44,19 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
                 }
                 else
                 {
-                    executionArguments = executionArguments.ForContext(context);
-
+                    // resolution context messages
+                    // are seperate by design
                     var resolutionContext = new DirectiveResolutionContext(
+                        context.ServiceProvider,
+                        context.Session,
                         context.Schema,
-                        context,
+                        context.QueryRequest,
                         context.Request,
                         executionArguments,
-                        context.User);
+                        new GraphMessageCollection(),
+                        context.Logger,
+                        context.User,
+                        context.CancellationToken);
 
                     // execute the directive
                     await context

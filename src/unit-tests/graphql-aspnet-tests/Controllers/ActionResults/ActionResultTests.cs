@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
                 .AddType<ActionableController>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<ActionableController>(
+            var builder = server.CreateActionMethodFieldContextBuilder<ActionableController>(
                 nameof(ActionableController.DoStuff));
             return builder.CreateResolutionContext();
         }

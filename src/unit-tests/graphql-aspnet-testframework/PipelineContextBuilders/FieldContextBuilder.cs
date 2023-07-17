@@ -27,6 +27,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using Moq;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
+    using System.Threading;
 
     /// <summary>
     /// A builder used to create inlined mocked replacements
@@ -51,13 +52,13 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <param name="userSecurityContext">The user security context.</param>
         /// <param name="graphField">The graph field.</param>
         /// <param name="schema">The schema.</param>
-        /// <param name="metaData">The metadata describing the method/functon to be invoked by a resolver.</param>
+        /// <param name="resolverMetadata">The metadata describing the method/functon to be invoked by a resolver.</param>
         public FieldContextBuilder(
             IServiceProvider serviceProvider,
             IUserSecurityContext userSecurityContext,
             IGraphField graphField,
             ISchema schema,
-            IGraphFieldResolverMetaData metaData)
+            IGraphFieldResolverMetaData resolverMetadata)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _graphField = Validation.ThrowIfNullOrReturn(graphField, nameof(graphField));
@@ -69,8 +70,8 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 
             Type expectedInputType = null;
 
-            if (!Validation.IsCastable<GraphDirective>(metaData.ParentObjectType)
-                && !Validation.IsCastable<GraphController>(metaData.ParentObjectType))
+            if (!Validation.IsCastable<GraphDirective>(resolverMetadata.ParentObjectType)
+                && !Validation.IsCastable<GraphController>(resolverMetadata.ParentObjectType))
             {
                 if (graphField.Parent is IInterfaceGraphType iif)
                     expectedInputType = iif.ObjectType;
@@ -103,16 +104,16 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockRequest.Setup(x => x.InvocationContext).Returns(_mockInvocationContext.Object);
 
             this.ResolverMetaData = new Mock<IGraphFieldResolverMetaData>();
-            this.ResolverMetaData.Setup(x => x.ParentInternalFullName).Returns(metaData.ParentInternalFullName);
-            this.ResolverMetaData.Setup(x => x.ParentInternalName).Returns(metaData.ParentInternalName);
-            this.ResolverMetaData.Setup(x => x.ParentObjectType).Returns(metaData.ParentObjectType);
-            this.ResolverMetaData.Setup(x => x.ExpectedReturnType).Returns(metaData.ExpectedReturnType);
-            this.ResolverMetaData.Setup(x => x.Method).Returns(metaData.Method);
-            this.ResolverMetaData.Setup(x => x.IsAsyncField).Returns(metaData.IsAsyncField);
-            this.ResolverMetaData.Setup(x => x.InternalName).Returns(metaData.InternalName);
-            this.ResolverMetaData.Setup(x => x.InternalFullName).Returns(metaData.InternalFullName);
-            this.ResolverMetaData.Setup(x => x.InternalName).Returns(metaData.InternalName);
-            this.ResolverMetaData.Setup(x => x.Parameters).Returns(metaData.Parameters);
+            this.ResolverMetaData.Setup(x => x.ParentInternalFullName).Returns(resolverMetadata.ParentInternalFullName);
+            this.ResolverMetaData.Setup(x => x.ParentInternalName).Returns(resolverMetadata.ParentInternalName);
+            this.ResolverMetaData.Setup(x => x.ParentObjectType).Returns(resolverMetadata.ParentObjectType);
+            this.ResolverMetaData.Setup(x => x.ExpectedReturnType).Returns(resolverMetadata.ExpectedReturnType);
+            this.ResolverMetaData.Setup(x => x.Method).Returns(resolverMetadata.Method);
+            this.ResolverMetaData.Setup(x => x.IsAsyncField).Returns(resolverMetadata.IsAsyncField);
+            this.ResolverMetaData.Setup(x => x.InternalName).Returns(resolverMetadata.InternalName);
+            this.ResolverMetaData.Setup(x => x.InternalFullName).Returns(resolverMetadata.InternalFullName);
+            this.ResolverMetaData.Setup(x => x.InternalName).Returns(resolverMetadata.InternalName);
+            this.ResolverMetaData.Setup(x => x.Parameters).Returns(resolverMetadata.Parameters);
         }
 
         /// <summary>
@@ -225,13 +226,17 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
                 context.Messages,
                 out var executionArguments);
 
-            executionArguments = executionArguments.ForContext(context);
-
             return new FieldResolutionContext(
+                this.ServiceProvider,
+                context.Session,
                 _schema,
-                this.CreateFakeParentMiddlewareContext(),
+                context.QueryRequest,
                 this.FieldRequest,
-                executionArguments);
+                executionArguments,
+                context.Messages,
+                context.Logger,
+                context.User,
+                CancellationToken.None);
         }
 
         /// <summary>

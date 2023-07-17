@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -25,9 +26,8 @@ namespace GraphQL.AspNet.Execution
     [DebuggerDisplay("Count = {Count}")]
     internal class ExecutionArgumentCollection : IExecutionArgumentCollection
     {
-        private readonly Dictionary<string, ExecutionArgument> _arguments;
-        private readonly GraphDirectiveExecutionContext _directiveContext;
-        private readonly GraphFieldExecutionContext _fieldContext;
+        private readonly Dictionary<string, ExecutionArgument> _suppliedArgumentDataValues;
+        private readonly SchemaItemResolutionContext _resolutionContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionArgumentCollection" /> class.
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="capacity">The initial capacity of the collection, if known.</param>
         public ExecutionArgumentCollection(int? capacity = null)
         {
-            _arguments = capacity.HasValue
+            _suppliedArgumentDataValues = capacity.HasValue
                 ? new Dictionary<string, ExecutionArgument>(capacity.Value)
                 : new Dictionary<string, ExecutionArgument>();
         }
@@ -44,45 +44,26 @@ namespace GraphQL.AspNet.Execution
         /// Initializes a new instance of the <see cref="ExecutionArgumentCollection" /> class.
         /// </summary>
         /// <param name="argumentList">The argument list keyed by the argument's name in the graph.</param>
-        /// <param name="fieldContext">The field context.</param>
+        /// <param name="resolutionContext">The resolution context.</param>
         private ExecutionArgumentCollection(
             IDictionary<string, ExecutionArgument> argumentList,
-            GraphFieldExecutionContext fieldContext)
+            SchemaItemResolutionContext resolutionContext)
         {
-            _arguments = new Dictionary<string, ExecutionArgument>(argumentList);
-            _fieldContext = fieldContext;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExecutionArgumentCollection" /> class.
-        /// </summary>
-        /// <param name="argumentList">The argument list keyed by the argument's name in the graph.</param>
-        /// <param name="directiveContext">The directive context.</param>
-        private ExecutionArgumentCollection(
-            IDictionary<string, ExecutionArgument> argumentList,
-            GraphDirectiveExecutionContext directiveContext)
-        {
-            _arguments = new Dictionary<string, ExecutionArgument>(argumentList);
-            _directiveContext = directiveContext;
+            _suppliedArgumentDataValues = new Dictionary<string, ExecutionArgument>(argumentList);
+            _resolutionContext = resolutionContext;
         }
 
         /// <inheritdoc />
         public void Add(ExecutionArgument argument)
         {
             Validation.ThrowIfNull(argument, nameof(argument));
-            _arguments.Add(argument.Name, argument);
+            _suppliedArgumentDataValues.Add(argument.Name, argument);
         }
 
         /// <inheritdoc />
-        public IExecutionArgumentCollection ForContext(GraphFieldExecutionContext fieldContext)
+        public IExecutionArgumentCollection ForContext(SchemaItemResolutionContext resolutionContext)
         {
-            return new ExecutionArgumentCollection(_arguments, fieldContext);
-        }
-
-        /// <inheritdoc />
-        public IExecutionArgumentCollection ForContext(GraphDirectiveExecutionContext directiveContext)
-        {
-            return new ExecutionArgumentCollection(_arguments, directiveContext);
+            return new ExecutionArgumentCollection(_suppliedArgumentDataValues, resolutionContext);
         }
 
         /// <inheritdoc />
@@ -137,10 +118,18 @@ namespace GraphQL.AspNet.Execution
             Validation.ThrowIfNull(paramDef, nameof(paramDef));
 
             if (paramDef.ArgumentModifiers.IsSourceParameter())
-                return this.SourceData;
+                return _resolutionContext?.SourceData;
 
             if (paramDef.ArgumentModifiers.IsCancellationToken())
-                return _fieldContext?.CancellationToken ?? default;
+                return _resolutionContext?.CancellationToken;
+
+            if (paramDef.ArgumentModifiers.IsResolverContext())
+            {
+                if (_resolutionContext != null && Validation.IsCastable(_resolutionContext.GetType(), paramDef.ExpectedType))
+                    return _resolutionContext;
+
+                return null;
+            }
 
             // if there an argument supplied on the query for this parameter, use that
             if (this.TryGetValue(paramDef.InternalName, out var arg))
@@ -151,17 +140,8 @@ namespace GraphQL.AspNet.Execution
             {
                 // additional checks and coersion if this the value is
                 // being supplied from a query
-                var graphArgument = _fieldContext?
-                    .Request
-                    .Field
-                    .Arguments
-                    .FindArgumentByParameterName(paramDef.InternalName);
-
-                graphArgument = graphArgument ??
-                    _directiveContext?
-                    .Request
-                    .Directive
-                    .Arguments
+                var graphArgument = _resolutionContext?
+                    .SchemaDefinedArguments?
                     .FindArgumentByParameterName(paramDef.InternalName);
 
                 if (graphArgument != null)
@@ -182,7 +162,7 @@ namespace GraphQL.AspNet.Execution
                     // but captured here as a saftey net for users
                     // doing custom extensions or implementations
                     // this prevents resolver execution with indeterminate or unexpected data
-                    var path = _fieldContext?.Request?.Field?.Route.Path ?? _directiveContext?.Request?.Directive?.Route.Path ?? "~unknown~";
+                    var path = _resolutionContext?.Route.Path;
                     throw new GraphExecutionException(
                         $"The parameter '{paramDef.InternalName}' for schema item '{path}' could not be resolved from the query document " +
                         "or variable collection and no default value was found.");
@@ -190,11 +170,7 @@ namespace GraphQL.AspNet.Execution
             }
 
             // its not a formal argument in the schema, try and resolve from DI container
-            object serviceResolvedValue = null;
-            if (_fieldContext != null)
-                serviceResolvedValue = _fieldContext.ServiceProvider?.GetService(paramDef.ExpectedType);
-            else if (_directiveContext != null)
-                serviceResolvedValue = _directiveContext.ServiceProvider?.GetService(paramDef.ExpectedType);
+            object serviceResolvedValue = _resolutionContext?.ServiceProvider?.GetService(paramDef.ExpectedType);
 
             // the service was found in the DI container!! *happy*
             if (serviceResolvedValue != null)
@@ -204,8 +180,7 @@ namespace GraphQL.AspNet.Execution
             if (paramDef.HasDefaultValue)
                 return paramDef.DefaultValue;
 
-            var schemaItem = _fieldContext?.Request.Field.Route.Path
-                ?? _directiveContext?.Request.Directive.Route.Path
+            var schemaItem = _resolutionContext?.Route.Path
                 ?? paramDef.InternalFullName;
 
             // error unable to resolve correctly. *womp womp*
@@ -216,33 +191,30 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <inheritdoc />
-        public bool ContainsKey(string key) => _arguments.ContainsKey(key);
+        public bool ContainsKey(string key) => _suppliedArgumentDataValues.ContainsKey(key);
 
         /// <inheritdoc />
         public bool TryGetValue(string key, out ExecutionArgument value)
         {
-            return _arguments.TryGetValue(key, out value);
+            return _suppliedArgumentDataValues.TryGetValue(key, out value);
         }
 
         /// <inheritdoc />
-        public ExecutionArgument this[string key] => _arguments[key];
+        public ExecutionArgument this[string key] => _suppliedArgumentDataValues[key];
 
         /// <inheritdoc />
-        public IEnumerable<string> Keys => _arguments.Keys;
+        public IEnumerable<string> Keys => _suppliedArgumentDataValues.Keys;
 
         /// <inheritdoc />
-        public IEnumerable<ExecutionArgument> Values => _arguments.Values;
+        public IEnumerable<ExecutionArgument> Values => _suppliedArgumentDataValues.Values;
 
         /// <inheritdoc />
-        public int Count => _arguments.Count;
-
-        /// <inheritdoc />
-        public object SourceData => _fieldContext?.Request?.Data?.Value;
+        public int Count => _suppliedArgumentDataValues.Count;
 
         /// <inheritdoc />
         public IEnumerator<KeyValuePair<string, ExecutionArgument>> GetEnumerator()
         {
-            return _arguments.GetEnumerator();
+            return _suppliedArgumentDataValues.GetEnumerator();
         }
 
         /// <inheritdoc />

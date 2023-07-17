@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Execution.Resolvers.Introspeection
         /// <inheritdoc />
         public Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
-            var sourceData = context.Arguments.SourceData as IntrospectedType;
+            var sourceData = context.SourceData as IntrospectedType;
 
             if (sourceData == null)
             {
@@ -39,8 +39,8 @@ namespace GraphQL.AspNet.Execution.Resolvers.Introspeection
             }
             else
             {
-                var includedDeprecated = context.Arguments.ContainsKey(Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME)
-                                         && (bool)context.Arguments[Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME].Value;
+                var includedDeprecated = context.ExecutionSuppliedArguments.ContainsKey(Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME)
+                                         && (bool)context.ExecutionSuppliedArguments[Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME].Value;
 
                 if (includedDeprecated)
                     context.Result = sourceData.Fields;

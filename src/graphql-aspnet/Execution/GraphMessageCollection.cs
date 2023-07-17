@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Execution
         /// <inheritdoc />
         public void AddRange(IGraphMessageCollection messagesToAdd)
         {
-            if (messagesToAdd == null || messagesToAdd.Count == 0)
+            if (messagesToAdd == null || messagesToAdd == this || messagesToAdd.Count == 0)
                 return;
 
             lock (_messages)

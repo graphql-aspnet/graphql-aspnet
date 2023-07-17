@@ -110,7 +110,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 .AddType<LogTestController>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+            var builder = server.CreateActionMethodFieldContextBuilder<LogTestController>(
                     nameof(LogTestController.ValidatableInputObject));
 
             var context = builder.CreateExecutionContext();
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 .AddType<LogTestController>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+            var builder = server.CreateActionMethodFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ValidatableInputObject));
 
             var context = builder.CreateExecutionContext();

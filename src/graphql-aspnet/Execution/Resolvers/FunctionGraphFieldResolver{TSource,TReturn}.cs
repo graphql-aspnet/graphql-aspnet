@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
         /// <inheritdoc />
         public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
-            var data = await _func(context?.Arguments.SourceData as TSource).ConfigureAwait(false);
+            var data = await _func(context?.SourceData as TSource).ConfigureAwait(false);
             context.Result = data;
         }
 

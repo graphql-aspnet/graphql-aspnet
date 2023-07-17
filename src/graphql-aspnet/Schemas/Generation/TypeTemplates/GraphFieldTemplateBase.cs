@@ -36,6 +36,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         private AppliedSecurityPolicyGroup _securityPolicies;
         private GraphFieldAttribute _fieldDeclaration;
         private bool _invalidTypeExpression;
+        private bool _returnsActionResult;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldTemplateBase" /> class.
@@ -133,6 +134,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // ------------------------------------
             if (Validation.IsCastable<IGraphActionResult>(objectType))
             {
+                _returnsActionResult = true;
                 if (this.UnionProxy != null)
                 {
                     // if a union was decalred preserve whatever modifer elements
@@ -217,9 +219,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             }
 
             // ensure the object type returned by the graph field is set correctly
-            bool returnsActionResult = Validation.IsCastable<IGraphActionResult>(this.ObjectType);
             var enforceUnionRules = this.UnionProxy != null;
-
             if (this.PossibleTypes.Count == 0)
             {
                 throw new GraphTypeDeclarationException(
@@ -278,7 +278,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 // declarations are not required at this stage
                 //
                 // batch processed fields are not subject to this restriction
-                if (!returnsActionResult && this.Mode == FieldResolutionMode.PerSourceItem && !Validation.IsCastable(type, this.ObjectType))
+                if (!_returnsActionResult && this.Mode == FieldResolutionMode.PerSourceItem && !Validation.IsCastable(type, this.ObjectType))
                 {
                     throw new GraphTypeDeclarationException(
                         $"The field '{this.InternalFullName}' returns '{this.ObjectType.FriendlyName()}' and declares a possible type of '{type.FriendlyName()}' " +

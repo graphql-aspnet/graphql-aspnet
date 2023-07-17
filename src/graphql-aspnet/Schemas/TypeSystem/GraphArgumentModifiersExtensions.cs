@@ -6,15 +6,25 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
-    using System.Runtime.CompilerServices;
-
     /// <summary>
     /// Extension helper methods for <see cref="GraphArgumentModifiers"/>.
     /// </summary>
     public static class GraphArgumentModifiersExtensions
     {
+        /// <summary>
+        /// Determines whether the modifers indicate the argument is to contain the context of
+        /// the directive or field being resolved by the target resolver.
+        /// </summary>
+        /// <param name="modifiers">The modifiers to check.</param>
+        /// <returns><c>true</c> if the parameters represent the resolver context; otherwise, <c>false</c>.</returns>
+        public static bool IsResolverContext(this GraphArgumentModifiers modifiers)
+        {
+            return modifiers == GraphArgumentModifiers.ResolutionContext;
+        }
+
         /// <summary>
         /// Determines whether the modifers indicate the argument is to contain the source data value supplied to the resolver for the field.
         /// </summary>

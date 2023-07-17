@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -132,8 +133,30 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.IsCancellationTokenArgument())
                 _foundModifiers.Add(GraphArgumentModifiers.CancellationToken);
 
+            if (this.IsResolutionContext())
+                _foundModifiers.Add(GraphArgumentModifiers.ResolutionContext);
+
             if (_foundModifiers.Count == 1)
                 this.ArgumentModifier = _foundModifiers.First();
+        }
+
+        /// <summary>
+        /// Determines whether this instance represents a parameter that should be marked as a "resolution context"
+        /// and filled with the active context when possible.
+        /// </summary>
+        /// <returns><c>true</c> if the ; otherwise, <c>false</c>.</returns>
+        public virtual bool IsResolutionContext()
+        {
+            if (this.Parent.Arguments.Any(x => x.ArgumentModifier.IsResolverContext()))
+                return false;
+
+            if (Validation.IsCastable(this.ObjectType, typeof(FieldResolutionContext)) && this.Parent is IGraphFieldTemplate)
+                return true;
+
+            if (Validation.IsCastable(this.ObjectType, typeof(DirectiveResolutionContext)) && this.Parent is IGraphDirectiveTemplate)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -143,7 +166,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <returns>System.Boolean.</returns>
         protected virtual bool IsSourceDataArgument()
         {
-            if (this.Parent.Arguments.Any(x => x.ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult)))
+            if (this.Parent.Arguments.Any(x => x.ArgumentModifier.IsSourceParameter()))
                 return false;
 
             if (_foundModifiers.Count > 0)

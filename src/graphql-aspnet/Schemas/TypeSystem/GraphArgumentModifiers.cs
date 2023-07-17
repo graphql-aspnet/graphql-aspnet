@@ -51,5 +51,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// or if the type was explicitly excluded from the graph via attributions.
         /// </summary>
         ExplicitSchemaItem,
+
+        /// <summary>
+        /// This paraemter is declared to be resolved as the active resolution context being processed by a controller action.
+        /// </summary>
+        ResolutionContext,
     }
 }

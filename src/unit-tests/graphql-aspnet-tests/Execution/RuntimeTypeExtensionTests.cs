@@ -73,7 +73,8 @@ namespace GraphQL.AspNet.Tests.Execution
                     });
                 });
 
-            var ex = Assert.Throws<GraphTypeDeclarationException>(() => {
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
                 builder.Build();
             });
 
@@ -367,8 +368,6 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages[0].Severity);
             Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
-
-
         }
 
         [Test]

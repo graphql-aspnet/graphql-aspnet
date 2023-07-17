@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
     /// A resolver that extracts a property from an object and returns it as a field value.
     /// </summary>
     /// <seealso cref="IGraphFieldResolver" />
-    [DebuggerDisplay("Prop Resolver: {_graphMethod.Name}")]
+    [DebuggerDisplay("Prop Resolver: {MetaData.InternalFullName}")]
     internal class ObjectPropertyGraphFieldResolver : IGraphFieldResolver
     {
         /// <summary>
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
         /// <inheritdoc />
         public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
-            var sourceData = context.Arguments.SourceData;
+            var sourceData = context.SourceData;
             if (sourceData == null)
             {
                 context.Messages.Critical(

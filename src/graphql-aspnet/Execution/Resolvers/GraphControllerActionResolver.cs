@@ -37,7 +37,6 @@ namespace GraphQL.AspNet.Execution.Resolvers
         }
 
         /// <inheritdoc />
-        [DebuggerStepThrough]
         public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             IGraphActionResult result;

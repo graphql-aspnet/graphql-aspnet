@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Execution.Resolvers
 {
     using System;
+    using System.Diagnostics;
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
     /// A field resolver that will invoke a schema pipeline for whatever schema is beng processed
     /// resulting in the configured <see cref="IGraphFieldResolverMetaData"/> handling the request.
     /// </summary>
+    [DebuggerDisplay("Prop Resolver: {MetaData.InternalName}")]
     internal class ObjectMethodGraphFieldResolver : IGraphFieldResolver
     {
         private readonly MethodInfo _methodInfo;
@@ -41,7 +43,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
         /// <inheritdoc />
         public virtual async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
-            var sourceData = context.Arguments?.SourceData;
+            var sourceData = context.SourceData;
             if (sourceData == null)
             {
                 context.Messages.Critical(
@@ -54,7 +56,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             }
 
             var typeCheck = _methodInfo.ReflectedType ?? _methodInfo.DeclaringType;
-            if (context.Arguments.SourceData.GetType() != typeCheck)
+            if (context.SourceData?.GetType() != typeCheck)
             {
                 context.Messages.Critical(
                    "The source data provided to the field resolver " +
@@ -73,10 +75,10 @@ namespace GraphQL.AspNet.Execution.Resolvers
             {
                 object data = null;
 
-                var paramSet = context.Arguments.PrepareArguments(this.MetaData);
+                var paramSet = context.ExecutionSuppliedArguments.PrepareArguments(this.MetaData);
                 var invoker = InstanceFactory.CreateInstanceMethodInvoker(this.MetaData.Method);
 
-                var invokableObject = context.Arguments.SourceData as object;
+                var invokableObject = context.SourceData as object;
                 var invokeReturn = invoker(ref invokableObject, paramSet);
                 if (this.MetaData.IsAsyncField)
                 {

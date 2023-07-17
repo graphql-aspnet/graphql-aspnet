@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
@@ -191,124 +192,58 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Creates a builder that will generate a field execution context for an action on a target controller. This
         /// context can be submitted against the field execution pipeline to generate a result.
         /// </summary>
-        /// <typeparam name="TController">The type of the controller that owns the
-        /// action.</typeparam>
-        /// <param name="actionName">Name of the action/field in the controller, as it exists in the schema.</param>
+        /// <typeparam name="TEntity">The type of the entity that owns <paramref name="fieldName"/>.</typeparam>
+        /// <param name="fieldName">Name of the field as it exists on the schema.</param>
         /// <returns>FieldContextBuilder.</returns>
-        public virtual FieldContextBuilder CreateGraphTypeFieldContextBuilder<TController>(string actionName)
-            where TController : GraphController
+        public virtual FieldContextBuilder CreateGraphTypeFieldContextBuilder<TEntity>(string fieldName)
         {
-            var template = GraphQLTemplateHelper.CreateFieldTemplate<TController>(actionName);
+            var graphType = this.Schema.KnownTypes.FindGraphType(typeof(TEntity), TypeKind.OBJECT) as IObjectGraphType;
+            if (graphType == null)
+            {
+                throw new InvalidOperationException($"Unknown or unregistered OBJECT graph for type {typeof(TEntity).FriendlyName()}. This method " +
+                    $"can only create a context builder for OBJECT graph types.");
+            }
 
-            var fieldMaker = new GraphFieldMaker(this.Schema, new GraphArgumentMaker(this.Schema));
-            var fieldResult = fieldMaker.CreateField(template);
+            var field = graphType.Fields.FindField(fieldName);
+            if (field == null)
+            {
+                throw new InvalidOperationException($"The graph type '{graphType.Name}' does not contain a field named '{fieldName}'. " +
+                    $"Field names are case sensitive.");
+            }
 
             var builder = new FieldContextBuilder(
                 this.ServiceProvider,
                 _userSecurityContext,
-                fieldResult.Field,
+                field,
                 this.Schema,
-                template.CreateResolverMetaData());
+                field.Resolver.MetaData);
 
             builder.AddSourceData(new object());
             return builder;
         }
 
         /// <summary>
-        /// Creates a low level field execution context that can be processed by the test server.
+        /// Creates a builder that will generate the various field processing contexts for an action method on a target controller..
         /// </summary>
-        /// <typeparam name="TType">The concrete type representing the graph type in the schema.</typeparam>
-        /// <param name="fieldName">Name of the field, on the type, as it exists in the schema.</param>
-        /// <param name="sourceData">The source data to use as the input to the field. This can be changed, but must be supplied. A
-        /// generic <see cref="object" /> will be used if not supplied.</param>
-        /// <param name="arguments">The collection of arguments that need to be supplied
-        /// to the field to properly resolve it.</param>
+        /// <typeparam name="TController">The type of the controller that owns the
+        /// action.</typeparam>
+        /// <param name="actionName">Name of the action/field in the controller, as it exists in the schema.</param>
         /// <returns>FieldContextBuilder.</returns>
-        public virtual GraphFieldExecutionContext CreateFieldExecutionContext<TType>(
-            string fieldName,
-            object sourceData,
-            IInputArgumentCollection arguments = null)
+        public virtual FieldContextBuilder CreateActionMethodFieldContextBuilder<TController>(string actionName)
         {
-            IGraphType graphType = this.Schema.KnownTypes.FindGraphType(typeof(TType));
+            var fieldTemplate = GraphQLTemplateHelper.CreateFieldTemplate<TController>(actionName);
+            var fieldMaker = new GraphFieldMaker(this.Schema, new GraphArgumentMaker(this.Schema));
+            var fieldResult = fieldMaker.CreateField(fieldTemplate);
 
-            if (graphType == null)
-            {
-                throw new InvalidOperationException($"Unable to locate a registered graph type that matched the supplied source data (Type: {typeof(TType).FriendlyName()})");
-            }
+            var builder = new FieldContextBuilder(
+                this.ServiceProvider,
+                _userSecurityContext,
+                fieldResult.Field,
+                this.Schema,
+                fieldTemplate.CreateResolverMetaData());
 
-            var typedGraphType = graphType as ITypedSchemaItem;
-            if (typedGraphType == null)
-            {
-                throw new InvalidOperationException($"The target graph type '{graphType.Name}' is not a strongly typed graph type and cannot be invoked via this builder.");
-            }
-
-            var container = graphType as IGraphFieldContainer;
-            if (container == null)
-            {
-                throw new InvalidOperationException($"The target graph type '{graphType.Name}' is not a field container. No field context builder can be created.");
-            }
-
-            var field = container.Fields.FindField(fieldName);
-            if (field == null)
-            {
-                throw new InvalidOperationException($"The target graph type '{graphType.Name}' does not contain a field named '{fieldName}'.");
-            }
-
-            arguments = arguments ?? InputArgumentCollectionFactory.Create();
-            var messages = new GraphMessageCollection();
-            var metaData = new MetaDataCollection();
-
-            var queryRequest = new Mock<IQueryExecutionRequest>();
-            var fieldInvocationContext = new Mock<IGraphFieldInvocationContext>();
-            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
-            var graphFieldRequest = new Mock<IGraphFieldRequest>();
-            var fieldDocumentPart = new Mock<IFieldDocumentPart>();
-
-            queryRequest.Setup(x => x.Items).Returns(metaData);
-
-            parentContext.Setup(x => x.QueryRequest).Returns(queryRequest.Object);
-            parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
-            parentContext.Setup(x => x.SecurityContext).Returns(this.SecurityContext);
-            parentContext.Setup(x => x.Metrics).Returns(null as IQueryExecutionMetrics);
-            parentContext.Setup(x => x.Logger).Returns(null as IGraphEventLogger);
-            parentContext.Setup(x => x.Messages).Returns(() => messages);
-            parentContext.Setup(x => x.IsValid).Returns(() => messages.IsSucessful);
-            parentContext.Setup(x => x.Session).Returns(new QuerySession());
-
-            fieldDocumentPart.Setup(x => x.Name).Returns(field.Name);
-            fieldDocumentPart.Setup(x => x.Alias).Returns(field.Name);
-            fieldDocumentPart.Setup(x => x.Field).Returns(field);
-
-            fieldInvocationContext.Setup(x => x.ExpectedSourceType).Returns(typeof(TType));
-            fieldInvocationContext.Setup(x => x.Field).Returns(field);
-            fieldInvocationContext.Setup(x => x.Arguments).Returns(arguments);
-            fieldInvocationContext.Setup(x => x.Name).Returns(field.Name);
-            fieldInvocationContext.Setup(x => x.ChildContexts).Returns(new FieldInvocationContextCollection());
-            fieldInvocationContext.Setup(x => x.Origin).Returns(SourceOrigin.None);
-            fieldInvocationContext.Setup(x => x.Schema).Returns(this.Schema);
-            fieldInvocationContext.Setup(x => x.FieldDocumentPart).Returns(fieldDocumentPart.Object);
-
-            var resolvedParentDataItem = new FieldDataItem(
-                fieldInvocationContext.Object,
-                sourceData,
-                SourcePath.None);
-
-            var sourceDataContainer = new FieldDataItemContainer(
-                sourceData,
-                SourcePath.None,
-                resolvedParentDataItem);
-
-            var id = Guid.NewGuid();
-            graphFieldRequest.Setup(x => x.Id).Returns(id);
-            graphFieldRequest.Setup(x => x.Origin).Returns(SourceOrigin.None);
-            graphFieldRequest.Setup(x => x.Field).Returns(field);
-            graphFieldRequest.Setup(x => x.InvocationContext).Returns(fieldInvocationContext.Object);
-            graphFieldRequest.Setup(x => x.Data).Returns(() => sourceDataContainer);
-
-            return new GraphFieldExecutionContext(
-                parentContext.Object,
-                graphFieldRequest.Object,
-                ResolvedVariableCollectionFactory.Create());
+            builder.AddSourceData(new object());
+            return builder;
         }
 
         /// <summary>

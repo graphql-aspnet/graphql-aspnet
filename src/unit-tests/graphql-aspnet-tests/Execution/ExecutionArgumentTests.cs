@@ -82,25 +82,16 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var testServer = builder.Build();
 
-            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
-            template.Parse();
-            template.ValidateOrThrow();
+            var contextBuilder = testServer
+                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithInjectedArgument));
 
-            var fieldMetadata = template
-                .FieldTemplates
-                .Values
-                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithInjectedArgument))
-                .CreateResolverMetaData();
-
-            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
-                nameof(ObjectWithFields.FieldWithInjectedArgument),
-                new ObjectWithFields());
+            var context = contextBuilder.CreateResolutionContext();
 
             // mimic a situation where no values are parsed from a query (no execution args)
             var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
             argSet = argSet.ForContext(context);
 
-            var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+            var resolvedArgs = argSet.PrepareArguments(contextBuilder.ResolverMetaData.Object);
 
             Assert.IsNotNull(resolvedArgs);
             Assert.AreEqual(1, resolvedArgs.Length);
@@ -121,19 +112,10 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var testServer = builder.Build();
 
-            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
-            template.Parse();
-            template.ValidateOrThrow();
+            var contextBuilder = testServer
+                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithInjectedArgument));
 
-            var fieldMetadata = template
-                .FieldTemplates
-                .Values
-                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithInjectedArgument))
-                .CreateResolverMetaData();
-
-            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
-                nameof(ObjectWithFields.FieldWithInjectedArgument),
-                new ObjectWithFields());
+            var context = contextBuilder.CreateResolutionContext();
 
             // mimic a situation where no values are parsed from a query (no execution args)
             // and no default value is present
@@ -142,7 +124,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             Assert.Throws<GraphExecutionException>(() =>
             {
-                var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+                var resolvedArgs = argSet.PrepareArguments(contextBuilder.ResolverMetaData.Object);
             });
         }
 
@@ -160,27 +142,16 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var testServer = builder.Build();
 
-            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
-            template.Parse();
-            template.ValidateOrThrow();
-
-            var fieldMetadata = template
-                .FieldTemplates
-                .Values
-                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithInjectedArgumentWithDefaultValue))
-                .CreateResolverMetaData();
-
-            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
-                nameof(ObjectWithFields.FieldWithInjectedArgumentWithDefaultValue),
-                new ObjectWithFields());
+            var contextBuilder = testServer
+                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithInjectedArgumentWithDefaultValue));
 
             // mimic a situation where no values are parsed from a query (no execution args)
             // and nothing is available from DI
             // but the parameter declares a default value
             var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
-            argSet = argSet.ForContext(context);
+            argSet = argSet.ForContext(contextBuilder.CreateResolutionContext());
 
-            var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+            var resolvedArgs = argSet.PrepareArguments(contextBuilder.ResolverMetaData.Object);
             Assert.IsNotNull(resolvedArgs);
             Assert.AreEqual(1, resolvedArgs.Length);
             Assert.IsNull(resolvedArgs[0]);
@@ -204,23 +175,16 @@ namespace GraphQL.AspNet.Tests.Execution
             template.Parse();
             template.ValidateOrThrow();
 
-            var fieldMetadata = template
-                .FieldTemplates
-                .Values
-                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithNullableSchemaArgument))
-                .CreateResolverMetaData();
-
-            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
-                nameof(ObjectWithFields.FieldWithNullableSchemaArgument),
-                new ObjectWithFields());
+            var fieldBuilder = testServer
+                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithNullableSchemaArgument));
 
             // mimic a situation where no values are parsed from a query (no execution args)
             // and nothing is available from DI
             // but the parameter declares a default value
             var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
-            argSet = argSet.ForContext(context);
+            argSet = argSet.ForContext(fieldBuilder.CreateResolutionContext());
 
-            var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+            var resolvedArgs = argSet.PrepareArguments(fieldBuilder.ResolverMetaData.Object);
             Assert.IsNotNull(resolvedArgs);
             Assert.AreEqual(1, resolvedArgs.Length);
             Assert.IsNull(resolvedArgs[0]);
@@ -240,27 +204,16 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var testServer = builder.Build();
 
-            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
-            template.Parse();
-            template.ValidateOrThrow();
-
-            var fieldMetadata = template
-                .FieldTemplates
-                .Values
-                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithNonNullableSchemaArgumentThatHasDefaultValue))
-                .CreateResolverMetaData();
-
-            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
-                nameof(ObjectWithFields.FieldWithNonNullableSchemaArgumentThatHasDefaultValue),
-                new ObjectWithFields());
+            var fieldBuilder = testServer
+                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithNonNullableSchemaArgumentThatHasDefaultValue));
 
             // mimic a situation where no values are parsed from a query (no execution args)
             // and nothing is available from DI
             // but the parameter declares a default value
             var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
-            argSet = argSet.ForContext(context);
+            argSet = argSet.ForContext(fieldBuilder.CreateResolutionContext());
 
-            var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+            var resolvedArgs = argSet.PrepareArguments(fieldBuilder.ResolverMetaData.Object);
             Assert.IsNotNull(resolvedArgs);
             Assert.AreEqual(1, resolvedArgs.Length);
             Assert.AreEqual(3, resolvedArgs[0]);
@@ -280,28 +233,17 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var testServer = builder.Build();
 
-            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithFields));
-            template.Parse();
-            template.ValidateOrThrow();
-
-            var fieldMetadata = template
-                .FieldTemplates
-                .Values
-                .FirstOrDefault(x => x.InternalName == nameof(ObjectWithFields.FieldWithNotNullableQueryArgument))
-                .CreateResolverMetaData();
-
-            var context = testServer.CreateFieldExecutionContext<ObjectWithFields>(
-                nameof(ObjectWithFields.FieldWithNotNullableQueryArgument),
-                new ObjectWithFields());
+            var fieldBuilder = testServer
+                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithNotNullableQueryArgument));
 
             // mimic a situation where no values are parsed from a query (no execution args)
             // but the argument expected there to be
             var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
-            argSet = argSet.ForContext(context);
+            argSet = argSet.ForContext(fieldBuilder.CreateResolutionContext());
 
             Assert.Throws<GraphExecutionException>(() =>
             {
-                var resolvedArgs = argSet.PrepareArguments(fieldMetadata);
+                var resolvedArgs = argSet.PrepareArguments(fieldBuilder.ResolverMetaData.Object);
             });
         }
     }

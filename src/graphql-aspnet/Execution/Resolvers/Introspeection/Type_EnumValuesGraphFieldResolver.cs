@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution.Resolvers.Introspeection
         /// <inheritdoc />
         public Task ResolveAsync(FieldResolutionContext resolutionContext, CancellationToken cancelToken = default)
         {
-            var sourceData = resolutionContext.Arguments.SourceData as IntrospectedType;
+            var sourceData = resolutionContext.SourceData as IntrospectedType;
 
             if (sourceData == null)
             {
@@ -40,8 +40,8 @@ namespace GraphQL.AspNet.Execution.Resolvers.Introspeection
             }
             else
             {
-                var includedDeprecated = resolutionContext.Arguments.ContainsKey(Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME)
-                                         && (bool)resolutionContext.Arguments[Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME].Value;
+                var includedDeprecated = resolutionContext.ExecutionSuppliedArguments.ContainsKey(Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME)
+                                         && (bool)resolutionContext.ExecutionSuppliedArguments[Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME].Value;
 
                 if (includedDeprecated)
                     resolutionContext.Result = sourceData.EnumValues;

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using System;
+    using System.Security.Claims;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -111,34 +112,35 @@ namespace GraphQL.AspNet.Tests.Execution
             var variableData = new Mock<IResolvedVariableCollection>();
             var serviceProvider = new Mock<IServiceProvider>();
             var logger = new Mock<IGraphEventLogger>();
-            var metrics = new Mock<IQueryExecutionMetrics>();
-            var securityContext = new Mock<IUserSecurityContext>();
             var schema = new GraphSchema();
-
-            parentContext.Setup(x => x.QueryRequest).Returns(queryRequest.Object);
-            parentContext.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
-            parentContext.Setup(x => x.SecurityContext).Returns(securityContext.Object);
-            parentContext.Setup(x => x.Metrics).Returns(metrics.Object);
-            parentContext.Setup(x => x.Logger).Returns(logger.Object);
-            parentContext.Setup(x => x.Session).Returns(new QuerySession());
+            var user = new ClaimsPrincipal();
+            var session = new QuerySession();
+            var messages = new GraphMessageCollection();
 
             var args = new Mock<IExecutionArgumentCollection>();
             var directiveRequest = new Mock<IGraphDirectiveRequest>();
             var sourceFieldCollection = new FieldSourceCollection();
 
             var context = new DirectiveResolutionContext(
+                serviceProvider.Object,
+                session,
                 schema,
-                parentContext.Object,
+                queryRequest.Object,
                 directiveRequest.Object,
-                args.Object);
+                args.Object,
+                messages,
+                logger.Object,
+                user);
 
             Assert.AreEqual(queryRequest.Object, context.QueryRequest);
             Assert.AreEqual(directiveRequest.Object, context.Request);
             Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
             Assert.AreEqual(logger.Object, context.Logger);
-            Assert.AreEqual(metrics.Object, context.Metrics);
-            Assert.AreEqual(securityContext.Object, context.SecurityContext);
+            Assert.AreEqual(user, context.User);
             Assert.AreEqual(schema, context.Schema);
+            Assert.AreEqual(directiveRequest.Object, context.Request);
+            Assert.AreEqual(messages, context.Messages);
+            Assert.AreEqual(session, context.Session);
         }
     }
 }

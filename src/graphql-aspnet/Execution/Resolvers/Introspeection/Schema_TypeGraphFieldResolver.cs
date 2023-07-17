@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Execution.Resolvers.Introspeection
         /// <inheritdoc />
         public Task ResolveAsync(FieldResolutionContext resolutionContext, CancellationToken cancelToken = default)
         {
-            if (!resolutionContext.Arguments.TryGetArgument<string>("name", out var name))
+            if (!resolutionContext.ExecutionSuppliedArguments.TryGetArgument<string>("name", out var name))
             {
                 resolutionContext.Messages.Critical("Required Argument 'name' not found.");
             }
