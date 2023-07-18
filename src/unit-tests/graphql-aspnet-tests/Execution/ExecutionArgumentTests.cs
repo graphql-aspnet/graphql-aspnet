@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var testServer = builder.Build();
 
             var contextBuilder = testServer
-                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithInjectedArgument));
+                .CreateFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithInjectedArgument));
 
             var context = contextBuilder.CreateResolutionContext();
 
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var testServer = builder.Build();
 
             var contextBuilder = testServer
-                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithInjectedArgument));
+                .CreateFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithInjectedArgument));
 
             var context = contextBuilder.CreateResolutionContext();
 
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var testServer = builder.Build();
 
             var contextBuilder = testServer
-                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithInjectedArgumentWithDefaultValue));
+                .CreateFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithInjectedArgumentWithDefaultValue));
 
             // mimic a situation where no values are parsed from a query (no execution args)
             // and nothing is available from DI
@@ -176,7 +176,7 @@ namespace GraphQL.AspNet.Tests.Execution
             template.ValidateOrThrow();
 
             var fieldBuilder = testServer
-                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithNullableSchemaArgument));
+                .CreateFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithNullableSchemaArgument));
 
             // mimic a situation where no values are parsed from a query (no execution args)
             // and nothing is available from DI
@@ -205,7 +205,8 @@ namespace GraphQL.AspNet.Tests.Execution
             var testServer = builder.Build();
 
             var fieldBuilder = testServer
-                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithNonNullableSchemaArgumentThatHasDefaultValue));
+                .CreateFieldContextBuilder<ObjectWithFields>(
+                    nameof(ObjectWithFields.FieldWithNonNullableSchemaArgumentThatHasDefaultValue));
 
             // mimic a situation where no values are parsed from a query (no execution args)
             // and nothing is available from DI
@@ -234,7 +235,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var testServer = builder.Build();
 
             var fieldBuilder = testServer
-                .CreateGraphTypeFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithNotNullableQueryArgument));
+                .CreateFieldContextBuilder<ObjectWithFields>(nameof(ObjectWithFields.FieldWithNotNullableQueryArgument));
 
             // mimic a situation where no values are parsed from a query (no execution args)
             // but the argument expected there to be

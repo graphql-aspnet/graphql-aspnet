@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.MutationRaisesSubEvent));
 
             var arg1Value = "random string";
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.MutationRaisesSubEventNoData));
 
             var arg1Value = "random string";
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.MutationRaisesSubEvent));
 
             var arg1Value = "random string";
@@ -119,7 +119,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.MutationRaisesSubEvent));
 
             var arg1Value = "random string";
@@ -147,7 +147,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.MutationRaiseSubEventWithNoEventName));
 
             var arg1Value = "random string";

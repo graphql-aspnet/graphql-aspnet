@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.AsyncActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = tester.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.SyncronousActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var tester = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
-            var fieldContextBuilder = tester.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.SyncronousActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var tester = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
-            var fieldContextBuilder = tester.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.SyncronousActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
             fieldContextBuilder.ResolverMetaData.Setup(x => x.Method).Returns<MethodInfo>(null);
@@ -117,7 +117,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var tester = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
-            var fieldContextBuilder = tester.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.AsyncActionMethodToCauseException));
 
             fieldContextBuilder.AddInputArgument("arg1", "random string");
@@ -134,7 +134,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddType<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateActionMethodFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.ErrorResult));
 
             var controller = new InvokableController();

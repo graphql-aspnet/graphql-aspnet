@@ -71,7 +71,20 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>IGraphTypeFieldTemplate.</returns>
         public static IGraphFieldTemplate CreateFieldTemplate<TType>(string fieldOrMethodName)
         {
-            var template = CreateGraphTypeTemplate<TType>(TypeKind.OBJECT) as IGraphTypeFieldTemplateContainer;
+            return CreateFieldTemplate(typeof(TType), fieldOrMethodName);
+        }
+
+        /// <summary>
+        /// Helper method to create a field template for a controller or object method/property. This method will search both the
+        /// names of the fields as they would exist in an object graph as well as the declared names of methods/properties. THe first
+        /// found match is returned.
+        /// </summary>
+        /// <param name="ownerEntityType">Type entity that owns the field or method.</param>
+        /// <param name="fieldOrMethodName">Name of the field as defined in the object graph or the name of the method/property.</param>
+        /// <returns>IGraphTypeFieldTemplate.</returns>
+        public static IGraphFieldTemplate CreateFieldTemplate(Type ownerEntityType, string fieldOrMethodName)
+        {
+            var template = CreateGraphTypeTemplate(ownerEntityType, TypeKind.OBJECT) as IGraphTypeFieldTemplateContainer;
 
             // bit of a hack but it solves a lot of schema configuration differences that
             // can occur when setting up a test do to references occuring out of process
@@ -84,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Framework
                     return kvp.Value;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(fieldOrMethodName), $"Test Setup Error. No field,method or property named '{fieldOrMethodName}' was found on the template of type '{typeof(TType).FriendlyName()}'.");
+            throw new ArgumentOutOfRangeException(nameof(fieldOrMethodName), $"Test Setup Error. No field,method or property named '{fieldOrMethodName}' was found on the template of type '{ownerEntityType.FriendlyName()}'.");
         }
 
         /// <summary>

@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 LastName = "Smith",
             };
 
-            var contextBuilder = server.CreateGraphTypeFieldContextBuilder<TestPersonWithResolverExtensionDirectiveByType>(
+            var contextBuilder = server.CreateFieldContextBuilder<TestPersonWithResolverExtensionDirectiveByType>(
                 nameof(TestPersonWithResolverExtensionDirectiveByType.Name));
 
             contextBuilder.AddSourceData(person);
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 LastName = "Smith",
             };
 
-            var contextBuilder = server.CreateGraphTypeFieldContextBuilder<TestPersonWithResolverExtensionDirectiveByName>(
+            var contextBuilder = server.CreateFieldContextBuilder<TestPersonWithResolverExtensionDirectiveByName>(
                 nameof(TestPersonWithResolverExtensionDirectiveByName.Name));
 
             contextBuilder.AddSourceData(person);
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 LastName = "Smith",
             };
 
-            var contextBuilder = server.CreateGraphTypeFieldContextBuilder<TestPersonWithResolverExtensionDirectiveByName>(
+            var contextBuilder = server.CreateFieldContextBuilder<TestPersonWithResolverExtensionDirectiveByName>(
                 nameof(TestPersonWithResolverExtensionDirectiveByName.Name));
 
             contextBuilder.AddSourceData(person);
@@ -110,7 +110,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 Property2 = "prop 2",
             };
 
-            var contextBuilder = server.CreateGraphTypeFieldContextBuilder<TestObjectWithAddFieldDirectiveByType>("property3")
+            var contextBuilder = server.CreateFieldContextBuilder<TestObjectWithAddFieldDirectiveByType>("property3")
                 .AddSourceData(obj);
 
             var context = contextBuilder.CreateExecutionContext();

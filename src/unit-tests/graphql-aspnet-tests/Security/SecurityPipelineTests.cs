@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Security
             builder.UserContext.AddUserRole("role4");
             var server = builder.Build();
 
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireRolePolicy_RequiresRole1));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Security
             builder.UserContext.AddUserRole("role1");
             var server = builder.Build();
 
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireRolePolicy_RequiresRole1));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Security
 
             var server = builder.Build();
 
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.MultiPolicyMethod_RequireRole6_RequireClaim7));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Tests.Security
 
             var server = builder.Build();
 
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.MultiPolicyMethod_RequireRole6_RequireClaim7));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.Tests.Security
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.MethodHasRoles_Role5));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -170,7 +170,7 @@ namespace GraphQL.AspNet.Tests.Security
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.MethodHasRoles_Role5));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -191,7 +191,7 @@ namespace GraphQL.AspNet.Tests.Security
             builder.UserContext.AddUserClaim("testClaim5", "testClaim5Value");
             var server = builder.Build();
 
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireClaimPolicy_RequiresTestClaim6));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Security
             builder.UserContext.AddUserClaim("testClaim6", "testClaim6Value");
             var server = builder.Build();
 
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireClaimPolicy_RequiresTestClaim6));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -233,7 +233,7 @@ namespace GraphQL.AspNet.Tests.Security
             builder.UserContext.AddUserClaim("testClaim6", "differentValueThanRequired");
             var server = builder.Build();
 
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireClaimPolicy_RequiresTestClaim6));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -252,7 +252,7 @@ namespace GraphQL.AspNet.Tests.Security
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.GeneralSecureMethod));
 
             fieldBuilder.AddSecurityContext(null);
@@ -276,7 +276,7 @@ namespace GraphQL.AspNet.Tests.Security
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.GeneralSecureMethod));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -301,7 +301,7 @@ namespace GraphQL.AspNet.Tests.Security
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.NoDefinedPolicies));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -320,7 +320,7 @@ namespace GraphQL.AspNet.Tests.Security
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.NoDefinedPolicies));
 
             fieldBuilder.AddSecurityContext(null);
@@ -343,7 +343,7 @@ namespace GraphQL.AspNet.Tests.Security
             builder.UserContext.AddUserClaim("testClaim6", "testClaim6Value");
             var server = builder.Build();
 
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_NoPolicies>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireClaimPolicy_RequiresTestClaim7_ButAlsoAllowAnon));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -373,7 +373,7 @@ namespace GraphQL.AspNet.Tests.Security
 
             var server = builder.Build();
 
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_Policy_RequiresPolicy5>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_Policy_RequiresPolicy5>(
                 nameof(Controller_Policy_RequiresPolicy5.Policy_RequiresRole1));
 
             var authContext = fieldBuilder.CreateSecurityContext();
@@ -403,7 +403,7 @@ namespace GraphQL.AspNet.Tests.Security
 
             var server = builder.Build();
 
-            var fieldBuilder = server.CreateActionMethodFieldContextBuilder<Controller_Policy_RequiresPolicy5>(
+            var fieldBuilder = server.CreateFieldContextBuilder<Controller_Policy_RequiresPolicy5>(
                 nameof(Controller_Policy_RequiresPolicy5.Policy_RequiresRole1));
 
             var authContext = fieldBuilder.CreateSecurityContext();

@@ -28,10 +28,9 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 .AddType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodRetrieveData),
-                null,
-                TypeKind.OBJECT);
+                null);
 
             var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData.Object);
 
@@ -50,10 +49,9 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 .AddType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodRetrieveData),
-                new object(),
-                TypeKind.OBJECT);
+                new object());
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new TwoPropertyObject());
@@ -73,10 +71,9 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 .AddType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodThrowException),
-                new object(),
-                TypeKind.OBJECT);
+                new object());
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
@@ -98,10 +95,9 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 .AddType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodWithArgument),
-                new object(),
-                TypeKind.OBJECT);
+                new object());
 
             // the method declares one input argument which is not provided on this request
             // resulting in a GraphExecutionException which
@@ -126,10 +122,9 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 .AddType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodRetrieveDataAsync),
-                null,
-                TypeKind.OBJECT);
+                null);
 
             var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData.Object);
 
@@ -148,10 +143,9 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 .AddType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodRetrieveDataAsync),
-                new object(),
-                TypeKind.OBJECT);
+                new object());
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new TwoPropertyObject());
@@ -171,10 +165,9 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 .AddType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodThrowExceptionAsync),
-                new object(),
-                TypeKind.OBJECT);
+                new object());
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
@@ -196,10 +189,9 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 .AddType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodWithArgumentAsync),
-                new object(),
-                TypeKind.OBJECT);
+                new object());
 
             // the method declares one input argument which is not provided on this request
             // resulting in a GraphExecutionException which

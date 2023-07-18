@@ -189,65 +189,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Creates a builder that will generate a field execution context for an action on a target controller. This
-        /// context can be submitted against the field execution pipeline to generate a result.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of the entity that owns <paramref name="fieldName"/>.</typeparam>
-        /// <param name="fieldName">Name of the field as it exists on the schema.</param>
-        /// <returns>FieldContextBuilder.</returns>
-        public virtual FieldContextBuilder CreateGraphTypeFieldContextBuilder<TEntity>(string fieldName)
-        {
-            var graphType = this.Schema.KnownTypes.FindGraphType(typeof(TEntity), TypeKind.OBJECT) as IObjectGraphType;
-            if (graphType == null)
-            {
-                throw new InvalidOperationException($"Unknown or unregistered OBJECT graph for type {typeof(TEntity).FriendlyName()}. This method " +
-                    $"can only create a context builder for OBJECT graph types.");
-            }
-
-            var field = graphType.Fields.FindField(fieldName);
-            if (field == null)
-            {
-                throw new InvalidOperationException($"The graph type '{graphType.Name}' does not contain a field named '{fieldName}'. " +
-                    $"Field names are case sensitive.");
-            }
-
-            var builder = new FieldContextBuilder(
-                this.ServiceProvider,
-                _userSecurityContext,
-                field,
-                this.Schema,
-                field.Resolver.MetaData);
-
-            builder.AddSourceData(new object());
-            return builder;
-        }
-
-        /// <summary>
-        /// Creates a builder that will generate the various field processing contexts for an action method on a target controller..
-        /// </summary>
-        /// <typeparam name="TController">The type of the controller that owns the
-        /// action.</typeparam>
-        /// <param name="actionName">Name of the action/field in the controller, as it exists in the schema.</param>
-        /// <returns>FieldContextBuilder.</returns>
-        public virtual FieldContextBuilder CreateActionMethodFieldContextBuilder<TController>(string actionName)
-        {
-            var fieldTemplate = GraphQLTemplateHelper.CreateFieldTemplate<TController>(actionName);
-            var fieldMaker = new GraphFieldMaker(this.Schema, new GraphArgumentMaker(this.Schema));
-            var fieldResult = fieldMaker.CreateField(fieldTemplate);
-
-            var builder = new FieldContextBuilder(
-                this.ServiceProvider,
-                _userSecurityContext,
-                fieldResult.Field,
-                this.Schema,
-                fieldTemplate.CreateResolverMetaData());
-
-            builder.AddSourceData(new object());
-            return builder;
-        }
-
-        /// <summary>
-        /// Creates a mocked context for the execution of a single field of data against the given concrete type and field name. This
+        /// (DEPRECATED, DO NOT USE) Creates a mocked context for the execution of a single field of data against the given concrete type and field name. This
         /// context can be submitted against the field execution pipeline to generate a result.
         /// </summary>
         /// <typeparam name="TType">The concrete type representing the graph type in the schema.</typeparam>
@@ -256,35 +198,104 @@ namespace GraphQL.AspNet.Tests.Framework
         /// generic <see cref="object" /> will be used if not supplied.</param>
         /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
         /// <returns>FieldContextBuilder.</returns>
+        [Obsolete("Use " + nameof(CreateFieldContextBuilder) + " Instead")]
         public virtual FieldContextBuilder CreateGraphTypeFieldContextBuilder<TType>(string fieldName, object sourceData, TypeKind typeKind)
         {
-            IGraphType graphType = this.Schema.KnownTypes.FindGraphType(typeof(TType));
+            return CreateFieldContextBuilder<TType>(fieldName, sourceData);
+        }
 
-            if (graphType == null)
+        /// <summary>
+        /// (DEPRECATED, DO NOT USE) Creates a builder that will generate the various field processing contexts for an action method on a target controller..
+        /// </summary>
+        /// <typeparam name="TController">The type of the controller that owns the
+        /// action.</typeparam>
+        /// <param name="actionName">Name of the action/field in the controller, as it exists in the schema.</param>
+        /// <returns>FieldContextBuilder.</returns>
+        [Obsolete("Use " + nameof(CreateFieldContextBuilder) + " Instead")]
+        public virtual FieldContextBuilder CreateActionMethodFieldContextBuilder<TController>(string actionName)
+        {
+            return CreateFieldContextBuilder<TController>(actionName);
+        }
+
+        /// <summary>
+        /// Creates a builder that will generate a field execution context for an action on a target controller. This
+        /// context can be submitted against the field execution pipeline to generate a result.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity that owns <paramref name="fieldOrActionName" />.</typeparam>
+        /// <param name="fieldOrActionName">Name of the field as it appears in the graph or the name of the action, method or property
+        /// as it appears on the <typeparamref name="TEntity"/>. This parameter is case sensitive.</param>
+        /// <param name="sourceData">(optional) A source data object to supply to the builder.</param>
+        /// <returns>FieldContextBuilder.</returns>
+        public virtual FieldContextBuilder CreateFieldContextBuilder<TEntity>(string fieldOrActionName, object sourceData = null)
+        {
+            return this.CreateFieldContextBuilder(typeof(TEntity), fieldOrActionName, sourceData);
+        }
+
+        /// <summary>
+        /// Creates a builder targeting the field owned the the combination entity and field, method or property name.
+        /// </summary>
+        /// <param name="entityType">Type of the entity to inspect.</param>
+        /// <param name="fieldOrActionName">Name of the field as it appears in the graph or the name of the action, method or property
+        /// as it appears on the <paramref name="entityType" />. This parameter is case sensitive.</param>
+        /// <param name="sourceData">(optional) A source data object to supply to the builder.</param>
+        /// <returns>FieldContextBuilder.</returns>
+        public virtual FieldContextBuilder CreateFieldContextBuilder(Type entityType, string fieldOrActionName, object sourceData = null)
+        {
+            Validation.ThrowIfNull(entityType, nameof(entityType));
+
+            IGraphField field = null;
+            fieldOrActionName = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldOrActionName, nameof(fieldOrActionName));
+
+            if (Validation.IsCastable<GraphController>(entityType))
             {
-                throw new InvalidOperationException($"Unable to locate a registered graph type that matched the supplied source data (Type: {typeof(TType).FriendlyName()})");
+                var fieldTemplate = GraphQLTemplateHelper.CreateFieldTemplate(entityType, fieldOrActionName);
+                var fieldMaker = new GraphFieldMaker(this.Schema, new GraphArgumentMaker(this.Schema));
+                field = fieldMaker.CreateField(fieldTemplate)?.Field;
+            }
+            else
+            {
+                var graphType = this.Schema.KnownTypes.FindGraphType(entityType, TypeKind.OBJECT) as IObjectGraphType;
+                if (graphType == null)
+                {
+                    throw new InvalidOperationException($"Unknown or unregistered OBJECT graph for type {entityType.FriendlyName()}. This method " +
+                        $"can only create a context builder for OBJECT graph types.");
+                }
+
+                var typedGraphType = graphType as ITypedSchemaItem;
+                if (typedGraphType == null)
+                {
+                    throw new InvalidOperationException($"The target graph type '{graphType.Name}' is not a strongly typed graph type and cannot be invoked via this builder.");
+                }
+
+                var container = graphType as IGraphFieldContainer;
+                if (container == null)
+                {
+                    throw new InvalidOperationException($"The target graph type '{graphType.Name}' is not a field container. No field context builder can be created.");
+                }
+
+                // find the field on the graph type
+                field = graphType.Fields.FindField(fieldOrActionName);
+                if (field == null)
+                {
+                    // fallback, try and find by method/property name
+                    foreach (var item in graphType.Fields)
+                    {
+                        if (item.Resolver.MetaData.InternalName == fieldOrActionName)
+                        {
+                            field = item;
+                            break;
+                        }
+                    }
+                }
             }
 
-            var typedGraphType = graphType as ITypedSchemaItem;
-            if (typedGraphType == null)
-            {
-                throw new InvalidOperationException($"The target graph type '{graphType.Name}' is not a strongly typed graph type and cannot be invoked via this builder.");
-            }
-
-            var container = graphType as IGraphFieldContainer;
-            if (container == null)
-            {
-                throw new InvalidOperationException($"The target graph type '{graphType.Name}' is not a field container. No field context builder can be created.");
-            }
-
-            var field = container.Fields.FindField(fieldName);
             if (field == null)
             {
-                throw new InvalidOperationException($"The target graph type '{graphType.Name}' does not contain a field named '{fieldName}'.");
+                throw new InvalidOperationException($"The entity '{entityType.FriendlyName()}' does not contain a field, action, method or property named '{fieldOrActionName}'. " +
+                    $"Field names are case sensitive.");
             }
 
-            var metaData = this.CreateResolverMetadata<TType>(fieldName, typeKind);
-
+            var metaData = field.Resolver.MetaData;
             var builder = new FieldContextBuilder(
                 this.ServiceProvider,
                 _userSecurityContext,
@@ -293,7 +304,6 @@ namespace GraphQL.AspNet.Tests.Framework
                 metaData);
 
             builder.AddSourceData(sourceData);
-
             return builder;
         }
 
@@ -304,34 +314,22 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <typeparam name="TObjectType">The type of the object to create a reference from.</typeparam>
         /// <param name="fieldName">Name of the field.</param>
-        /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
         /// <returns>IGraphMethod.</returns>
-        public virtual IGraphFieldResolverMetaData CreateResolverMetadata<TObjectType>(string fieldName, TypeKind typeKind)
+        public virtual IGraphFieldResolverMetaData CreateResolverMetadata<TObjectType>(string fieldName)
         {
-            var template = GraphQLTemplateHelper.CreateGraphTypeTemplate<TObjectType>(typeKind);
-            var fieldContainer = template as IGraphTypeFieldTemplateContainer;
-            if (fieldContainer == null)
-            {
-                throw new InvalidOperationException($"The provided type '{typeof(TObjectType).FriendlyName()}' is not " +
-                                   $"a field container, no invokable method references can be created from it.");
-            }
+            return CreateResolverMetadata(typeof(TObjectType), fieldName);
+        }
 
-            var fieldTemplate = fieldContainer.FieldTemplates
-                .SingleOrDefault(x => string.Compare(x.Value.Name, fieldName, StringComparison.OrdinalIgnoreCase) == 0)
-                .Value;
-
-            if (fieldTemplate == null)
-            {
-                throw new InvalidOperationException($"The provided type '{typeof(TObjectType).FriendlyName()}' does not " + $"contain a field named '{fieldName}'.");
-            }
-
-            var metaData = fieldTemplate.CreateResolverMetaData();
-            if (metaData == null)
-            {
-                throw new InvalidOperationException($"The field named '{fieldName}' on the provided type '{typeof(TObjectType).FriendlyName()}' " + $"does not represent an invokable {typeof(IGraphFieldResolverMetaData)}. Operation cannot proceed.");
-            }
-
-            return metaData;
+        /// <summary>
+        /// Creates a reference to the invokable method or property that acts as a resolver for the given <paramref name="entityType"/>.
+        /// </summary>
+        /// <param name="entityType">Type of the entity that owns the field.</param>
+        /// <param name="fieldOrActionName">Name of the field or method/property name to search for.</param>
+        /// <returns>IGraphMethod.</returns>
+        public virtual IGraphFieldResolverMetaData CreateResolverMetadata(Type entityType, string fieldOrActionName)
+        {
+            var builder = CreateFieldContextBuilder(entityType, fieldOrActionName);
+            return builder?.ResolverMetaData.Object;
         }
 
         /// <summary>
@@ -456,6 +454,18 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
+        /// Executes the field authorization pipeline against the provided context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task.</returns>
+        public virtual async Task ExecuteFieldAuthorization(SchemaItemSecurityChallengeContext context, CancellationToken cancelToken = default)
+        {
+            var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, SchemaItemSecurityChallengeContext>>();
+            await pipeline.InvokeAsync(context, cancelToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Renders the provided operation request through the engine and generates a JSON string output.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -502,18 +512,6 @@ namespace GraphQL.AspNet.Tests.Framework
                     return reader.ReadToEnd();
                 }
             }
-        }
-
-        /// <summary>
-        /// Executes the field authorization pipeline against the provided context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task.</returns>
-        public virtual async Task ExecuteFieldAuthorization(SchemaItemSecurityChallengeContext context, CancellationToken cancelToken = default)
-        {
-            var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, SchemaItemSecurityChallengeContext>>();
-            await pipeline.InvokeAsync(context, cancelToken).ConfigureAwait(false);
         }
 
         /// <summary>
