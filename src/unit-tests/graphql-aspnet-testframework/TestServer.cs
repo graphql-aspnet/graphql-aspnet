@@ -189,8 +189,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// (DEPRECATED, DO NOT USE) Creates a mocked context for the execution of a single field of data against the given concrete type and field name. This
-        /// context can be submitted against the field execution pipeline to generate a result.
+        /// (DEPRECATED, DO NOT USE).
         /// </summary>
         /// <typeparam name="TType">The concrete type representing the graph type in the schema.</typeparam>
         /// <param name="fieldName">Name of the field, on the type, as it exists in the schema.</param>
@@ -205,7 +204,7 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// (DEPRECATED, DO NOT USE) Creates a builder that will generate the various field processing contexts for an action method on a target controller..
+        /// (DEPRECATED, DO NOT USE).
         /// </summary>
         /// <typeparam name="TController">The type of the controller that owns the
         /// action.</typeparam>
@@ -221,7 +220,8 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Creates a builder that will generate a field execution context for an action on a target controller. This
         /// context can be submitted against the field execution pipeline to generate a result.
         /// </summary>
-        /// <typeparam name="TEntity">The type of the entity that owns <paramref name="fieldOrActionName" />.</typeparam>
+        /// <typeparam name="TEntity">The type of the entity that owns <paramref name="fieldOrActionName" />. This entity must be a
+        /// controller or an entity representing an OBJECT graph type that is registered to the schema.</typeparam>
         /// <param name="fieldOrActionName">Name of the field as it appears in the graph or the name of the action, method or property
         /// as it appears on the <typeparamref name="TEntity"/>. This parameter is case sensitive.</param>
         /// <param name="sourceData">(optional) A source data object to supply to the builder.</param>
@@ -234,7 +234,8 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <summary>
         /// Creates a builder targeting the field owned the the combination entity and field, method or property name.
         /// </summary>
-        /// <param name="entityType">Type of the entity to inspect.</param>
+        /// <param name="entityType">Type of the entity that owns the <paramref name="fieldOrActionName"/>. This entity must be a
+        /// controller or an entity representing an OBJECT graph type that is registered to the schema</param>
         /// <param name="fieldOrActionName">Name of the field as it appears in the graph or the name of the action, method or property
         /// as it appears on the <paramref name="entityType" />. This parameter is case sensitive.</param>
         /// <param name="sourceData">(optional) A source data object to supply to the builder.</param>
@@ -308,6 +309,128 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
+        /// /// (DEPRECATED, DO NOT USE).
+        /// </summary>
+        /// <typeparam name="TDirective">The type of the directive to invoke.</typeparam>
+        /// <param name="location">The target location from where the directive is being called.</param>
+        /// <param name="directiveTarget">The target object of the invocation.</param>
+        /// <param name="phase">The phase of invocation.</param>
+        /// <param name="origin">The origin in a source document, if any.</param>
+        /// <param name="arguments">The arguments to pass to the directive, if any.</param>
+        /// <returns>GraphDirectiveExecutionContext.</returns>
+        [Obsolete("Use " + nameof(CreateDirectiveContextBuilder) + " Instead")]
+        public virtual GraphDirectiveExecutionContext CreateDirectiveExecutionContext<TDirective>(
+            DirectiveLocation location,
+            object directiveTarget,
+            DirectiveInvocationPhase phase = DirectiveInvocationPhase.SchemaGeneration,
+            SourceOrigin origin = default,
+            object[] arguments = null)
+            where TDirective : class
+        {
+            var builder = this.CreateDirectiveContextBuilder(
+                typeof(TDirective),
+                location,
+                directiveTarget,
+                phase,
+                origin,
+                arguments);
+
+            return builder.CreateExecutionContext();
+        }
+
+        /// <summary>
+        /// Creates a builder targeting a specific directive. This builder can be used to create execution contexts (targeting middleware components)
+        /// and resolution contexts (targeting specific directive resolvers) in order to perform different types of tests.
+        /// </summary>
+        /// <typeparam name="TDirectiveType">The type of the <see cref="GraphDirective"/> to build for.</typeparam>
+        /// <param name="directiveLocation">The directive location, of those accepted by the directive.</param>
+        /// <param name="directiveTarget">The directive target. Typically an <see cref="IDocumentPart" /> for execution directives
+        /// or an <see cref="ISchemaItem" /> for type system directives.</param>
+        /// <param name="phase">The phase of execution. This value will be passed to the middleware item or resolver.</param>
+        /// <param name="origin">The origin location within a query document. This value will be passed to the middleware item
+        /// or resolver.</param>
+        /// <param name="arguments">The set of input argument values accepted by the directive. These arguments are expected
+        /// to be supplied in order of definition within the schema and castable to the appropriate data types. This builder
+        /// will NOT attempt any validation or mangling on these values.</param>
+        /// <returns>DirectiveContextBuilder.</returns>
+        public virtual DirectiveContextBuilder CreateDirectiveContextBuilder<TDirectiveType>(
+            DirectiveLocation directiveLocation,
+            object directiveTarget = null,
+            DirectiveInvocationPhase phase = DirectiveInvocationPhase.QueryDocumentExecution,
+            SourceOrigin origin = default,
+            object[] arguments = null)
+        {
+            var builder = this.CreateDirectiveContextBuilder(
+                typeof(TDirectiveType),
+                directiveLocation,
+                directiveTarget,
+                phase,
+                origin,
+                arguments);
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Creates a builder targeting a specific directive. This builder can be used to create execution contexts (targeting middleware components)
+        /// and resolution contexts (targeting specific directive resolvers) in order to perform different types of tests.
+        /// </summary>
+        /// <remarks>
+        /// If the target <paramref name="directiveType"/> is not a valid directive or not registered to the schema a context builder
+        /// will still be created with null values to test various scenarios.
+        /// </remarks>
+        /// <param name="directiveType">The type of the directive that is registered to teh schema.</param>
+        /// <param name="directiveLocation">The directive location, of those accepted by the directive.</param>
+        /// <param name="directiveTarget">The directive target. Typically an <see cref="IDocumentPart" /> for execution directives
+        /// or an <see cref="ISchemaItem" /> for type system directives.</param>
+        /// <param name="phase">The phase of execution. This value will be passed to the middleware item or resolver.</param>
+        /// <param name="origin">The origin location within a query document. This value will be passed to the middleware item
+        /// or resolver.</param>
+        /// <param name="arguments">The set of input argument values accepted by the directive. These arguments are expected
+        /// to be supplied in order of definition within the schema and castable to the appropriate data types. This builder
+        /// will NOT attempt any validation or mangling on these values.</param>
+        /// <returns>DirectiveContextBuilder.</returns>
+        public virtual DirectiveContextBuilder CreateDirectiveContextBuilder(
+            Type directiveType,
+            DirectiveLocation directiveLocation,
+            object directiveTarget = null,
+            DirectiveInvocationPhase phase = DirectiveInvocationPhase.QueryDocumentExecution,
+            SourceOrigin origin = default,
+            object[] arguments = null)
+        {
+            var directiveInstance = this.Schema.KnownTypes.FindGraphType(directiveType, TypeKind.DIRECTIVE) as IDirective;
+
+            IGraphFieldResolverMetaData metadata = null;
+            directiveInstance?.Resolver.MetaData.TryGetValue(directiveLocation, out metadata);
+
+            var builder = new DirectiveContextBuilder(
+                this.ServiceProvider,
+                this.SecurityContext,
+                this.Schema,
+                directiveInstance,
+                directiveLocation,
+                phase,
+                metadata);
+
+            if (directiveTarget != null)
+                builder.AddTarget(directiveTarget);
+
+            if (arguments != null && directiveInstance != null)
+            {
+                for (var i = 0; i < arguments.Length; i++)
+                {
+                    if (directiveInstance.Arguments.Count > i)
+                    {
+                        var argByPosition = directiveInstance.Arguments[i];
+                        builder.AddInputArgument(argByPosition.Name, arguments[i]);
+                    }
+                }
+            }
+
+            return builder;
+        }
+
+        /// <summary>
         /// Creates a reference to the invokable method or property that represents the
         /// root resolver for the given <paramref name="fieldName" />. (i.e. the method
         /// or property of the object that can produce the core data value).
@@ -322,6 +445,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
         /// <summary>
         /// Creates a reference to the invokable method or property that acts as a resolver for the given <paramref name="entityType"/>.
+        /// The <paramref name="entityType"/> must represent a controller or OBJECT graph type.
         /// </summary>
         /// <param name="entityType">Type of the entity that owns the field.</param>
         /// <param name="fieldOrActionName">Name of the field or method/property name to search for.</param>
@@ -330,72 +454,6 @@ namespace GraphQL.AspNet.Tests.Framework
         {
             var builder = CreateFieldContextBuilder(entityType, fieldOrActionName);
             return builder?.ResolverMetaData.Object;
-        }
-
-        /// <summary>
-        /// Creates an execution context to invoke a directive execution pipeleine.
-        /// </summary>
-        /// <typeparam name="TDirective">The type of the directive to invoke.</typeparam>
-        /// <param name="location">The target location from where the directive is being called.</param>
-        /// <param name="directiveTarget">The target object of the invocation.</param>
-        /// <param name="phase">The phase of invocation.</param>
-        /// <param name="origin">The origin in a source document, if any.</param>
-        /// <param name="arguments">The arguments to pass to the directive, if any.</param>
-        /// <returns>GraphDirectiveExecutionContext.</returns>
-        public virtual GraphDirectiveExecutionContext CreateDirectiveExecutionContext<TDirective>(
-            DirectiveLocation location,
-            object directiveTarget,
-            DirectiveInvocationPhase phase = DirectiveInvocationPhase.SchemaGeneration,
-            SourceOrigin origin = default,
-            object[] arguments = null)
-            where TDirective : class
-        {
-            var server = new TestServerBuilder()
-                .AddType<TDirective>()
-                .Build();
-
-            var targetDirective = server.Schema.KnownTypes.FindDirective(typeof(TDirective));
-
-            var queryRequest = new Mock<IQueryExecutionRequest>();
-            var directiveRequest = new Mock<IGraphDirectiveRequest>();
-            var invocationContext = new Mock<IDirectiveInvocationContext>();
-            var argCollection = InputArgumentCollectionFactory.Create();
-
-            directiveRequest.Setup(x => x.DirectivePhase).Returns(phase);
-            directiveRequest.Setup(x => x.InvocationContext).Returns(invocationContext.Object);
-            directiveRequest.Setup(x => x.DirectiveTarget).Returns(directiveTarget);
-            directiveRequest.Setup(x => x.Directive).Returns(targetDirective);
-
-            invocationContext.Setup(x => x.Location).Returns(location);
-            invocationContext.Setup(x => x.Arguments).Returns(argCollection);
-            invocationContext.Setup(x => x.Origin).Returns(origin);
-            invocationContext.Setup(x => x.Directive).Returns(targetDirective);
-
-            if (targetDirective != null && targetDirective.Kind == TypeKind.DIRECTIVE
-                && arguments != null)
-            {
-                for (var i = 0; i < targetDirective.Arguments.Count; i++)
-                {
-                    if (arguments.Length <= i)
-                        break;
-
-                    var directiveArg = targetDirective.Arguments[i];
-                    var resolvedValue = arguments[i];
-
-                    var argValue = new ResolvedInputArgumentValue(directiveArg.Name, resolvedValue);
-                    var inputArg = new InputArgument(directiveArg, argValue);
-                    argCollection.Add(inputArg);
-                }
-            }
-
-            var context = new GraphDirectiveExecutionContext(
-                server.Schema,
-                directiveRequest.Object,
-                queryRequest.Object,
-                server.ServiceProvider,
-                new QuerySession());
-
-            return context;
         }
 
         /// <summary>

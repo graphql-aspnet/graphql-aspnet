@@ -10,24 +10,24 @@
 namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
     using System;
+    using System.Threading;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Security;
     using Moq;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
-    using System.Threading;
 
     /// <summary>
     /// A builder used to create inlined mocked replacements
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         private readonly Mock<IFieldDocumentPart> _mockFieldDocumentPart;
         private readonly IGraphMessageCollection _messageCollection;
         private readonly IInputArgumentCollection _arguments;
-
+        private readonly Mock<IGraphFieldResolverMetaData> _mockResolverMetaData;
         private IUserSecurityContext _securityContext;
 
         /// <summary>
@@ -103,17 +103,17 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockRequest.Setup(x => x.Field).Returns(_graphField);
             _mockRequest.Setup(x => x.InvocationContext).Returns(_mockInvocationContext.Object);
 
-            this.ResolverMetaData = new Mock<IGraphFieldResolverMetaData>();
-            this.ResolverMetaData.Setup(x => x.ParentInternalFullName).Returns(resolverMetadata.ParentInternalFullName);
-            this.ResolverMetaData.Setup(x => x.ParentInternalName).Returns(resolverMetadata.ParentInternalName);
-            this.ResolverMetaData.Setup(x => x.ParentObjectType).Returns(resolverMetadata.ParentObjectType);
-            this.ResolverMetaData.Setup(x => x.ExpectedReturnType).Returns(resolverMetadata.ExpectedReturnType);
-            this.ResolverMetaData.Setup(x => x.Method).Returns(resolverMetadata.Method);
-            this.ResolverMetaData.Setup(x => x.IsAsyncField).Returns(resolverMetadata.IsAsyncField);
-            this.ResolverMetaData.Setup(x => x.InternalName).Returns(resolverMetadata.InternalName);
-            this.ResolverMetaData.Setup(x => x.InternalFullName).Returns(resolverMetadata.InternalFullName);
-            this.ResolverMetaData.Setup(x => x.InternalName).Returns(resolverMetadata.InternalName);
-            this.ResolverMetaData.Setup(x => x.Parameters).Returns(resolverMetadata.Parameters);
+            _mockResolverMetaData = new Mock<IGraphFieldResolverMetaData>();
+            _mockResolverMetaData.Setup(x => x.ParentInternalFullName).Returns(resolverMetadata.ParentInternalFullName);
+            _mockResolverMetaData.Setup(x => x.ParentInternalName).Returns(resolverMetadata.ParentInternalName);
+            _mockResolverMetaData.Setup(x => x.ParentObjectType).Returns(resolverMetadata.ParentObjectType);
+            _mockResolverMetaData.Setup(x => x.ExpectedReturnType).Returns(resolverMetadata.ExpectedReturnType);
+            _mockResolverMetaData.Setup(x => x.Method).Returns(resolverMetadata.Method);
+            _mockResolverMetaData.Setup(x => x.IsAsyncField).Returns(resolverMetadata.IsAsyncField);
+            _mockResolverMetaData.Setup(x => x.InternalName).Returns(resolverMetadata.InternalName);
+            _mockResolverMetaData.Setup(x => x.InternalFullName).Returns(resolverMetadata.InternalFullName);
+            _mockResolverMetaData.Setup(x => x.InternalName).Returns(resolverMetadata.InternalName);
+            _mockResolverMetaData.Setup(x => x.Parameters).Returns(resolverMetadata.Parameters);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         }
 
         /// <summary>
-        /// alters the security context to be different than that provided by the server that created this builder.
+        /// Alters the security context to be different than that provided by the server that created this builder.
         /// </summary>
         /// <param name="securityContext">The security context.</param>
         /// <returns>MockFieldRequest.</returns>
@@ -186,34 +186,33 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         }
 
         /// <summary>
-        /// Creates an authorization context to validate the field request this builder is creating.
+        /// Creates an authorization context that can be used to test authorization middleware components.
         /// </summary>
-        /// <returns>GraphFieldAuthorizationContext.</returns>
+        /// <returns>SchemaItemSecurityChallengeContext.</returns>
         public SchemaItemSecurityChallengeContext CreateSecurityContext()
         {
             var parent = this.CreateFakeParentMiddlewareContext();
 
-            var request = new SchemaItemSecurityRequest(this.FieldRequest);
+            var request = new SchemaItemSecurityRequest(this.FieldRequest.Object);
             return new SchemaItemSecurityChallengeContext(
                 parent,
                 request);
         }
 
         /// <summary>
-        /// Creates this instance.
+        /// Creates an execution context that can be used to test field middleware pipeline contents.
         /// </summary>
         /// <returns>GraphFieldExecutionContext.</returns>
         public GraphFieldExecutionContext CreateExecutionContext()
         {
             return new GraphFieldExecutionContext(
                 this.CreateFakeParentMiddlewareContext(),
-                this.FieldRequest,
+                this.FieldRequest.Object,
                 ResolvedVariableCollectionFactory.Create());
         }
 
         /// <summary>
-        /// Creates the resolution context capable of being acted on directly by a resolver, as opposed to being
-        /// processed through a pipeline.
+        /// Creates the resolution context that can be passed to a resolver to test field resolution.
         /// </summary>
         /// <returns>FieldResolutionContext.</returns>
         public FieldResolutionContext CreateResolutionContext()
@@ -231,7 +230,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
                 context.Session,
                 _schema,
                 context.QueryRequest,
-                this.FieldRequest,
+                this.FieldRequest.Object,
                 executionArguments,
                 context.Messages,
                 context.Logger,
@@ -243,7 +242,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// Gets a reference to the field request to be contained in the context.
         /// </summary>
         /// <value>The field request.</value>
-        public IGraphFieldRequest FieldRequest => _mockRequest.Object;
+        public Mock<IGraphFieldRequest> FieldRequest => _mockRequest;
 
         /// <summary>
         /// Gets or sets the service provider used in all created contexts.
@@ -257,6 +256,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// against the testserver.
         /// </summary>
         /// <value>The graph method.</value>
-        public Mock<IGraphFieldResolverMetaData> ResolverMetaData { get; }
+        public Mock<IGraphFieldResolverMetaData> ResolverMetaData => _mockResolverMetaData;
     }
 }

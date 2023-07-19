@@ -264,7 +264,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
-            var fieldRequest = package.FieldRequest;
+            var fieldRequest = package.FieldRequest.Object;
 
             resolutionContext.Result = "15";
 
@@ -289,7 +289,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var fieldRequest = package.FieldRequest;
+            var fieldRequest = package.FieldRequest.Object;
 
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
@@ -314,7 +314,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var fieldRequest = package.FieldRequest;
+            var fieldRequest = package.FieldRequest.Object;
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
 
@@ -341,7 +341,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var fieldRequest = package.FieldRequest;
+            var fieldRequest = package.FieldRequest.Object;
 
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
@@ -375,7 +375,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
 
-            var fieldRequest = package.FieldRequest;
+            var fieldRequest = package.FieldRequest.Object;
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
             authContext.Result = SchemaItemSecurityChallengeResult.Fail("test message 1");
@@ -402,7 +402,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var fieldRequest = package.FieldRequest;
+            var fieldRequest = package.FieldRequest.Object;
 
             var entry = new ActionMethodInvocationStartedLogEntry(graphMethod, fieldRequest);
 
@@ -425,7 +425,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
-            var fieldRequest = package.FieldRequest;
+            var fieldRequest = package.FieldRequest.Object;
 
             var result = new object();
 
@@ -449,7 +449,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var metaData = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var fieldRequest = package.FieldRequest;
+            var fieldRequest = package.FieldRequest.Object;
 
             var result = new object();
 
@@ -481,7 +481,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 nameof(LogTestController.ExecuteField2));
             var template = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2));
             var metaData = template.CreateResolverMetaData();
-            var fieldRequest = package.FieldRequest;
+            var fieldRequest = package.FieldRequest.Object;
 
             var result = new object();
 
