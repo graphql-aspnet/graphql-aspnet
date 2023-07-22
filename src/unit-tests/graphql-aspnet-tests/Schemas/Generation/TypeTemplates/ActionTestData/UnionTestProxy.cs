@@ -17,6 +17,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ActionTestData
     {
         public string Name { get; set; } = "BobUnion";
 
+        public string InternalName { get; } = "BobUnionInternal";
+
         public string Description { get; set; } = "This is the Bob union";
 
         public HashSet<Type> Types { get; } = new HashSet<Type>()

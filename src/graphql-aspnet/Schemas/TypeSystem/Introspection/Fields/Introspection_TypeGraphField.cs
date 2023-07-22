@@ -35,11 +35,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
         public Introspection_TypeGraphField(IntrospectedSchema schema)
             : base(
                 Constants.ReservedNames.TYPE_FIELD,
+                nameof(Introspection_TypeGraphField),
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE),
                 FIELD_PATH,
-                nameof(Introspection_TypeGraphField),
-                objectType: typeof(IntrospectedType),
                 declaredReturnType: typeof(IntrospectedType),
+                objectType: typeof(IntrospectedType),
                 mode: FieldResolutionMode.PerSourceItem,
                 resolver: new Schema_TypeGraphFieldResolver(schema))
         {

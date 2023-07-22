@@ -23,14 +23,16 @@ namespace GraphQL.AspNet.Execution.Resolvers
     internal class FieldResolverMetaData : IGraphFieldResolverMetaData
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldResolverMetaData"/> class.
+        /// Initializes a new instance of the <see cref="FieldResolverMetaData" /> class.
         /// </summary>
         /// <param name="method">The method info will be invoked to fulfill the resolver.</param>
         /// <param name="parameters">The parameters metadata collection related to this resolver method.</param>
         /// <param name="expectedReturnType">Expected type of the data to be returned by the method. May be different
         /// from concrete return types (e.g. expecting an interface but actually returning a concrete type that implements that interface).</param>
         /// <param name="isAsyncField">if set to <c>true</c> the invoked method is asyncronous.</param>
-        /// <param name="internalName">The name of the resolver method or property as it exists in source code.</param>
+        /// <param name="internalName">The internal name of the resolver method or property that can uniquely identify it in
+        /// exceptions and log entries.</param>
+        /// <param name="declaredName">The exact name of the resolver method or property name as its declared in source code.</param>
         /// <param name="parentObjectType">The type of the .NET class or struct where the resolver method is declared.</param>
         /// <param name="parentInternalName">The name of the .NET class or struct where the resolver method is declared.</param>
         public FieldResolverMetaData(
@@ -39,6 +41,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             Type expectedReturnType,
             bool isAsyncField,
             string internalName,
+            string declaredName,
             Type parentObjectType,
             string parentInternalName)
         {
@@ -50,7 +53,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             this.Parameters = Validation.ThrowIfNullOrReturn(parameters, nameof(parameters));
 
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
-
+            this.DeclaredName = Validation.ThrowIfNullWhiteSpaceOrReturn(declaredName, nameof(declaredName));
             this.ParentObjectType = Validation.ThrowIfNullOrReturn(parentObjectType, nameof(parentObjectType));
             this.ParentInternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentInternalName, nameof(parentInternalName));
         }
@@ -75,5 +78,8 @@ namespace GraphQL.AspNet.Execution.Resolvers
 
         /// <inheritdoc />
         public Type ParentObjectType { get; }
+
+        /// <inheritdoc />
+        public string DeclaredName { get; }
     }
 }

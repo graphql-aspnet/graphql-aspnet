@@ -105,7 +105,9 @@ namespace GraphQL.AspNet.Execution.Resolvers
                 var actualField = _graphType.Fields.FindField(inputField.Key);
                 if (actualField != null)
                 {
-                    propSetter = _propSetters.ContainsKey(actualField.InternalName) ? _propSetters[actualField.InternalName] : null;
+                    propSetter = _propSetters.ContainsKey(actualField.DeclaredName)
+                        ? _propSetters[actualField.DeclaredName]
+                        : null;
                 }
 
                 if (resolver == null || propSetter == null)

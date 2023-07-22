@@ -281,7 +281,7 @@ namespace GraphQL.AspNet.Tests.Framework
                     // fallback, try and find by method/property name
                     foreach (var item in graphType.Fields)
                     {
-                        if (item.Resolver.MetaData.InternalName == fieldOrActionName)
+                        if (item.Resolver.MetaData.DeclaredName == fieldOrActionName)
                         {
                             field = item;
                             break;

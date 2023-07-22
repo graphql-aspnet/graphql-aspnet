@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
         public NullTypesUnionProxy()
         {
             this.Name = "Name";
+            this.InternalName = "NulLTypesUnionProxy";
             this.Types = null;
         }
 
@@ -28,6 +29,8 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
         public string Name { get; }
 
         public string Description { get; set; }
+
+        public string InternalName { get; }
 
         public Type MapType(Type runtimeObjectType)
         {

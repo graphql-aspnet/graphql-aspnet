@@ -27,6 +27,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers.TestData
 
         public bool Publish { get; set; } = true;
 
+        public string InternalName => "Internal_BobUnion";
+
         public Type MapType(Type runtimeObjectType)
         {
             return runtimeObjectType;

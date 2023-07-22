@@ -27,14 +27,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
         object DeclaredValue { get; }
 
         /// <summary>
-        /// Gets the internal name assigned to this enum value. Typically this is the same
-        /// as <see cref="DeclaredLabel"/> but can be customized by the developer to provider additional
-        /// context in error messages and log entries.
-        /// </summary>
-        /// <value>The assigned internal name of this enum value.</value>
-        string InternalName { get; }
-
-        /// <summary>
         /// Gets the declared label applied to the enum value by .NET.
         /// (e.g. 'Value1' for the enum value <c>MyEnum.Value1</c>).
         /// </summary>

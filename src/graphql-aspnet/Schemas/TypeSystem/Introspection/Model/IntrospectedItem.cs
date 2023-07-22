@@ -30,6 +30,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         {
             _item = Validation.ThrowIfNullOrReturn(item, nameof(item));
             this.Name = _item.Name;
+            this.InternalName = _item.InternalName;
             this.Description = _item.Description;
             this.Route = _item.Route.ReParent(Constants.Routing.INTROSPECTION_ROOT);
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
@@ -54,6 +55,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
 
         /// <inheritdoc />
         public virtual string Name { get; set; }
+
+        /// <inheritdoc />
+        public string InternalName { get; }
 
         /// <inheritdoc />
         public virtual string Description { get; set; }

@@ -30,10 +30,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="parent">The parent schema item that owns this argument.</param>
         /// <param name="argumentName">Name of the argument.</param>
+        /// <param name="internalName">The internal name identifiying this argument.</param>
+        /// <param name="parameterName">Name of the parameter as it is declared in the source code.</param>
         /// <param name="typeExpression">The type expression.</param>
         /// <param name="route">The route path that identifies this argument.</param>
-        /// <param name="parameterName">Name of the parameter as it is declared in the source code.</param>
-        /// <param name="internalFullName">The fully qualified internal name identifiying this argument.</param>
         /// <param name="objectType">The concrete type of the object representing this argument.</param>
         /// <param name="hasDefaultValue">if set to <c>true</c> indicates that this
         /// argument has a default value assigned, even if that argument is <c>null</c>.</param>
@@ -44,10 +44,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public GraphFieldArgument(
             ISchemaItem parent,
             string argumentName,
+            string internalName,
+            string parameterName,
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
-            string parameterName,
-            string internalFullName,
             Type objectType,
             bool hasDefaultValue,
             object defaultValue = null,
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(argumentName, nameof(argumentName));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
-            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.ParameterName = Validation.ThrowIfNullWhiteSpaceOrReturn(parameterName, nameof(parameterName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
@@ -79,10 +79,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             return new GraphFieldArgument(
                 parent,
                 this.Name,
+                this.InternalName,
+                this.ParameterName,
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
-                this.ParameterName,
-                this.InternalName,
                 this.ObjectType,
                 this.HasDefaultValue,
                 this.DefaultValue,

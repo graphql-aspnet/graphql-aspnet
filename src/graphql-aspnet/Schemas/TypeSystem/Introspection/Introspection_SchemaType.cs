@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
         /// Initializes a new instance of the <see cref="Introspection_SchemaType"/> class.
         /// </summary>
         public Introspection_SchemaType()
-            : base(Constants.ReservedNames.SCHEMA_TYPE)
+            : base(Constants.ReservedNames.SCHEMA_TYPE, nameof(Introspection_SchemaType))
         {
             // "__Schema" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection

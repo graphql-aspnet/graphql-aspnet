@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
 {
     using System;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
@@ -23,11 +22,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
     internal abstract class BaseIntrospectionObjectType : ObjectGraphTypeBase, IObjectGraphType, IInternalSchemaItem
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseIntrospectionObjectType"/> class.
+        /// Initializes a new instance of the <see cref="BaseIntrospectionObjectType" /> class.
         /// </summary>
         /// <param name="name">The name of the graph type as it is displayed in the __type information.</param>
-        protected BaseIntrospectionObjectType(string name)
-            : base(name, new GraphIntrospectionFieldPath(name))
+        /// <param name="internalName">The internal name of the introspected graph type as its defined for the target graph type.</param>
+        protected BaseIntrospectionObjectType(string name, string internalName)
+            : base(name, internalName, new GraphIntrospectionFieldPath(name))
         {
         }
 
@@ -45,8 +45,5 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
 
         /// <inheritdoc />
         public virtual Type ObjectType => this.GetType();
-
-        /// <inheritdoc />
-        public virtual string InternalName => this.ObjectType.FriendlyName();
     }
 }

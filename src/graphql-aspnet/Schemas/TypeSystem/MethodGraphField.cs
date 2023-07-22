@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -34,23 +33,22 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="MethodGraphField" /> class.
         /// </summary>
         /// <param name="fieldName">Name of the field in the graph.</param>
+        /// <param name="internalName">The internal name that represents the method this field respresents.</param>
         /// <param name="typeExpression">The meta data describing the type of data this field returns.</param>
         /// <param name="route">The formal route to this field in the object graph.</param>
-        /// <param name="internalFullName">The fully qualified name of the method this field respresents, as it was declared
-        /// in C# code.</param>
-        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
+        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="mode">The mode in which the runtime will process this field.</param>
         /// <param name="resolver">The resolver to be invoked to produce data when this field is called.</param>
         /// <param name="securityPolicies">The security policies that apply to this field.</param>
         /// <param name="directives">The directives to apply to this field when its added to a schema.</param>
         public MethodGraphField(
             string fieldName,
+            string internalName,
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
-            string internalFullName,
-            Type objectType,
             Type declaredReturnType,
+            Type objectType,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
@@ -62,7 +60,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Arguments = new GraphFieldArgumentCollection(this);
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.DeclaredReturnType = Validation.ThrowIfNullOrReturn(declaredReturnType, nameof(declaredReturnType));
-            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
@@ -148,11 +146,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             return new MethodGraphField(
                 this.Name,
+                this.InternalName,
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
-                this.InternalName,
-                this.ObjectType,
                 this.DeclaredReturnType,
+                this.ObjectType,
                 this.Mode,
                 this.Resolver,
                 this.SecurityGroups,

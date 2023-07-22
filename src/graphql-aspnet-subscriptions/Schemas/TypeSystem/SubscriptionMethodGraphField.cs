@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
             string eventName = null,
             IAppliedDirectiveCollection directives = null)
-            : base(fieldName, typeExpression, route, internalFullName, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
+            : base(fieldName, internalFullName, typeExpression, route, declaredReturnType, objectType, mode, resolver, securityPolicies, directives)
         {
             this.EventName = eventName;
         }

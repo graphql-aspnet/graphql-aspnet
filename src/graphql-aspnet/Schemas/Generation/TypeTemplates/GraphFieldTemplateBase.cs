@@ -416,7 +416,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // if and only if a name was supplied for the union
             if (proxy == null && !string.IsNullOrWhiteSpace(fieldAttribute.UnionTypeName))
             {
-                proxy = new GraphUnionProxy(fieldAttribute.UnionTypeName, fieldAttribute.Types);
+                proxy = new GraphUnionProxy(fieldAttribute.UnionTypeName, fieldAttribute.UnionTypeName, fieldAttribute.Types);
             }
 
             this.UnionProxy = proxy;

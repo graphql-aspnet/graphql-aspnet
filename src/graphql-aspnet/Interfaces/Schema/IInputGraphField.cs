@@ -14,5 +14,10 @@ namespace GraphQL.AspNet.Interfaces.Schema
     /// </summary>
     public interface IInputGraphField : IGraphFieldBase, IDefaultValueSchemaItem, ITypedSchemaItem
     {
+        /// <summary>
+        /// Gets the unaltered name of the property that defines this input field in source code.
+        /// </summary>
+        /// <value>The property name that generated this data field.</value>
+        public string DeclaredName { get; }
     }
 }

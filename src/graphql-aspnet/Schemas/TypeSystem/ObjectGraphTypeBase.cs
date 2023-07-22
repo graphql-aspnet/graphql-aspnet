@@ -28,15 +28,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="ObjectGraphTypeBase" /> class.
         /// </summary>
         /// <param name="name">The name of the graph type as it is displayed in the __type information.</param>
+        /// <param name="internalName">The defined internal name for this graph type.</param>
         /// <param name="route">The route path of this object.</param>
         /// <param name="directives">The directives applied to this schema item
         /// when its added to a schema.</param>
         protected ObjectGraphTypeBase(
             string name,
+            string internalName,
             SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             _graphFields = new GraphFieldCollection(this);
             this.InterfaceNames = new HashSet<string>();
@@ -69,6 +72,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public virtual string Name { get; set; }
+
+        /// <inheritdoc />
+        public string InternalName { get; }
 
         /// <inheritdoc />
         public virtual string Description { get; set; }

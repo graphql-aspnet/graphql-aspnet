@@ -85,11 +85,11 @@ namespace GraphQL.AspNet.Schemas.Structural
         {
             var field = new MethodGraphField(
                 fieldName,
+                "GraphQLCustomInternalField",
                 typeExpression,
                 route,
-                "GraphQLCustomInternalField",
-                GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 typeof(TReturn),
+                GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 FieldResolutionMode.PerSourceItem,
                 new FunctionGraphFieldResolver<TSource, TReturn>(resolver));
             field.Description = description;

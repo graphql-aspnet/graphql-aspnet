@@ -60,6 +60,7 @@ namespace GraphQL.AspNet.Schemas
 
             this.Route = new SchemaItemPath(SchemaItemCollections.Schemas, graphName);
             this.Name = DEFAULT_NAME;
+            this.InternalName = this.GetType().FriendlyName();
             this.Description = DEFAULT_DESCRIPTION;
         }
 
@@ -77,6 +78,9 @@ namespace GraphQL.AspNet.Schemas
 
         /// <inheritdoc />
         public virtual string Name { get; set; }
+
+        /// <inheritdoc />
+        public virtual string InternalName { get; set; }
 
         /// <inheritdoc />
         public virtual string Description { get; set; }

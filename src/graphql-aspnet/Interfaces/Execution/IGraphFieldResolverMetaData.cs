@@ -44,11 +44,22 @@ namespace GraphQL.AspNet.Interfaces.Execution
         bool IsAsyncField { get; }
 
         /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application;
-        /// typically a qualifed method name or property name. (e.g. <c>MyObject.MyMethodName</c>).
+        /// Gets the name that defines this item internally. Typically a qualifed method name or property name. (e.g. <c>MyObject.MyMethodName</c>).
         /// </summary>
+        /// <remarks>
+        /// This can be changed by the developer to facilitate logging and messaging identification.
+        /// </remarks>
         /// <value>The internal name given to this item.</value>
         string InternalName { get; }
+
+        /// <summary>
+        /// Gets the name of the resolver (method name or property name) exactly as its declared in source code.
+        /// </summary>
+        /// <remarks>
+        /// This cannot be changed by the developer and is used for internal indexing and searching.
+        /// </remarks>
+        /// <value>The name of the resolver as its declared in source code.</value>
+        string DeclaredName { get; }
 
         /// <summary>
         /// Gets the type representing the graph type that will invoke the resolver identified by this

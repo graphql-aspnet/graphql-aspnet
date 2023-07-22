@@ -127,6 +127,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 this.ExpectedReturnType,
                 this.IsAsyncField,
                 this.InternalName,
+                this.Method.Name,
                 this.Parent.ObjectType,
                 this.Parent.InternalName);
         }

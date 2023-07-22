@@ -37,9 +37,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
         public Introspection_SchemaField(IntrospectedSchema schema)
             : base(
                 Constants.ReservedNames.SCHEMA_FIELD,
+                nameof(Introspection_SchemaField),
                 new GraphTypeExpression(Constants.ReservedNames.SCHEMA_TYPE),
                 FIELD_PATH,
-                nameof(Introspection_SchemaField),
                 typeof(IntrospectedSchema),
                 typeof(IntrospectedSchema),
                 resolver: new FunctionGraphFieldResolver<object, IntrospectedSchema>((x) => schema.AsCompletedTask()))

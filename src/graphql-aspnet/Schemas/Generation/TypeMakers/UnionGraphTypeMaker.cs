@@ -71,6 +71,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             var name = formatter.FormatGraphTypeName(proxy.Name);
             var union = new UnionGraphType(
                 name,
+                proxy.InternalName,
                 (IUnionGraphTypeMapper)proxy,
                 new SchemaItemPath(SchemaItemCollections.Types, name),
                 directives)

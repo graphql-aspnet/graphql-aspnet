@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             // non-nullable value type
             Assert.AreEqual("Int!", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/NotRequiredValueTypeField", graphField.Route.ToString());
-            Assert.AreEqual("NotRequiredValueTypeField", graphField.InternalName);
+            Assert.AreEqual("NotRequiredValueTypeField", graphField.DeclaredName);
             Assert.AreEqual(typeof(int), graphField.DeclaredReturnType);
 
             Assert.AreEqual(1, graphField.AppliedDirectives.Count);
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             Assert.AreEqual("Int!", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/RequiredValueTypeField", graphField.Route.ToString());
-            Assert.AreEqual("RequiredValueTypeField", graphField.InternalName);
+            Assert.AreEqual("RequiredValueTypeField", graphField.DeclaredName);
             Assert.AreEqual(typeof(int), graphField.DeclaredReturnType);
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);
@@ -80,7 +80,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .Values
                 .Single(x => x.Name == nameof(InputTestObject.NotRequiredReferenceTypeField));
 
-            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(fieldTemplate).Field;
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema))
+                .CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("notRequiredReferenceTypeField", graphField.Name);
             Assert.IsFalse(graphField.IsRequired);
@@ -89,7 +90,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             // meaning the type expression should also be "nullable"
             Assert.AreEqual("Input_TwoPropertyObject", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/NotRequiredReferenceTypeField", graphField.Route.ToString());
-            Assert.AreEqual("NotRequiredReferenceTypeField", graphField.InternalName);
+            Assert.AreEqual("InputTestObject.NotRequiredReferenceTypeField", graphField.InternalName);
+            Assert.AreEqual("NotRequiredReferenceTypeField", graphField.DeclaredName);
             Assert.AreEqual(typeof(TwoPropertyObject), graphField.DeclaredReturnType);
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);
@@ -117,7 +119,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             // the type expression is automatically hoisted to be "non-nullable"
             Assert.AreEqual("Input_TwoPropertyObject", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/RequiredReferenceTypeField", graphField.Route.ToString());
-            Assert.AreEqual("RequiredReferenceTypeField", graphField.InternalName);
+            Assert.AreEqual("RequiredReferenceTypeField", graphField.DeclaredName);
             Assert.AreEqual(typeof(TwoPropertyObject), graphField.DeclaredReturnType);
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);
@@ -143,7 +145,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             // the type expression is automatically hoisted to be "non-nullable"
             Assert.AreEqual("Input_TwoPropertyObject!", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/RequiredReferenceExplicitNonNullTypeField", graphField.Route.ToString());
-            Assert.AreEqual("RequiredReferenceExplicitNonNullTypeField", graphField.InternalName);
+            Assert.AreEqual("RequiredReferenceExplicitNonNullTypeField", graphField.DeclaredName);
             Assert.AreEqual(typeof(TwoPropertyObject), graphField.DeclaredReturnType);
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);
@@ -168,7 +170,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             // scalar is required by default
             Assert.AreEqual("ID!", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/GraphIdRequired", graphField.Route.ToString());
-            Assert.AreEqual("GraphIdRequired", graphField.InternalName);
+            Assert.AreEqual("GraphIdRequired", graphField.DeclaredName);
             Assert.AreEqual(typeof(GraphId), graphField.DeclaredReturnType);
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);
@@ -192,7 +194,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             Assert.AreEqual("ID!", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/GraphIdNotRequired", graphField.Route.ToString());
-            Assert.AreEqual("GraphIdNotRequired", graphField.InternalName);
+            Assert.AreEqual("GraphIdNotRequired", graphField.DeclaredName);
             Assert.AreEqual(typeof(GraphId), graphField.DeclaredReturnType);
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);
@@ -216,7 +218,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             Assert.AreEqual("ID", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/GraphIdNullable", graphField.Route.ToString());
-            Assert.AreEqual("GraphIdNullable", graphField.InternalName);
+            Assert.AreEqual("GraphIdNullable", graphField.DeclaredName);
             Assert.AreEqual(typeof(GraphId?), graphField.DeclaredReturnType);
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);

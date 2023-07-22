@@ -37,9 +37,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
         public Introspection_TypeNameMetaField(string graphTypeName)
             : base(
                 Constants.ReservedNames.TYPENAME_FIELD,
+                nameof(Introspection_TypeNameMetaField),
                 new GraphTypeExpression(Constants.ScalarNames.STRING, MetaGraphTypes.IsNotNull),
                 FIELD_PATH,
-                nameof(Introspection_TypeNameMetaField),
                 typeof(string),
                 typeof(string),
                 FieldResolutionMode.PerSourceItem)

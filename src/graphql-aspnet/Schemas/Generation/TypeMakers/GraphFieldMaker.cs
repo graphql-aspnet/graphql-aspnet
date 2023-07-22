@@ -117,10 +117,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
             var field = new InputGraphField(
                     formatter.FormatFieldName(template.Name),
+                    template.InternalName,
                     template.TypeExpression.CloneTo(schemaTypeName),
                     template.Route,
-                    template.DeclaredName,
                     template.ObjectType,
+                    template.DeclaredName,
                     template.DeclaredReturnType,
                     template.IsRequired,
                     defaultValue,
@@ -189,7 +190,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         /// <returns>System.String.</returns>
         protected virtual string PrepareTypeName(IInputGraphFieldTemplate template)
         {
-
             // all input fields return either an object, scalar or enum (never a union)
             string schemaTypeName;
             var existingGraphType = _schema.KnownTypes.FindGraphType(template.ObjectType, template.OwnerTypeKind);
@@ -238,27 +238,15 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             switch (template.FieldSource)
             {
                 case GraphFieldSource.Method:
+                case GraphFieldSource.Property:
                 case GraphFieldSource.Action:
                     return new MethodGraphField(
                         formatter.FormatFieldName(template.Name),
+                        template.InternalName,
                         typeExpression,
                         template.Route,
-                        template.DeclaredName,
-                        template.ObjectType,
                         template.DeclaredReturnType,
-                        template.Mode,
-                        template.CreateResolver(),
-                        securityGroups,
-                        directives);
-
-                case GraphFieldSource.Property:
-                    return new PropertyGraphField(
-                        formatter.FormatFieldName(template.Name),
-                        typeExpression,
-                        template.Route,
-                        template.DeclaredName,
                         template.ObjectType,
-                        template.DeclaredReturnType,
                         template.Mode,
                         template.CreateResolver(),
                         securityGroups,

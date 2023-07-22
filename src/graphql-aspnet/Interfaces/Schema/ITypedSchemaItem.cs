@@ -21,21 +21,5 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// </summary>
         /// <value>The type of the object.</value>
         Type ObjectType { get; }
-
-        /// <summary>
-        /// <para>Gets the assigned internal name of schema item as it exists on the server. This name
-        /// is used in many exceptions and internal error messages.
-        /// </para>
-        /// </summary>
-        /// <remarks>
-        /// Examples: <br/>
-        /// <b>Scalar:</b>                     System.Int<br/>
-        /// <b>Controller Resolver Method:</b> MyProject.MyController.RetrieveWidgets<br/>
-        /// <b>Object Property:</b>            MyProject.Widget.Name<br/>
-        /// <br/>
-        /// This value is customizable by the developer to assign a more specific name if desired.
-        /// </remarks>
-        /// <value>The assigned internal name of this schema item.</value>
-        string InternalName { get; }
     }
 }

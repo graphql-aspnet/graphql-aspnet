@@ -72,10 +72,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             var argument = new GraphFieldArgument(
                 owner,
                 formatter.FormatFieldName(template.Name),
+                template.InternalName,
+                template.ParameterName,
                 typeExpression,
                 template.Route,
-                template.ParameterName,
-                template.InternalName,
                 template.ObjectType,
                 template.HasDefaultValue,
                 template.DefaultValue,

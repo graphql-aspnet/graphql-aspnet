@@ -32,10 +32,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             var arg = new GraphFieldArgument(
                 parentField.Object,
                 "argName",
+                "internalName",
+                "paramName",
                 GraphTypeExpression.FromDeclaration("String"),
                 new SchemaItemPath("[type]/GraphType1/Field1/Arg1"),
-                "paramName",
-                "internalName",
                 typeof(string),
                 true,
                 "default value",
