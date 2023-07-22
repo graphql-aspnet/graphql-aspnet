@@ -47,14 +47,14 @@ namespace GraphQL.AspNet.Tests.Logging
         }
 
         private void ValidateModelDictionaryToLogEntry(
-            IGraphFieldResolverMetaData graphMethod,
+            IGraphFieldResolverMetaData resolverMetaData,
             IGraphFieldRequest fieldRequest,
             InputModelStateDictionary dictionary,
             ActionMethodModelStateValidatedLogEntry logEntry)
         {
             Assert.AreEqual(fieldRequest.Id.ToString(), logEntry.PipelineRequestId);
-            Assert.AreEqual(graphMethod.ParentInternalFullName, logEntry.ControllerName);
-            Assert.AreEqual(graphMethod.InternalName, logEntry.ActionName);
+            Assert.AreEqual(resolverMetaData.ParentInternalName, logEntry.ControllerName);
+            Assert.AreEqual(resolverMetaData.InternalName, logEntry.ActionName);
             Assert.AreEqual(dictionary.IsValid, logEntry.ModelDataIsValid);
 
             foreach (var kvp in dictionary)

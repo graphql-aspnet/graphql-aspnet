@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
-            this.InternalFullName = declaredPropertyName;
+            this.InternalName = declaredPropertyName;
             this.HasDefaultValue = !isRequired;
             this.IsRequired = isRequired && this.TypeExpression.IsNonNullable;
             this.DefaultValue = defaultValue;
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// is used in many exceptions and internal error messages.
         /// </summary>
         /// <value>The fully qualified name of the proeprty this field was created from.</value>
-        public string InternalFullName { get; }
+        public string InternalName { get; }
 
         /// <inheritdoc />
         public object DefaultValue { get; }

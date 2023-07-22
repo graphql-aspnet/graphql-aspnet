@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(argumentName, nameof(argumentName));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
-            this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
             this.ParameterName = Validation.ThrowIfNullWhiteSpaceOrReturn(parameterName, nameof(parameterName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
                 this.ParameterName,
-                this.InternalFullName,
+                this.InternalName,
                 this.ObjectType,
                 this.HasDefaultValue,
                 this.DefaultValue,
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Type ObjectType { get; }
 
         /// <inheritdoc />
-        public string InternalFullName { get; }
+        public string InternalName { get; }
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }

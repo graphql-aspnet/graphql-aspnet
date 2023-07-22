@@ -47,6 +47,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         /// <inheritdoc />
         public virtual GraphFieldCreationResult<IGraphField> CreateField(IGraphFieldTemplate template)
         {
+            Validation.ThrowIfNull(template, nameof(template));
+
             var formatter = _config.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphFieldCreationResult<IGraphField>();
 
@@ -94,6 +96,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         /// <inheritdoc />
         public GraphFieldCreationResult<IInputGraphField> CreateField(IInputGraphFieldTemplate template)
         {
+            Validation.ThrowIfNull(template, nameof(template));
+
             var formatter = _config.DeclarationOptions.GraphNamingFormatter;
 
             var defaultInputObject = InstanceFactory.CreateInstance(template.Parent.ObjectType);
@@ -101,18 +105,19 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
             object defaultValue = null;
 
-            if (!template.IsRequired && propGetters.ContainsKey(template.InternalName))
+            if (!template.IsRequired && propGetters.ContainsKey(template.DeclaredName))
             {
-                defaultValue = propGetters[template.InternalName](ref defaultInputObject);
+                defaultValue = propGetters[template.DeclaredName](ref defaultInputObject);
             }
 
             var result = new GraphFieldCreationResult<IInputGraphField>();
 
             var directives = template.CreateAppliedDirectives();
+            var schemaTypeName = this.PrepareTypeName(template);
 
             var field = new InputGraphField(
                     formatter.FormatFieldName(template.Name),
-                    template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
+                    template.TypeExpression.CloneTo(schemaTypeName),
                     template.Route,
                     template.DeclaredName,
                     template.ObjectType,
@@ -153,8 +158,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             string schemaTypeName;
 
             // when the type already exists on the target schema
-            // and is usable as an input type then just use the name
-            if (existingGraphType != null && existingGraphType.Kind.IsValidInputKind())
+            // and is usable as a type name then just use the name
+            if (existingGraphType != null)
             {
                 schemaTypeName = existingGraphType.Name;
             }
@@ -166,6 +171,42 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             {
                 // guess on what the name of the schema item will be
                 // this is guaranteed correct for all but scalars
+                schemaTypeName = GraphTypeNames.ParseName(template.ObjectType, template.OwnerTypeKind);
+            }
+
+            // enforce non-renaming standards in the maker since the
+            // directly controls the formatter
+            if (GlobalTypes.CanBeRenamed(schemaTypeName))
+                schemaTypeName = _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(schemaTypeName);
+
+            return schemaTypeName;
+        }
+
+        /// <summary>
+        /// Finds and applies proper casing to the graph type name returned by this input field.
+        /// </summary>
+        /// <param name="template">The template to inspect.</param>
+        /// <returns>System.String.</returns>
+        protected virtual string PrepareTypeName(IInputGraphFieldTemplate template)
+        {
+
+            // all input fields return either an object, scalar or enum (never a union)
+            string schemaTypeName;
+            var existingGraphType = _schema.KnownTypes.FindGraphType(template.ObjectType, template.OwnerTypeKind);
+
+            // when the type already exists on the target schema
+            // and is usable as a type for an input field then just use the name
+            // an OBJECT type may be registered for the target `template.ObjectType` which might get found
+            // but the coorisponding INPUT_OBJECT may not yet be discovered
+            if (existingGraphType != null && existingGraphType.Kind.IsValidInputKind())
+            {
+                schemaTypeName = existingGraphType.Name;
+            }
+            else
+            {
+                // guess on what the unformatted name of the schema item will be
+                // this is guaranteed correct for all but scalars and scalars should be registered by the time
+                // input objects are registered
                 schemaTypeName = GraphTypeNames.ParseName(template.ObjectType, template.OwnerTypeKind);
             }
 

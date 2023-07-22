@@ -148,10 +148,10 @@ namespace GraphQL.AspNet.Schemas
             var getters = InstanceFactory.CreatePropertyGetterInvokerCollection(obj.GetType());
             foreach (var field in inputObjectGraphType.Fields)
             {
-                if (!getters.ContainsKey(field.InternalFullName))
+                if (!getters.ContainsKey(field.InternalName))
                     continue;
 
-                var getter = getters[field.InternalFullName];
+                var getter = getters[field.InternalName];
                 builder.Append(field.Name);
                 builder.Append(Constants.QueryLanguage.FieldValueSeperator);
                 builder.Append(" ");

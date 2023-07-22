@@ -183,13 +183,13 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_invalidTypeExpression)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The field  '{this.InternalFullName}' defines an invalid {nameof(GraphFieldAttribute.TypeExpression)} (Value = '{_fieldDeclaration.TypeExpression}'). " +
+                    $"The field  '{this.InternalName}' defines an invalid {nameof(GraphFieldAttribute.TypeExpression)} (Value = '{_fieldDeclaration.TypeExpression}'). " +
                     $"The provided type expression must be a valid query language type expression or null.");
             }
 
             if (this.DeclaredReturnType == typeof(void))
             {
-                throw new GraphTypeDeclarationException($"The graph field '{this.InternalFullName}' has a void return. All graph fields must return something.");
+                throw new GraphTypeDeclarationException($"The graph field '{this.InternalName}' has a void return. All graph fields must return something.");
             }
 
             if (this.IsAsyncField)
@@ -199,7 +199,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 if (genericArgs.Length != 1)
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The field  '{this.InternalFullName}' defines a return type of'{typeof(Task).Name}' but " +
+                        $"The field  '{this.InternalName}' defines a return type of'{typeof(Task).Name}' but " +
                         "defines no contained return type for the resultant model object yielding a void return after " +
                         "completion of the task. All graph methods must return a single model object. Consider using " +
                         $"'{typeof(Task<>).Name}' instead for asyncronous methods");
@@ -208,11 +208,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             if (this.UnionProxy != null)
             {
-                GraphValidation.EnsureGraphNameOrThrow($"{this.InternalFullName}[{nameof(GraphFieldAttribute)}][{nameof(IGraphUnionProxy)}]", this.UnionProxy.Name);
+                GraphValidation.EnsureGraphNameOrThrow($"{this.InternalName}[{nameof(GraphFieldAttribute)}][{nameof(IGraphUnionProxy)}]", this.UnionProxy.Name);
                 if (this.UnionProxy.Types.Count < 1)
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The field '{this.InternalFullName}' declares union type of '{this.UnionProxy.Name}' " +
+                        $"The field '{this.InternalName}' declares union type of '{this.UnionProxy.Name}' " +
                         "but that type includes 0 possible types in the union. Unions require 1 or more possible types. Add additional types" +
                         "or remove the union.");
                 }
@@ -223,7 +223,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.PossibleTypes.Count == 0)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The field '{this.InternalFullName}' declared no possible return types either as part of its specification or as the " +
+                    $"The field '{this.InternalName}' declared no possible return types either as part of its specification or as the " +
                     "declared return type for the field. GraphQL requires the type information be known " +
                     $"to setup the schema and client tooling properly. If this field returns a '{nameof(IGraphActionResult)}' you must " +
                     "provide a graph field declaration attribute and add at least one type; be that a concrete type, an interface or a union.");
@@ -240,21 +240,21 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     if (type.IsEnum)
                     {
                         throw new GraphTypeDeclarationException(
-                            $"The field '{this.InternalFullName}' declares a union with a possible type of '{type.FriendlyName()}' " +
+                            $"The field '{this.InternalName}' declares a union with a possible type of '{type.FriendlyName()}' " +
                             "but that type is an enum. Only concrete, non-abstract classes may be used.  Value types, such as structs or enumerations, are not allowed.");
                     }
 
                     if (GraphValidation.MustBeLeafType(type))
                     {
                         throw new GraphTypeDeclarationException(
-                            $"The field '{this.InternalFullName}' declares union with a possible type of '{type.FriendlyName()}' " +
+                            $"The field '{this.InternalName}' declares union with a possible type of '{type.FriendlyName()}' " +
                             "but that type is a scalar. Scalars cannot be included in a field's possible type collection, only object types can.");
                     }
 
                     if (type.IsInterface)
                     {
                         throw new GraphTypeDeclarationException(
-                            $"The field '{this.InternalFullName}'  declares union with  a possible type of '{type.FriendlyName()}' " +
+                            $"The field '{this.InternalName}'  declares union with  a possible type of '{type.FriendlyName()}' " +
                             "but that type is an interface. Interfaces cannot be included in a field's possible type collection, only object types can.");
                     }
                 }
@@ -264,7 +264,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     if (Validation.IsCastable(type, invalidFieldType))
                     {
                         throw new GraphTypeDeclarationException(
-                            $"The field '{this.InternalFullName}' declares a possible return type of '{type.FriendlyName()}' " +
+                            $"The field '{this.InternalName}' declares a possible return type of '{type.FriendlyName()}' " +
                             $"but that type inherits from '{invalidFieldType.FriendlyName()}' which is a reserved type declared by the graphql-aspnet library. This type cannot cannot be returned by a graphql field.");
                     }
                 }
@@ -281,7 +281,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 if (!_returnsActionResult && this.Mode == FieldResolutionMode.PerSourceItem && !Validation.IsCastable(type, this.ObjectType))
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The field '{this.InternalFullName}' returns '{this.ObjectType.FriendlyName()}' and declares a possible type of '{type.FriendlyName()}' " +
+                        $"The field '{this.InternalName}' returns '{this.ObjectType.FriendlyName()}' and declares a possible type of '{type.FriendlyName()}' " +
                         $"but that type is not castable to '{this.ObjectType.FriendlyName()}' and therefore not returnable by this field. Due to the strongly-typed nature of C# any possible type on a field " +
                         "must be castable to the type of the field in order to ensure its not inadvertantly nulled out during processing. If this field returns a union " +
                         $"of multiple, disperate types consider returning '{typeof(object).Name}' from the field to ensure each possible return type can be successfully processed.");
@@ -295,7 +295,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.Complexity.HasValue && this.Complexity < 0)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The field '{this.InternalFullName}' declares a complexity value of " +
+                    $"The field '{this.InternalName}' declares a complexity value of " +
                     $"`{this.Complexity.Value}`. The complexity factor must be greater than or equal to 0.");
             }
 
@@ -325,7 +325,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.Arguments.All(arg => arg.DeclaredArgumentType != requiredEnumerable))
             {
                 throw new GraphTypeDeclarationException(
-                    $"Invalid batch method signature. The field '{this.InternalFullName}' declares itself as batch method but does not accept a batch " +
+                    $"Invalid batch method signature. The field '{this.InternalName}' declares itself as batch method but does not accept a batch " +
                     $"of data as an input parameter. This method must accept a parameter of type '{requiredEnumerable.FriendlyName()}' somewhere in its method signature to " +
                     $"be used as a batch extension for the type '{this.SourceObjectType.FriendlyName()}'.");
             }
@@ -343,7 +343,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (!BatchResultProcessor.IsBatchDictionaryType(declaredType, this.SourceObjectType, this.ObjectType))
             {
                 throw new GraphTypeDeclarationException(
-                    $"Invalid batch method signature. The field '{this.InternalFullName}' declares a return type of '{declaredType.FriendlyName()}', however; " +
+                    $"Invalid batch method signature. The field '{this.InternalName}' declares a return type of '{declaredType.FriendlyName()}', however; " +
                     $"batch methods must return either an '{typeof(IGraphActionResult).FriendlyName()}' or a dictionary keyed " +
                     "on the provided source data (e.g. 'IDictionary<SourceType, ResultsPerSourceItem>').");
             }
@@ -358,7 +358,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 if (!Validation.IsCastable(type, dictionaryValue))
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The field '{this.InternalFullName}' returns '{this.ObjectType.FriendlyName()}' and declares a possible type of '{type.FriendlyName()}' " +
+                        $"The field '{this.InternalName}' returns '{this.ObjectType.FriendlyName()}' and declares a possible type of '{type.FriendlyName()}' " +
                         $"but that type is not castable to '{this.ObjectType.FriendlyName()}' and therefore not returnable by this field. Due to the strongly-typed nature of C# any possible type on a field " +
                         "must be castable to the type of the field in order to ensure its not inadvertantly nulled out during processing. If this field returns a union " +
                         $"of multiple, disperate types consider returning '{typeof(object).Name}' from the field to ensure each possible return type can be successfully processed.");

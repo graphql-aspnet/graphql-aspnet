@@ -98,14 +98,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             {
                 // should be an impossible situation but just in case someone manually invokes this template bypassing global checks.
                 throw new GraphTypeDeclarationException(
-                    $"The type extension '{this.InternalFullName}' does not define a {typeof(TypeExtensionAttribute).FriendlyName()} or defines more than one instance. " +
+                    $"The type extension '{this.InternalName}' does not define a {typeof(TypeExtensionAttribute).FriendlyName()} or defines more than one instance. " +
                     "All methods wishing to be treated as type extensions must define one instance of this attribute to properly configure the runtime.");
             }
 
             if (!this.SourceObjectType.IsClass && !this.SourceObjectType.IsStruct() && !this.SourceObjectType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The type extension '{this.InternalFullName}' is attempting to extend '{this.SourceObjectType.FriendlyName()}'. " +
+                    $"The type extension '{this.InternalName}' is attempting to extend '{this.SourceObjectType.FriendlyName()}'. " +
                     "Only classes, structs and  interfaces can be extended.");
             }
 
@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.Route == null || !this.Route.IsValid)
             {
                 throw new GraphTypeDeclarationException(
-                        $"The type extension '{this.InternalFullName}' declares an invalid field name of '{_typeAttrib.Template ?? "<null>"}'. " +
+                        $"The type extension '{this.InternalName}' declares an invalid field name of '{_typeAttrib.Template ?? "<null>"}'. " +
                         $"Each segment of the route must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )",
                         this.ObjectType);
             }

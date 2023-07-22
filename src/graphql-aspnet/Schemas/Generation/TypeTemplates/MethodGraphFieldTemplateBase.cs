@@ -14,7 +14,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -62,6 +64,13 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
             base.ParseTemplateDefinition();
 
+            // set the internal name of the item
+            var fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            if (fieldDeclaration != null)
+                this.InternalName = fieldDeclaration.InternalName;
+            if (string.IsNullOrWhiteSpace(this.InternalName))
+                this.InternalName = $"{this.Parent.InternalName}.{this.Method.Name}";
+
             // parse all input parameters from the method signature
             foreach (var parameter in this.Parameters)
             {
@@ -95,7 +104,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.ExpectedReturnType == null)
             {
                 throw new GraphTypeDeclarationException(
-                   $"Invalid graph method declaration. The method '{this.InternalFullName}' has no valid {nameof(this.ExpectedReturnType)}. An expected " +
+                   $"Invalid graph method declaration. The method '{this.InternalName}' has no valid {nameof(this.ExpectedReturnType)}. An expected " +
                    "return type must be assigned from the declared return type.");
             }
         }
@@ -118,17 +127,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 this.ExpectedReturnType,
                 this.IsAsyncField,
                 this.InternalName,
-                this.InternalFullName,
                 this.Parent.ObjectType,
-                this.Parent.InternalName,
-                this.Parent.InternalFullName);
+                this.Parent.InternalName);
         }
-
-        /// <inheritdoc />
-        public override string InternalFullName => $"{this.Parent?.InternalFullName}.{this.Method.Name}";
-
-        /// <inheritdoc />
-        public override string InternalName => this.Method.Name;
 
         /// <inheritdoc />
         public override IReadOnlyList<IGraphArgumentTemplate> Arguments => _arguments;

@@ -375,8 +375,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.AreEqual(2, template.FieldTemplates.Count);
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectThatInheritsExplicitMethodField.FieldOnObject)));
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectWithExplicitMethodField.FieldOnBaseObject)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == $"{nameof(ObjectThatInheritsExplicitMethodField)}.{nameof(ObjectThatInheritsExplicitMethodField.FieldOnObject)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == $"{nameof(ObjectThatInheritsExplicitMethodField)}.{nameof(ObjectWithExplicitMethodField.FieldOnBaseObject)}"));
         }
 
         [Test]
@@ -387,8 +387,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.AreEqual(2, template.FieldTemplates.Count);
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectThatInheritsNonExplicitMethodField.FieldOnObject)));
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectWithNonExplicitMethodField.FieldOnBaseObject)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.DeclaredName == nameof(ObjectThatInheritsNonExplicitMethodField.FieldOnObject)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.DeclaredName == nameof(ObjectWithNonExplicitMethodField.FieldOnBaseObject)));
         }
 
         [Test]

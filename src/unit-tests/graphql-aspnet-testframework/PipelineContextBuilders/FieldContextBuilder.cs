@@ -104,14 +104,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockRequest.Setup(x => x.InvocationContext).Returns(_mockInvocationContext.Object);
 
             _mockResolverMetaData = new Mock<IGraphFieldResolverMetaData>();
-            _mockResolverMetaData.Setup(x => x.ParentInternalFullName).Returns(resolverMetadata.ParentInternalFullName);
             _mockResolverMetaData.Setup(x => x.ParentInternalName).Returns(resolverMetadata.ParentInternalName);
             _mockResolverMetaData.Setup(x => x.ParentObjectType).Returns(resolverMetadata.ParentObjectType);
             _mockResolverMetaData.Setup(x => x.ExpectedReturnType).Returns(resolverMetadata.ExpectedReturnType);
             _mockResolverMetaData.Setup(x => x.Method).Returns(resolverMetadata.Method);
             _mockResolverMetaData.Setup(x => x.IsAsyncField).Returns(resolverMetadata.IsAsyncField);
             _mockResolverMetaData.Setup(x => x.InternalName).Returns(resolverMetadata.InternalName);
-            _mockResolverMetaData.Setup(x => x.InternalFullName).Returns(resolverMetadata.InternalFullName);
             _mockResolverMetaData.Setup(x => x.InternalName).Returns(resolverMetadata.InternalName);
             _mockResolverMetaData.Setup(x => x.Parameters).Returns(resolverMetadata.Parameters);
         }

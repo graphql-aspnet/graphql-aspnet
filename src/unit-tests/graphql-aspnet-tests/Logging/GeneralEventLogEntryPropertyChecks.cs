@@ -399,18 +399,21 @@ namespace GraphQL.AspNet.Tests.Logging
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddType<LogTestController>()
                                          .Build();
-            var graphMethod = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
+            var resolverMetaData = GraphQLTemplateHelper
+                .CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2))
+                .CreateResolverMetaData();
+
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest.Object;
 
-            var entry = new ActionMethodInvocationStartedLogEntry(graphMethod, fieldRequest);
+            var entry = new ActionMethodInvocationStartedLogEntry(resolverMetaData, fieldRequest);
 
             Assert.AreEqual(LogEventIds.ControllerInvocationStarted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
-            Assert.AreEqual(graphMethod.ParentInternalFullName, entry.ControllerName);
-            Assert.AreEqual(graphMethod.InternalName, entry.ActionName);
-            Assert.AreEqual(graphMethod.IsAsyncField, entry.IsAsync);
+            Assert.AreEqual(resolverMetaData.ParentInternalName, entry.ControllerName);
+            Assert.AreEqual(resolverMetaData.InternalName, entry.ActionName);
+            Assert.AreEqual(resolverMetaData.IsAsyncField, entry.IsAsync);
             Assert.IsNotNull(entry.ToString());
         }
 
@@ -433,7 +436,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(LogEventIds.ControllerInvocationCompleted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
-            Assert.AreEqual(metaData.ParentInternalFullName, entry.ControllerName);
+            Assert.AreEqual(metaData.ParentInternalName, entry.ControllerName);
             Assert.AreEqual(metaData.InternalName, entry.ActionName);
             Assert.AreEqual(result.GetType().FriendlyName(true), entry.ResultTypeName);
             Assert.IsNotNull(entry.ToString());
@@ -459,7 +462,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(LogEventIds.ControllerInvocationException.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
-            Assert.AreEqual(metaData.ParentInternalFullName, entry.ControllerTypeName);
+            Assert.AreEqual(metaData.ParentInternalName, entry.ControllerTypeName);
             Assert.AreEqual(metaData.InternalName, entry.ActionName);
             Assert.IsNotNull(entry.ToString());
 
@@ -490,7 +493,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(LogEventIds.ControllerUnhandledException.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
-            Assert.AreEqual(metaData.ParentInternalFullName, entry.ControllerTypeName);
+            Assert.AreEqual(metaData.ParentInternalName, entry.ControllerTypeName);
             Assert.AreEqual(metaData.InternalName, entry.ActionName);
             Assert.IsNotNull(entry.ToString());
 
@@ -506,7 +509,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             var directive = new Mock<IDirective>();
             directive.Setup(x => x.Name).Returns("The Directive");
-            directive.Setup(x => x.InternalFullName).Returns("The Directive Internal");
+            directive.Setup(x => x.InternalName).Returns("The Directive Internal");
 
             var item = new Mock<ISchemaItem>();
             item.Setup(x => x.Route).Returns(new AspNet.Schemas.Structural.SchemaItemPath(SchemaItemCollections.Types, "path1"));
@@ -515,7 +518,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(LogEventIds.TypeSystemDirectiveApplied.Id, entry.EventId);
             Assert.AreEqual(directive.Object.Name, entry.DirectiveName);
-            Assert.AreEqual(directive.Object.InternalFullName, entry.DirectiveInternalName);
+            Assert.AreEqual(directive.Object.InternalName, entry.DirectiveInternalName);
             Assert.AreEqual(item.Object.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
         }
@@ -525,7 +528,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             var directive = new Mock<IDirective>();
             directive.Setup(x => x.Name).Returns("The Directive");
-            directive.Setup(x => x.InternalFullName).Returns("The Directive Internal");
+            directive.Setup(x => x.InternalName).Returns("The Directive Internal");
 
             var docPart = new DocumentOperation(
                 new Mock<IDocumentPart>().Object,
@@ -539,7 +542,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(LogEventIds.ExecutionDirectiveApplied.Id, entry.EventId);
             Assert.AreEqual(directive.Object.Name, entry.DirectiveName);
-            Assert.AreEqual(directive.Object.InternalFullName, entry.DirectiveInternalName);
+            Assert.AreEqual(directive.Object.InternalName, entry.DirectiveInternalName);
             Assert.AreEqual(DirectiveLocation.QUERY.ToString(), entry.DirectiveLocation);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
             Assert.AreEqual(33, entry.SourceLine);

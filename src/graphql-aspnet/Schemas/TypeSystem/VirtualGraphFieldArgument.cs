@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
-            this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ParameterName = this.Name;
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Type ObjectType { get; }
 
         /// <inheritdoc />
-        public string InternalFullName { get; }
+        public string InternalName { get; }
 
         /// <inheritdoc />
         public string Name { get; set; }

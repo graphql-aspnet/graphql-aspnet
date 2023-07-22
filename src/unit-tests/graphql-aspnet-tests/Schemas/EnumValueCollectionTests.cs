@@ -36,13 +36,13 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = new Mock<IEnumValue>();
             enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
 
             var enumValue2 = new Mock<IEnumValue>();
             enumValue2.Setup(x => x.Name).Returns("VALUE1");
-            enumValue2.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue2.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner.Object);
             collection.Add(enumValue.Object);
@@ -69,8 +69,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = new Mock<IEnumValue>();
             enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner.Object);
             collection.Add(enumValue.Object);
@@ -93,8 +93,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = new Mock<IEnumValue>();
             enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner.Object);
             collection.Add(enumValue.Object);
@@ -114,8 +114,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = new Mock<IEnumValue>();
             enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner.Object);
             collection.Add(enumValue.Object);
@@ -135,8 +135,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = new Mock<IEnumValue>();
             enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner.Object);
             collection.Add(enumValue.Object);
@@ -167,8 +167,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = new Mock<IEnumValue>();
             enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner.Object);
             collection.Add(enumValue.Object);
@@ -196,8 +196,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = new Mock<IEnumValue>();
             enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner.Object);
             collection.Add(enumValue.Object);
@@ -216,8 +216,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = new Mock<IEnumValue>();
             enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.InternalValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.InternalLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
+            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner.Object);
             collection.Add(enumValue.Object);

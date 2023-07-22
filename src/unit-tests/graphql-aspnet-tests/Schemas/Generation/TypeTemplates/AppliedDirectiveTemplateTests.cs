@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void PropertyCheck()
         {
             var owner = new Mock<ISchemaItemTemplate>();
-            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            owner.Setup(x => x.InternalName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,
                 typeof(DirectiveWithArgs),
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void NulLTemplateType_ThrowsException()
         {
             var owner = new Mock<ISchemaItemTemplate>();
-            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            owner.Setup(x => x.InternalName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,
                 null as Type,
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void NullName_ThrowsException()
         {
             var owner = new Mock<ISchemaItemTemplate>();
-            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            owner.Setup(x => x.InternalName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,
                 null as string,
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void EmptyName_ThrowsException()
         {
             var owner = new Mock<ISchemaItemTemplate>();
-            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            owner.Setup(x => x.InternalName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,
                 string.Empty,
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void NonDirectiveType_ThrowsException()
         {
             var owner = new Mock<ISchemaItemTemplate>();
-            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            owner.Setup(x => x.InternalName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,
                 typeof(AppliedDirectiveTemplateTests),

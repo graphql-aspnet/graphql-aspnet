@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
             this.Publish = true;
             this.IsVirtual = false;
             this.ObjectType = typeof(ScalarDataType);
-            this.InternalFullName = "myInternalName";
+            this.InternalName = "myInternalName";
             this.Route = new SchemaItemPath(AspNet.Execution.SchemaItemCollections.Types, "myScalar");
             this.Name = "MyScalar";
             this.Description = "my description";
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
 
         public Type ObjectType { get; set; }
 
-        public string InternalFullName { get; set; }
+        public string InternalName { get; set; }
 
         public SchemaItemPath Route { get; set; }
 

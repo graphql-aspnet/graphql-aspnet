@@ -111,5 +111,15 @@ namespace GraphQL.AspNet.Attributes
         /// </summary>
         /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
         public bool Publish { get; set; }
+
+        /// <summary>
+        /// Gets or sets a customized name to refer to this .NET type in all log entries and error messages.
+        /// </summary>
+        /// <remarks>
+        /// When not supplied the name defaults to the fully qualified class, struct or primative name. (e.g. <c>'MyObject', 'Person'</c>). This
+        /// can be especially helpful when working with runtime defined fields (e.g. minimal api).
+        /// </remarks>
+        /// <value>The name to refer to this field on internal messaging.</value>
+        public string InternalName { get; set; }
     }
 }

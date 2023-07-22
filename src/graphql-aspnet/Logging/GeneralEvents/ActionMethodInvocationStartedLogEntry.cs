@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             : base(LogEventIds.ControllerInvocationStarted)
         {
             this.PipelineRequestId = request?.Id.ToString();
-            this.ControllerName = method?.ParentInternalFullName;
+            this.ControllerName = method?.ParentInternalName;
             this.ActionName = method?.InternalName;
 
             if (request is IGraphFieldRequest gfr)

@@ -65,6 +65,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Type ObjectType => typeof(VirtualObjectGraphType);
 
         /// <inheritdoc />
-        public string InternalFullName => typeof(VirtualObjectGraphType).FriendlyName();
+        public string InternalName => typeof(VirtualObjectGraphType).FriendlyName();
     }
 }

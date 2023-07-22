@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
-            this.InternalFullName = this.ObjectType.FriendlyName();
+            this.InternalName = this.ObjectType.FriendlyName();
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
             this.Publish = true;
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Type ObjectType { get; }
 
         /// <inheritdoc />
-        public string InternalFullName { get; }
+        public string InternalName { get; }
 
         /// <summary>
         /// Gets the collection of fields, keyed on their name, of all the fields nested or contained within this field.

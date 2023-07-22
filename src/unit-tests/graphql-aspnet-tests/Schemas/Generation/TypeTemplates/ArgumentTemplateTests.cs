@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 .FirstOrDefault(x => x.Name == paramName);
 
             var mockMethod = new Mock<IGraphFieldTemplateBase>();
-            mockMethod.Setup(x => x.InternalFullName)
+            mockMethod.Setup(x => x.InternalName)
                 .Returns($"{nameof(ParameterTestClass)}.{nameof(ParameterTestClass.TestMethod)}");
             mockMethod.Setup(x => x.ObjectType).Returns(typeof(ParameterTestClass));
             mockMethod.Setup(x => x.Arguments).Returns(new List<IGraphArgumentTemplate>());
@@ -64,8 +64,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(null, template.Description);
             Assert.IsEmpty((IEnumerable)template.TypeExpression.Wrappers);
             Assert.IsNull(template.DefaultValue);
-            Assert.AreEqual($"{nameof(ParameterTestClass)}.{nameof(ParameterTestClass.TestMethod)}.stringArg", template.InternalFullName);
-            Assert.AreEqual("stringArg", template.InternalName);
+            Assert.AreEqual($"{nameof(ParameterTestClass)}.{nameof(ParameterTestClass.TestMethod)}.stringArg", template.InternalName);
+            Assert.AreEqual("stringArg", template.ParameterName);
+            Assert.AreEqual("ParameterTestClass.TestMethod.stringArg", template.InternalName);
         }
 
         [Test]

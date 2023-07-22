@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("LongItem0");
             obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.ObjectType).Returns(typeof(SimplePropertyObject));
 
@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("LongItem0");
             obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.ObjectType).Returns(typeof(SimplePropertyObject));
 
@@ -173,7 +173,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("LongItem0");
             obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.ObjectType).Returns(typeof(SimplePropertyObject));
 
@@ -199,7 +199,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("LongItem0");
             obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.ObjectType).Returns(typeof(ObjectDirectiveTestItem));
 
@@ -225,7 +225,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("LongItem0");
             obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.ObjectType).Returns(typeof(ObjectDirectiveTestItem));
 
@@ -309,7 +309,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("LongItem0");
             obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.ObjectType).Returns(typeof(ObjectWithAttributedFieldArguments));
 

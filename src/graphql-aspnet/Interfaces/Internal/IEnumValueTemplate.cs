@@ -32,5 +32,11 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// </summary>
         /// <value>The numeric value as string.</value>
         string NumericValueAsString { get;  }
+
+        /// <summary>
+        /// Gets the label assigned to this enum value in the source code. (e.g. <c>"Value1"</c> in an enum value named <c>MyEnum.Value1</c>).
+        /// </summary>
+        /// <value>The declared label.</value>
+        string DeclaredLabel { get; }
     }
 }

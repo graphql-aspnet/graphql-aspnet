@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Address1));
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Address2));
@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Hair));
@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
 
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.LastName));
@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.City));
@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.State));
@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var propInfo = typeof(NoGetterOnProperty).GetProperty(nameof(NoGetterOnProperty.Prop1));
@@ -157,10 +157,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
 
-            Assert.Throws<GraphTypeDeclarationException>(() =>
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 template.ValidateOrThrow();
             });
+
+            Assert.IsTrue(ex.Message.Contains("does not define a public getter"));
         }
 
         [Test]
@@ -168,7 +170,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
                 Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME,
@@ -190,7 +192,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
                 Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME,  // expression is expected to be unnamed at the template level
@@ -213,7 +215,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
                 typeof(KeyValuePair<string, string>).FriendlyGraphTypeName(),
@@ -238,7 +240,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.InvalidTypeExpression));

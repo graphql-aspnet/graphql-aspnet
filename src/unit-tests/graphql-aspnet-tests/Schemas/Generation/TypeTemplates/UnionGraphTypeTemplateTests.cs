@@ -46,8 +46,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(TypeKind.UNION, instance.Kind);
             Assert.AreEqual("ValidUnion", instance.Name);
             Assert.AreEqual("My Union Desc", instance.Description);
-            Assert.AreEqual(typeof(ValidTestUnion).FriendlyName(true), instance.InternalFullName);
-            Assert.AreEqual("ValidTestUnion", typeof(ValidTestUnion).Name);
+            Assert.AreEqual("ValidUnion", instance.InternalName); // should use union name when supplied
             Assert.AreEqual(typeof(ValidTestUnion), instance.ProxyType);
             Assert.IsTrue(instance.Publish);
         }

@@ -34,9 +34,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.Publish = true;
         }
 
-        /// <summary>
-        /// When overridden in a child class this method builds out the template according to its own individual requirements.
-        /// </summary>
+        /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
             base.ParseTemplateDefinition();
@@ -46,11 +44,17 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (graphTypeDeclaration != null)
             {
                 this.Publish = graphTypeDeclaration.Publish;
+
+                if (string.IsNullOrEmpty(this.InternalName))
+                    this.InternalName = graphTypeDeclaration.InternalName;
                 if (graphTypeDeclaration.RequirementsWereDeclared)
                 {
                     _fieldDeclarationOverrides = graphTypeDeclaration.FieldDeclarationRequirements;
                 }
             }
+
+            if (string.IsNullOrWhiteSpace(this.InternalName))
+                this.InternalName = this.ObjectType?.FriendlyName();
         }
 
         /// <inheritdoc />

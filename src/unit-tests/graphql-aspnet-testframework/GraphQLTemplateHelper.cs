@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Framework
             template.ValidateOrThrow();
             return template
                 .FieldTemplates
-                .FirstOrDefault(x => x.Value.InternalName.Equals(methodName, StringComparison.OrdinalIgnoreCase)).Value;
+                .FirstOrDefault(x => x.Value.DeclaredName.Equals(methodName, StringComparison.OrdinalIgnoreCase)).Value;
         }
 
         /// <summary>

@@ -47,6 +47,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
         public virtual Type ObjectType => this.GetType();
 
         /// <inheritdoc />
-        public virtual string InternalFullName => this.ObjectType.FriendlyName();
+        public virtual string InternalName => this.ObjectType.FriendlyName();
     }
 }

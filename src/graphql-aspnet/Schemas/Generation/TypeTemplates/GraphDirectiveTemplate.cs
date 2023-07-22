@@ -135,14 +135,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.Locations == DirectiveLocation.NONE)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive '{this.InternalFullName}' defines no locations to which it can be applied. You must specify at least " +
+                    $"The directive '{this.InternalName}' defines no locations to which it can be applied. You must specify at least " +
                     $"one '{typeof(DirectiveLocation)}' via the {typeof(DirectiveLocationsAttribute).FriendlyName()}.");
             }
 
             if (this.AppliedDirectives.Any())
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive {this.InternalFullName} defines an {nameof(ApplyDirectiveAttribute)}. " +
+                    $"The directive {this.InternalName} defines an {nameof(ApplyDirectiveAttribute)}. " +
                     $"Directives cannot have applied directives.");
             }
 
@@ -170,12 +170,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// </summary>
         /// <value>The type of the declared.</value>
         public Type DeclaredType => this.ObjectType;
-
-        /// <inheritdoc />
-        public override string InternalFullName => this.ObjectType?.FriendlyName(true);
-
-        /// <inheritdoc />
-        public override string InternalName => this.ObjectType?.FriendlyName();
 
         /// <inheritdoc />
         public override bool IsExplicitDeclaration => true;

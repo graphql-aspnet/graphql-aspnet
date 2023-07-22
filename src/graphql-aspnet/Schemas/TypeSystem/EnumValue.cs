@@ -29,7 +29,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="description">The description.</param>
         /// <param name="route">The route path that uniquely identifies this enum option.</param>
         /// <param name="internalValue">The value of the enum as its declared in .NET.</param>
-        /// <param name="internalLabel">A string representation of label applied to the enum value in .NET.</param>
+        /// <param name="declaredLabel">A string representation of label declared on the enum value in .NET.</param>
+        /// <param name="internalName">The internal name assigned to this enum value. Typically the same as <paramref name="declaredLabel"/>
+        /// but can be customized by the developer for reporting purposes.</param>
         /// <param name="directives">The set of directives to execute
         /// against this option when it is added to the schema.</param>
         public EnumValue(
@@ -38,7 +40,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string description,
             SchemaItemPath route,
             object internalValue,
-            string internalLabel,
+            string declaredLabel,
+            string internalName,
             IAppliedDirectiveCollection directives = null)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
@@ -46,8 +49,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.Description = description?.Trim();
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
-            this.InternalValue = Validation.ThrowIfNullOrReturn(internalValue, nameof(internalValue));
-            this.InternalLabel = Validation.ThrowIfNullWhiteSpaceOrReturn(internalLabel, nameof(internalLabel));
+            this.DeclaredValue = Validation.ThrowIfNullOrReturn(internalValue, nameof(internalValue));
+            this.DeclaredLabel = Validation.ThrowIfNullWhiteSpaceOrReturn(declaredLabel, nameof(declaredLabel));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
 
             if (Constants.QueryLanguage.IsReservedKeyword(this.Name))
             {
@@ -78,9 +82,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IEnumGraphType Parent { get; }
 
         /// <inheritdoc />
-        public object InternalValue { get; }
+        public object DeclaredValue { get; }
 
         /// <inheritdoc />
-        public string InternalLabel { get; }
+        public string DeclaredLabel { get; }
+
+        /// <inheritdoc />
+        public string InternalName { get; }
     }
 }

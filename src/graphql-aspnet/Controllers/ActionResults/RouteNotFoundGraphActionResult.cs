@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using System;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
 
@@ -56,38 +57,44 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         /// <inheritdoc />
         public Task CompleteAsync(SchemaItemResolutionContext context)
         {
-            if (_invokeDef != null)
-            {
-                string fieldName;
-                if (context is FieldResolutionContext frc)
-                    fieldName = frc.Request.Field.Route.Path;
-                else if (context is DirectiveResolutionContext drc)
-                    fieldName = drc.Request.Directive.Route.Path;
-                else
-                    fieldName = "-unknown-";
+            context.Cancel();
 
-                context.Messages.Critical(
-                    $"The field '{fieldName}' was not found or could not be invoked.",
-                    Constants.ErrorCodes.INVALID_ROUTE,
-                    context.Request.Origin,
-                    _thrownException);
-            }
-            else if (!string.IsNullOrWhiteSpace(_message))
+            if (!string.IsNullOrWhiteSpace(_message))
             {
                 context.Messages.Critical(
                     _message,
                     Constants.ErrorCodes.INVALID_ROUTE,
                     context.Request.Origin);
+
+                return Task.CompletedTask;
+            }
+
+            string fieldName = context.Route?.Path;
+            if (string.IsNullOrWhiteSpace(fieldName))
+                fieldName = "~Unknown~";
+
+            if (_invokeDef != null)
+            {
+                var exception = new Exception(
+                    $"The resolver '{_invokeDef.InternalName}' with {_invokeDef.Parameters.Count} was not invocable with the provided data on " +
+                    $"the request.",
+                    _thrownException);
+
+                context.Messages.Critical(
+                    $"The field '{fieldName}' was not found or the resolver could not be invoked.",
+                    Constants.ErrorCodes.INVALID_ROUTE,
+                    context.Request.Origin,
+                    exception);
             }
             else
             {
                 context.Messages.Critical(
-                    "The item was not routable or otherwise not available.",
+                    $"The field '{fieldName}' was not routable or otherwise not available.",
                     Constants.ErrorCodes.INVALID_ROUTE,
-                    context.Request.Origin);
+                    context.Request.Origin,
+                    _thrownException);
             }
 
-            context.Cancel();
             return Task.CompletedTask;
         }
 

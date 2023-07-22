@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(field.DeprecationReason, clonedField.DeprecationReason);
             Assert.AreEqual(field.Complexity, clonedField.Complexity);
             Assert.AreEqual(field.FieldSource, clonedField.FieldSource);
-            Assert.AreEqual(field.InternalFullName, clonedField.InternalFullName);
+            Assert.AreEqual(field.InternalName, clonedField.InternalName);
 
             Assert.IsFalse(object.ReferenceEquals(field.TypeExpression, clonedField.TypeExpression));
             Assert.IsTrue(object.ReferenceEquals(field.Resolver, clonedField.Resolver));
@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var clonedField = field.Clone(clonedParent.Object) as PropertyGraphField;
 
             Assert.IsNotNull(clonedField);
-            Assert.AreEqual(field.InternalFullName, clonedField.InternalFullName);
+            Assert.AreEqual(field.InternalName, clonedField.InternalName);
             Assert.AreEqual(field.Name, clonedField.Name);
             Assert.AreEqual(field.ObjectType, clonedField.ObjectType);
             Assert.AreEqual(field.DeclaredReturnType, clonedField.DeclaredReturnType);

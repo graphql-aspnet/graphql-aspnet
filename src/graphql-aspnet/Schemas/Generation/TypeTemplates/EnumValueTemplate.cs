@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Structural;
 
@@ -51,18 +52,28 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.Description = this.FieldInfo.SingleAttributeOrDefault<DescriptionAttribute>()?.Description ?? null;
             var enumAttrib = this.FieldInfo.SingleAttributeOrDefault<GraphEnumValueAttribute>();
 
+            this.InternalName = enumAttrib?.InternalName;
             var valueName = enumAttrib?.Name?.Trim() ?? Constants.Routing.ENUM_VALUE_META_NAME;
             if (valueName.Length == 0)
                 valueName = Constants.Routing.ENUM_VALUE_META_NAME;
 
             valueName = valueName.Replace(Constants.Routing.ENUM_VALUE_META_NAME, this.FieldInfo.Name);
             this.Route = new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, valueName));
+
+            if (string.IsNullOrWhiteSpace(this.InternalName))
+                this.InternalName = $"{this.Parent.InternalName}.{this.FieldInfo.Name}";
         }
 
         /// <inheritdoc />
         public override void ValidateOrThrow()
         {
-            GraphValidation.EnsureGraphNameOrThrow($"{this.InternalFullName}", this.Name);
+            if (string.IsNullOrWhiteSpace(this.InternalName))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The enum value template of `{this.Value}`, owned by enum {this.Parent.InternalName}, does not declare a valid internal name");
+            }
+
+            GraphValidation.EnsureGraphNameOrThrow($"{this.InternalName}", this.Name);
         }
 
         /// <inheritdoc />
@@ -84,9 +95,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public string NumericValueAsString { get; private set; }
 
         /// <inheritdoc />
-        public override string InternalFullName => $"{this.Parent.InternalFullName}.{this.InternalName}";
-
-        /// <inheritdoc />
-        public override string InternalName => this.FieldInfo.Name;
+        public string DeclaredLabel => this.FieldInfo.Name;
     }
 }

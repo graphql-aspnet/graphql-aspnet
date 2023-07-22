@@ -40,5 +40,14 @@ namespace GraphQL.AspNet.Attributes
         /// </summary>
         /// <value>The name given to this enum value.</value>
         public string Name { get; }
+
+        /// <summary>
+        /// Gets or sets a customized name to refer to this .NET enum value in all log entries and error messages.
+        /// </summary>
+        /// <remarks>
+        /// When not supplied the name defaults to the qualified name of the enum value. (e.g. <c>'MyEnum.Value1'</c>).
+        /// </remarks>
+        /// <value>The name to refer to this enum value on internal messaging.</value>
+        public string InternalName { get; set; }
     }
 }

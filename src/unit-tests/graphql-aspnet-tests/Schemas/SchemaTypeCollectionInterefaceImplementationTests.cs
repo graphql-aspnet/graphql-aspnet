@@ -83,9 +83,9 @@ namespace GraphQL.AspNet.Tests.Schemas
             template.Parse();
             template.ValidateOrThrow();
 
-            var hasSugarTemplate = template.Extensions.FirstOrDefault(x => x.InternalName == nameof(PastryExtensionController.HasSugarExtension));
-            var hasGlazeTemplate = template.Extensions.FirstOrDefault(x => x.InternalName == nameof(PastryExtensionController.HasGlazeExtension));
-            var hasDoubleGlazeTemplate = template.Extensions.FirstOrDefault(x => x.InternalName == nameof(PastryExtensionController.HasDoubleGlazeExtension));
+            var hasSugarTemplate = template.Extensions.FirstOrDefault(x => x.DeclaredName == nameof(PastryExtensionController.HasSugarExtension));
+            var hasGlazeTemplate = template.Extensions.FirstOrDefault(x => x.DeclaredName == nameof(PastryExtensionController.HasGlazeExtension));
+            var hasDoubleGlazeTemplate = template.Extensions.FirstOrDefault(x => x.DeclaredName == nameof(PastryExtensionController.HasDoubleGlazeExtension));
             _hasSugarFieldExtension = this.MakeGraphField(hasSugarTemplate);
             _hasGlazeFieldExtension = this.MakeGraphField(hasGlazeTemplate);
             _hasDoubleGlazeFieldExtension = this.MakeGraphField(hasDoubleGlazeTemplate);
@@ -276,6 +276,9 @@ namespace GraphQL.AspNet.Tests.Schemas
             int positionToAddGlazeField,
             int positiontoAddDoubleGlazeField)
         {
+            // Tests the various scenarios of when a type extension, an OBJECT graph type and an INTERFACE
+            // graph type may be registered to ensure that all graph types contain all extensions by the end
+            // of the inclusion process regardless of the order encountered
             for (var i = 1; i <= 7; i++)
             {
                 if (positionToAddIPastry == i)

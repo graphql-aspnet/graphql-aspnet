@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             var graphName = this.Method.SingleAttributeOrDefault<GraphFieldAttribute>()?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();
 
-            GraphValidation.EnsureGraphNameOrThrow(this.InternalFullName, graphName);
+            GraphValidation.EnsureGraphNameOrThrow(this.InternalName, graphName);
             return new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, graphName));
         }
 
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (declaration != null && declaration != typeof(GraphFieldAttribute))
             {
                 throw new GraphTypeDeclarationException(
-                    $"Invalid graph method declaration. The method '{this.InternalFullName}' declares a '{declaration.FriendlyName()}'. This " +
+                    $"Invalid graph method declaration. The method '{this.InternalName}' declares a '{declaration.FriendlyName()}'. This " +
                     $"attribute is reserved for controller actions. For a general object type use '{nameof(GraphFieldAttribute)}' instead.");
             }
         }

@@ -209,7 +209,7 @@ namespace GraphQL.AspNet.Configuration
             return schemaItem != null
                 && schemaItem is IEnumValue ev
                 && ev.Parent.ObjectType == typeof(TEnum)
-                && Enum.Equals(ev.InternalValue, enumValue);
+                && Enum.Equals(ev.DeclaredValue, enumValue);
         }
 
         /// <summary>

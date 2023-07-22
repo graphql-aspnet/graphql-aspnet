@@ -52,19 +52,24 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
             base.ParseTemplateDefinition();
 
+            var objectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
+            this.ObjectType = objectType;
+
             _fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
 
             this.Route = this.GenerateFieldPath();
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
-            var objectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
-            this.ObjectType = objectType;
-
             var typeExpression = GraphTypeExpression.FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers);
-            typeExpression = typeExpression.CloneTo(GraphTypeNames.ParseName(objectType, this.Parent.Kind));
+            typeExpression = typeExpression.CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
             this.IsRequired = this.AttributeProvider.SingleAttributeOrDefault<RequiredAttribute>() != null;
             this.TypeExpression = typeExpression;
+
+            if (_fieldDeclaration != null)
+                this.InternalName = _fieldDeclaration.InternalName;
+            if (string.IsNullOrEmpty(this.InternalName))
+                this.InternalName = $"{this.Parent.InternalName}.{this.Property.Name}";
         }
 
         /// <inheritdoc />
@@ -79,7 +84,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         private SchemaItemPath GenerateFieldPath()
         {
-            var graphName = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>()?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
+            var graphName = _fieldDeclaration?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Property.Name).Trim();
 
             return new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, graphName));
@@ -93,28 +98,28 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (Validation.IsCastable<Task>(this.DeclaredReturnType))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The input field  '{this.InternalFullName}' defines a return type of'{nameof(Task)}'.  " +
+                    $"The input field  '{this.InternalName}' defines a return type of'{nameof(Task)}'.  " +
                     $"Input fields must not be asyncronous.");
             }
 
             if (this.ObjectType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The input field '{this.InternalFullName}' returns '{this.ObjectType.FriendlyName()}' which is an interface. " +
+                    $"The input field '{this.InternalName}' returns '{this.ObjectType.FriendlyName()}' which is an interface. " +
                     $"Input fields must not return interface objects.");
             }
 
             if (Validation.IsCastable<IGraphUnionProxy>(this.ObjectType))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The input field '{this.InternalFullName}' returns '{this.ObjectType.FriendlyName()}' which implements {nameof(IGraphUnionProxy)}. " +
+                    $"The input field '{this.InternalName}' returns '{this.ObjectType.FriendlyName()}' which implements {nameof(IGraphUnionProxy)}. " +
                     $"Input fields must not implement {nameof(IGraphUnionProxy)}.");
             }
 
             if (Validation.IsCastable<IGraphActionResult>(this.ObjectType))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The input field '{this.InternalFullName}' returns '{this.ObjectType.FriendlyName()}' which implements {nameof(IGraphActionResult)}. " +
+                    $"The input field '{this.InternalName}' returns '{this.ObjectType.FriendlyName()}' which implements {nameof(IGraphActionResult)}. " +
                     $"Input fields must not implement {nameof(IGraphActionResult)}.");
             }
         }
@@ -142,12 +147,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public TypeKind OwnerTypeKind => TypeKind.INPUT_OBJECT;
-
-        /// <inheritdoc />
-        public override string InternalFullName => $"{this.Parent.InternalFullName}.{this.Property.Name}";
-
-        /// <inheritdoc />
-        public override string InternalName => this.Property.Name;
 
         /// <inheritdoc />
         public MetaGraphTypes[] DeclaredTypeWrappers

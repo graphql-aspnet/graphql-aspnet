@@ -78,28 +78,35 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <inheritdoc />
         public override void ValidateOrThrow()
         {
-            base.ValidateOrThrow();
-
             // ensure property has a public getter (kinda useless otherwise)
             if (this.Property.GetGetMethod() == null)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The graph property {this.InternalFullName} does not define a public getter.  It cannot be parsed or added " +
+                    $"The graph property {this.InternalName} does not define a public getter.  It cannot be parsed or added " +
                     "to the object graph.");
             }
 
             if (this.ExpectedReturnType == null)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The graph property '{this.InternalFullName}' has no valid {nameof(this.ExpectedReturnType)}. An expected " +
+                    $"The graph property '{this.InternalName}' has no valid {nameof(this.ExpectedReturnType)}. An expected " +
                     "return type must be assigned from the declared return type.");
             }
+
+            base.ValidateOrThrow();
         }
 
         /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
             base.ParseTemplateDefinition();
+
+            // set the internal name of the item
+            var fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            if (fieldDeclaration != null)
+                this.InternalName = fieldDeclaration.InternalName;
+            if (string.IsNullOrWhiteSpace(this.InternalName) && this.Method != null)
+                this.InternalName = $"{this.Parent.InternalName}.{this.Method.Name}";
 
             this.ExpectedReturnType = GraphValidation.EliminateWrappersFromCoreType(
                 this.DeclaredReturnType,
@@ -126,10 +133,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 this.ExpectedReturnType,
                 this.IsAsyncField,
                 this.InternalName,
-                this.InternalFullName,
                 this.Parent.ObjectType,
-                this.Parent.InternalName,
-                this.Parent.InternalFullName);
+                this.Parent.InternalName);
         }
 
         /// <inheritdoc />
@@ -164,11 +169,5 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public override IReadOnlyList<IGraphArgumentTemplate> Arguments { get; } = new List<IGraphArgumentTemplate>();
-
-        /// <inheritdoc />
-        public override string InternalFullName => $"{this.Parent.InternalFullName}.{this.Property.Name}";
-
-        /// <inheritdoc />
-        public override string InternalName => this.Property.Name;
     }
 }

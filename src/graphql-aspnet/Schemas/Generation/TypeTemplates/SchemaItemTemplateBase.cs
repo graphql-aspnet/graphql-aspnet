@@ -87,14 +87,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (!_isParsed)
             {
                 throw new InvalidOperationException(
-                    $"The graph item has not been parsed and cannot pass validation. Be sure to call {nameof(this.Parse)}() before attempting to " +
+                    $"The schema template item has not been parsed and cannot pass validation. Be sure to call {nameof(this.Parse)}() before attempting to " +
                     "validate this instance.");
             }
 
             if (this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphSkipAttribute>() != null)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The graph item {this.InternalFullName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
+                    $"The schema template item {this.InternalName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
                     "to the object graph.",
                     this.ObjectType);
             }
@@ -102,9 +102,16 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.Route == null || !this.Route.IsValid)
             {
                 throw new GraphTypeDeclarationException(
-                        $"The template item '{this.InternalFullName}' declares an invalid route of '{this.Route?.Raw ?? "<null>"}'. " +
+                        $"The schema template item '{this.InternalName}' declares an invalid route of '{this.Route?.Raw ?? "<null>"}'. " +
                         $"Each segment of the route must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )",
                         this.ObjectType);
+            }
+
+            if (string.IsNullOrWhiteSpace(this.InternalName))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The schema template item identified by `{this.ObjectType.FriendlyName()}` and named '{this.Name}' on a schema " +
+                    $"does not declare a valid internal name.");
             }
 
             foreach (var directive in this.AppliedDirectives)
@@ -124,10 +131,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public SchemaItemPath Route { get; protected set; }
 
         /// <inheritdoc />
-        public abstract string InternalFullName { get; }
-
-        /// <inheritdoc />
-        public abstract string InternalName { get; }
+        public string InternalName { get; protected set; }
 
         /// <inheritdoc />
         public ICustomAttributeProvider AttributeProvider { get; }

@@ -153,12 +153,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public IReadOnlyList<IEnumValueTemplate> Values => _values;
 
         /// <inheritdoc />
-        public override string InternalFullName => this.ObjectType?.FriendlyName(true);
-
-        /// <inheritdoc />
-        public override string InternalName => this.ObjectType?.FriendlyName();
-
-        /// <inheritdoc />
         public override AppliedSecurityPolicyGroup SecurityPolicies => AppliedSecurityPolicyGroup.Empty;
 
         /// <inheritdoc />

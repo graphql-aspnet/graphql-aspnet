@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.TypeExpression = new GraphTypeExpression(parentTypeName);
             this.Arguments = new GraphFieldArgumentCollection(this);
             this.Resolver = new GraphControllerRouteFieldResolver(new VirtualResolvedObject(this.TypeExpression.TypeName));
-            this.InternalFullName = $"VirtualField_{this.Name}";
+            this.InternalName = $"VirtualField_{this.Name}";
 
             // fields made from controller route parameters have no policies directly unto themselves
             // any controller class level policies are individually added to fields they declare
@@ -192,6 +192,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public string InternalFullName { get; }
+        public string InternalName { get; }
     }
 }

@@ -47,6 +47,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                     description,
                     this.Route.CreateChild(name),
                     value,
+                    fi.Name,
                     name);
 
                 this.AddOption(option);

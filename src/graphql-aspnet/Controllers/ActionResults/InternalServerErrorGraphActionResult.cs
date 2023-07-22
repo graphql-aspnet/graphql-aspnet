@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
             _exception = exception;
 
             if (_exception == null)
-                _exception = new Exception($"The action method '{action?.InternalFullName}' failed to complete successfully but did not record an exception.");
+                _exception = new Exception($"The action method '{action?.InternalName}' failed to complete successfully but did not record an exception.");
         }
 
         /// <inheritdoc />

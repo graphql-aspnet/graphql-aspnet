@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             {
                 var duplicatedDecs = string.Join(",", _duplicateDirectiveLocations.Select(x => $"'{x.ToString()}'"));
                 throw new GraphTypeDeclarationException(
-                    $"The directive '{_parent.InternalFullName}' attempted to register more than one method to handle " +
+                    $"The directive '{_parent.InternalName}' attempted to register more than one method to handle " +
                     $"a single {nameof(DirectiveLocation)}. Each directive can only define, at most, one method per {nameof(DirectiveLocation)}. " +
                     $"Duplicated Locations: {duplicatedDecs}");
             }
@@ -155,7 +155,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 if (!this.DoMethodSignaturesMatch(baseExecutionMethod, kvp.Value))
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The method '{kvp.Value.InternalFullName}' (Target Location: {kvp.Value}) declares a signature of '{kvp.Value.MethodSignature}'. " +
+                        $"The method '{kvp.Value.InternalName}' (Target Location: {kvp.Value}) declares a signature of '{kvp.Value.MethodSignature}'. " +
                         $"However, which is different than the method '{baseExecutionMethod.InternalName}'. " +
                         $"All location targeting methods on a directive must have the same method signature " +
                         $"including parameter types, names and declaration order.");

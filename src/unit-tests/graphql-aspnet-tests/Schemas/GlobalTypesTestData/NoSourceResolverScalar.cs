@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
 
         public Type ObjectType { get; }
 
-        public string InternalFullName { get; }
+        public string InternalName { get; }
 
         public SchemaItemPath Route { get; }
 

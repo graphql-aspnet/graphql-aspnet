@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Engine
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(action),
-                    $"The '{action.InternalFullName}' action's operation root ({action.Route.RootCollection}) is not " +
+                    $"The '{action.InternalName}' action's operation root ({action.Route.RootCollection}) is not " +
                     $"allowed by the target schema (Name: {this.Schema.Name}).");
             }
         }
@@ -228,7 +228,7 @@ namespace GraphQL.AspNet.Engine
                 {
                     throw new GraphTypeDeclarationException(
                         $"The '{parentType.Kind}' graph type '{parentType.Name}' already contains a field named '{fieldResult.Field.Name}'. " +
-                        $"The action method '{action.InternalFullName}' cannot be added to the graph type with the same name.");
+                        $"The action method '{action.InternalName}' cannot be added to the graph type with the same name.");
                 }
 
                 parentType.Extend(fieldResult.Field);

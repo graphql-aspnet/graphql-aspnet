@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.Name,
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
-                this.InternalFullName,
+                this.InternalName,
                 this.ObjectType,
                 this.DeclaredReturnType,
                 this.Mode,

@@ -1165,7 +1165,7 @@ namespace GraphQL.AspNet.Tests.Execution
                       schemaItem != null
                         && schemaItem is IEnumValue ev
                         && ev.Parent.ObjectType == typeof(IntrospectableEnum)
-                        && Convert.ToInt32(ev.InternalValue) == (int)IntrospectableEnum.Value1);
+                        && Convert.ToInt32(ev.DeclaredValue) == (int)IntrospectableEnum.Value1);
             })
             .Build();
 

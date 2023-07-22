@@ -44,15 +44,8 @@ namespace GraphQL.AspNet.Interfaces.Execution
         bool IsAsyncField { get; }
 
         /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the
-        /// .NET code (e.g. <c>Namespace.ObjectType.MethodName</c>).
-        /// </summary>
-        /// <value>The fully qualified name given to this item.</value>
-        string InternalFullName { get; }
-
-        /// <summary>
         /// Gets the name that defines this item within the .NET code of the application;
-        /// typically a method name or property name.
+        /// typically a qualifed method name or property name. (e.g. <c>MyObject.MyMethodName</c>).
         /// </summary>
         /// <value>The internal name given to this item.</value>
         string InternalName { get; }
@@ -70,13 +63,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The name of the parent.</value>
         string ParentInternalName { get; }
-
-        /// <summary>
-        /// Gets the full internal name of the parent item that ows the <see cref="Method"/> which generated
-        /// this metdata object.
-        /// </summary>
-        /// <value>The name of the parent.</value>
-        string ParentInternalFullName { get; }
 
         /// <summary>
         /// Gets the templatized field arguments representing the field (if any).

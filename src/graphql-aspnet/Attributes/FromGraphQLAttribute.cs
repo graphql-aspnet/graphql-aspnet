@@ -59,5 +59,15 @@ namespace GraphQL.AspNet.Attributes
         /// </remarks>
         /// <value>The type expression to assign to this argument.</value>
         public string TypeExpression { get; set; }
+
+        /// <summary>
+        /// Gets or sets a customized name to refer to this parameter in all log entries and error messages.
+        /// </summary>
+        /// <remarks>
+        /// When not supplied the name defaults to a combination of the class + method + parameter naem. (e.g. <c>'MyObject.Method1.Param1'</c>). This
+        /// can be especially helpful when working with runtime defined fields (e.g. minimal api).
+        /// </remarks>
+        /// <value>The name to refer to this parameter on internal messaging.</value>
+        public string InternalName { get; set; }
     }
 }

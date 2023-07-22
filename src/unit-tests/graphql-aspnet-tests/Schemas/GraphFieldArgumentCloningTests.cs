@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(arg.Description, clonedArg.Description);
             Assert.AreEqual(arg.DefaultValue, clonedArg.DefaultValue);
             Assert.AreEqual(arg.ObjectType, clonedArg.ObjectType);
-            Assert.AreEqual(arg.InternalFullName, clonedArg.InternalFullName);
+            Assert.AreEqual(arg.InternalName, clonedArg.InternalName);
             Assert.AreEqual(arg.TypeExpression, clonedArg.TypeExpression);
             Assert.AreEqual(arg.ParameterName, clonedArg.ParameterName);
             Assert.AreEqual(arg.AppliedDirectives.Count, arg.AppliedDirectives.Count);

@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             where TControllerType : GraphController
         {
             var mockController = new Mock<IGraphControllerTemplate>();
-            mockController.Setup(x => x.InternalFullName).Returns(typeof(TControllerType).FullName);
+            mockController.Setup(x => x.InternalName).Returns(typeof(TControllerType).FullName);
             mockController.Setup(x => x.InternalName).Returns(typeof(TControllerType).Name);
             mockController.Setup(x => x.Route).Returns(new SchemaItemPath("path0"));
             mockController.Setup(x => x.Name).Returns("path0");
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(OneMethodSubscriptionController), action.Parent.ObjectType);
             Assert.AreEqual(SchemaItemCollections.Subscription, action.Route.RootCollection);
             Assert.AreEqual("[subscription]/path0/path1", action.Route.Path);
-            Assert.AreEqual($"{action.Parent.InternalFullName}.{nameof(OneMethodSubscriptionController.SingleMethod)}", action.InternalFullName);
+            Assert.AreEqual($"{action.Parent.InternalName}.{nameof(OneMethodSubscriptionController.SingleMethod)}", action.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, metaData.ParentObjectType);
             Assert.AreEqual("path0", action.Parent.Name);
             Assert.AreEqual(methodInfo, action.Method);

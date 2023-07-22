@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Execution
             {
                 var parameter = resolverMetadata.Parameters[i];
 
-                object passedValue = this.ResolveParameterValue(parameter, resolverMetadata.InternalFullName);
+                object passedValue = this.ResolveParameterValue(parameter);
 
                 // ensure compatible list types between the internally
                 // tracked data and the target type of the method being invoked
@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Execution
             return preparedParams;
         }
 
-        private object ResolveParameterValue(IGraphFieldResolverParameterMetaData paramDef, string parentFullName)
+        private object ResolveParameterValue(IGraphFieldResolverParameterMetaData paramDef)
         {
             Validation.ThrowIfNull(paramDef, nameof(paramDef));
 
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Execution
                     return this.CreateNullOrDefault(paramDef.ExpectedType);
 
                 throw new GraphExecutionException(
-                    $"The resolution context parameter '{paramDef.InternalName}' of type {paramDef.ExpectedType.FriendlyName()} for resolver '{parentFullName}' could not be resolved and " +
+                    $"The resolution context parameter '{paramDef.InternalName}' of type {paramDef.ExpectedType.FriendlyName()} for resolver '{paramDef.ParentInternalName}' could not be resolved and " +
                     $"does not declare a default value. Unable to complete the request.");
             }
 
@@ -158,12 +158,12 @@ namespace GraphQL.AspNet.Execution
                     return this.CreateNullOrDefault(paramDef.ExpectedType);
 
                 throw new GraphExecutionException(
-                    $"The http context parameter '{paramDef.InternalName}' of type {paramDef.ExpectedType.FriendlyName()} for resolver '{parentFullName}' could not be resolved and " +
+                    $"The http context parameter '{paramDef.InternalName}' of type {paramDef.ExpectedType.FriendlyName()} for resolver '{paramDef.ParentInternalName}' could not be resolved and " +
                     $"does not declare a default value. Unable to complete the request.");
             }
 
             // if there an argument supplied on the query for this parameter, use that
-            if (this.TryGetValue(paramDef.InternalName, out var arg))
+            if (this.TryGetValue(paramDef.ParameterInfo.Name, out var arg))
                 return arg.Value;
 
             // if the parameter is part of the graph, use the related argument's default value
@@ -173,7 +173,7 @@ namespace GraphQL.AspNet.Execution
                 // supplied from a query
                 var graphArgument = _resolutionContext?
                     .SchemaDefinedArguments?
-                    .FindArgumentByParameterName(paramDef.InternalName);
+                    .FindArgumentByParameterName(paramDef.ParameterInfo.Name);
 
                 if (graphArgument != null)
                 {
@@ -216,12 +216,12 @@ namespace GraphQL.AspNet.Execution
             if (_resolutionContext != null && _resolutionContext.Schema.Configuration.ExecutionOptions.ResolverParameterResolutionRule == Configuration.ResolverParameterResolutionRules.UseNullorDefault)
                 return this.CreateNullOrDefault(paramDef.ExpectedType);
 
-            var schemaItem = _resolutionContext?.Route.Path
-                ?? paramDef.InternalFullName;
+            var schemaItemName = _resolutionContext?.Route.Path
+                ?? paramDef.InternalName;
 
             // error unable to resolve correctly. *womp womp*
             throw new GraphExecutionException(
-                   $"The parameter '{paramDef.InternalName}' targeting '{schemaItem}' was expected to be resolved from a " +
+                   $"The parameter '{paramDef.InternalName}' targeting '{schemaItemName}' was expected to be resolved from a " +
                    $"service provider but a suitable instance could not be obtained from the current invocation context " +
                    $"and no default value was declared.");
         }

@@ -167,12 +167,12 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         }
 
         [Test]
-        public async Task RouteNotFound_ViaGraphAction_YieldsNegativeResult()
+        public async Task RouteNotFound_ViaResolverMetaData_WithThrownException_YieldsNegativeResult_AndThrowsExceptionWrappedException()
         {
-            var action = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)).CreateResolverMetaData();
+            var resolverMetadata = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)).CreateResolverMetaData();
 
             var exception = new Exception("fail");
-            var actionResult = new RouteNotFoundGraphActionResult(action, exception);
+            var actionResult = new RouteNotFoundGraphActionResult(resolverMetadata, exception);
 
             var context = this.CreateResolutionContext();
             await actionResult.CompleteAsync(context);
@@ -180,7 +180,11 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_ROUTE, context.Messages[0].Code);
-            Assert.IsTrue(context.Messages[0].Message.Contains(action.InternalName));
+
+            // exception message should have the resolver name in it
+            Assert.IsTrue(context.Messages[0].Message.Contains(context.Route.Name));
+            Assert.IsTrue(context.Messages[0].Exception.Message.Contains(resolverMetadata.InternalName));
+            Assert.AreEqual(context.Messages[0].Exception.InnerException, exception);
         }
 
         [Test]

@@ -80,6 +80,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                     value.Description,
                     value.Route,
                     value.Value,
+                    value.DeclaredLabel,
                     value.InternalName,
                     valueDirectives);
 

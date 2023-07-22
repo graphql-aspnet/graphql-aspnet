@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Resolvers;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
@@ -75,6 +76,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.Description = this.AttributeProvider.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.IsAsyncField = Validation.IsCastable<Task>(this.Method.ReturnType);
             this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();
+            this.InternalName = $"{this.Parent?.InternalName ?? "UnknownDirective"}.{this.Method.Name}";
 
             // deteremine all the directive locations where this method should be invoked
             var locations = DirectiveLocation.NONE;
@@ -147,14 +149,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.Method.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive method {this.InternalFullName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
+                    $"The directive method {this.InternalName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
                     "to the object graph.");
             }
 
             if (this.AppliedDirectives.Any())
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive method {this.InternalFullName} defines an {nameof(ApplyDirectiveAttribute)}. " +
+                    $"The directive method {this.InternalName} defines an {nameof(ApplyDirectiveAttribute)}. " +
                     $"Directive methods cannot have applied directives.");
             }
 
@@ -167,7 +169,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 if (genericArgs.Length != 1)
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The directive method '{this.InternalFullName}' defines a return type of'{typeof(Task).Name}' but " +
+                        $"The directive method '{this.InternalName}' defines a return type of'{typeof(Task).Name}' but " +
                         "defines no contained return type for the resultant model object yielding a void return after " +
                         "completion of the task. All graph methods must return a single model object. Consider using " +
                         $"'{typeof(Task<>).Name}' instead for asyncronous methods");
@@ -177,8 +179,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.ExpectedReturnType != typeof(IGraphActionResult))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive method '{this.InternalFullName}' does not return a {nameof(IGraphActionResult)}. " +
+                    $"The directive method '{this.InternalName}' does not return a {nameof(IGraphActionResult)}. " +
                     $"All directive methods must return a {nameof(IGraphActionResult)} or {typeof(Task<IGraphActionResult>).FriendlyName()}");
+            }
+
+            if (string.IsNullOrWhiteSpace(this.InternalName))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The directive method template identified by `{this.Method.Name}` does not declare a valid internal name.");
             }
 
             foreach (var argument in _arguments)
@@ -218,10 +226,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 this.ExpectedReturnType,
                 this.IsAsyncField,
                 this.InternalName,
-                this.InternalFullName,
                 this.Parent.ObjectType,
-                this.Parent.InternalName,
-                this.Parent.InternalFullName);
+                this.Parent.InternalName);
         }
 
         /// <summary>
@@ -292,10 +298,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public GraphFieldSource FieldSource => GraphFieldSource.Method;
 
         /// <inheritdoc />
-        public string InternalFullName => $"{this.Parent?.InternalFullName}.{this.Method.Name}";
-
-        /// <inheritdoc />
-        public string InternalName => this.Method.Name;
+        public string InternalName { get; protected set; }
 
         /// <inheritdoc />
         public ICustomAttributeProvider AttributeProvider { get; }

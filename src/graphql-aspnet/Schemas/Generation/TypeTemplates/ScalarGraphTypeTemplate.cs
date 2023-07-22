@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -49,7 +50,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             {
                 this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, _instance.Name));
                 this.ObjectType = _instance.ObjectType;
+                this.InternalName = _instance.InternalName;
             }
+
+            if (string.IsNullOrWhiteSpace(this.InternalName))
+                this.InternalName = _scalarType?.FriendlyName();
         }
 
         /// <inheritdoc />
@@ -81,12 +86,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public override TypeKind Kind => TypeKind.SCALAR;
-
-        /// <inheritdoc />
-        public override string InternalFullName => _instance?.InternalFullName;
-
-        /// <inheritdoc />
-        public override string InternalName => _scalarType?.Name;
 
         /// <inheritdoc />
         public override string Name => _instance?.Name;

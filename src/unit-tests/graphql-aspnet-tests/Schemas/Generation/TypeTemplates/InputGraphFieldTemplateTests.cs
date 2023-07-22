@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IInputObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
 
             var parent = obj.Object;
@@ -40,10 +40,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual("name desc", template.Description);
             Assert.AreEqual(typeof(string), template.ObjectType);
             Assert.IsFalse(template.IsRequired);
-            Assert.AreEqual("String", template.TypeExpression.ToString());
+            Assert.AreEqual("Type", template.TypeExpression.ToString());
             Assert.AreEqual(1, template.AppliedDirectives.Count());
             Assert.AreEqual("nameDirective", template.AppliedDirectives.Single().DirectiveName);
-            Assert.AreEqual("Name", template.InternalName);
+            Assert.AreEqual("Item0.Name", template.InternalName);
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IInputObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
 
             var parent = obj.Object;
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IInputObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
 
             var parent = obj.Object;
@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IInputObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
 
             var parent = obj.Object;
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             // field does declare [Required] there for cannot have a default value
-            Assert.AreEqual("Input_ShoeData!", template.TypeExpression.ToString());
+            Assert.AreEqual("Type!", template.TypeExpression.ToString());
         }
 
         [Test]
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IInputObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
 
             var parent = obj.Object;
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IInputObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
 
             var parent = obj.Object;
@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IInputObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
 
             var parent = obj.Object;
@@ -163,7 +163,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IInputObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
             obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
 
             var parent = obj.Object;

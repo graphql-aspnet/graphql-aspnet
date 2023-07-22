@@ -99,14 +99,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (string.IsNullOrWhiteSpace(this.EventName))
             {
                 throw new GraphTypeDeclarationException(
-                        $"Invalid subscription action declaration. The method '{this.InternalFullName}' does not " +
+                        $"Invalid subscription action declaration. The method '{this.InternalName}' does not " +
                         $"have an event name.");
             }
 
             if (!Constants.RegExPatterns.NameRegex.IsMatch(this.EventName))
             {
                 throw new GraphTypeDeclarationException(
-                        $"Invalid subscription action declaration. The method '{this.InternalFullName}' declares " +
+                        $"Invalid subscription action declaration. The method '{this.InternalName}' declares " +
                         $"a custom event name of '{this.EventName}'. However, the event name must conform to " +
                         $"standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )");
             }
@@ -115,7 +115,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (this.Method.GetParameters().Where(x => x.HasAttribute<SubscriptionSourceAttribute>()).Count() > 1)
             {
                 throw new GraphTypeDeclarationException(
-                        $"Invalid subscription action declaration. The method '{this.InternalFullName}' decorates more" +
+                        $"Invalid subscription action declaration. The method '{this.InternalName}' decorates more" +
                         $"than one parameter  with {typeof(SubscriptionSourceAttribute).FriendlyName()}. At most one parameter " +
                         $"can be attributed with {typeof(SubscriptionSourceAttribute).FriendlyName()}");
             }
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (sourceArgument == null)
             {
                 throw new GraphTypeDeclarationException(
-                        $"Invalid subscription action declaration. The method '{this.InternalFullName}' must " +
+                        $"Invalid subscription action declaration. The method '{this.InternalName}' must " +
                         $"declare 1 (and only 1) parameter of type '{this.SourceObjectType.FriendlyName()}' which will be populated" +
                         "with the source data raised by a subscription event at runtime. Alternately use " +
                         $"{typeof(SubscriptionSourceAttribute).FriendlyName()} to explicitly assign a source data parameter.");

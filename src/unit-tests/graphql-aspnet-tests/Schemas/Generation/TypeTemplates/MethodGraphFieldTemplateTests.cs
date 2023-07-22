@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var methodInfo = typeof(TObject).GetMethod(methodName);
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var methodInfo = typeof(MethodClass).GetMethod(nameof(MethodClass.SimpleMethodNoAttributes));
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.AreEqual(nameof(MethodClass.SimpleMethodNoAttributes), template.Name);
-            Assert.AreEqual($"Item0.{nameof(MethodClass.SimpleMethodNoAttributes)}", template.InternalFullName);
+            Assert.AreEqual($"Item0.{nameof(MethodClass.SimpleMethodNoAttributes)}", template.InternalName);
             Assert.AreEqual($"[type]/Item0/{nameof(MethodClass.SimpleMethodNoAttributes)}", template.Route.Path);
             Assert.AreEqual(parent.Route.Path, template.Route.Parent.Path);
             Assert.AreEqual(methodInfo, template.Method);
@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(1, template.Arguments.Count);
             var param = template.Arguments[0];
             Assert.AreEqual("arg55", param.Name);
-            Assert.AreEqual("Item0.ParamWithAlternateName.arg1", param.InternalFullName);
+            Assert.AreEqual("Item0.ParamWithAlternateName.arg1", param.InternalName);
         }
 
         [Test]
@@ -157,7 +157,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
                 Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME,
@@ -175,7 +175,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
                 typeof(TwoPropertyObject).FriendlyName(),
@@ -196,7 +196,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
 
             var parent = obj.Object;
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.DefaultNonNullableParameter));

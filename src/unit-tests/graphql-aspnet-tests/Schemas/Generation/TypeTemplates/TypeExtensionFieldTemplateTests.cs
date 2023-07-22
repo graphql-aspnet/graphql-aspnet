@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             where TControllerType : GraphController
         {
             var mockController = new Mock<IGraphControllerTemplate>();
-            mockController.Setup(x => x.InternalFullName).Returns(typeof(TControllerType).Name);
+            mockController.Setup(x => x.InternalName).Returns(typeof(TControllerType).Name);
             mockController.Setup(x => x.Route).Returns(new SchemaItemPath("path0"));
             mockController.Setup(x => x.Name).Returns("path0");
             mockController.Setup(x => x.ObjectType).Returns(typeof(TControllerType));
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyObject), template.SourceObjectType);
             Assert.AreEqual($"[type]/{nameof(TwoPropertyObject)}/Property3", template.Route.Path);
-            Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.ClassTypeExtension)}", template.InternalFullName);
+            Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.ClassTypeExtension)}", template.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, template.Parent.ObjectType);
             Assert.AreEqual("path0", template.Parent.Name);
             Assert.AreEqual(methodInfo, template.Method);
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyStruct), template.SourceObjectType);
             Assert.AreEqual($"[type]/{nameof(TwoPropertyStruct)}/Property3", template.Route.Path);
-            Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.StructTypeExtension)}", template.InternalFullName);
+            Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.StructTypeExtension)}", template.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, template.Parent.ObjectType);
             Assert.AreEqual("path0", template.Parent.Name);
             Assert.AreEqual(methodInfo, template.Method);
@@ -145,7 +145,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(ISinglePropertyObject), template.SourceObjectType);
             Assert.AreEqual($"[type]/TwoPropertyInterface/Property3", template.Route.Path);
-            Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.InterfaceTypeExtension)}", template.InternalFullName);
+            Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.InterfaceTypeExtension)}", template.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, template.Parent.ObjectType);
             Assert.AreEqual("path0", template.Parent.Name);
             Assert.AreEqual(methodInfo, template.Method);

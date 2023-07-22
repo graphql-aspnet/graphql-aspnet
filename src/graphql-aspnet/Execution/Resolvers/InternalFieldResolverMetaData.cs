@@ -39,10 +39,8 @@ namespace GraphQL.AspNet.Execution.Resolvers
                 typeof(int),
                 false,
                 nameof(InternalValueResolver),
-                $"{owningType.FriendlyName(true)}.{nameof(InternalValueResolver)}",
                 owningType,
-                owningType.FriendlyName(),
-                owningType.FriendlyName(true));
+                owningType.FriendlyName());
         }
 
         private static int InternalValueResolver()

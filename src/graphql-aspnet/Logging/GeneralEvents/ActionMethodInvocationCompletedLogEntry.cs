@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             : base(LogEventIds.ControllerInvocationCompleted)
         {
             this.PipelineRequestId = request?.Id.ToString();
-            this.ControllerName = method?.ParentInternalFullName;
+            this.ControllerName = method?.ParentInternalName;
             this.ActionName = method?.InternalName;
             this.ResultTypeName = result?.GetType().FriendlyName(true);
             _shortControllerName = method?.ParentInternalName;

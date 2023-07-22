@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ScalarTestData
             this.Name = "myScalar";
             this.Description = "myScalar Desc";
             this.Route = new SchemaItemPath(SchemaItemCollections.Scalars, this.Name);
-            this.InternalFullName = "My.Test.Scalar";
+            this.InternalName = "My.Test.Scalar";
             this.ObjectType = typeof(MyTestObject);
             this.SourceResolver = new Mock<ILeafValueResolver>().Object;
             this.Publish = true;
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ScalarTestData
 
         public Type ObjectType { get; }
 
-        public string InternalFullName { get; }
+        public string InternalName { get; }
 
         public SchemaItemPath Route { get; }
 

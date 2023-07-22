@@ -73,7 +73,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             {
                 name = _argDeclaration?.ArgumentName?.Trim();
                 _foundModifiers.Add(GraphArgumentModifiers.ExplicitSchemaItem);
+                this.InternalName = _argDeclaration.InternalName;
             }
+
+            if (string.IsNullOrWhiteSpace(this.InternalName))
+                this.InternalName = $"{this.Parent?.InternalName}.{this.Parameter.Name}";
 
             if (string.IsNullOrWhiteSpace(name))
                 name = Constants.Routing.PARAMETER_META_NAME;
@@ -257,12 +261,19 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <inheritdoc />
         public void ValidateOrThrow()
         {
-            GraphValidation.EnsureGraphNameOrThrow(this.InternalFullName, this.Name);
+            if (string.IsNullOrWhiteSpace(this.InternalName))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The item '{this.Parent.InternalName}' declares a parameter '{this.Parameter.Name}' " +
+                    "that did not not declare a valid internal name. Templating cannot continue.");
+            }
+
+            GraphValidation.EnsureGraphNameOrThrow(this.InternalName, this.Name);
 
             if (_invalidTypeExpression)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The item '{this.Parent.InternalFullName}' declares a parameter '{this.Name}' that " +
+                    $"The item '{this.Parent.InternalName}' declares a parameter '{this.Name}' that " +
                     $"defines an invalid {nameof(FromGraphQLAttribute.TypeExpression)} (Value = '{_argDeclaration.TypeExpression}'). " +
                     $"The provided type expression must be a valid query language type expression or null.");
             }
@@ -276,7 +287,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (!GraphTypeExpression.AreTypesCompatiable(actualTypeExpression, this.TypeExpression, false))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The item '{this.Parent.InternalFullName}' declares a parameter '{this.Name}' that " +
+                    $"The item '{this.Parent.InternalName}' declares a parameter '{this.Name}' that " +
                     $"defines a {nameof(FromGraphQLAttribute.TypeExpression)} that is incompatiable with the " +
                     $".NET parameter. (Declared '{this.TypeExpression}' is incompatiable with '{actualTypeExpression}') ");
             }
@@ -287,7 +298,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 && _foundModifiers.Contains(GraphArgumentModifiers.ExplicitSchemaItem))
             {
                 throw new GraphTypeDeclarationException(
-                       $"The item '{this.Parent.InternalFullName}' declares a parameter '{this.Name}' that " +
+                       $"The item '{this.Parent.InternalName}' declares a parameter '{this.Name}' that " +
                        $"is defined to be supplied from a graphql query AND from a DI services container. " +
                        $"An argument can not be supplied from a graphql query and from a DI container. If declaring argument attributes, supply " +
                        $"{nameof(FromGraphQLAttribute)} or {nameof(FromServicesAttribute)}, but not both.");
@@ -297,7 +308,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             {
                 var flags = string.Join(", ", _foundModifiers);
                 throw new GraphTypeDeclarationException(
-                    $"The item '{this.Parent.InternalFullName}' declares a parameter '{this.Name}' that " +
+                    $"The item '{this.Parent.InternalName}' declares a parameter '{this.Name}' that " +
                     $"declares more than one behavior modification flag. Each parameter must declare only one " +
                     $"behavioral role within a given resolver method. Flags Declared: {flags}");
             }
@@ -305,7 +316,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_argSkipDeclaration != null && this.ArgumentModifier.CouldBePartOfTheSchema())
             {
                 throw new GraphTypeDeclarationException(
-                    $"The item '{this.Parent.InternalFullName}' contains a parameter '{this.Name}' that " +
+                    $"The item '{this.Parent.InternalName}' contains a parameter '{this.Name}' that " +
                     $"declares the {nameof(GraphSkipAttribute)}. However, this argument may be included in the schema in some scenarios. " +
                     $"If this argument is intended to be served from a service provider try adding {typeof(FromServicesAttribute)} to its declaration.");
             }
@@ -313,7 +324,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_argTypeSkipDeclaration != null && this.ArgumentModifier.CouldBePartOfTheSchema())
             {
                 throw new GraphTypeDeclarationException(
-                    $"The item '{this.Parent.InternalFullName}' contains a parameter '{this.Name}' that " +
+                    $"The item '{this.Parent.InternalName}' contains a parameter '{this.Name}' that " +
                     $"is of type {this.Parameter.ParameterType.FriendlyName()} . This type declares the {nameof(GraphSkipAttribute)} and is " +
                     $"not allowed to appear in any schema but is currently being interpreted as an INPUT_OBJECT. If the parameter value is intended to be served " +
                     $"from a service provider try adding {typeof(FromServicesAttribute)} to its declaration.");
@@ -336,7 +347,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             return new FieldResolverParameterMetaData(
                 this.Parameter,
                 this.InternalName,
-                this.InternalFullName,
+                this.Parent.InternalName,
                 this.ArgumentModifier,
                 isValidList,
                 this.HasDefaultValue,
@@ -356,10 +367,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public Type DeclaredArgumentType { get; private set; }
 
         /// <inheritdoc />
-        public string InternalFullName => $"{this.Parent?.InternalFullName}.{this.Parameter.Name}";
-
-        /// <inheritdoc />
-        public string InternalName => this.Parameter.Name;
+        public string InternalName { get; private set; }
 
         /// <inheritdoc />
         public bool IsExplicitDeclaration => true;

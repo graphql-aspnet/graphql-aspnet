@@ -188,9 +188,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             if (_invalidFields != null && _invalidFields.Count > 0)
             {
-                var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalFullName} ({x.Route.RootCollection.ToString()})'"));
+                var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalName} ({x.Route.RootCollection.ToString()})'"));
                 throw new GraphTypeDeclarationException(
-                    $"Invalid input field declaration.  The type '{this.InternalFullName}' declares fields belonging to a graph collection not allowed given its context. This type can " +
+                    $"Invalid input field declaration.  The type '{this.InternalName}' declares fields belonging to a graph collection not allowed given its context. This type can " +
                     $"only declare the following graph collections: '{string.Join(", ", this.AllowedGraphCollectionTypes.Select(x => x.ToString()))}'. " +
                     $"If this field is declared on an object (not a controller) be sure to use '{nameof(GraphFieldAttribute)}' instead " +
                     $"of '{nameof(QueryAttribute)}' or '{nameof(MutationAttribute)}'.\n---------\n " + fieldNames,
@@ -209,12 +209,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public override AppliedSecurityPolicyGroup SecurityPolicies => AppliedSecurityPolicyGroup.Empty;
-
-        /// <inheritdoc />
-        public override string InternalFullName => this.ObjectType?.FriendlyName(true);
-
-        /// <inheritdoc />
-        public override string InternalName => this.ObjectType?.FriendlyName();
 
         private IEnumerable<SchemaItemCollections> AllowedGraphCollectionTypes => SchemaItemCollections.Types.AsEnumerable();
     }

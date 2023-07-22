@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Arguments = new GraphFieldArgumentCollection(this);
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.DeclaredReturnType = Validation.ThrowIfNullOrReturn(declaredReturnType, nameof(declaredReturnType));
-            this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.Name,
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
-                this.InternalFullName,
+                this.InternalName,
                 this.ObjectType,
                 this.DeclaredReturnType,
                 this.Mode,
@@ -214,6 +214,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public string InternalFullName { get; }
+        public string InternalName { get; }
     }
 }

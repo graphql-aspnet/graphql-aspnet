@@ -31,21 +31,16 @@ namespace GraphQL.AspNet.Execution.Resolvers
         /// from concrete return types (e.g. expecting an interface but actually returning a concrete type that implements that interface).</param>
         /// <param name="isAsyncField">if set to <c>true</c> the invoked method is asyncronous.</param>
         /// <param name="internalName">The name of the resolver method or property as it exists in source code.</param>
-        /// <param name="internalFullName">the full name of the resolver method or propert, with namespace and parent owning class,
-        /// as it exists in source code.</param>
         /// <param name="parentObjectType">The type of the .NET class or struct where the resolver method is declared.</param>
         /// <param name="parentInternalName">The name of the .NET class or struct where the resolver method is declared.</param>
-        /// <param name="parentInternalFullName">The full name of the .NET class or struct, including namespace, where the resolver method is declared.</param>
         public FieldResolverMetaData(
             MethodInfo method,
             IGraphFieldResolverParameterMetaDataCollection parameters,
             Type expectedReturnType,
             bool isAsyncField,
             string internalName,
-            string internalFullName,
             Type parentObjectType,
-            string parentInternalName,
-            string parentInternalFullName)
+            string parentInternalName)
         {
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
 
@@ -55,11 +50,9 @@ namespace GraphQL.AspNet.Execution.Resolvers
             this.Parameters = Validation.ThrowIfNullOrReturn(parameters, nameof(parameters));
 
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
-            this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
 
             this.ParentObjectType = Validation.ThrowIfNullOrReturn(parentObjectType, nameof(parentObjectType));
             this.ParentInternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentInternalName, nameof(parentInternalName));
-            this.ParentInternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentInternalFullName, nameof(parentInternalFullName));
         }
 
         /// <inheritdoc />
@@ -72,9 +65,6 @@ namespace GraphQL.AspNet.Execution.Resolvers
         public bool IsAsyncField { get; }
 
         /// <inheritdoc />
-        public string InternalFullName { get; }
-
-        /// <inheritdoc />
         public string InternalName { get; }
 
         /// <inheritdoc />
@@ -82,9 +72,6 @@ namespace GraphQL.AspNet.Execution.Resolvers
 
         /// <inheritdoc />
         public string ParentInternalName { get; }
-
-        /// <inheritdoc />
-        public string ParentInternalFullName { get; }
 
         /// <inheritdoc />
         public Type ParentObjectType { get; }

@@ -67,6 +67,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Type ObjectType => typeof(GraphOperation);
 
         /// <inheritdoc />
-        public string InternalFullName => $"{typeof(GraphOperation).FriendlyName()}.{this.OperationType}";
+        public string InternalName => $"{typeof(GraphOperation).FriendlyName()}.{this.OperationType}";
     }
 }

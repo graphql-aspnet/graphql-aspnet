@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
                    Constants.ErrorCodes.INVALID_OBJECT,
                    context.Request.Origin,
                    new GraphExecutionException(
-                       $"The method '{this.MetaData.InternalFullName}' expected source data of type " +
+                       $"The method '{this.MetaData.InternalName}' expected source data of type " +
                        $"'{this.MetaData.ParentObjectType.FriendlyName()}' but received '{sourceData.GetType().FriendlyName()}' " +
                        "which is not compatible."));
 

@@ -51,13 +51,13 @@ namespace GraphQL.AspNet.Schemas.Structural
             }
 
             _enumValuesByName.Add(value.Name, value);
-            _enumValuesByInternalLabel.Add(value.InternalLabel, value);
+            _enumValuesByInternalLabel.Add(value.DeclaredLabel, value);
         }
 
         /// <summary>
-        /// Removes the specified name if it exists. When found, the removed item is returned.
+        /// Removes the specified enum value if it exists. When found, the removed item is returned.
         /// </summary>
-        /// <param name="name">The name of the item to remove.</param>
+        /// <param name="name">The name of the enum value, as it exists in the schema.</param>
         /// <returns>IEnumValue.</returns>
         public IEnumValue Remove(string name)
         {
@@ -66,8 +66,8 @@ namespace GraphQL.AspNet.Schemas.Structural
                 var removedOption = _enumValuesByName[name];
                 _enumValuesByName.Remove(name);
 
-                if (_enumValuesByInternalLabel.ContainsKey(removedOption.InternalLabel))
-                    _enumValuesByInternalLabel.Remove(removedOption.InternalLabel);
+                if (_enumValuesByInternalLabel.ContainsKey(removedOption.DeclaredLabel))
+                    _enumValuesByInternalLabel.Remove(removedOption.DeclaredLabel);
 
                 return removedOption;
             }
@@ -83,9 +83,9 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             if (_graphType.ValidateObject(enumValue))
             {
-                var internalLabel = Enum.GetName(_graphType.ObjectType, enumValue);
-                if (_enumValuesByInternalLabel.ContainsKey(internalLabel))
-                    return _enumValuesByInternalLabel[internalLabel];
+                var declaredLabel = Enum.GetName(_graphType.ObjectType, enumValue);
+                if (_enumValuesByInternalLabel.ContainsKey(declaredLabel))
+                    return _enumValuesByInternalLabel[declaredLabel];
             }
 
             return null;

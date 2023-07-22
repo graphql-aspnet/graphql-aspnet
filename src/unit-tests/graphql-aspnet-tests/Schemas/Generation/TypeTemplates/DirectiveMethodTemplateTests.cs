@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 .GetMethod(nameof(SimpleExecutableDirective.Execute));
 
             var mock = new Mock<IGraphTypeTemplate>();
-            mock.Setup(x => x.InternalFullName).Returns("Simple");
+            mock.Setup(x => x.InternalName).Returns("Simple");
             var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
             mock.Setup(x => x.Route).Returns(route);
             var template = new GraphDirectiveMethodTemplate(mock.Object, method);
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             Assert.AreEqual("IGraphActionResult (object source, int arg1, string arg2)", template.MethodSignature);
             Assert.AreEqual(nameof(SimpleExecutableDirective.Execute), template.Name);
-            Assert.AreEqual($"Simple.{nameof(SimpleExecutableDirective.Execute)}", template.InternalFullName);
+            Assert.AreEqual($"Simple.{nameof(SimpleExecutableDirective.Execute)}", template.InternalName);
             Assert.IsTrue(template.IsAsyncField);
             Assert.AreEqual(typeof(IGraphActionResult), template.ObjectType);
             Assert.AreEqual(DirectiveLocation.FIELD, template.Locations);
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 .GetMethod(nameof(TestDirectiveMethodTemplateContainer.SkippedMethod));
 
             var mock = new Mock<IGraphTypeTemplate>();
-            mock.Setup(x => x.InternalFullName).Returns("Simple");
+            mock.Setup(x => x.InternalName).Returns("Simple");
             var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
             mock.Setup(x => x.Route).Returns(route);
             var template = new GraphDirectiveMethodTemplate(mock.Object, method);
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 .GetMethod(nameof(TestDirectiveMethodTemplateContainer.IncorrrectReturnType));
 
             var mock = new Mock<IGraphTypeTemplate>();
-            mock.Setup(x => x.InternalFullName).Returns("Simple");
+            mock.Setup(x => x.InternalName).Returns("Simple");
             var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
             mock.Setup(x => x.Route).Returns(route);
 
@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 .GetMethod(nameof(TestDirectiveMethodTemplateContainer2.InvalidTaskReference));
 
             var mock = new Mock<IGraphTypeTemplate>();
-            mock.Setup(x => x.InternalFullName).Returns("Simple");
+            mock.Setup(x => x.InternalName).Returns("Simple");
             var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
             mock.Setup(x => x.Route).Returns(route);
 

@@ -30,7 +30,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             Assert.AreEqual("SimpleExecutable", template.Name);
             Assert.AreEqual(nameof(SimpleExecutableDirective), template.InternalName);
-            Assert.AreEqual(typeof(SimpleExecutableDirective).FriendlyName(true), template.InternalFullName);
             Assert.AreEqual("Simple Description", template.Description);
             Assert.AreEqual(1, template.Methods.Count);
             Assert.IsTrue(template.Locations.HasFlag(DirectiveLocation.FIELD));

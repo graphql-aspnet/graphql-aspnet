@@ -49,15 +49,8 @@ namespace GraphQL.AspNet.Interfaces.Execution
         Type UnwrappedExpectedParameterType { get; }
 
         /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the
-        /// .NET code (e.g. <c>Namespace.ObjectType.MethodName</c>).
-        /// </summary>
-        /// <value>The fully qualified name given to this item.</value>
-        string InternalFullName { get; }
-
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application;
-        /// typically a method name or property name.
+        /// Gets the name that identifies this item within the .NET code of the application.
+        /// This is typically a method name or property name.
         /// </summary>
         /// <value>The internal name given to this item.</value>
         string InternalName { get; }
@@ -86,5 +79,12 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value><c>true</c> if this instance is a list or collection; otherwise, <c>false</c>.</value>
         bool IsList { get; }
+
+        /// <summary>
+        /// Gets the internal name of the parent resolver that owns the <see cref="ParameterInfo"/> which generated
+        /// this metdata object.
+        /// </summary>
+        /// <value>The name of the parent method.</value>
+        string ParentInternalName { get; }
     }
 }

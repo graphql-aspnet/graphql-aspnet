@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             : base(LogEventIds.ControllerModelValidated)
         {
             this.PipelineRequestId = request?.Id.ToString();
-            this.ControllerName = method?.ParentInternalFullName;
+            this.ControllerName = method?.ParentInternalName;
             this.ActionName = method?.InternalName;
             this.ModelDataIsValid = modelState?.IsValid;
 

@@ -28,8 +28,8 @@ namespace GraphQL.AspNet.Execution.Resolvers
         /// Initializes a new instance of the <see cref="FieldResolverParameterMetaData" /> class.
         /// </summary>
         /// <param name="paramInfo">The parameter info for a single parameter within a resolver method.</param>
-        /// <param name="internalName">The name of the parameter as its declared in source code.</param>
-        /// <param name="internalFullName">The full name of the parameter, including namespace, owning object and declared method, as it exists in source code.</param>
+        /// <param name="internalName">The internal name of the parameter as its declared in source code.</param>
+        /// <param name="parentInternalName">The internal name of the parent method that owns this parameter.</param>
         /// <param name="modifiers">Any modifier attributes for this parameter discovered via templating or set
         /// at runtime by the target schema.</param>
         /// <param name="isListBasedParameter">if set to <c>true</c> this parameter is expecting a list
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
         public FieldResolverParameterMetaData(
             ParameterInfo paramInfo,
             string internalName,
-            string internalFullName,
+            string parentInternalName,
             GraphArgumentModifiers modifiers,
             bool isListBasedParameter,
             bool hasDefaultValue,
@@ -54,8 +54,8 @@ namespace GraphQL.AspNet.Execution.Resolvers
                 eliminateTask: true,
                 eliminateNullableT: false);
 
+            this.ParentInternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentInternalName, nameof(parentInternalName));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
-            this.InternalFullName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
             this.DefaultValue = defaultValue;
             this.ArgumentModifiers = modifiers;
             this.HasDefaultValue = hasDefaultValue;
@@ -64,9 +64,6 @@ namespace GraphQL.AspNet.Execution.Resolvers
 
         /// <inheritdoc />
         public ParameterInfo ParameterInfo { get; }
-
-        /// <inheritdoc />
-        public string InternalFullName { get; }
 
         /// <inheritdoc />
         public string InternalName { get; }
@@ -88,5 +85,8 @@ namespace GraphQL.AspNet.Execution.Resolvers
 
         /// <inheritdoc />
         public bool HasDefaultValue { get; }
+
+        /// <inheritdoc />
+        public string ParentInternalName { get; }
     }
 }

@@ -51,11 +51,20 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     if (_instance != null)
                     {
                         this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, _instance.Name));
+                        this.InternalName = _instance.Name;
                     }
                 }
             }
             catch
             {
+            }
+
+            if (string.IsNullOrWhiteSpace(this.InternalName))
+            {
+                // ad-hoc unions will be a flat instance of GraphUnionProxy, not a differentiated instance
+                // BUT internally it will always be guarunteed that the flat instance is instantiable
+                // and that a name will be defined so this "should" never run....best laid plans though, am i rite?
+                this.InternalName = _proxyType?.FriendlyName();
             }
         }
 
@@ -77,12 +86,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public override TypeKind Kind => TypeKind.UNION;
-
-        /// <inheritdoc />
-        public override string InternalFullName => _proxyType?.FriendlyName(true);
-
-        /// <inheritdoc />
-        public override string InternalName => _proxyType?.Name;
 
         /// <inheritdoc />
         public Type ProxyType => _proxyType;

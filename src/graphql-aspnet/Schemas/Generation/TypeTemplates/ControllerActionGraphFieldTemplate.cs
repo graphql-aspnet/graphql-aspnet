@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (declaration != null && declaration == typeof(GraphFieldAttribute))
             {
                 throw new GraphTypeDeclarationException(
-                    $"Invalid action declaration. The controller action method '{this.InternalFullName}' declares " +
+                    $"Invalid action declaration. The controller action method '{this.InternalName}' declares " +
                     $"a '{nameof(GraphFieldAttribute)}'. This attribute is reserved for model classes. Controller " +
                     $"actions must declare an operation specific attribute such as '{nameof(QueryAttribute)}', '{nameof(MutationAttribute)}' etc.");
             }

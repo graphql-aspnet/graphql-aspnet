@@ -60,7 +60,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(0, template.FieldTemplates.Count());
             Assert.AreEqual(TypeKind.INPUT_OBJECT, template.Kind);
             Assert.AreEqual(nameof(SimpleObjectNoMethods), template.InternalName);
-            Assert.AreEqual("GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ObjectTypeTests.SimpleObjectNoMethods", template.InternalFullName);
             Assert.AreEqual(0, template.SecurityPolicies.Count);
         }
 
