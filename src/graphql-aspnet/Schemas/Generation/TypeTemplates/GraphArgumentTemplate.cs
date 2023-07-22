@@ -27,6 +27,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -38,6 +39,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         private FromGraphQLAttribute _argDeclaration;
         private bool _invalidTypeExpression;
         private HashSet<GraphArgumentModifiers> _foundModifiers;
+        private GraphSkipAttribute _argSkipDeclaration;
+        private GraphSkipAttribute _argTypeSkipDeclaration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphArgumentTemplate" /> class.
@@ -64,7 +67,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();
 
             // set the name
-            _argDeclaration = this.Parameter.SingleAttributeOrDefault<FromGraphQLAttribute>();
+            _argDeclaration = this.AttributeProvider.SingleAttributeOrDefault<FromGraphQLAttribute>();
             string name = null;
             if (_argDeclaration != null)
             {
@@ -84,7 +87,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             name = name.Replace(Constants.Routing.PARAMETER_META_NAME, this.Parameter.Name);
             this.Route = new GraphArgumentFieldPath(this.Parent.Route, name);
 
-            this.Description = this.Parameter.SingleAttributeOrDefault<DescriptionAttribute>()?.Description?.Trim();
+            this.Description = this.AttributeProvider.SingleAttributeOrDefault<DescriptionAttribute>()?.Description?.Trim();
 
             if (_argDeclaration?.TypeExpression == null)
             {
@@ -136,8 +139,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.IsResolutionContext())
                 _foundModifiers.Add(GraphArgumentModifiers.ResolutionContext);
 
+            if (this.IsHttpContext())
+                _foundModifiers.Add(GraphArgumentModifiers.HttpContext);
+
             if (_foundModifiers.Count == 1)
                 this.ArgumentModifier = _foundModifiers.First();
+
+            _argSkipDeclaration = this.AttributeProvider.FirstAttributeOfTypeOrDefault<GraphSkipAttribute>();
+            _argTypeSkipDeclaration = this.Parameter.ParameterType.FirstAttributeOfTypeOrDefault<GraphSkipAttribute>();
         }
 
         /// <summary>
@@ -147,13 +156,20 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <returns><c>true</c> if the ; otherwise, <c>false</c>.</returns>
         public virtual bool IsResolutionContext()
         {
-            if (this.Parent.Arguments.Any(x => x.ArgumentModifier.IsResolverContext()))
-                return false;
-
-            if (Validation.IsCastable(this.ObjectType, typeof(FieldResolutionContext)) && this.Parent is IGraphFieldTemplate)
+            if (Validation.IsCastable(this.ObjectType, typeof(SchemaItemResolutionContext)))
                 return true;
 
-            if (Validation.IsCastable(this.ObjectType, typeof(DirectiveResolutionContext)) && this.Parent is IGraphDirectiveTemplate)
+            return false;
+        }
+
+        /// <summary>
+        /// Determines whether this instance represents a parameter that should be marked as a "resolution context"
+        /// and filled with the active context when possible.
+        /// </summary>
+        /// <returns><c>true</c> if the ; otherwise, <c>false</c>.</returns>
+        public virtual bool IsHttpContext()
+        {
+            if (Validation.IsCastable(this.ObjectType, typeof(HttpContext)))
                 return true;
 
             return false;
@@ -166,6 +182,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <returns>System.Boolean.</returns>
         protected virtual bool IsSourceDataArgument()
         {
+            // there can only ever be one source argument
             if (this.Parent.Arguments.Any(x => x.ArgumentModifier.IsSourceParameter()))
                 return false;
 
@@ -281,8 +298,25 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 var flags = string.Join(", ", _foundModifiers);
                 throw new GraphTypeDeclarationException(
                     $"The item '{this.Parent.InternalFullName}' declares a parameter '{this.Name}' that " +
-                    $"is declares more than one behavior modification flag. Each parameter must declare only one" +
+                    $"declares more than one behavior modification flag. Each parameter must declare only one " +
                     $"behavioral role within a given resolver method. Flags Declared: {flags}");
+            }
+
+            if (_argSkipDeclaration != null && this.ArgumentModifier.CouldBePartOfTheSchema())
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The item '{this.Parent.InternalFullName}' contains a parameter '{this.Name}' that " +
+                    $"declares the {nameof(GraphSkipAttribute)}. However, this argument may be included in the schema in some scenarios. " +
+                    $"If this argument is intended to be served from a service provider try adding {typeof(FromServicesAttribute)} to its declaration.");
+            }
+
+            if (_argTypeSkipDeclaration != null && this.ArgumentModifier.CouldBePartOfTheSchema())
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The item '{this.Parent.InternalFullName}' contains a parameter '{this.Name}' that " +
+                    $"is of type {this.Parameter.ParameterType.FriendlyName()} . This type declares the {nameof(GraphSkipAttribute)} and is " +
+                    $"not allowed to appear in any schema but is currently being interpreted as an INPUT_OBJECT. If the parameter value is intended to be served " +
+                    $"from a service provider try adding {typeof(FromServicesAttribute)} to its declaration.");
             }
 
             foreach (var directive in this.AppliedDirectives)

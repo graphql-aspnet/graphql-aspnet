@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var builder = server.CreateQueryContextBuilder();
             builder.AddQueryText("{ testField }");
-            var request = builder.QueryRequest;
+            var request = builder.QueryRequest.Object;
             var context = builder.Build();
 
             var entry = new RequestReceivedLogEntry(context);
@@ -153,7 +153,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var builder = server.CreateQueryContextBuilder();
             builder.AddQueryText("{ testField }");
-            var request = builder.QueryRequest;
+            var request = builder.QueryRequest.Object;
             var context = builder.Build();
 
             var mock = new Mock<IQueryExecutionResult>();

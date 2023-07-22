@@ -316,5 +316,23 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 var template = this.ExtractParameterTemplate("doubleDeclaredObject", out var paramInfo);
             });
         }
+
+        [Test]
+        public void ArgumentAttributedasGraphSkip_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("graphSkipArgument", out var paramInfo);
+            });
+        }
+
+        [Test]
+        public void ArgumentTypeAttributedasGraphSkip_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("typeHasGraphSkip", out var paramInfo);
+            });
+        }
     }
 }

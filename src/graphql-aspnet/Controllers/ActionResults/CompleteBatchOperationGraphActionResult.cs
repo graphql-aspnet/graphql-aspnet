@@ -22,8 +22,8 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     /// A graph action result that is built from a batch builder and can turn said builder into an
     /// appropriate dictionary of items to resolve a type extension.
     /// </summary>
-    /// <typeparam name="TSource">The type of the source item identified in the type extension.</typeparam>
-    /// <typeparam name="TResult">The type of the result item identified in the type extension.</typeparam>
+    /// <typeparam name="TSource">The type of the source item supplied to the batch extension.</typeparam>
+    /// <typeparam name="TResult">The type of the result item produced by the batch extension.</typeparam>
     /// <typeparam name="TKey">The type of the key that links <typeparamref name="TSource"/> to <typeparamref name="TResult"/>.</typeparam>
     public class CompleteBatchOperationGraphActionResult<TSource, TResult, TKey> : IGraphActionResult
     {

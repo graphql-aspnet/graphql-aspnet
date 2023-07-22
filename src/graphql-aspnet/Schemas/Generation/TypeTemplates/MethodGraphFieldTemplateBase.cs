@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             base.ParseTemplateDefinition();
 
             // parse all input parameters from the method signature
-            foreach (var parameter in this.Method.GetParameters())
+            foreach (var parameter in this.Parameters)
             {
                 var argTemplate = this.CreateArgument(parameter);
                 argTemplate.Parse();

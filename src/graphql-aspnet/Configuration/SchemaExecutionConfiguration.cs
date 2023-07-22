@@ -24,6 +24,14 @@ namespace GraphQL.AspNet.Configuration
         private ResolverIsolationOptions _isolationOptions = ResolverIsolationOptions.None;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SchemaExecutionConfiguration"/> class.
+        /// </summary>
+        public SchemaExecutionConfiguration()
+        {
+            this.ResolverParameterResolutionRule = ResolverParameterResolutionRules.ThrowException;
+        }
+
+        /// <summary>
         /// Merges the specified configuration setttings into this instance.
         /// </summary>
         /// <param name="config">The configuration.</param>
@@ -38,6 +46,7 @@ namespace GraphQL.AspNet.Configuration
             this.MaxQueryDepth = config.MaxQueryDepth;
             this.MaxQueryComplexity = config.MaxQueryComplexity;
             this.DebugMode = config.DebugMode;
+            this.ResolverParameterResolutionRule = config.ResolverParameterResolutionRule;
         }
 
         /// <inheritdoc />
@@ -51,6 +60,12 @@ namespace GraphQL.AspNet.Configuration
 
         /// <inheritdoc />
         public float? MaxQueryComplexity { get; set; }
+
+        /// <inheritdoc />
+        public bool DebugMode { get; set; }
+
+        /// <inheritdoc />
+        public ResolverParameterResolutionRules ResolverParameterResolutionRule { get; set; }
 
         /// <inheritdoc />
         public ResolverIsolationOptions ResolverIsolation
@@ -68,10 +83,5 @@ namespace GraphQL.AspNet.Configuration
                 _isolationOptions = value;
             }
         }
-
-        /// <inheritdoc />
-        public bool DebugMode { get; set; }
     }
-
-#pragma warning restore CS0618 // Type or member is obsolete
 }

@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
-    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Primitives;
 
@@ -27,7 +26,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Model
     /// will result in a schema failure. This class cannot be used as a regular INPUT_OBJECT. See documentation
     /// for details.
     /// </remarks>
-    [GraphSkip]
     [GraphType(PreventAutoInclusion = true)]
     public class FileUpload
     {

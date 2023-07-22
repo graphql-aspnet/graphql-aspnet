@@ -9,14 +9,19 @@
 
 namespace GraphQL.AspNet.Execution
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Reflection;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSetSteps;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -95,7 +100,7 @@ namespace GraphQL.AspNet.Execution
             {
                 var parameter = resolverMetadata.Parameters[i];
 
-                object passedValue = this.ResolveParameterValue(parameter);
+                object passedValue = this.ResolveParameterValue(parameter, resolverMetadata.InternalFullName);
 
                 // ensure compatible list types between the internally
                 // tracked data and the target type of the method being invoked
@@ -113,7 +118,7 @@ namespace GraphQL.AspNet.Execution
             return preparedParams;
         }
 
-        private object ResolveParameterValue(IGraphFieldResolverParameterMetaData paramDef)
+        private object ResolveParameterValue(IGraphFieldResolverParameterMetaData paramDef, string parentFullName)
         {
             Validation.ThrowIfNull(paramDef, nameof(paramDef));
 
@@ -121,14 +126,40 @@ namespace GraphQL.AspNet.Execution
                 return _resolutionContext?.SourceData;
 
             if (paramDef.ArgumentModifiers.IsCancellationToken())
-                return _resolutionContext?.CancellationToken;
+                return _resolutionContext?.CancellationToken ?? default;
 
             if (paramDef.ArgumentModifiers.IsResolverContext())
             {
                 if (_resolutionContext != null && Validation.IsCastable(_resolutionContext.GetType(), paramDef.ExpectedType))
                     return _resolutionContext;
 
-                return null;
+                if (paramDef.HasDefaultValue)
+                    return paramDef.DefaultValue;
+
+                // check fallback rules for missing, non-schema items
+                if (_resolutionContext != null && _resolutionContext.Schema.Configuration.ExecutionOptions.ResolverParameterResolutionRule == Configuration.ResolverParameterResolutionRules.UseNullorDefault)
+                    return this.CreateNullOrDefault(paramDef.ExpectedType);
+
+                throw new GraphExecutionException(
+                    $"The resolution context parameter '{paramDef.InternalName}' of type {paramDef.ExpectedType.FriendlyName()} for resolver '{parentFullName}' could not be resolved and " +
+                    $"does not declare a default value. Unable to complete the request.");
+            }
+
+            if (paramDef.ArgumentModifiers.IsHttpContext())
+            {
+                if (_resolutionContext?.QueryRequest is IQueryExecutionWebRequest req)
+                    return req.HttpContext;
+
+                if (paramDef.HasDefaultValue)
+                    return paramDef.DefaultValue;
+
+                // check fallback rules for missing, non-schema items
+                if (_resolutionContext != null && _resolutionContext.Schema.Configuration.ExecutionOptions.ResolverParameterResolutionRule == Configuration.ResolverParameterResolutionRules.UseNullorDefault)
+                    return this.CreateNullOrDefault(paramDef.ExpectedType);
+
+                throw new GraphExecutionException(
+                    $"The http context parameter '{paramDef.InternalName}' of type {paramDef.ExpectedType.FriendlyName()} for resolver '{parentFullName}' could not be resolved and " +
+                    $"does not declare a default value. Unable to complete the request.");
             }
 
             // if there an argument supplied on the query for this parameter, use that
@@ -138,8 +169,8 @@ namespace GraphQL.AspNet.Execution
             // if the parameter is part of the graph, use the related argument's default value
             if (paramDef.ArgumentModifiers.CouldBePartOfTheSchema())
             {
-                // additional checks and coersion if this the value is
-                // being supplied from a query
+                // additional checks and coersion if this the value is (or should be)
+                // supplied from a query
                 var graphArgument = _resolutionContext?
                     .SchemaDefinedArguments?
                     .FindArgumentByParameterName(paramDef.InternalName);
@@ -162,6 +193,7 @@ namespace GraphQL.AspNet.Execution
                     // but captured here as a saftey net for users
                     // doing custom extensions or implementations
                     // this prevents resolver execution with indeterminate or unexpected data
+                    // as well as cryptic error messages related to object invocation
                     var path = _resolutionContext?.Route.Path;
                     throw new GraphExecutionException(
                         $"The parameter '{paramDef.InternalName}' for schema item '{path}' could not be resolved from the query document " +
@@ -180,6 +212,10 @@ namespace GraphQL.AspNet.Execution
             if (paramDef.HasDefaultValue)
                 return paramDef.DefaultValue;
 
+            // check fallback rules for missing, non-schema items
+            if (_resolutionContext != null && _resolutionContext.Schema.Configuration.ExecutionOptions.ResolverParameterResolutionRule == Configuration.ResolverParameterResolutionRules.UseNullorDefault)
+                return this.CreateNullOrDefault(paramDef.ExpectedType);
+
             var schemaItem = _resolutionContext?.Route.Path
                 ?? paramDef.InternalFullName;
 
@@ -188,6 +224,16 @@ namespace GraphQL.AspNet.Execution
                    $"The parameter '{paramDef.InternalName}' targeting '{schemaItem}' was expected to be resolved from a " +
                    $"service provider but a suitable instance could not be obtained from the current invocation context " +
                    $"and no default value was declared.");
+        }
+
+        private object CreateNullOrDefault(Type typeToCreateFor)
+        {
+            if (typeToCreateFor.IsValueType)
+            {
+                return Activator.CreateInstance(typeToCreateFor);
+            }
+
+            return null;
         }
 
         /// <inheritdoc />

@@ -79,5 +79,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             return modifier == GraphArgumentModifiers.ExplicitInjected;
         }
+
+        /// <summary>
+        /// Determines whether the modifier indicate that the argument is to be populated with the http context for the request.
+        /// </summary>
+        /// <param name="modifier">The modifier to check.</param>
+        /// <returns><c>true</c> if the parameters represent the global http context for the request; otherwise, <c>false</c>.</returns>
+        public static bool IsHttpContext(this GraphArgumentModifiers modifier)
+        {
+            return modifier == GraphArgumentModifiers.HttpContext;
+        }
     }
 }

@@ -21,6 +21,8 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.StarwarsAPI.Common.Model;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A graph controller responsible for managing starship related data.
@@ -66,7 +68,6 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
             var starship = await _starWarsData.RetrieveStarship(starshipId).ConfigureAwait(false);
             return this.Ok(starship);
         }
-
 
         /// <summary>
         /// Retrieves a droid in the system by their id. Note the use of a different name for the parameter

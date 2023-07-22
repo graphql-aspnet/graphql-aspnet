@@ -32,9 +32,9 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     public class QueryContextBuilder
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly Mock<IQueryExecutionRequest> _mockRequest;
         private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
 
+        private Mock<IQueryExecutionRequest> _mockRequest;
         private IUserSecurityContext _userSecurityContext;
         private IQueryExecutionMetrics _metrics;
         private IGraphEventLogger _eventLogger;
@@ -149,11 +149,11 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 
             // updateable items about the request
             var context = new QueryExecutionContext(
-                this.QueryRequest,
+                this.QueryRequest.Object,
                 _serviceProvider,
                 new QuerySession(),
                 securityContext: _userSecurityContext,
-                items: this.QueryRequest.Items,
+                items: this.QueryRequest.Object.Items,
                 metrics: _metrics,
                 logger: _eventLogger);
 
@@ -169,9 +169,13 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         }
 
         /// <summary>
-        /// Gets the mocked request as its currently defined by this builder.
+        /// Gets or sets the mocked request as its currently defined by this builder.
         /// </summary>
         /// <value>The request.</value>
-        public IQueryExecutionRequest QueryRequest => _mockRequest.Object;
+        public Mock<IQueryExecutionRequest> QueryRequest
+        {
+            get { return _mockRequest; }
+            set { _mockRequest = value; }
+        }
     }
 }

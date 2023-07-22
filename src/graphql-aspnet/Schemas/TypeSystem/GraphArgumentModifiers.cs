@@ -53,8 +53,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         ExplicitSchemaItem,
 
         /// <summary>
-        /// This paraemter is declared to be resolved as the active resolution context being processed by a controller action.
+        /// This parameter is declared to be resolved as the active resolution context being processed by a controller action.
         /// </summary>
         ResolutionContext,
+
+        /// <summary>
+        /// This parameter is declared to be resolved as the active http context responsible for the original query.
+        /// </summary>
+        HttpContext,
     }
 }

@@ -16,13 +16,17 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTest;
     using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTestData;
     using GraphQL.AspNet.Tests.Framework;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -594,7 +598,7 @@ namespace GraphQL.AspNet.Tests.Execution
             {
                 o.MapQuery("field", (FieldResolutionContext context) =>
                 {
-                    if (context != null && context.Request.Field != null)
+                    if (context?.Request?.Field != null && context.Request.Field.Name == "field")
                         return 1;
 
                     return 0;
@@ -611,6 +615,97 @@ namespace GraphQL.AspNet.Tests.Execution
                 @"{
                   ""data"": {
                     ""field"": 1
+                  }
+                }",
+                result);
+        }
+
+        [Test]
+        public async Task Runtime_StandardField_FieldResolutionContext_WhenSuppliedMultipleTimes_IsInjected_WhenRequested()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", (FieldResolutionContext context, FieldResolutionContext context1) =>
+                {
+                    if (context != null && context == context1)
+                        return 1;
+
+                    return 0;
+                });
+            });
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                  ""data"": {
+                    ""field"": 1
+                  }
+                }",
+                result);
+        }
+
+        [Test]
+        public async Task Runtime_StandardField_SupplyingADirectiveResolutionContext_WithoutDefaultValue_ThrowsException()
+        {
+            var serverBuilder = new TestServerBuilder(TestOptions.IncludeExceptions);
+
+            // TODO: Read https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/lambda-method-group-defaults
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", (DirectiveResolutionContext context) =>
+                {
+                    return 0;
+                });
+            });
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field }");
+
+            var result = await server.ExecuteQuery(builder);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INTERNAL_SERVER_ERROR, result.Messages[0].Code);
+            Assert.AreEqual(typeof(GraphExecutionException), result.Messages[0].Exception.GetType());
+
+            Assert.IsTrue(result.Messages[0].Exception.Message.Contains(nameof(DirectiveResolutionContext)));
+        }
+
+        [Test]
+        public async Task Runtime_StandardField_HttpContext_WhenNotSupplied_ReturnsNull_WhenRulesSetToNullableItems()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.ExecutionOptions.ResolverParameterResolutionRule = ResolverParameterResolutionRules.UseNullorDefault;
+
+                o.MapQuery("field", (HttpContext context) =>
+                {
+                    if (context != null)
+                        return 1;
+
+                    return 0;
+                });
+            });
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                  ""data"": {
+                    ""field"": 0
                   }
                 }",
                 result);

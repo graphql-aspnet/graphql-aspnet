@@ -43,6 +43,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ParameterTestDat
             IEnumerable<Person[]>[] arrayOfEnumerableOfArrayOfObjects,
             Person[][][][][][][][][][][][][][][][][][][] deepArray,
             [FromGraphQL(TypeExpression = "[Type!")] int invalidTypeExpression,
+            [GraphSkip] Person graphSkipArgument,
+            ObjectWithGraphSkip typeHasGraphSkip,
             [FromGraphQL(TypeExpression = "Type!")] int? compatiableTypeExpressionSingle, // add more specificity
             [FromGraphQL(TypeExpression = "[Type!]!")] int?[] compatiableTypeExpressionList, // add more specificity
             [FromGraphQL(TypeExpression = "[Type]")] int incompatiableTypeExpressionListToSingle,

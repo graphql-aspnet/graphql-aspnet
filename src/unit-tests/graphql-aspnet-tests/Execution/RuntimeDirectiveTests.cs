@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
@@ -290,6 +291,116 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages[0].Severity);
             Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task Runtime_ExecutionDirective_WithDirectiveContext_SuppliesContextToDirectiveCorrect()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", () => 3);
+
+                o.MapDirective("@injectedContext")
+                    .RestrictLocations(DirectiveLocation.FIELD)
+                    .AddResolver<int>((DirectiveResolutionContext context) =>
+                    {
+                        if (context != null)
+                            _values["directiveResolutionContext0"] = 1;
+
+                        return GraphActionResult.Ok();
+                    });
+            });
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field @injectedContext }");
+
+            var result = await server.RenderResult(builder);
+
+            Assert.IsTrue(_values.ContainsKey("directiveResolutionContext0"));
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                  ""data"": {
+                    ""field"": 3
+                  }
+                }",
+                result);
+        }
+
+        [Test]
+        public async Task Runtime_ExecutionDirective_WithFieldResolutionContext_ThrowsException()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", () => 3);
+
+                o.MapDirective("@injectedContext")
+                    .RestrictLocations(DirectiveLocation.FIELD)
+                    .AddResolver<int>((FieldResolutionContext context) =>
+                    {
+                        if (context != null)
+                            _values["directiveResolutionContext1"] = 1;
+
+                        return GraphActionResult.Ok();
+                    });
+            });
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field @injectedContext }");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.IsFalse(_values.ContainsKey("directiveResolutionContext1"));
+
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INTERNAL_SERVER_ERROR, result.Messages[0].Code);
+            Assert.AreEqual(typeof(GraphExecutionException), result.Messages[0].Exception.GetType());
+
+            Assert.IsTrue(result.Messages[0].Exception.Message.Contains(nameof(FieldResolutionContext)));
+        }
+
+        [Test]
+        public async Task Runtime_ExecutionDirective_WithMultipleDirectiveContext_SuppliesContextToDirectiveCorrect()
+        {
+            var serverBuilder = new TestServerBuilder();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.MapQuery("field", () => 3);
+
+                o.MapDirective("@injectedContext")
+                    .RestrictLocations(DirectiveLocation.FIELD)
+                    .AddResolver<int>((DirectiveResolutionContext context, DirectiveResolutionContext context1) =>
+                    {
+                        if (context != null && context == context1)
+                            _values["directiveResolutionContext2"] = 1;
+
+                        return GraphActionResult.Ok();
+                    });
+            });
+
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field @injectedContext }");
+
+            var result = await server.RenderResult(builder);
+
+            Assert.IsTrue(_values.ContainsKey("directiveResolutionContext2"));
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                  ""data"": {
+                    ""field"": 3
+                  }
+                }",
+                result);
         }
     }
 }
