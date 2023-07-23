@@ -53,6 +53,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ParameterTestDat
             [FromGraphQL] TwoPropertyObject justFromGraphQLDeclaration,
             [FromServices] TwoPropertyObject justFromServicesDeclaration,
             [FromGraphQL] [FromServices] TwoPropertyObject doubleDeclaredObject,
+            [FromGraphQL(InternalName = "customInternalName_38")] int internalNameObject,
             Person defaultValueObjectArg = null,
             string defaultValueStringArg = null,
             string defaultValueStringArgWithValue = "abc",

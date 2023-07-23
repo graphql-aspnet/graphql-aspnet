@@ -235,5 +235,26 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 89, "enum option arg" }, appliedDirective.Arguments);
         }
+
+        [Test]
+        public void Parse_InternalName_WhenSupplied_IsRendered()
+        {
+            var template = new EnumGraphTypeTemplate(typeof(EnumWithInternalName));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual("InternalName_Enum_21", template.InternalName);
+        }
+
+        [Test]
+        public void Parse_InternalName_OnValue_WhenSupplied_IsRendered()
+        {
+            var template = new EnumGraphTypeTemplate(typeof(EnumWithInternalNameOnOption));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var option = template.Values.Single();
+            Assert.AreEqual("Value1_InternalName", option.InternalName);
+        }
     }
 }

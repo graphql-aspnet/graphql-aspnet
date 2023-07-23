@@ -253,5 +253,26 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 template.ValidateOrThrow();
             });
         }
+
+        [Test]
+        public void Parse_InternalName_IsSetCorrectly()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
+            obj.Setup(x => x.InternalName).Returns("Item0");
+
+            var expectedTypeExpression = new GraphTypeExpression(
+                typeof(KeyValuePair<string, string>).FriendlyGraphTypeName(),
+                MetaGraphTypes.IsList,
+                MetaGraphTypes.IsNotNull); // structs can't be null
+
+            var parent = obj.Object;
+            var propInfo = typeof(PropertyWithInternalName).GetProperty(nameof(PropertyWithInternalName.Prop1));
+
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+            Assert.AreEqual("prop_Field_223", template.InternalName);
+        }
     }
 }

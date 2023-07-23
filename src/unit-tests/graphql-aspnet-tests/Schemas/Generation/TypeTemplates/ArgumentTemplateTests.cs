@@ -335,5 +335,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 var template = this.ExtractParameterTemplate("typeHasGraphSkip", out var paramInfo);
             });
         }
+
+        [Test]
+        public void InternalName_IsSetCorrectly()
+        {
+            var template = this.ExtractParameterTemplate("internalNameObject", out var paramInfo);
+            Assert.AreEqual("customInternalName_38", template.InternalName);
+        }
     }
 }

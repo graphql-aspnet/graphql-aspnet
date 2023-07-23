@@ -161,5 +161,11 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.MethodTestData
         {
             return null;
         }
+
+        [GraphField(InternalName = "Method_InternalName_21")]
+        public Task<TwoPropertyObject> MethodWithInternalName()
+        {
+            return Task.FromResult(new TwoPropertyObject());
+        }
     }
 }

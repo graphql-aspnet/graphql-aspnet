@@ -26,22 +26,22 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="parent">The parent enum graph type that owns this value.</param>
         /// <param name="name">The value.</param>
+        /// <param name="internalName">The internal name assigned to this enum value. Typically the same as <paramref name="declaredLabel"/>
+        /// but can be customized by the developer for reporting purposes.</param>
         /// <param name="description">The description.</param>
         /// <param name="route">The route path that uniquely identifies this enum option.</param>
         /// <param name="internalValue">The value of the enum as its declared in .NET.</param>
         /// <param name="declaredLabel">A string representation of label declared on the enum value in .NET.</param>
-        /// <param name="internalName">The internal name assigned to this enum value. Typically the same as <paramref name="declaredLabel"/>
-        /// but can be customized by the developer for reporting purposes.</param>
         /// <param name="directives">The set of directives to execute
         /// against this option when it is added to the schema.</param>
         public EnumValue(
             IEnumGraphType parent,
             string name,
+            string internalName,
             string description,
             SchemaItemPath route,
             object internalValue,
             string declaredLabel,
-            string internalName,
             IAppliedDirectiveCollection directives = null)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));

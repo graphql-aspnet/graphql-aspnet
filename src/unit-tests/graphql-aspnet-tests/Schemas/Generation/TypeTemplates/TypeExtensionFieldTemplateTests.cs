@@ -248,5 +248,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.EnumBatchExtensionFails));
             });
         }
+
+        [Test]
+        public void ValidBatchExtension_WithCustomInternalName_PropertyCheck()
+        {
+            var methodInfo = typeof(ExtensionMethodController).GetMethod(nameof(ExtensionMethodController.CustomeInternalName));
+            var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.CustomeInternalName));
+
+            Assert.AreEqual("BatchInternalName", template.InternalName);
+        }
     }
 }

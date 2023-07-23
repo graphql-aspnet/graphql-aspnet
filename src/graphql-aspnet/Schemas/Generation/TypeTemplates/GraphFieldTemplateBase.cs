@@ -56,6 +56,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
+            base.ParseTemplateDefinition();
+
             Type StripTasks(Type type)
             {
                 return GraphValidation.EliminateWrappersFromCoreType(
@@ -64,8 +66,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     eliminateTask: true,
                     eliminateNullableT: false);
             }
-
-            base.ParseTemplateDefinition();
 
             _fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
 

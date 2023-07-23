@@ -284,5 +284,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 202, "controller action arg" }, appliedDirective.Arguments);
         }
+
+        [Test]
+        public void Parse_InternalName_IsAssignedCorrectly()
+        {
+            var action = this.CreateActionTemplate<ActionMethodWithInternalNameController>(nameof(ActionMethodWithInternalNameController.Execute));
+            action.ValidateOrThrow();
+
+            Assert.AreEqual("Internal_Action_Name_37", action.InternalName);
+        }
     }
 }

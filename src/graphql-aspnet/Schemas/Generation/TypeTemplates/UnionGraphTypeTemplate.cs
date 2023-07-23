@@ -51,8 +51,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     if (_instance != null)
                     {
                         this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, _instance.Name));
-                        this.InternalName = _instance.Name;
+                        this.InternalName = _instance.InternalName;
                     }
+
+                    this.InternalName = this.InternalName ?? _proxyType.FriendlyName();
                 }
             }
             catch

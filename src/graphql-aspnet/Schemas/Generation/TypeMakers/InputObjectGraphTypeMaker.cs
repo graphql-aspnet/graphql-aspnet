@@ -54,6 +54,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
             var inputObjectType = new InputObjectGraphType(
                 formatter.FormatGraphTypeName(template.Name),
+                template.InternalName,
                 template.ObjectType,
                 template.Route,
                 directives)

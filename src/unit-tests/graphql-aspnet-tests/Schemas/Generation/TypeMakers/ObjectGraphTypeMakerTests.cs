@@ -285,5 +285,18 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(ObjectWithUndeclaredMethodField.FieldOnBaseObject), System.StringComparison.OrdinalIgnoreCase)));
             Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
         }
+
+        [Test]
+        public void InternalName_OnObjectGraphType_IsRendered()
+        {
+            var result = this.MakeGraphType(
+                typeof(ObjectWithInternalName),
+                TypeKind.OBJECT,
+                TemplateDeclarationRequirements.None);
+
+            var objectType = result.GraphType as IObjectGraphType;
+
+            Assert.AreEqual("Object_Internal_Name", objectType.InternalName);
+        }
     }
 }

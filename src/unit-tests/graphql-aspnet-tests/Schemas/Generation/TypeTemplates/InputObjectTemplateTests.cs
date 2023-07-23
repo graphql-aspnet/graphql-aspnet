@@ -374,5 +374,15 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 template.ValidateOrThrow();
             });
         }
+
+        [Test]
+        public void Parse_InternalName_WhenSupplied_IsRendered()
+        {
+            var template = new InputObjectGraphTypeTemplate(typeof(InputObjectWithInternalName));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual("InputObjectWithName_33", template.InternalName);
+        }
     }
 }

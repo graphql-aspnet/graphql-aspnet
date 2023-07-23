@@ -108,5 +108,15 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(1, Enumerable.Count<Type>(template.DeclaredInterfaces));
             Assert.IsTrue(Enumerable.Contains(template.DeclaredInterfaces, typeof(InterfaceWithDeclaredInterfaceField)));
         }
+
+        [Test]
+        public void Parse_InternalName_WhenSuppliedOnGraphType_IsExtractedCorrectly()
+        {
+            var template = new InterfaceGraphTypeTemplate(typeof(IInterfaceWIthInternalName));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual("MyInterface_32", template.InternalName);
+        }
     }
 }

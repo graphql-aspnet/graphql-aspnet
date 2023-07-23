@@ -209,5 +209,15 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 44, "input arg" }, appliedDirective.ArgumentValues);
         }
+
+        [Test]
+        public void InputObject_WithInternalName_HasInternalNameSet()
+        {
+            // config says properties DO require declaration, override on type says it does not
+            var result = this.MakeGraphType(typeof(InputTestObjectWithInternalName), TypeKind.INPUT_OBJECT);
+            var inputType = result.GraphType as IInputObjectGraphType;
+
+            Assert.AreEqual("InputObjectInternalName", inputType.InternalName);
+        }
     }
 }

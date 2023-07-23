@@ -403,5 +403,15 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.IsNotNull(template.FieldTemplates.Values.SingleOrDefault(x => x.Route.Name == nameof(ObjectWithStatics.InstanceProperty)));
             Assert.IsNotNull(template.FieldTemplates.Values.SingleOrDefault(x => x.Route.Name == nameof(ObjectWithStatics.InstanceMethod)));
         }
+
+        [Test]
+        public void Parse_InternalName_WhenSuppliedOnGraphType_IsExtractedCorrectly()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithInternalName));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual("MyObjectWithInternalName_33", template.InternalName);
+        }
     }
 }

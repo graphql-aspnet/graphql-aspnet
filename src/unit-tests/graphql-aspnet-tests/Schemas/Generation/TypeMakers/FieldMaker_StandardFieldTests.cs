@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers.TestData;
+    using Microsoft.AspNetCore.Hosting.Server;
     using Moq;
     using NUnit.Framework;
 
@@ -329,6 +330,54 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 Assert.AreEqual(1, field.Arguments.Count);
             else
                 Assert.AreEqual(0, field.Arguments.Count);
+        }
+
+        [Test]
+        public void InternalName_OnPropField_IsRendered()
+        {
+            var server = new TestServerBuilder().Build();
+
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
+            obj.Setup(x => x.InternalName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
+            obj.Setup(x => x.ObjectType).Returns(typeof(ObjectWithInternalName));
+
+            var parent = obj.Object;
+            var methodInfo = typeof(ObjectWithInternalName).GetProperty("Prop1");
+            var template = new PropertyGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var maker = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema));
+            var field = maker.CreateField(template).Field;
+
+            Assert.AreEqual("PropInternalName", field.InternalName);
+            Assert.AreEqual("[type]/Item0/Prop1", field.Route.Path);
+        }
+
+        [Test]
+        public void InternalName_OnMethodField_IsRendered()
+        {
+            var server = new TestServerBuilder().Build();
+
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
+            obj.Setup(x => x.InternalName).Returns("LongItem0");
+            obj.Setup(x => x.InternalName).Returns("Item0");
+            obj.Setup(x => x.ObjectType).Returns(typeof(ObjectWithInternalName));
+
+            var parent = obj.Object;
+            var methodInfo = typeof(ObjectWithInternalName).GetMethod("Method1");
+            var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var maker = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema));
+            var field = maker.CreateField(template).Field;
+
+            Assert.AreEqual("MethodInternalName", field.InternalName);
+            Assert.AreEqual("[type]/Item0/Method1", field.Route.Path);
         }
     }
 }

@@ -90,5 +90,27 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var unionType = maker.CreateUnionFromProxy(null);
             Assert.IsNull(unionType);
         }
+
+        [Test]
+        public void Proxy_WithCustomInternalName_IsSetToSaidName()
+        {
+            var schema = new GraphSchema();
+            schema.SetNoAlterationConfiguration();
+            var maker = new UnionGraphTypeMaker(schema.Configuration);
+
+            var unionType = maker.CreateUnionFromProxy(new UnionWithInternalName()).GraphType as IUnionGraphType;
+            Assert.AreEqual("TestUnionInternalName", unionType.InternalName);
+        }
+
+        [Test]
+        public void Proxy_WithNoInternalName_IsSetToProxyName()
+        {
+            var schema = new GraphSchema();
+            schema.SetNoAlterationConfiguration();
+            var maker = new UnionGraphTypeMaker(schema.Configuration);
+
+            var unionType = maker.CreateUnionFromProxy(new UnionWithNoInternalName()).GraphType as IUnionGraphType;
+            Assert.AreEqual("UnionWithNoInternalName", unionType.InternalName);
+        }
     }
 }

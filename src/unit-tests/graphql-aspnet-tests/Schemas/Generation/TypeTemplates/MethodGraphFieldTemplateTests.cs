@@ -218,5 +218,18 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.InvalidTypeExpression));
             });
         }
+
+        [Test]
+        public void InternalName_IsSetCorrectly()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
+            obj.Setup(x => x.InternalName).Returns("Item0");
+
+            var parent = obj.Object;
+            var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.MethodWithInternalName));
+
+            Assert.AreEqual("Method_InternalName_21", template.InternalName);
+        }
     }
 }

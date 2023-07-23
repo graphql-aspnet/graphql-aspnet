@@ -135,5 +135,20 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsDeclaredMethodField.PropFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
             Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
         }
+
+        [Test]
+        public void InternalName_OnInterfaceGraphType_IsRendered()
+        {
+            var result = this.MakeGraphType(
+                typeof(IInterfaceWithInternalName),
+                TypeKind.INTERFACE,
+                TemplateDeclarationRequirements.None);
+
+            var objectType = result.GraphType as IInterfaceGraphType;
+
+            // inherited and declared method field should not be counted
+            Assert.IsNotNull(objectType);
+            Assert.AreEqual("Interface_Internal_Name", objectType.InternalName);
+        }
     }
 }

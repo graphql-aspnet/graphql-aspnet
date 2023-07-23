@@ -125,5 +125,15 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.IsFalse(template.SecurityPolicies.ElementAt(1).IsNamedPolicy);
             CollectionAssert.AreEquivalent(new string[] { "CustomRole1", "CustomRole2" }, template.SecurityPolicies.ElementAt(1).AllowedRoles);
         }
+
+        [Test]
+        public void InternalName_WhenSuppliedOnGraphType_IsExtractedCorrectly()
+        {
+            var template = new GraphDirectiveTemplate(typeof(DirectiveWithInternalName));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual("MyInternalNameDirective", template.InternalName);
+        }
     }
 }

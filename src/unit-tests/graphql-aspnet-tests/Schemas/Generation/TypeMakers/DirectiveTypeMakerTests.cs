@@ -183,5 +183,23 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             else
                 Assert.AreEqual(0, directive.Arguments.Count);
         }
+
+        [Test]
+        public void Directive_InternalName_PropertyCheck()
+        {
+            var builder = new TestServerBuilder();
+            var server = builder.Build();
+
+            var factory = server.CreateMakerFactory();
+
+            var template = new GraphDirectiveTemplate(typeof(DirectiveWithInternalName));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var typeMaker = new DirectiveMaker(server.Schema, new GraphArgumentMaker(server.Schema));
+            var directive = typeMaker.CreateGraphType(template).GraphType as IDirective;
+
+            Assert.AreEqual("DirectiveInternalName_33", directive.InternalName);
+        }
     }
 }

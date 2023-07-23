@@ -63,5 +63,9 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Schemas\GeneralTestData\" />
+  </ItemGroup>
+
 
 </Project>

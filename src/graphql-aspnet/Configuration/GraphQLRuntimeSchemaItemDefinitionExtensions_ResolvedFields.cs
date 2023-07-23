@@ -102,7 +102,8 @@ namespace GraphQL.AspNet.Configuration
         /// <see cref="PossibleTypesAttribute" /> on a controller's action method.
         /// </summary>
         /// <remarks>
-        /// This method can be called multiple times. Any new types will be appended to the field.
+        /// This method can be called multiple times. Any new types will be appended to the field. All types added
+        /// must be coercable to the declared return type of the assigned resolver for this field.
         /// </remarks>
         /// <param name="fieldBuilder">The field being built.</param>
         /// <param name="firstPossibleType">The first possible type that might be returned by this
@@ -118,9 +119,9 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Assigns a custom value to the internal name of this field. This value will be used in error
-        /// messages and log entries instead of anonymous method name. This can significantly increase readability
-        /// while trying to debug an issue.
+        /// Assigns a custom internal name to this field. This value will be used in error
+        /// messages and log entries instead of an anonymous method name. This can significantly increase readability
+        /// while trying to debug an issue. This value has no bearing on the runtime use of this field. It is cosmetic only.
         /// </summary>
         /// <remarks>
         /// This value does NOT affect the field name as it would appear in a schema. It only effects the internal

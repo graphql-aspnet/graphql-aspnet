@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual string Name { get; set; }
 
         /// <inheritdoc />
-        public string InternalName { get; }
+        public string InternalName { get; set; }
 
         /// <inheritdoc />
         public virtual string Description { get; set; }

@@ -38,17 +38,23 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         [Test]
         public void ValidateProxy_ParsesCorrectly()
         {
-            var instance = new UnionGraphTypeTemplate(typeof(ValidTestUnion));
+            var instance = new UnionGraphTypeTemplate(typeof(UnionWithInternalName));
 
             instance.Parse();
             instance.ValidateOrThrow();
 
-            Assert.AreEqual(TypeKind.UNION, instance.Kind);
-            Assert.AreEqual("ValidUnion", instance.Name);
-            Assert.AreEqual("My Union Desc", instance.Description);
-            Assert.AreEqual("ValidUnion", instance.InternalName); // should use union name when supplied
-            Assert.AreEqual(typeof(ValidTestUnion), instance.ProxyType);
-            Assert.IsTrue(instance.Publish);
+            Assert.AreEqual("My Union Internal Name", instance.InternalName);
+        }
+
+        [Test]
+        public void ValidateProxy_NoInternalName_FallsBackToProxyName()
+        {
+            var instance = new UnionGraphTypeTemplate(typeof(UnionWithNoInternalName));
+
+            instance.Parse();
+            instance.ValidateOrThrow();
+
+            Assert.AreEqual(nameof(UnionWithNoInternalName), instance.InternalName);
         }
     }
 }

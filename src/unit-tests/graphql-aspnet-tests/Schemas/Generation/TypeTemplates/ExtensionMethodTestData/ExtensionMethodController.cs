@@ -73,6 +73,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ExtensionMethodT
             return null;
         }
 
+        [BatchTypeExtension(typeof(TwoPropertyObject), "Property3", InternalName = "BatchInternalName")]
+        public IDictionary<TwoPropertyObject, List<int>> CustomeInternalName(IEnumerable<TwoPropertyObject> sourceData, int arg1)
+        {
+            return null;
+        }
+
         [BatchTypeExtension(typeof(TwoPropertyObject), "Property3", typeof(List<string>))]
         public IDictionary<TwoPropertyObject, List<int>> MismatchedPropertyDeclarations(IEnumerable<TwoPropertyObject> sourceData, int arg1)
         {

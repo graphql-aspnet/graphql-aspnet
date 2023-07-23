@@ -30,6 +30,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
         public Introspection_TypeKindType()
             : base(
                   Constants.ReservedNames.TYPE_KIND_ENUM,
+                  nameof(Introspection_TypeKindType),
                   typeof(TypeKind),
                   new GraphIntrospectionFieldPath(Constants.ReservedNames.TYPE_KIND_ENUM))
         {
@@ -44,11 +45,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 var option = new EnumValue(
                     this,
                     name,
+                    name,
                     description,
                     this.Route.CreateChild(name),
                     value,
-                    fi.Name,
-                    name);
+                    fi.Name);
 
                 this.AddOption(option);
             }

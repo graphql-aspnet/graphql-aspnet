@@ -189,5 +189,32 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             Assert.Fail($"Expected {nameof(GraphTypeDeclarationException)} exception");
         }
+
+        [Test]
+        public void EnumType_InternalNameCheck()
+        {
+            var schema = new GraphSchema();
+
+            var maker = new EnumGraphTypeMaker(schema.Configuration);
+            var template = GraphQLTemplateHelper.CreateGraphTypeTemplate(typeof(EnumWithInternalNames), TypeKind.ENUM) as IGraphTypeTemplate;
+
+            var graphType = maker.CreateGraphType(template).GraphType as IEnumGraphType;
+
+            Assert.AreEqual("EnumInternalName", graphType.InternalName);
+        }
+
+        [Test]
+        public void EnumValue_InternalNameCheck()
+        {
+            var schema = new GraphSchema();
+
+            var maker = new EnumGraphTypeMaker(schema.Configuration);
+            var template = GraphQLTemplateHelper.CreateGraphTypeTemplate(typeof(EnumWithInternalNames), TypeKind.ENUM) as IGraphTypeTemplate;
+
+            var graphType = maker.CreateGraphType(template).GraphType as IEnumGraphType;
+            var value = graphType.Values.Single().Value;
+
+            Assert.AreEqual("Value1InternalName", value.InternalName);
+        }
     }
 }

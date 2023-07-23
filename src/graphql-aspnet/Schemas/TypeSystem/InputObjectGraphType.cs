@@ -29,19 +29,21 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="InputObjectGraphType" /> class.
         /// </summary>
         /// <param name="name">The name of the graph type.</param>
+        /// <param name="internalName">The internal name assigned to this graph type in source code.</param>
         /// <param name="objectType">Type of the object.</param>
         /// <param name="route">The route path that identifies this object in the schema.</param>
         /// <param name="directives">The directives to apply to this input
         /// object when its added to a schema.</param>
         public InputObjectGraphType(
             string name,
+            string internalName,
             Type objectType,
             SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
-            this.InternalName = this.ObjectType.FriendlyName();
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
             this.Publish = true;

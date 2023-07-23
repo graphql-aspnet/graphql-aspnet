@@ -55,6 +55,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
             var directive = new Directive(
                 formatter.FormatFieldName(template.Name),
+                template.InternalName,
                 template.Locations,
                 template.ObjectType,
                 template.Route,

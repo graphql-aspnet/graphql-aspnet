@@ -223,5 +223,21 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);
         }
+
+        [Test]
+        public void Parse_InternalName_PropertyCheck()
+        {
+            var server = new TestServerBuilder().Build();
+            var template = GraphQLTemplateHelper.CreateInputObjectTemplate<InputTestObjectWithInternalName>();
+
+            var fieldTemplate = template
+                .FieldTemplates
+                .Values
+                .Single(x => x.Name == nameof(InputTestObjectWithInternalName.Prop1));
+
+            var graphField = new GraphFieldMaker(server.Schema, new GraphArgumentMaker(server.Schema)).CreateField(fieldTemplate).Field;
+
+            Assert.AreEqual("Prop1InternalName", graphField.InternalName);
+        }
     }
 }

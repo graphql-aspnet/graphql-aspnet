@@ -31,11 +31,17 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="EnumGraphType" /> class.
         /// </summary>
         /// <param name="name">The name to assign to this enumeration in the graph.</param>
+        /// <param name="internalName">The internal name of this graph type as its assigned in source code.</param>
         /// <param name="enumType">Type of the enum.</param>
         /// <param name="route">The route path that identifies this enum type.</param>
         /// <param name="directives">The directives to apply to this enum type.</param>
-        public EnumGraphType(string name, Type enumType, SchemaItemPath route, IAppliedDirectiveCollection directives = null)
-            : this(name, enumType, route, new EnumLeafValueResolver(enumType), directives)
+        public EnumGraphType(
+            string name,
+            string internalName,
+            Type enumType,
+            SchemaItemPath route,
+            IAppliedDirectiveCollection directives = null)
+            : this(name, internalName, enumType, route, new EnumLeafValueResolver(enumType), directives)
         {
         }
 
@@ -43,23 +49,26 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="EnumGraphType" /> class.
         /// </summary>
         /// <param name="name">The name to assign to this enumeration in the graph.</param>
+        /// <param name="internalName">The internal name of this graph type as its assigned in source code.</param>
         /// <param name="enumType">Type of the enum.</param>
         /// <param name="route">The route path that identifies this enum type.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="directives">The directives to apply to this enum type.</param>
         public EnumGraphType(
             string name,
+            string internalName,
             Type enumType,
             SchemaItemPath route,
             ILeafValueResolver resolver,
             IAppliedDirectiveCollection directives = null)
         {
-            this.Name = Validation.ThrowIfNullEmptyOrReturn(name, nameof(name));
+            this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
+
             this.ObjectType = Validation.ThrowIfNullOrReturn(enumType, nameof(enumType));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.SourceResolver = Validation.ThrowIfNullOrReturn(resolver, nameof(resolver));
 
-            this.InternalName = this.ObjectType.FriendlyName();
             this.Publish = true;
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
