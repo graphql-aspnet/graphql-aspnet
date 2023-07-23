@@ -44,6 +44,15 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
+        protected override void ParseTemplateDefinition()
+        {
+            base.ParseTemplateDefinition();
+
+            if (!string.IsNullOrWhiteSpace(_directiveDefinition?.InternalName))
+                this.InternalName = _directiveDefinition.InternalName;
+        }
+
+        /// <inheritdoc />
         protected override IEnumerable<IMemberInfoProvider> GatherPossibleDirectiveExecutionMethods()
         {
             yield return this._fieldProvider;

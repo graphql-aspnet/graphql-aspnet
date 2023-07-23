@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ActionTestData
             public int Data1 { get; }
         }
 
-        [Query]
+        [Query("field")]
         [PossibleTypes(typeof(TestItemA), typeof(TestItemB))]
         public ITestItem RetrieveData()
         {

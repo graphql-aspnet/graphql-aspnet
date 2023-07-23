@@ -35,7 +35,17 @@ namespace GraphQL.AspNet.Attributes
         /// </summary>
         /// <param name="template">The template naming scheme to use to generate a graph field from this method.</param>
         public MutationRootAttribute(string template)
-            : this(template, null)
+            : this(template, null as Type)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MutationRootAttribute" /> class.
+        /// </summary>
+        /// <param name="template">The template naming scheme to use to generate a graph field from this method.</param>
+        /// <param name="unionTypeName">Name of the union type.</param>
+        public MutationRootAttribute(string template, string unionTypeName)
+         : this(template, unionTypeName, null, null)
         {
         }
 

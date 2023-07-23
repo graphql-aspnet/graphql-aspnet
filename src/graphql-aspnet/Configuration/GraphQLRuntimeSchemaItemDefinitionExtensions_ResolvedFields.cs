@@ -116,5 +116,24 @@ namespace GraphQL.AspNet.Configuration
             fieldBuilder.AddAttribute(possibleTypes);
             return fieldBuilder;
         }
+
+        /// <summary>
+        /// Assigns a custom value to the internal name of this field. This value will be used in error
+        /// messages and log entries instead of anonymous method name. This can significantly increase readability
+        /// while trying to debug an issue.
+        /// </summary>
+        /// <remarks>
+        /// This value does NOT affect the field name as it would appear in a schema. It only effects the internal
+        /// name used in log messages and exception text.
+        /// </remarks>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="internalName">The value to use as the internal name for this field definition when its
+        /// added to the schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition WithName(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, string internalName)
+        {
+            fieldBuilder.InternalName = internalName;
+            return fieldBuilder;
+        }
     }
 }

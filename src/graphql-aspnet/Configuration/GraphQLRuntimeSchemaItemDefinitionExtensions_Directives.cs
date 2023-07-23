@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="directiveTemplate">The directive being built.</param>
         /// <param name="policyName">The name of the policy to assign via this requirement.</param>
         /// <param name="roles">A comma-seperated list of roles to assign via this requirement.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
+        /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
         public static IGraphQLRuntimeDirectiveDefinition RequireAuthorization(
             this IGraphQLRuntimeDirectiveDefinition directiveTemplate,
             string policyName = null,
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Configuration
         /// </para>
         /// </remarks>
         /// <param name="directiveTemplate">The directive being built.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
+        /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
         public static IGraphQLRuntimeDirectiveDefinition AllowAnonymous(this IGraphQLRuntimeDirectiveDefinition directiveTemplate)
         {
             Validation.ThrowIfNull(directiveTemplate, nameof(directiveTemplate));
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Configuration
         /// schema item more than once.
         /// </summary>
         /// <param name="directiveTemplate">The directive template.</param>
-        /// <returns>IGraphQLDirectiveTemplate.</returns>
+        /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
         public static IGraphQLRuntimeDirectiveDefinition IsRepeatable(this IGraphQLRuntimeDirectiveDefinition directiveTemplate)
         {
             var repeatable = new RepeatableAttribute();
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="directiveTemplate">The directive template to alter.</param>
         /// <param name="locations">The bitwise set of locations where this
         /// directive can be applied.</param>
-        /// <returns>IGraphQLDirectiveTemplate.</returns>
+        /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
         public static IGraphQLRuntimeDirectiveDefinition RestrictLocations(
             this IGraphQLRuntimeDirectiveDefinition directiveTemplate,
             DirectiveLocation locations)
@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="directiveTemplate">The directive being built.</param>
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
+        /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
         public static IGraphQLRuntimeDirectiveDefinition AddResolver(this IGraphQLRuntimeDirectiveDefinition directiveTemplate, Delegate resolverMethod)
         {
             directiveTemplate.Resolver = resolverMethod;
@@ -136,7 +136,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="directiveTemplate">The directive being built.</param>
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the directive on the target schema.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
+        /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
         public static IGraphQLRuntimeDirectiveDefinition AddResolver<TReturnType>(this IGraphQLRuntimeDirectiveDefinition directiveTemplate, Delegate resolverMethod)
         {
             directiveTemplate.Resolver = resolverMethod;
@@ -145,11 +145,30 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
+        /// Assigns a custom value to the internal name of this directive. This value will be used in error
+        /// messages and log entries instead of an anonymous method name. This can significantly increase readability
+        /// while trying to debug an issue.
+        /// </summary>
+        /// <remarks>
+        /// This value does NOT affect the directive name as it would appear in a schema. It only effects the internal
+        /// name used in log messages and exception text.
+        /// </remarks>
+        /// <param name="directiveTemplate">The directive being built.</param>
+        /// <param name="internalName">The value to use as the internal name for this field definition when its
+        /// added to the schema.</param>
+        /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
+        public static IGraphQLRuntimeDirectiveDefinition WithName(this IGraphQLRuntimeDirectiveDefinition directiveTemplate, string internalName)
+        {
+            directiveTemplate.InternalName = internalName;
+            return directiveTemplate;
+        }
+
+        /// <summary>
         /// Maps a new directive into the target schema.
         /// </summary>
         /// <param name="schemaOptions">The schema options where the directive will be created.</param>
         /// <param name="directiveName">Name of the directive (e.g. '@myDirective').</param>
-        /// <returns>IGraphQLDirectiveTemplate.</returns>
+        /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
         public static IGraphQLRuntimeDirectiveDefinition MapDirective(this SchemaOptions schemaOptions, string directiveName)
         {
             return MapDirectiveInternal(schemaOptions, directiveName);
@@ -161,7 +180,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="schemaOptions">The schema options where the directive will be created.</param>
         /// <param name="directiveName">Name of the directive (e.g. '@myDirective').</param>
         /// <param name="resolverMethod">The resolver that will be executed when the directive is invoked.</param>
-        /// <returns>IGraphQLDirectiveTemplate.</returns>
+        /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
         public static IGraphQLRuntimeDirectiveDefinition MapDirective(this SchemaOptions schemaOptions, string directiveName, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(resolverMethod, nameof(resolverMethod));
@@ -175,7 +194,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="schemaBuilder">The builder representing the schema being constructed.</param>
         /// <param name="directiveName">Name of the directive (e.g. '@myDirective').</param>
-        /// <returns>IGraphQLDirectiveTemplate.</returns>
+        /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
         public static IGraphQLRuntimeDirectiveDefinition MapDirective(this ISchemaBuilder schemaBuilder, string directiveName)
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));

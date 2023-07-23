@@ -26,9 +26,16 @@ namespace GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions
 
         /// <summary>
         /// Gets or sets the explicitly declared return type of this schema item. Can be
-        /// null if the <see cref="Resolver"/> returns a valid concrete type.
+        /// null if the <see cref="Resolver"/> returns a valid concrete type. May also be a
+        /// type that implements <see cref="IGraphUnionProxy"/> for items that return a union of values.
         /// </summary>
         /// <value>The data type this schema item will return.</value>
         Type ReturnType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the internal name that will be applied this item in the schema.
+        /// </summary>
+        /// <value>The internal name to apply to this schema item when its created.</value>
+        string InternalName { get; set; }
     }
 }

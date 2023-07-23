@@ -45,7 +45,9 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
             if (this.AppendedAttributes.OfType<DirectiveLocationsAttribute>().Any())
                 return null;
 
-            return new DirectiveLocationsAttribute(DirectiveLocation.AllExecutionLocations | DirectiveLocation.AllTypeSystemLocations);
+            return new DirectiveLocationsAttribute(DirectiveLocation.AllExecutionLocations | DirectiveLocation.AllTypeSystemLocations)
+            {
+            };
         }
 
         /// <inheritdoc />
@@ -53,5 +55,8 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
 
         /// <inheritdoc />
         public Type ReturnType { get; set; }
+
+        /// <inheritdoc />
+        public string InternalName { get; set; }
     }
 }

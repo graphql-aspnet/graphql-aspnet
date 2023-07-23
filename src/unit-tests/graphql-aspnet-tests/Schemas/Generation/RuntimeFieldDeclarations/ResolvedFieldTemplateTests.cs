@@ -36,6 +36,19 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
         }
 
         [Test]
+        public void ResolvedField_WhenNameApplied_NameIsAttchedToFieldDeclaration()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options
+                .MapQuery("/path1/path2", (string a) => 1)
+                .WithName("theName");
+
+            Assert.AreEqual("theName", field.InternalName);
+        }
+
+        [Test]
         public void ResolvedField_WhenRequireAuthAdded_AddsAuthAttribute()
         {
             var services = new ServiceCollection();

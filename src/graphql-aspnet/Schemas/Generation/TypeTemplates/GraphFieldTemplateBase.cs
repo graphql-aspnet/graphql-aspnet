@@ -37,6 +37,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         private GraphFieldAttribute _fieldDeclaration;
         private bool _invalidTypeExpression;
         private bool _returnsActionResult;
+        private bool _duplicateUnionDeclarationDetected;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldTemplateBase" /> class.
@@ -49,23 +50,52 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             _securityPolicies = AppliedSecurityPolicyGroup.Empty;
+            this.PossibleObjectTypes = new List<Type>();
         }
 
         /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
+            Type StripTasks(Type type)
+            {
+                return GraphValidation.EliminateWrappersFromCoreType(
+                    type,
+                    eliminateEnumerables: false,
+                    eliminateTask: true,
+                    eliminateNullableT: false);
+            }
+
             base.ParseTemplateDefinition();
 
             _fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
 
             // ------------------------------------
-            // Common Metadata
+            // Build up a list of possible return types and, if applicable,
+            // position the declared return type of the resolver to be at the 0th index.
+            // ------------------------------------
+            var potentialReturnTypes = this.GatherAllPossibleReturnedDataTypes()
+                .Select(x => StripTasks(x))
+                .ToList();
+
+            // extract type info from the return type of the field
+            // ensure its listed first if it needs to be
+            var rootDeclaredType = StripTasks(this.DeclaredReturnType);
+            if (!Validation.IsCastable<IGraphActionResult>(rootDeclaredType))
+                potentialReturnTypes.Insert(0, rootDeclaredType);
+
+            // remove duplicates and trim to only valid types
+            potentialReturnTypes = potentialReturnTypes
+                .Distinct()
+                .Where(x => GraphValidation.IsValidGraphType(x))
+                .ToList();
+
+            // ------------------------------------
+            // Extract Common Metadata
             // ------------------------------------
             this.Route = this.GenerateFieldPath();
             this.Mode = _fieldDeclaration?.ExecutionMode ?? FieldResolutionMode.PerSourceItem;
             this.Complexity = _fieldDeclaration?.Complexity;
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
-
             if (_fieldDeclaration?.TypeExpression == null)
             {
                 this.DeclaredTypeWrappers = null;
@@ -74,95 +104,71 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             {
                 var expression = GraphTypeExpression.FromDeclaration(_fieldDeclaration.TypeExpression);
                 if (!expression.IsValid)
-                {
                     _invalidTypeExpression = true;
-                }
                 else
-                {
                     this.DeclaredTypeWrappers = expression.Wrappers;
-                }
             }
 
+            // ------------------------------------
+            // Build out the union definition if one was supplied
+            // ------------------------------------
+            this.UnionProxy = this.BuildUnionProxyInstance(potentialReturnTypes);
+
+            // ------------------------------------
+            // Calculate the correct type expression and expected return type
+            // ------------------------------------
+            //
+            // first calculate the initial expression from what is returned by the resolver
+            // based on the resolver's declarations
             var objectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
-            var typeExpression = GraphTypeExpression.FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers);
-            typeExpression = typeExpression.CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
+            var typeExpression = GraphTypeExpression
+                                    .FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers)
+                                    .CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
-            // ------------------------------------
-            // Gather Possible Types and/or union definition
-            // ------------------------------------
-            this.BuildUnionProxyInstance();
-            if (this.UnionProxy != null)
-            {
-                this.PossibleTypes = new List<Type>(this.UnionProxy.Types);
-            }
-            else
-            {
-                this.PossibleTypes = new List<Type>();
-
-                // the possible types attribte is optional but expects that the concrete types are added
-                // to the schema else where lest a runtime exception occurs of a missing graph type.
-                var typesAttrib = this.AttributeProvider.SingleAttributeOfTypeOrDefault<PossibleTypesAttribute>();
-                if (typesAttrib != null)
-                {
-                    foreach (var type in typesAttrib.PossibleTypes)
-                        this.PossibleTypes.Add(type);
-                }
-
-                // add any types declared on the primary field declaration
-                if (_fieldDeclaration != null)
-                {
-                    foreach (var type in _fieldDeclaration.Types)
-                    {
-                        var strippedType = GraphValidation.EliminateWrappersFromCoreType(type);
-                        if (strippedType != null)
-                        {
-                            this.PossibleTypes.Add(strippedType);
-                        }
-                    }
-                }
-
-                if (objectType != null && !Validation.IsCastable<IGraphActionResult>(objectType) && GraphValidation.IsValidGraphType(objectType))
-                {
-                    this.PossibleTypes.Insert(0, objectType);
-                }
-            }
-
-            this.PossibleTypes = this.PossibleTypes.Distinct().ToList();
-
-            // ------------------------------------
-            // Adjust the action result to the actual return type this field returns
-            // ------------------------------------
+            // adjust the object type and type expression
+            // if this field returns an action result
             if (Validation.IsCastable<IGraphActionResult>(objectType))
             {
                 _returnsActionResult = true;
                 if (this.UnionProxy != null)
                 {
-                    // if a union was decalred preserve whatever modifer elements
-                    // were decalred but alter the return type to object (a known common element among all members of the union)
+                    // if a union was declared preserve whatever modifer elements
+                    // were declared but alter the return type to "object"
+                    // (a known common element among all members of the union)
                     objectType = typeof(object);
+
+                    // clear out the "possible types" that could be returned and
+                    // limit this field to just those of the union (they are already part of the union anyways)
+                    potentialReturnTypes.Clear();
+                    potentialReturnTypes.AddRange(this.UnionProxy.Types);
                 }
-                else if (_fieldDeclaration != null && _fieldDeclaration.Types.Count > 0)
+                else if (potentialReturnTypes.Count > 0)
                 {
-                    objectType = _fieldDeclaration.Types[0];
-                    typeExpression = GraphTypeExpression.FromType(objectType, this.DeclaredTypeWrappers)
-                        .CloneTo(GraphTypeNames.ParseName(objectType, this.Parent.Kind));
-                    objectType = GraphValidation.EliminateWrappersFromCoreType(objectType);
-                }
-                else if (this.PossibleTypes.Count > 0)
-                {
-                    objectType = this.PossibleTypes[0];
-                    typeExpression = GraphTypeExpression.FromType(objectType, this.DeclaredTypeWrappers)
-                        .CloneTo(GraphTypeNames.ParseName(objectType, this.Parent.Kind));
+                    // the first type in the list will be the primary return type
+                    // when this field is not returning a union
+                    // extract its type expression AND object type to be the primary for the field
+                    objectType = potentialReturnTypes[0];
+                    typeExpression = GraphTypeExpression
+                        .FromType(objectType, this.DeclaredTypeWrappers)
+                        .CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
+
                     objectType = GraphValidation.EliminateWrappersFromCoreType(objectType);
                 }
                 else
                 {
-                    objectType = typeof(object);
+                    // ths is an error state that will be picked up during validation
+                    objectType = null;
                 }
             }
 
             this.ObjectType = objectType;
             this.TypeExpression = typeExpression;
+
+            // done with type expression, set the final list of potential object types
+            // to the core types of each return type.
+            this.PossibleObjectTypes = potentialReturnTypes
+                .Select(x => GraphValidation.EliminateWrappersFromCoreType(x))
+                .ToList();
 
             // ------------------------------------
             // Async Requirements
@@ -206,6 +212,13 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 }
             }
 
+            if (_duplicateUnionDeclarationDetected)
+            {
+                throw new GraphTypeDeclarationException(
+                        $"The field '{this.InternalName}' attempted to define a union multiple times. A union can only be " +
+                        $"defined once per field. Double check the field's applied attributes.");
+            }
+
             if (this.UnionProxy != null)
             {
                 GraphValidation.EnsureGraphNameOrThrow($"{this.InternalName}[{nameof(GraphFieldAttribute)}][{nameof(IGraphUnionProxy)}]", this.UnionProxy.Name);
@@ -216,11 +229,29 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                         "but that type includes 0 possible types in the union. Unions require 1 or more possible types. Add additional types" +
                         "or remove the union.");
                 }
+
+                // union methods MUST return a graph action result
+                var unwrappedReturnType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
+                if (!Validation.IsCastable<IGraphActionResult>(unwrappedReturnType))
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The field '{this.InternalName}' declares union type of '{this.UnionProxy.Name}'. " +
+                        $"A fields returning a union must return a {nameof(IGraphActionResult)} from the method or property resolver.");
+                }
+            }
+            else if (this.ObjectType == null || this.ObjectType == typeof(object))
+            {
+                // this field is not a union but it also has not declared a proper return type.
+                // this can happen if the field returns a graph action result and does not declare a return type.
+                throw new GraphTypeDeclarationException(
+                    $"The field '{this.InternalName}' declared no possible return types either as part of its specification or as the " +
+                    "declared return type for the field. GraphQL requires the type information be known " +
+                    $"to setup the schema and client tooling properly. If this field returns a '{nameof(IGraphActionResult)}' you must " +
+                    "provide a graph field declaration attribute and add at least one type; be that a concrete type, an interface or a union.");
             }
 
-            // ensure the object type returned by the graph field is set correctly
-            var enforceUnionRules = this.UnionProxy != null;
-            if (this.PossibleTypes.Count == 0)
+            // regardless of being a union or not there must always at least one possible return type
+            if (this.PossibleObjectTypes.Count == 0)
             {
                 throw new GraphTypeDeclarationException(
                     $"The field '{this.InternalName}' declared no possible return types either as part of its specification or as the " +
@@ -230,35 +261,31 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             }
 
             // validate each type in the list for "correctness"
-            // Possible Types must conform to the rules of those required by sub type declarations of unions and interfaces
+            // Possible Types must conform to the rules of those required by sub-type declarations of unions and interfaces
             // interfaces: https://graphql.github.io/graphql-spec/October2021/#sec-Interfaces
             // unions: https://graphql.github.io/graphql-spec/October2021/#sec-Unions
-            foreach (var type in this.PossibleTypes)
+            var enforceUnionRules = this.UnionProxy != null;
+            foreach (var type in this.PossibleObjectTypes)
             {
                 if (enforceUnionRules)
                 {
-                    if (type.IsEnum)
-                    {
-                        throw new GraphTypeDeclarationException(
-                            $"The field '{this.InternalName}' declares a union with a possible type of '{type.FriendlyName()}' " +
-                            "but that type is an enum. Only concrete, non-abstract classes may be used.  Value types, such as structs or enumerations, are not allowed.");
-                    }
-
                     if (GraphValidation.MustBeLeafType(type))
                     {
                         throw new GraphTypeDeclarationException(
                             $"The field '{this.InternalName}' declares union with a possible type of '{type.FriendlyName()}' " +
-                            "but that type is a scalar. Scalars cannot be included in a field's possible type collection, only object types can.");
+                            "but that type is a leaf value (i.e. a defined scalar or enum). Scalars and enums cannot be included in a field's possible type collection, only object types can.");
                     }
 
                     if (type.IsInterface)
                     {
                         throw new GraphTypeDeclarationException(
-                            $"The field '{this.InternalName}'  declares union with  a possible type of '{type.FriendlyName()}' " +
+                            $"The field '{this.InternalName}'  declares union with a possible type of '{type.FriendlyName()}' " +
                             "but that type is an interface. Interfaces cannot be included in a field's possible type collection, only object types can.");
                     }
                 }
 
+                // the possible types returned by this field must never include any of the pre-defined
+                // invalid types
                 foreach (var invalidFieldType in Constants.InvalidFieldTemplateTypes)
                 {
                     if (Validation.IsCastable(type, invalidFieldType))
@@ -272,12 +299,13 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 // to ensure an object isn't arbitrarly returned as null and lost
                 // ensure that the any possible type returned from this field is returnable AS the type this field declares
                 // as its return type. In doing this we know that, potentially, an object returned by this
-                // field "could" cast to the return type and allow field execution to continue.
+                // field "could" cast itself to the expected return type and allow field execution to continue.
                 //
                 // This is a helpful developer safety check, not a complete guarantee as concrete types for interface
-                // declarations are not required at this stage
+                // declarations are not required at this stage.
                 //
-                // batch processed fields are not subject to this restriction
+                // batch processed fields and those that return a IGrahpActionResult
+                // are not subject to this restriction or check
                 if (!_returnsActionResult && this.Mode == FieldResolutionMode.PerSourceItem && !Validation.IsCastable(type, this.ObjectType))
                 {
                     throw new GraphTypeDeclarationException(
@@ -331,7 +359,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             }
 
             var declaredType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
-            if (declaredType == typeof(IGraphActionResult))
+            if (Validation.IsCastable<IGraphActionResult>(declaredType))
                 return;
 
             // when a batch method doesn't return an action result, indicating the developer
@@ -353,8 +381,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // each member of the union must be castable to 'K' in order for the runtime to properly seperate
             // and process the batch results
             var dictionaryValue = GraphValidation.EliminateWrappersFromCoreType(declaredType.GetValueTypeOfDictionary());
-            foreach (var type in this.PossibleTypes)
+            foreach (var type in this.PossibleObjectTypes)
             {
+                var s = dictionaryValue.FriendlyName();
+                var t = type.FriendlyName();
                 if (!Validation.IsCastable(type, dictionaryValue))
                 {
                     throw new GraphTypeDeclarationException(
@@ -378,9 +408,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             var list = new List<DependentType>();
             list.AddRange(base.RetrieveRequiredTypes());
 
-            if (this.PossibleTypes != null)
+            if (this.PossibleObjectTypes != null)
             {
-                var dependentTypes = this.PossibleTypes
+                var dependentTypes = this.PossibleObjectTypes
                     .Select(x => new DependentType(x, GraphValidation.ResolveTypeKind(x, this.OwnerTypeKind)));
                 list.AddRange(dependentTypes);
             }
@@ -395,31 +425,104 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <summary>
-        /// Retrieves proxy instance defined on this attribute that is used to generate the <see cref="UnionGraphType" /> metadata.
+        /// Gathers a  list, of all possible data types returned by this field. This list should be unfiltered and
+        /// and contain any decorations as they are declared. Do NOT remove wrappers such as Task{T}, IEnumerable{T} or
+        /// Nullable{T}.
         /// </summary>
-        private void BuildUnionProxyInstance()
+        /// <returns>IEnumerable&lt;Type&gt;.</returns>
+        protected virtual IEnumerable<Type> GatherAllPossibleReturnedDataTypes()
         {
+            // extract types from [GraphField]
             var fieldAttribute = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
-            if (fieldAttribute == null)
-                return;
+            if (fieldAttribute?.Types != null)
+            {
+                foreach (var type in fieldAttribute.Types)
+                    yield return type;
+            }
+
+            // extract types from [Union]
+            var unionAttribute = this.AttributeProvider.SingleAttributeOfTypeOrDefault<UnionAttribute>();
+            if (unionAttribute != null)
+            {
+                if (unionAttribute.UnionProxyType != null)
+                    yield return unionAttribute.UnionProxyType;
+
+                if (unionAttribute.UnionMemberTypes != null)
+                {
+                    foreach (var type in unionAttribute.UnionMemberTypes)
+                        yield return type;
+                }
+            }
+
+            // extract types from [PossibleTypes]
+            var possibleTypesAttribute = this.AttributeProvider.SingleAttributeOfTypeOrDefault<PossibleTypesAttribute>();
+            if (possibleTypesAttribute?.PossibleTypes != null)
+            {
+                foreach (var type in possibleTypesAttribute.PossibleTypes)
+                    yield return type;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to create a union proxy instance from all the attribute declarations on this field.
+        /// This proxy will be used to create a union graph type for the field on a schema. If this field does
+        /// not return a union this method should return <c>null</c>.
+        /// </summary>
+        /// <returns>IGraphUnionProxy.</returns>
+        private IGraphUnionProxy BuildUnionProxyInstance(List<Type> potentialReturnTypes)
+        {
+            string unionTypeName = null;
+            var unionDeclaredOnFieldAttribute = false;
+            var unionAttributeDeclared = false;
+
+            // extract union name from [GraphField]
+            var fieldAttribute = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            if (fieldAttribute != null)
+            {
+                unionTypeName = fieldAttribute.UnionTypeName;
+                unionDeclaredOnFieldAttribute = fieldAttribute.UnionTypeName != null;
+            }
+
+            // extract union name from [Union]
+            var unionAttribute = this.AttributeProvider.SingleAttributeOfTypeOrDefault<UnionAttribute>();
+            if (unionAttribute != null)
+            {
+                unionAttributeDeclared = true;
+                unionTypeName = unionAttribute.UnionName;
+            }
+
+            // while there are multiple ways to declare a union, each field
+            // can only accept 1.
+            if (unionDeclaredOnFieldAttribute && unionAttributeDeclared)
+            {
+                _duplicateUnionDeclarationDetected = true;
+                return null;
+            }
+
+            // if the only type declared is a reference to a union proxy instnatiate it and use its
+            // definition for the union
+            Type unionProxyType = null;
+            if (potentialReturnTypes.Count == 1 && Validation.IsCastable<IGraphUnionProxy>(potentialReturnTypes[0]))
+                unionProxyType = potentialReturnTypes[0];
 
             IGraphUnionProxy proxy = null;
-
-            if (fieldAttribute.Types.Count == 1)
-            {
-                var proxyType = fieldAttribute.Types.FirstOrDefault();
-                if (proxyType != null)
-                    proxy = GlobalTypes.CreateUnionProxyFromType(proxyType);
-            }
+            if (unionProxyType != null)
+               proxy = GlobalTypes.CreateUnionProxyFromType(unionProxyType);
 
             // when no proxy type is declared attempt to construct the proxy from types supplied
             // if and only if a name was supplied for the union
-            if (proxy == null && !string.IsNullOrWhiteSpace(fieldAttribute.UnionTypeName))
+            //
+            // if it happens that two or more union proxies were declared
+            // then validation will pick up the issue as a union proxy is not a valid return type
+            if (proxy == null && !string.IsNullOrWhiteSpace(unionTypeName))
             {
-                proxy = new GraphUnionProxy(fieldAttribute.UnionTypeName, fieldAttribute.UnionTypeName, fieldAttribute.Types);
+                proxy = new GraphUnionProxy(
+                    unionTypeName,
+                    unionTypeName,
+                    potentialReturnTypes);
             }
 
-            this.UnionProxy = proxy;
+            return proxy;
         }
 
         /// <inheritdoc />
@@ -461,16 +564,18 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <inheritdoc />
         public virtual IGraphUnionProxy UnionProxy { get; protected set; }
 
-        /// <summary>
-        /// Gets the possible types that can be returned by this field.
-        /// </summary>
-        /// <value>The possible types.</value>
-        protected List<Type> PossibleTypes { get; private set; }
-
         /// <inheritdoc />
         public MetaGraphTypes[] DeclaredTypeWrappers { get; private set; }
 
         /// <inheritdoc />
         public float? Complexity { get; set; }
+
+        /// <summary>
+        /// Gets the possible concrete data types that can be returned by this field.
+        /// This list represents the core .NET types that will represent the various graph types. It should not include
+        /// decorators such as IEnumerable{t} or Nullable{T}.
+        /// </summary>
+        /// <value>The potential types of data returnable by this instance.</value>
+        protected List<Type> PossibleObjectTypes { get; private set; }
     }
 }

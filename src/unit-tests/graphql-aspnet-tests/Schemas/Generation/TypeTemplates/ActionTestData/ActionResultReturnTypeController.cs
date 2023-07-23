@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ActionTestData
         }
 
         [Query("path4", typeof(TwoPropertyObject))]
-        public TwoPropertyObjectV2 ActionResultMethodWithDeclaredReturnTypeAndMethodReturnType()
+        public TwoPropertyObjectV2 MethodWithDeclaredReturnTypeAndMethodReturnType()
         {
             return null;
         }

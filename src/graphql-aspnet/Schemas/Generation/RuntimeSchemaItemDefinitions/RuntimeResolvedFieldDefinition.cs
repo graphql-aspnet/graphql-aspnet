@@ -90,10 +90,16 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
             switch (collection)
             {
                 case SchemaItemCollections.Query:
-                    return new QueryRootAttribute(path, this.ReturnType);
+                    return new QueryRootAttribute(path, this.ReturnType)
+                    {
+                        InternalName = this.InternalName,
+                    };
 
                 case SchemaItemCollections.Mutation:
-                    return new MutationRootAttribute(path, this.ReturnType);
+                    return new MutationRootAttribute(path, this.ReturnType)
+                    {
+                        InternalName = this.InternalName,
+                    };
             }
 
             return null;
@@ -104,5 +110,8 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
 
         /// <inheritdoc />
         public Type ReturnType { get; set; }
+
+        /// <inheritdoc />
+        public string InternalName { get; set; }
     }
 }

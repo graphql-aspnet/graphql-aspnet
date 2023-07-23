@@ -48,6 +48,21 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
         }
 
         [Test]
+        public void MapTypeExtension_WithName_AddsInternalName()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var builderMock = new Mock<ISchemaBuilder>();
+            builderMock.Setup(x => x.Options).Returns(options);
+
+            var typeExt = options.MapField<TwoPropertyObject>("myField")
+                .WithName("internalFieldName");
+
+            Assert.AreEqual("internalFieldName", typeExt.InternalName);
+        }
+
+        [Test]
         public void MapTypeExtension_ByBuilder_AddsTypeExtensionToOptions()
         {
             var services = new ServiceCollection();

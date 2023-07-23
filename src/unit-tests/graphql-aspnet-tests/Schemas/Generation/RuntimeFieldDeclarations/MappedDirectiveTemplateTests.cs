@@ -48,6 +48,22 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
         }
 
         [Test]
+        public void MapDirective_WhenNameApplied_NameIsAttchedToFieldDeclaration()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var builderMock = new Mock<ISchemaBuilder>();
+            builderMock.Setup(x => x.Options).Returns(options);
+
+            var directive = builderMock.Object
+                .MapDirective("@myDirective")
+                .WithName("internalDirectiveName");
+
+            Assert.AreEqual("internalDirectiveName", directive.InternalName);
+        }
+
+        [Test]
         public void MapDirective_ByBuilder_AddsDirectiveToOptions()
         {
             var services = new ServiceCollection();

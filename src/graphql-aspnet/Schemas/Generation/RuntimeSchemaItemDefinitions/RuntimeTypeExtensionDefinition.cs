@@ -58,10 +58,16 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
             switch (this.ExecutionMode)
             {
                 case FieldResolutionMode.PerSourceItem:
-                    return new TypeExtensionAttribute(this.TargetType, _fieldName, this.ReturnType);
+                    return new TypeExtensionAttribute(this.TargetType, _fieldName, this.ReturnType)
+                    {
+                        InternalName = this.InternalName,
+                    };
 
                 case FieldResolutionMode.Batch:
-                    return new BatchTypeExtensionAttribute(this.TargetType, _fieldName, this.ReturnType);
+                    return new BatchTypeExtensionAttribute(this.TargetType, _fieldName, this.ReturnType)
+                    {
+                        InternalName = this.InternalName,
+                    };
 
                 default:
                     throw new NotSupportedException(

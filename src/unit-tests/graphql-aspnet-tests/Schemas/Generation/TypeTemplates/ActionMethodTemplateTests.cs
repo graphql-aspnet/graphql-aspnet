@@ -38,7 +38,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var methodInfo = typeof(TControllerType).GetMethod(actionName);
             var action = new ControllerActionGraphFieldTemplate(mockController.Object, methodInfo);
             action.Parse();
-            action.ValidateOrThrow();
 
             return action;
         }
@@ -68,6 +67,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void ActionTemplate_Parse_MethodMarkedAsOperationIsAssignedARootPath()
         {
             var action = this.CreateActionTemplate<ContainerController>(nameof(ContainerController.RootMethod));
+            action.ValidateOrThrow();
 
             Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
             Assert.AreEqual(0, action.Arguments.Count);
@@ -79,6 +79,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void ActionTemplate_Parse_WithValidDeclaredUnion_ParsesCorrectly()
         {
             var action = this.CreateActionTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
+            action.ValidateOrThrow();
 
             Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
             Assert.IsNotNull(action.UnionProxy);
@@ -95,6 +96,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void ActionTemplate_Parse_WithValidDeclaredUnionViaProxy_UsesProxy()
         {
             var action = this.CreateActionTemplate<UnionTestController>(nameof(UnionTestController.UnionViaProxy));
+            action.ValidateOrThrow();
 
             Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
             Assert.IsNotNull(action.UnionProxy);
@@ -109,7 +111,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                this.CreateActionTemplate<UnionTestController>(methodName);
+                var template = this.CreateActionTemplate<UnionTestController>(methodName);
+                template.ValidateOrThrow();
             });
         }
 
@@ -119,15 +122,17 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 var action = this.CreateActionTemplate<ComplexityValueCheckController>(nameof(ComplexityValueCheckController.ReturnsAnInt));
+                action.ValidateOrThrow();
             });
         }
 
         [Test]
-        public void ActionTemplate_ReturnTypeOfActionResult_ThrowsException()
+        public void ActionTemplate_ReturnTypeOfActionResult_WithoutDeclaredReturnType_ThrowsException()
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                this.CreateActionTemplate<ActionResultReturnTypeController>(nameof(ActionResultReturnTypeController.ActionResultMethod));
+                var action = this.CreateActionTemplate<ActionResultReturnTypeController>(nameof(ActionResultReturnTypeController.ActionResultMethod));
+                action.ValidateOrThrow();
             });
         }
 
@@ -135,14 +140,16 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void ActionTemplate_ReturnTypeOfActionResult_WithDeclaredDataType_RendersCorrectly()
         {
             var action = this.CreateActionTemplate<ActionResultReturnTypeController>(nameof(ActionResultReturnTypeController.ActionResultMethodWithDeclaredReturnType));
+            action.ValidateOrThrow();
 
             Assert.AreEqual(typeof(TwoPropertyObject), action.ObjectType);
         }
 
         [Test]
-        public void ActionTemplate_ReturnTypeOfActionResult_WithDeclaredListDataType_RendersOptionsCorrectly()
+        public void ActionTemplate_ReturnTypeOfActionResult_WithDeclaredListDataType_RendersObjectTypeCorrectly()
         {
             var action = this.CreateActionTemplate<ActionResultReturnTypeController>(nameof(ActionResultReturnTypeController.ActionResultMethodWithListReturnType));
+            action.ValidateOrThrow();
 
             Assert.AreEqual(typeof(TwoPropertyObject), action.ObjectType);
             Assert.IsTrue(action.TypeExpression.IsListOfItems);
@@ -167,17 +174,16 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             action.ValidateOrThrow();
 
             Assert.AreEqual(typeof(CustomNamedItem), action.ObjectType);
-            Assert.AreEqual("AnAwesomeName", action.TypeExpression.TypeName);
+            Assert.AreEqual("Type", action.TypeExpression.TypeName);
         }
 
         [Test]
-        public void ActionTemplate_ReturnTypeOfActionResult_WithDeclaredDataType_DiffersFromMethodReturn_ThrowsException()
+        public void ActionTemplate_WithDeclaredDataType_ThatDiffersFromMethodReturn_ThrowsException()
         {
-            Assert.Throws<GraphTypeDeclarationException>(() =>
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 var action = this.CreateActionTemplate<ActionResultReturnTypeController>(
-                    nameof(ActionResultReturnTypeController
-                        .ActionResultMethodWithDeclaredReturnTypeAndMethodReturnType));
+                    nameof(ActionResultReturnTypeController.MethodWithDeclaredReturnTypeAndMethodReturnType));
                 action.ValidateOrThrow();
             });
         }
@@ -186,6 +192,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void ActionTemplate_ReturnTypeOfInterface_WithPossibleTypesAttribute_RetrieveDependentTypes_ReturnsAllTypes()
         {
             var action = this.CreateActionTemplate<InterfaceReturnTypeController>(nameof(InterfaceReturnTypeController.RetrieveData));
+            action.ValidateOrThrow();
 
             var types = action.RetrieveRequiredTypes();
             Assert.IsNotNull(types);
@@ -200,6 +207,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void ActionTemplate_ReturnTypeOfInterface_WithoutPossibleTypesAttribute_DoesntFail_ReturnsOnlyInterface()
         {
             var action = this.CreateActionTemplate<InterfaceReturnTypeController>(nameof(InterfaceReturnTypeController.RetrieveDataNoAttributeDeclared));
+            action.ValidateOrThrow();
 
             var types = action.RetrieveRequiredTypes();
             Assert.IsNotNull(types);
@@ -214,6 +222,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 var action = this.CreateActionTemplate<InterfaceReturnTypeController>(nameof(InterfaceReturnTypeController.RetrieveDataInvalidPossibleType));
+                action.ValidateOrThrow();
             });
         }
 
@@ -223,6 +232,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 var action = this.CreateActionTemplate<InterfaceReturnTypeController>(nameof(InterfaceReturnTypeController.RetrieveDataPossibleTypeIsInterface));
+                action.ValidateOrThrow();
             });
         }
 
@@ -232,6 +242,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 var action = this.CreateActionTemplate<InterfaceReturnTypeController>(nameof(InterfaceReturnTypeController.RetrieveDataPossibleTypeIsScalar));
+                action.ValidateOrThrow();
             });
         }
 
@@ -241,6 +252,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 var action = this.CreateActionTemplate<InterfaceReturnTypeController>(nameof(InterfaceReturnTypeController.RetrieveDataPossibleTypeIsAStruct));
+                action.ValidateOrThrow();
             });
         }
 
@@ -248,6 +260,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void ActionTemplate_ArrayOnInputParameter_RendersFine()
         {
             var action = this.CreateActionTemplate<ArrayInputMethodController>(nameof(ArrayInputMethodController.AddData));
+            action.ValidateOrThrow();
 
             var types = action.RetrieveRequiredTypes();
             Assert.IsNotNull(types);
@@ -263,6 +276,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_AssignedDirective_IsTemplatized()
         {
             var action = this.CreateActionTemplate<ActionMethodWithDirectiveController>(nameof(ActionMethodWithDirectiveController.Execute));
+            action.ValidateOrThrow();
 
             Assert.AreEqual(1, action.AppliedDirectives.Count());
 

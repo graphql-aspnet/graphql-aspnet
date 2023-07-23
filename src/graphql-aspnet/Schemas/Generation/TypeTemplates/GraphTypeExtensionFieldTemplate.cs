@@ -10,9 +10,11 @@
 namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -70,18 +72,22 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             base.ParseTemplateDefinition();
 
+            // rebuild the returned object type and the type expression of the field
+            // to account for the extra values required when dealing with an explictly
+            // declared batch extension
             var returnType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
-            if (returnType != typeof(IGraphActionResult))
+            if (!Validation.IsCastable<IGraphActionResult>(returnType) && _typeAttrib.ExecutionMode == FieldResolutionMode.Batch)
             {
                 // inspect the return type, if its a valid dictionary extract the return type from the value
                 // and set the type modifiers and method type based on the value of each dictionary entry
-                if (_typeAttrib.ExecutionMode == FieldResolutionMode.Batch)
-                {
-                    returnType = returnType.GetValueTypeOfDictionary();
-                    this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(returnType);
-                    this.TypeExpression = GraphTypeExpression.FromType(returnType, this.DeclaredTypeWrappers);
-                    this.PossibleTypes.Insert(0, this.ObjectType);
-                }
+                returnType = returnType.GetValueTypeOfDictionary();
+                var wrappers = GraphTypeExpression.FromType(returnType).Wrappers;
+                this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(returnType);
+                this.TypeExpression = GraphTypeExpression
+                    .FromType(returnType, this.DeclaredTypeWrappers ?? wrappers)
+                    .CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
+
+                this.PossibleObjectTypes.Insert(0, this.ObjectType);
             }
         }
 
