@@ -10,6 +10,8 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
+    using System.Linq;
+    using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Controllers;
@@ -46,7 +48,8 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Indicates that the field should allow anonymous access.
+        /// Indicates that the field should allow anonymous access. This will override any potential authorization requirements setup via
+        /// the "MapGroup" methods if this field was created within a group.
         /// </summary>
         /// <remarks>
         /// This is similar to adding the <see cref="AllowAnonymousAttribute"/> to a controller method
@@ -57,6 +60,40 @@ namespace GraphQL.AspNet.Configuration
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
             fieldBuilder.AddAttribute(new AllowAnonymousAttribute());
+            return fieldBuilder;
+        }
+
+        /// <summary>
+        /// Indicates this field will return a union and sets the resolver to be used when this field is requested at runtime. The provided
+        /// resolver should return a <see cref="IGraphActionResult" />.
+        /// </summary>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
+        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
+        /// parsed to determine input arguments for the field on the target schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver(
+            this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder,
+            string unionName,
+            Delegate resolverMethod)
+        {
+            fieldBuilder.Resolver = resolverMethod;
+            fieldBuilder.ReturnType = null;
+
+            if (!string.IsNullOrWhiteSpace(unionName))
+            {
+                var unionAttrib = fieldBuilder.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+                if (unionAttrib != null)
+                {
+                    unionAttrib.UnionName = unionName?.Trim();
+                    unionAttrib.UnionMemberTypes.Clear();
+                }
+                else
+                {
+                    fieldBuilder.AddAttribute(new UnionAttribute(unionName.Trim()));
+                }
+            }
+
             return fieldBuilder;
         }
 
@@ -74,6 +111,12 @@ namespace GraphQL.AspNet.Configuration
         {
             fieldBuilder.Resolver = resolverMethod;
             fieldBuilder.ReturnType = null;
+
+            // since the resolver was declared as non-union, remove any potential union setup that might have
+            // existed via a previous call.
+            var unionAttrib = fieldBuilder.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+            if (unionAttrib != null)
+                fieldBuilder.RemoveAttribute(unionAttrib);
 
             return fieldBuilder;
         }
@@ -94,6 +137,14 @@ namespace GraphQL.AspNet.Configuration
         {
             fieldBuilder.Resolver = resolverMethod;
             fieldBuilder.ReturnType = typeof(TReturnType);
+
+            // since the resolver was declared as non-union, remove any potential union setup that might have
+            // existed via a previous call. if TReturnType is a union proxy it will be
+            // picked up automatically during templating
+            var unionAttrib = fieldBuilder.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+            if (unionAttrib != null)
+                fieldBuilder.RemoveAttribute(unionAttrib);
+
             return fieldBuilder;
         }
 
@@ -103,7 +154,8 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <remarks>
         /// This method can be called multiple times. Any new types will be appended to the field. All types added
-        /// must be coercable to the declared return type of the assigned resolver for this field.
+        /// must be coercable to the declared return type of the assigned resolver for this field unless this field returns a union; in
+        /// which case the types will be added as union members.
         /// </remarks>
         /// <param name="fieldBuilder">The field being built.</param>
         /// <param name="firstPossibleType">The first possible type that might be returned by this
@@ -115,6 +167,21 @@ namespace GraphQL.AspNet.Configuration
         {
             var possibleTypes = new PossibleTypesAttribute(firstPossibleType, additionalPossibleTypes);
             fieldBuilder.AddAttribute(possibleTypes);
+            return fieldBuilder;
+        }
+
+        /// <summary>
+        /// Clears all extra defined possible types this field may declare. This will not affect the core type defined by the resolver, if
+        /// a resolver has been defined for this field.
+        /// </summary>
+        /// <param name="fieldBuilder">The field builder.</param>
+        /// <returns>IGraphQLRuntimeResolvedFieldDefinition.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition ClearPossibleTypes(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder)
+        {
+            var attributes = fieldBuilder.Attributes.OfType<PossibleTypesAttribute>().ToList();
+            foreach (var att in attributes)
+                fieldBuilder.RemoveAttribute(att);
+
             return fieldBuilder;
         }
 
@@ -133,7 +200,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeResolvedFieldDefinition WithName(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, string internalName)
         {
-            fieldBuilder.InternalName = internalName;
+            fieldBuilder.InternalName = internalName?.Trim();
             return fieldBuilder;
         }
     }

@@ -10,6 +10,8 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
+    using System.Linq;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
@@ -20,46 +22,6 @@ namespace GraphQL.AspNet.Configuration
     /// </summary>
     public static partial class GraphQLRuntimeSchemaItemDefinitionExtensions
     {
-        /// <summary>
-        /// Creates a new field in the mutation root object with the given path. This field can act as a
-        /// grouping field of other resolvable fields or be converted to an explicitly resolvable field itself.
-        /// </summary>
-        /// <param name="schemaOptions">The options representing the schema where this field
-        /// will be created.</param>
-        /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
-        /// <returns>IGraphQLFieldTemplate.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this SchemaOptions schemaOptions, string template)
-        {
-            var field = MapGraphQLFieldInternal(
-                schemaOptions,
-                GraphOperationType.Mutation,
-                template);
-
-            return field.AddResolver(null);
-        }
-
-        /// <summary>
-        /// Creates a new, explicitly resolvable field in the mutation root object with the given path. This field cannot be
-        /// further extended or nested with other fields via the Mapping API.
-        /// </summary>
-        /// <param name="schemaOptions">The options representing the schema where this field
-        /// will be created.</param>
-        /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
-        /// <param name="resolverMethod">The resolver method to execute when
-        /// this field is requested by a caller.</param>
-        /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this SchemaOptions schemaOptions, string template, Delegate resolverMethod)
-        {
-            Validation.ThrowIfNull(resolverMethod, nameof(resolverMethod));
-
-            var field = MapGraphQLFieldInternal(
-                schemaOptions,
-                GraphOperationType.Mutation,
-                template);
-
-            return field.AddResolver(resolverMethod);
-        }
-
         /// <summary>
         /// Creates a new, explicitly resolvable field in the mutation root object with the given path. This field cannot be
         /// further extended or nested with other fields via the Mapping API.
@@ -72,32 +34,162 @@ namespace GraphQL.AspNet.Configuration
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
 
-            var field = MapGraphQLFieldInternal(
+            return MapMutation(
                 schemaBuilder.Options,
-                GraphOperationType.Mutation,
-                template);
-
-            return field.AddResolver(null);
+                template,
+                null, // unionName
+                null as Delegate);
         }
 
         /// <summary>
-        /// Creates a new field in the  mutation root object with the given path. This field can act as a
+        /// Creates a new field in the mutation object with the given path. This field can act as a
         /// grouping field of other resolvable fields or be converted to an explicitly resolvable field itself.
         /// </summary>
         /// <param name="schemaBuilder">The builder representing the schema where this field
         /// will be created.</param>
         /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
-        /// <param name="resolverMethod">The resolver method to execute when this field is requested.</param>
+        /// <param name="resolverMethod">The resolver method to execute when this
+        /// field is requested.</param>
         /// <returns>IGraphQLFieldTemplate.</returns>
         public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this ISchemaBuilder schemaBuilder, string template, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
-            Validation.ThrowIfNull(resolverMethod, nameof(resolverMethod));
+            return MapMutation(
+                schemaBuilder.Options,
+                template,
+                null, // unionName
+                resolverMethod);
+        }
+
+        /// <summary>
+        /// Creates a new, explicitly resolvable field in the mutation root object with the given path. This field cannot be
+        /// further extended or nested with other fields via the Mapping API.
+        /// </summary>
+        /// <param name="schemaBuilder">The builder representing the schema where this field
+        /// will be created.</param>
+        /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
+        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
+        /// <returns>IGraphQLFieldTemplate.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this ISchemaBuilder schemaBuilder, string template, string unionName)
+        {
+            Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
+
+            return MapMutation(
+                schemaBuilder.Options,
+                template,
+                unionName, // unionName
+                null as Delegate);
+        }
+
+        /// <summary>
+        /// Creates a new field in the mutation object with the given path. This field can act as a
+        /// grouping field of other resolvable fields or be converted to an explicitly resolvable field itself.
+        /// </summary>
+        /// <param name="schemaBuilder">The builder representing the schema where this field
+        /// will be created.</param>
+        /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
+        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
+        /// <param name="resolverMethod">The resolver method to execute when this
+        /// field is requested.</param>
+        /// <returns>IGraphQLFieldTemplate.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this ISchemaBuilder schemaBuilder, string template, string unionName, Delegate resolverMethod)
+        {
+            Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
+
+            return MapMutation(
+                schemaBuilder.Options,
+                template,
+                unionName,
+                resolverMethod);
+        }
+
+        /// <summary>
+        /// Creates a new field in the mutation root object with the given path. This field can act as a
+        /// grouping field of other resolvable fields or be converted to an explicitly resolvable field itself.
+        /// </summary>
+        /// <param name="schemaOptions">The options representing the schema where this field
+        /// will be created.</param>
+        /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
+        /// <returns>IGraphQLFieldTemplate.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this SchemaOptions schemaOptions, string template)
+        {
+            return MapMutation(
+                schemaOptions,
+                template,
+                null, // unionName
+                null as Delegate);
+        }
+
+        /// <summary>
+        /// Creates a new, explicitly resolvable field in the Mutation root object with the given path. This field cannot be
+        /// further extended or nested with other fields via the Mapping API.
+        /// </summary>
+        /// <param name="schemaOptions">The options representing the schema where this field
+        /// will be created.</param>
+        /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
+        /// <param name="resolverMethod">The resolver method to execute when
+        /// this field is requested by a caller.</param>
+        /// <returns>IGraphQLResolvedFieldTemplate.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this SchemaOptions schemaOptions, string template, Delegate resolverMethod)
+        {
+            return MapMutation(
+                schemaOptions,
+                template,
+                null, // unionName
+                resolverMethod);
+        }
+
+        /// <summary>
+        /// Creates a new field in the Mutation root object with the given path. This field can act as a
+        /// grouping field of other resolvable fields or be converted to an explicitly resolvable field itself.
+        /// </summary>
+        /// <param name="schemaOptions">The options representing the schema where this field
+        /// will be created.</param>
+        /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
+        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
+        /// <returns>IGraphQLFieldTemplate.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this SchemaOptions schemaOptions, string template, string unionName)
+        {
+            return MapMutation(
+                schemaOptions,
+                template,
+                unionName, // unionName
+                null as Delegate);
+        }
+
+        /// <summary>
+        /// Creates a new, explicitly resolvable field in the Mutation root object with the given path. This field cannot be
+        /// further extended or nested with other fields via the Mapping API.
+        /// </summary>
+        /// <param name="schemaOptions">The options representing the schema where this field
+        /// will be created.</param>
+        /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
+        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
+        /// <param name="resolverMethod">The resolver method to execute when
+        /// this field is requested by a caller.</param>
+        /// <returns>IGraphQLResolvedFieldTemplate.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this SchemaOptions schemaOptions, string template, string unionName, Delegate resolverMethod)
+        {
+            Validation.ThrowIfNull(schemaOptions, nameof(schemaOptions));
 
             var field = MapGraphQLFieldInternal(
-                schemaBuilder.Options,
+                schemaOptions,
                 GraphOperationType.Mutation,
                 template);
+
+            if (!string.IsNullOrWhiteSpace(unionName))
+            {
+                var unionAttrib = field.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+                if (unionAttrib != null)
+                {
+                    unionAttrib.UnionName = unionName.Trim();
+                    unionAttrib.UnionMemberTypes.Clear();
+                }
+                else
+                {
+                    field.AddAttribute(new UnionAttribute(unionName.Trim()));
+                }
+            }
 
             return field.AddResolver(resolverMethod);
         }

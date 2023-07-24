@@ -102,6 +102,13 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         protected abstract Attribute CreatePrimaryAttribute();
 
         /// <inheritdoc />
+        public void RemoveAttribute(Attribute attrib)
+        {
+            Validation.ThrowIfNull(attrib, nameof(attrib));
+            this.AppendedAttributes.Remove(attrib);
+        }
+
+        /// <inheritdoc />
         public virtual IEnumerable<Attribute> Attributes
         {
             get

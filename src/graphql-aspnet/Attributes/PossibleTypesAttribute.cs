@@ -32,13 +32,13 @@ namespace GraphQL.AspNet.Attributes
         /// <param name="additionalPossibleTypes">Any additional possible types.</param>
         public PossibleTypesAttribute(Type firstPossibleType, params Type[] additionalPossibleTypes)
         {
-            this.PossibleTypes = firstPossibleType.AsEnumerable().Concat(additionalPossibleTypes).Where(x => x != null).ToArray();
+            this.PossibleTypes = firstPossibleType.AsEnumerable().Concat(additionalPossibleTypes).Where(x => x != null).ToList();
         }
 
         /// <summary>
         /// Gets the possible types this field may return under its declared interface.
         /// </summary>
         /// <value>The possible types.</value>
-        public IReadOnlyList<Type> PossibleTypes { get; }
+        public IList<Type> PossibleTypes { get; }
     }
 }

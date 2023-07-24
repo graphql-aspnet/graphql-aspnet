@@ -65,5 +65,44 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var mutationRootAttrib = field.Attributes.FirstOrDefault(x => x.GetType() == typeof(MutationRootAttribute));
             Assert.IsNotNull(mutationRootAttrib);
         }
+
+        [Test]
+        public void MapMutation_WithUnionNameSetToNull_AddsUnionNameToType()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var typeExt = options.MapMutation("myField", null, (string a) => 1);
+
+            var attrib = typeExt.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+
+            Assert.IsNull(attrib);
+        }
+
+        [Test]
+        public void MapMutation_WithUnionName0_AddsUnionNameToType()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var typeExt = options.MapMutation("myField", "myUnion", (string a) => 1);
+
+            var attrib = typeExt.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+
+            Assert.AreEqual("myUnion", attrib.UnionName);
+        }
+
+        [Test]
+        public void MapMutation_WithUnionName1_AddsUnionNameToType()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var typeExt = options.MapMutation("myField", "myUnion");
+
+            var attrib = typeExt.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+
+            Assert.AreEqual("myUnion", attrib.UnionName);
+        }
     }
 }

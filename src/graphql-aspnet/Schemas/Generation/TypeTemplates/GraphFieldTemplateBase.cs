@@ -444,9 +444,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             var unionAttribute = this.AttributeProvider.SingleAttributeOfTypeOrDefault<UnionAttribute>();
             if (unionAttribute != null)
             {
-                if (unionAttribute.UnionProxyType != null)
-                    yield return unionAttribute.UnionProxyType;
-
                 if (unionAttribute.UnionMemberTypes != null)
                 {
                     foreach (var type in unionAttribute.UnionMemberTypes)

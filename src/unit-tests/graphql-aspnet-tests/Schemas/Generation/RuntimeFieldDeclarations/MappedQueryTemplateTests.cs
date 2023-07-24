@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
@@ -65,6 +66,45 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             var queryRootAttrib = field.Attributes.FirstOrDefault(x => x.GetType() == typeof(QueryRootAttribute));
             Assert.IsNotNull(queryRootAttrib);
+        }
+
+        [Test]
+        public void MapQuery_WithUnionNameSetToNull_AddsUnionNameToType()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var typeExt = options.MapQuery("myField", null, (string a) => 1);
+
+            var attrib = typeExt.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+
+            Assert.IsNull(attrib);
+        }
+
+        [Test]
+        public void MapQuery_WithUnionName0_AddsUnionNameToType()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var typeExt = options.MapQuery("myField", "myUnion", (string a) => 1);
+
+            var attrib = typeExt.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+
+            Assert.AreEqual("myUnion", attrib.UnionName);
+        }
+
+        [Test]
+        public void MapQuery_WithUnionName1_AddsUnionNameToType()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var typeExt = options.MapQuery("myField", "myUnion");
+
+            var attrib = typeExt.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+
+            Assert.AreEqual("myUnion", attrib.UnionName);
         }
     }
 }

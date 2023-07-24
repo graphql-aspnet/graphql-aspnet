@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Attributes
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -38,7 +39,6 @@ namespace GraphQL.AspNet.Attributes
         /// </remarks>
         public UnionAttribute(string unionName, Type firstUnionMemberType, Type secondUnionMemberType, params Type[] otherUnionMembers)
         {
-            this.UnionProxyType = null;
             this.UnionName = unionName?.Trim();
 
             var list = new List<Type>(2 + otherUnionMembers.Length);
@@ -55,28 +55,30 @@ namespace GraphQL.AspNet.Attributes
         /// declares all required information about the referenced union.</param>
         public UnionAttribute(Type unionProxyType)
         {
-            this.UnionProxyType = unionProxyType;
             this.UnionName = null;
-            this.UnionProxyType = null;
+            if (unionProxyType != null)
+                this.UnionMemberTypes = new List<Type>() { unionProxyType };
         }
 
         /// <summary>
-        /// Gets a type that implements inherits from <see cref="GraphUnionProxy"/> or <see cref="IGraphUnionProxy"/>
-        /// that declares all required information about the referenced union.
+        /// Initializes a new instance of the <see cref="UnionAttribute" /> class.
         /// </summary>
-        /// <value>The union proxy type to reference when building the schema references for this field.</value>
-        public Type UnionProxyType { get; }
+        /// <param name="unionName">The name to assign to this union.</param>
+        public UnionAttribute(string unionName)
+        {
+            this.UnionName = unionName;
+        }
 
         /// <summary>
-        /// Gets the name of the new union to create within the schema. This union name must be a valid graph name.
+        /// Gets or sets the name of the new union to create within the schema. This union name must be a valid graph name.
         /// </summary>
         /// <value>The name of the union as it will appear in the schema.</value>
-        public string UnionName { get; }
+        public string UnionName { get; set; }
 
         /// <summary>
-        /// Gets the concrete types of the objects that may be returned by this field.
+        /// Gets or sets the concrete types of the objects that may be returned by this field.
         /// </summary>
         /// <value>All union member types to be included in this union.</value>
-        public IReadOnlyList<Type> UnionMemberTypes { get; }
+        public IList<Type> UnionMemberTypes { get; set; }
     }
 }

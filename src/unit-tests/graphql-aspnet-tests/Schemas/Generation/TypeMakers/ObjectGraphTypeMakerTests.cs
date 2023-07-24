@@ -11,11 +11,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 {
     using System.Linq;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.CommonHelpers;

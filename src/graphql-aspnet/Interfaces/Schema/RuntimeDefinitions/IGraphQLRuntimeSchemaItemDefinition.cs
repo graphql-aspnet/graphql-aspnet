@@ -27,6 +27,12 @@ namespace GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions
         void AddAttribute(Attribute attrib);
 
         /// <summary>
+        /// Removes the specified attribute from the collection.
+        /// </summary>
+        /// <param name="attrib">The attribute to remove.</param>
+        void RemoveAttribute(Attribute attrib);
+
+        /// <summary>
         /// Gets the templated name that will be given to the item on the target schema.
         /// </summary>
         /// <value>The fully qualified template for this item.</value>

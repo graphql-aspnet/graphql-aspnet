@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 {
                     o.AddController<RuntimeFieldTypeExtensionTestsController>();
 
-                    o.MapField<TwoPropertyObject>("Property3", (TwoPropertyObject source) =>
+                    o.MapTypeExtension<TwoPropertyObject>("Property3", (TwoPropertyObject source) =>
                     {
                         return $"{source.Property1}-{source.Property2}";
                     });
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 {
                     o.AddController<RuntimeFieldTypeExtensionTestsController>();
 
-                    o.MapField<TwoPropertyObject>("[Action]", (TwoPropertyObject source) =>
+                    o.MapTypeExtension<TwoPropertyObject>("[Action]", (TwoPropertyObject source) =>
                     {
                         return $"{source.Property1}-{source.Property2}";
                     });
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 {
                     o.AddController<RuntimeFieldTypeExtensionTestsController>();
 
-                    o.MapField<TwoPropertyObject>("property5", (int argument) =>
+                    o.MapTypeExtension<TwoPropertyObject>("property5", (int argument) =>
                     {
                         return argument;
                     });
@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 {
                     o.AddController<RuntimeFieldTypeExtensionTestsController>();
 
-                    o.MapField<TwoPropertyStruct>("Property3", (TwoPropertyStruct source) =>
+                    o.MapTypeExtension<TwoPropertyStruct>("Property3", (TwoPropertyStruct source) =>
                     {
                         return $"{source.Property1}-{source.Property2}";
                     });
@@ -153,7 +153,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 {
                     o.AddController<RuntimeFieldTypeExtensionTestsController>();
 
-                    o.MapField<TwoPropertyObject>("Property4")
+                    o.MapTypeExtension<TwoPropertyObject>("Property4")
                         .WithBatchProcessing()
                         .AddResolver((IEnumerable<TwoPropertyObject> source) =>
                         {
@@ -202,7 +202,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 {
                     o.AddController<RuntimeFieldTypeExtensionTestsController>();
 
-                    o.MapField<TwoPropertyStruct>("Property4")
+                    o.MapTypeExtension<TwoPropertyStruct>("Property4")
                         .WithBatchProcessing()
                         .AddResolver((IEnumerable<TwoPropertyStruct> source) =>
                         {
@@ -250,7 +250,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 {
                     o.AddController<RuntimeFieldTypeExtensionTestsController>();
 
-                    o.MapField<TwoPropertyObject>("Property5")
+                    o.MapTypeExtension<TwoPropertyObject>("Property5")
                         .WithBatchProcessing()
                         .AddPossibleTypes(typeof(ChildObject))
                         .AddResolver((IEnumerable<TwoPropertyObject> source) =>
@@ -310,7 +310,7 @@ namespace GraphQL.AspNet.Tests.Execution
             {
                 o.AddController<RuntimeFieldTypeExtensionTestsController>();
 
-                o.MapField<TwoPropertyStruct>("Property3", (TwoPropertyStruct source) =>
+                o.MapTypeExtension<TwoPropertyStruct>("Property3", (TwoPropertyStruct source) =>
                 {
                     return $"{source.Property1}-{source.Property2}";
                 })
@@ -349,7 +349,7 @@ namespace GraphQL.AspNet.Tests.Execution
             {
                 o.AddController<RuntimeFieldTypeExtensionTestsController>();
 
-                o.MapField<TwoPropertyStruct>("Property3", (TwoPropertyStruct source) =>
+                o.MapTypeExtension<TwoPropertyStruct>("Property3", (TwoPropertyStruct source) =>
                 {
                     return $"{source.Property1}-{source.Property2}";
                 })
@@ -379,7 +379,7 @@ namespace GraphQL.AspNet.Tests.Execution
             {
                 o.AddController<RuntimeFieldTypeExtensionTestsController>();
 
-                o.MapField<TwoPropertyStruct>("Property3", (TwoPropertyStruct source) =>
+                o.MapTypeExtension<TwoPropertyStruct>("Property3", (TwoPropertyStruct source) =>
                 {
                     return $"{source.Property1}-{source.Property2}";
                 })
