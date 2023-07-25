@@ -122,5 +122,19 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             // nullable int
             Assert.AreEqual(typeof(int?), field.Resolver.Method.ReturnType);
         }
+
+        [Test]
+        public void ResolvedField_SwappingOutResolvers_RemovesUnion()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options.MapQuery("/path1/path2", "myUnion", (string a) => (int?)1);
+            Assert.AreEqual(1, field.Attributes.Count(x => x is UnionAttribute));
+
+            // union is removed when resolver is re-declared
+            field.AddResolver((int a) => 0);
+            Assert.AreEqual(0, field.Attributes.Count(x => x is UnionAttribute));
+        }
     }
 }

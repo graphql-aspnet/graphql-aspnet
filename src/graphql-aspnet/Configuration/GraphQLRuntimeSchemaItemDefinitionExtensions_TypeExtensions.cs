@@ -40,9 +40,37 @@ namespace GraphQL.AspNet.Configuration
         /// <typeparam name="TOwnerType">The concrete interface, class or struct to extend with a new field.</typeparam>
         /// <param name="builder">The schema builder to append the field to.</param>
         /// <param name="fieldName">Name of the field to add to the <typeparamref name="TOwnerType"/>.</param>
+        /// <returns>IGraphQLResolvedFieldTemplate.</returns>
+        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension<TOwnerType>(this ISchemaBuilder builder, string fieldName)
+        {
+            Validation.ThrowIfNull(builder, nameof(builder));
+
+            return MapTypeExtension(
+                builder.Options,
+                typeof(TOwnerType),
+                fieldName,
+                null, // unionName
+                null as Delegate);
+        }
+
+        /// <summary>
+        /// Registers a new type extension to a given OBJECT or INTERFACE type for the target schema.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method is synonymous with using the <see cref="TypeExtensionAttribute"/> on
+        /// a controller action.
+        /// </para>
+        /// <para>
+        /// The supplied resolver must declare a parameter that is of the same type as <typeparamref name="TOwnerType"/>.
+        /// </para>
+        /// </remarks>
+        /// <typeparam name="TOwnerType">The concrete interface, class or struct to extend with a new field.</typeparam>
+        /// <param name="builder">The schema builder to append the field to.</param>
+        /// <param name="fieldName">Name of the field to add to the <typeparamref name="TOwnerType"/>.</param>
         /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension<TOwnerType>(this ISchemaBuilder builder, string fieldName, Delegate resolverMethod = null)
+        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension<TOwnerType>(this ISchemaBuilder builder, string fieldName, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(builder, nameof(builder));
 
@@ -72,7 +100,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
         /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension<TOwnerType>(this ISchemaBuilder builder, string fieldName, string unionName, Delegate resolverMethod = null)
+        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension<TOwnerType>(this ISchemaBuilder builder, string fieldName, string unionName, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(builder, nameof(builder));
 
@@ -99,9 +127,35 @@ namespace GraphQL.AspNet.Configuration
         /// <typeparam name="TOwnerType">The concrete interface, class or struct to extend with a new field.</typeparam>
         /// <param name="schemaOptions">The configuration options for the target schema.</param>
         /// <param name="fieldName">Name of the field to add to the <typeparamref name="TOwnerType"/>.</param>
+        /// <returns>IGraphQLResolvedFieldTemplate.</returns>
+        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension<TOwnerType>(this SchemaOptions schemaOptions, string fieldName)
+        {
+            return MapTypeExtension(
+                schemaOptions,
+                typeof(TOwnerType),
+                fieldName,
+                null, // unionName
+                null as Delegate);
+        }
+
+        /// <summary>
+        /// Registers a new type extension to a given OBJECT or INTERFACE type for the target schema.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method is synonymous with using the <see cref="TypeExtensionAttribute"/> on
+        /// a controller action.
+        /// </para>
+        /// <para>
+        /// The supplied resolver must declare a parameter that is of the same type as <typeparamref name="TOwnerType"/>.
+        /// </para>
+        /// </remarks>
+        /// <typeparam name="TOwnerType">The concrete interface, class or struct to extend with a new field.</typeparam>
+        /// <param name="schemaOptions">The configuration options for the target schema.</param>
+        /// <param name="fieldName">Name of the field to add to the <typeparamref name="TOwnerType"/>.</param>
         /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension<TOwnerType>(this SchemaOptions schemaOptions, string fieldName, Delegate resolverMethod = null)
+        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension<TOwnerType>(this SchemaOptions schemaOptions, string fieldName, Delegate resolverMethod)
         {
             return MapTypeExtension(
                 schemaOptions,
@@ -122,9 +176,33 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="schemaOptions">The configuration options for the target schema.</param>
         /// <param name="fieldOwnerType">The concrete interface, class or struct to extend with a new field.</param>
         /// <param name="fieldName">Name of the field to add to the <paramref name="fieldOwnerType"/>.</param>
+        /// <returns>IGraphQLResolvedFieldTemplate.</returns>
+        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName)
+        {
+            var field = MapTypeExtension(
+                schemaOptions,
+                fieldOwnerType,
+                fieldName,
+                null, // unionName
+                null as Delegate);
+
+            return field;
+        }
+
+        /// <summary>
+        /// Registers a new field to a given type on the target schema.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The supplied resolver must declare a parameter that is of the same type as <paramref name="fieldOwnerType"/>.
+        /// </para>
+        /// </remarks>
+        /// <param name="schemaOptions">The configuration options for the target schema.</param>
+        /// <param name="fieldOwnerType">The concrete interface, class or struct to extend with a new field.</param>
+        /// <param name="fieldName">Name of the field to add to the <paramref name="fieldOwnerType"/>.</param>
         /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName, Delegate resolverMethod = null)
+        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName, Delegate resolverMethod)
         {
             var field = MapTypeExtension(
                 schemaOptions,
@@ -154,7 +232,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
         /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension<TOwnerType>(this SchemaOptions schemaOptions, string fieldName, string unionName, Delegate resolverMethod = null)
+        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension<TOwnerType>(this SchemaOptions schemaOptions, string fieldName, string unionName, Delegate resolverMethod)
         {
             return MapTypeExtension(
                 schemaOptions,
@@ -178,7 +256,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
         /// <param name="resolverMethod">The resolver method to be called when the field is requested.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName, string unionName, Delegate resolverMethod = null)
+        public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName, string unionName, Delegate resolverMethod)
         {
             var field = MapTypeExtensionInternal(
                 schemaOptions,
@@ -201,7 +279,7 @@ namespace GraphQL.AspNet.Configuration
             }
 
             if (resolverMethod != null)
-                field = field.AddResolver(resolverMethod);
+                field = field.AddResolver(unionName, resolverMethod);
 
             return field;
         }
@@ -314,10 +392,11 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeTypeExtensionDefinition AddResolver(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, Delegate resolverMethod)
         {
-            fieldBuilder.Resolver = resolverMethod;
-            fieldBuilder.ReturnType = null;
-
-            return fieldBuilder;
+            return AddResolver(
+              fieldBuilder,
+              null as Type, // returnType
+              null,  // unionName
+              resolverMethod);
         }
 
         /// <summary>
@@ -334,8 +413,79 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeTypeExtensionDefinition AddResolver<TReturnType>(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, Delegate resolverMethod)
         {
+            return AddResolver(
+                fieldBuilder,
+                typeof(TReturnType),
+                null,  // unionName
+                resolverMethod);
+        }
+
+        /// <summary>
+        /// Sets the resolver to be used when this field is requested at runtime.
+        /// </summary>
+        /// <remarks>
+        ///  If this method is called more than once the previously set resolver will be replaced.
+        /// </remarks>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeTypeExtensionDefinition, Type, Type[])"/> to declare union members.</param>
+        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
+        /// parsed to determine input arguments for the field on the target schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLRuntimeTypeExtensionDefinition AddResolver(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, string unionName, Delegate resolverMethod)
+        {
+            return AddResolver(
+                fieldBuilder,
+                null as Type, // returnType
+                unionName,
+                resolverMethod);
+        }
+
+        /// <summary>
+        /// Sets the resolver to be used when this field is requested at runtime.
+        /// </summary>
+        /// <remarks>
+        ///  If this method is called more than once the previously set resolver will be replaced.
+        /// </remarks>
+        /// <typeparam name="TReturnType">The expected, primary return type of the field. Must be provided
+        /// if the supplied delegate returns an <see cref="IGraphActionResult"/>.</typeparam>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeTypeExtensionDefinition, Type, Type[])"/> to declare union members.</param>
+        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
+        /// parsed to determine input arguments for the field on the target schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLRuntimeTypeExtensionDefinition AddResolver<TReturnType>(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, string unionName, Delegate resolverMethod)
+        {
+            return AddResolver(
+                fieldBuilder,
+                typeof(TReturnType),
+                unionName,
+                resolverMethod);
+        }
+
+        private static IGraphQLRuntimeTypeExtensionDefinition AddResolver(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, Type expectedReturnType, string unionName, Delegate resolverMethod)
+        {
             fieldBuilder.Resolver = resolverMethod;
-            fieldBuilder.ReturnType = typeof(TReturnType);
+            fieldBuilder.ReturnType = expectedReturnType;
+
+            // since the resolver was declared as non-union, remove any potential union setup that might have
+            // existed via a previous call. if TReturnType is a union proxy it will be
+            // picked up automatically during templating
+            var unionAttrib = fieldBuilder.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+            if (string.IsNullOrEmpty(unionName))
+            {
+                if (unionAttrib != null)
+                    fieldBuilder.RemoveAttribute(unionAttrib);
+            }
+            else if (unionAttrib != null)
+            {
+                unionAttrib.UnionName = unionName?.Trim();
+                unionAttrib.UnionMemberTypes.Clear();
+            }
+            else
+            {
+                fieldBuilder.AddAttribute(new UnionAttribute(unionName.Trim()));
+            }
+
             return fieldBuilder;
         }
     }

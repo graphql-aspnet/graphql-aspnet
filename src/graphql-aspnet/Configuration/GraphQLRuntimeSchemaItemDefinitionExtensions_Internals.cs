@@ -56,36 +56,5 @@ namespace GraphQL.AspNet.Configuration
             schemaOptions.AddRuntimeSchemaItem(field);
             return field;
         }
-
-        private static IGraphQLRuntimeDirectiveDefinition MapDirectiveInternal(
-            this SchemaOptions schemaOptions,
-            string directiveName)
-        {
-            while (directiveName != null && directiveName.StartsWith(TokenTypeNames.STRING_AT_SYMBOL))
-                directiveName = directiveName.Substring(1);
-
-            var directive = new RuntimeDirectiveActionDefinition(schemaOptions, directiveName);
-            schemaOptions.AddRuntimeSchemaItem(directive);
-            return directive;
-        }
-
-        /// <summary>
-        /// Convert a virtual field to a resolvable fields and assigns the given resolver.
-        /// </summary>
-        /// <param name="field">The field being built.</param>
-        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
-        /// parsed to determine input arguments for the field on the target schema.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
-        private static IGraphQLRuntimeResolvedFieldDefinition AddResolver(this IGraphQLRuntimeFieldDefinition field, Delegate resolverMethod)
-        {
-            // convert the virtual field to a resolved field
-            var resolvedBuilder = RuntimeResolvedFieldDefinition.FromFieldTemplate(field);
-            resolvedBuilder.Options.AddRuntimeSchemaItem(resolvedBuilder);
-
-            resolvedBuilder.Resolver = resolverMethod;
-            resolvedBuilder.ReturnType = null;
-
-            return resolvedBuilder;
-        }
     }
 }

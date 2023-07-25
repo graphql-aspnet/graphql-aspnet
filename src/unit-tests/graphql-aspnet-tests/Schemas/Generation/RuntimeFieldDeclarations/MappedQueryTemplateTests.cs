@@ -93,18 +93,5 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             Assert.AreEqual("myUnion", attrib.UnionName);
         }
-
-        [Test]
-        public void MapQuery_WithUnionName1_AddsUnionNameToType()
-        {
-            var services = new ServiceCollection();
-            var options = new SchemaOptions<GraphSchema>(services);
-
-            var typeExt = options.MapQuery("myField", "myUnion");
-
-            var attrib = typeExt.Attributes.OfType<UnionAttribute>().SingleOrDefault();
-
-            Assert.AreEqual("myUnion", attrib.UnionName);
-        }
     }
 }

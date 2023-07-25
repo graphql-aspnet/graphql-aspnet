@@ -188,9 +188,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var directive = options.MapDirective("@mydirective", (string a) => 1);
             Assert.AreEqual(typeof(int), directive.Resolver.Method.ReturnType);
 
-            directive.AddResolver<decimal>((string a) => "bob");
+            directive.AddResolver((string a) => "bob");
             Assert.AreEqual(typeof(string), directive.Resolver.Method.ReturnType);
-            Assert.AreEqual(typeof(decimal), directive.ReturnType);
+            Assert.IsNull(directive.ReturnType);
         }
     }
 }

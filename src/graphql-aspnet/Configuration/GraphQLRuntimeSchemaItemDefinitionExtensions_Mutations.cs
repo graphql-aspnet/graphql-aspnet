@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
+    using GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -59,26 +60,6 @@ namespace GraphQL.AspNet.Configuration
                 template,
                 null, // unionName
                 resolverMethod);
-        }
-
-        /// <summary>
-        /// Creates a new, explicitly resolvable field in the mutation root object with the given path. This field cannot be
-        /// further extended or nested with other fields via the Mapping API.
-        /// </summary>
-        /// <param name="schemaBuilder">The builder representing the schema where this field
-        /// will be created.</param>
-        /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
-        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
-        /// <returns>IGraphQLFieldTemplate.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this ISchemaBuilder schemaBuilder, string template, string unionName)
-        {
-            Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
-
-            return MapMutation(
-                schemaBuilder.Options,
-                template,
-                unionName, // unionName
-                null as Delegate);
         }
 
         /// <summary>
@@ -140,24 +121,6 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Creates a new field in the Mutation root object with the given path. This field can act as a
-        /// grouping field of other resolvable fields or be converted to an explicitly resolvable field itself.
-        /// </summary>
-        /// <param name="schemaOptions">The options representing the schema where this field
-        /// will be created.</param>
-        /// <param name="template">The template path string for his field. (e.g. <c>/path1/path2/path3</c>)</param>
-        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
-        /// <returns>IGraphQLFieldTemplate.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition MapMutation(this SchemaOptions schemaOptions, string template, string unionName)
-        {
-            return MapMutation(
-                schemaOptions,
-                template,
-                unionName, // unionName
-                null as Delegate);
-        }
-
-        /// <summary>
         /// Creates a new, explicitly resolvable field in the Mutation root object with the given path. This field cannot be
         /// further extended or nested with other fields via the Mapping API.
         /// </summary>
@@ -177,21 +140,13 @@ namespace GraphQL.AspNet.Configuration
                 GraphOperationType.Mutation,
                 template);
 
-            if (!string.IsNullOrWhiteSpace(unionName))
-            {
-                var unionAttrib = field.Attributes.OfType<UnionAttribute>().SingleOrDefault();
-                if (unionAttrib != null)
-                {
-                    unionAttrib.UnionName = unionName.Trim();
-                    unionAttrib.UnionMemberTypes.Clear();
-                }
-                else
-                {
-                    field.AddAttribute(new UnionAttribute(unionName.Trim()));
-                }
-            }
+            var resolvedField = RuntimeResolvedFieldDefinition.FromFieldTemplate(field);
+            schemaOptions.AddRuntimeSchemaItem(resolvedField);
 
-            return field.AddResolver(resolverMethod);
+            if (!string.IsNullOrWhiteSpace(unionName))
+                resolvedField.AddAttribute(new UnionAttribute(unionName.Trim()));
+
+            return resolvedField.AddResolver(unionName, resolverMethod);
         }
     }
 }

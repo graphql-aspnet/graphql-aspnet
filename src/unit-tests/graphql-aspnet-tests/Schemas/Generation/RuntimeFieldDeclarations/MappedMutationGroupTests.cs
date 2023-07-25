@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             var field = options.MapMutationGroup("/path1/path2");
 
-            var childField = field.MapSubGroup("/path3/path4");
+            var childField = field.MapChildGroup("/path3/path4");
 
             Assert.AreEqual("[mutation]/path1/path2/path3/path4", childField.Route.Path);
         }
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var options = new SchemaOptions<GraphSchema>(services);
 
             var field = options.MapMutationGroup("/path1/path2");
-            var childField = field.MapSubGroup("/path3/path4");
+            var childField = field.MapChildGroup("/path3/path4");
             var resolvedField = childField.MapField("/path5/path6", (string a) => 1);
 
             Assert.AreEqual("[mutation]/path1/path2/path3/path4/path5/path6", resolvedField.Route.Path);

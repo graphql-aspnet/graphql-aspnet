@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 o.AddType<TwoPropertyObject>();
                 o.MapDirective("@myObjectDirective")
                     .RestrictLocations(DirectiveLocation.OBJECT)
-                    .AddResolver<int>((int a, int b) =>
+                    .AddResolver((int a, int b) =>
                     {
                         _values["generalTypeSystemDirective"] = a + b;
                         return GraphActionResult.Ok();
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 o.AddType<TwoPropertyObject>();
                 o.MapDirective("@myObjectDirective")
                     .RestrictLocations(DirectiveLocation.OBJECT)
-                    .AddResolver<int>((int a, IInjectedService service) =>
+                    .AddResolver((int a, IInjectedService service) =>
                     {
                         _values["injectedService"] = a + service.FetchValue();
                         return GraphActionResult.Ok();
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 o.AddType<TwoPropertyObject>();
                 o.MapDirective("@myObjectDirective")
                     .RestrictLocations(DirectiveLocation.OBJECT)
-                    .AddResolver<int>((int a, [FromGraphQL] IInjectedService service) =>
+                    .AddResolver((int a, [FromGraphQL] IInjectedService service) =>
                     {
                         _values["injectedServiceWrong"] = a + service.FetchValue();
                         return GraphActionResult.Ok();
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 o.AddController<SingleFieldController>();
                 o.MapDirective("@myFieldDirective")
                     .RestrictLocations(DirectiveLocation.FIELD)
-                    .AddResolver<int>(() =>
+                    .AddResolver(() =>
                     {
                         _values["fieldDirective"] = 11;
                         return GraphActionResult.Ok();
@@ -157,7 +157,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
                 o.MapDirective("@myFieldDirective")
                     .RestrictLocations(DirectiveLocation.FIELD)
-                    .AddResolver<int>(() =>
+                    .AddResolver(() =>
                     {
                         _values["fieldDirective"] = 11;
                         return GraphActionResult.Ok();
@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 o.MapDirective("@secureDirective")
                     .RestrictLocations(DirectiveLocation.FIELD)
                     .RequireAuthorization("policy1")
-                    .AddResolver<int>(() =>
+                    .AddResolver(() =>
                     {
                         _values["secureDirective1"] = 11;
                         return GraphActionResult.Ok();
@@ -234,7 +234,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 o.MapDirective("@secureDirective")
                     .RestrictLocations(DirectiveLocation.FIELD)
                     .RequireAuthorization("policy1")
-                    .AddResolver<int>(() =>
+                    .AddResolver(() =>
                     {
                         _values["secureDirective2"] = 11;
                         return GraphActionResult.Ok();
@@ -268,7 +268,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 o.MapDirective("@secureDirective")
                     .RestrictLocations(DirectiveLocation.FIELD)
                     .RequireAuthorization("policy1")
-                    .AddResolver<int>(() =>
+                    .AddResolver(() =>
                     {
                         _values["secureDirective3"] = 11;
                         return GraphActionResult.Ok();
@@ -304,7 +304,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
                 o.MapDirective("@injectedContext")
                     .RestrictLocations(DirectiveLocation.FIELD)
-                    .AddResolver<int>((DirectiveResolutionContext context) =>
+                    .AddResolver((DirectiveResolutionContext context) =>
                     {
                         if (context != null)
                             _values["directiveResolutionContext0"] = 1;
@@ -341,7 +341,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
                 o.MapDirective("@injectedContext")
                     .RestrictLocations(DirectiveLocation.FIELD)
-                    .AddResolver<int>((FieldResolutionContext context) =>
+                    .AddResolver((FieldResolutionContext context) =>
                     {
                         if (context != null)
                             _values["directiveResolutionContext1"] = 1;
@@ -377,7 +377,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
                 o.MapDirective("@injectedContext")
                     .RestrictLocations(DirectiveLocation.FIELD)
-                    .AddResolver<int>((DirectiveResolutionContext context, DirectiveResolutionContext context1) =>
+                    .AddResolver((DirectiveResolutionContext context, DirectiveResolutionContext context1) =>
                     {
                         if (context != null && context == context1)
                             _values["directiveResolutionContext2"] = 1;

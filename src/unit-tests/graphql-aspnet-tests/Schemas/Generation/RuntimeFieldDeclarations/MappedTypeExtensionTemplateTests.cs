@@ -218,16 +218,17 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
         }
 
         [Test]
-        public void MappedTypeExtension_WithUnionName1_AddsUnionNameToType()
+        public void ResolvedField_SwappingOutResolvers_RemovesUnion()
         {
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var typeExt = options.MapTypeExtension<TwoPropertyObject>("myField", "myUnion");
+            var typeExt = options.MapTypeExtension<TwoPropertyObject>("myField", "myUnion", (string a) => 1);
+            Assert.AreEqual(1, typeExt.Attributes.Count(x => x is UnionAttribute));
 
-            var attrib = typeExt.Attributes.OfType<UnionAttribute>().SingleOrDefault();
-
-            Assert.AreEqual("myUnion", attrib.UnionName);
+            // union is removed when resolver is re-declared
+            typeExt.AddResolver((int a) => 0);
+            Assert.AreEqual(0, typeExt.Attributes.Count(x => x is UnionAttribute));
         }
     }
 }

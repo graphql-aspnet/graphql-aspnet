@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Attributes
         {
             this.UnionName = null;
             if (unionProxyType != null)
-                this.UnionMemberTypes = new List<Type>() { unionProxyType };
+                this.UnionMemberTypes.Add(unionProxyType);
         }
 
         /// <summary>
@@ -65,8 +65,17 @@ namespace GraphQL.AspNet.Attributes
         /// </summary>
         /// <param name="unionName">The name to assign to this union.</param>
         public UnionAttribute(string unionName)
+            : this()
         {
             this.UnionName = unionName;
+        }
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="UnionAttribute"/> class from being created.
+        /// </summary>
+        private UnionAttribute()
+        {
+            this.UnionMemberTypes = new List<Type>();
         }
 
         /// <summary>

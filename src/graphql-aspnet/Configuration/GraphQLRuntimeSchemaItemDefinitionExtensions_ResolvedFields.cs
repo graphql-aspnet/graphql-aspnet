@@ -64,91 +64,6 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Indicates this field will return a union and sets the resolver to be used when this field is requested at runtime. The provided
-        /// resolver should return a <see cref="IGraphActionResult" />.
-        /// </summary>
-        /// <param name="fieldBuilder">The field being built.</param>
-        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
-        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
-        /// parsed to determine input arguments for the field on the target schema.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver(
-            this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder,
-            string unionName,
-            Delegate resolverMethod)
-        {
-            fieldBuilder.Resolver = resolverMethod;
-            fieldBuilder.ReturnType = null;
-
-            if (!string.IsNullOrWhiteSpace(unionName))
-            {
-                var unionAttrib = fieldBuilder.Attributes.OfType<UnionAttribute>().SingleOrDefault();
-                if (unionAttrib != null)
-                {
-                    unionAttrib.UnionName = unionName?.Trim();
-                    unionAttrib.UnionMemberTypes.Clear();
-                }
-                else
-                {
-                    fieldBuilder.AddAttribute(new UnionAttribute(unionName.Trim()));
-                }
-            }
-
-            return fieldBuilder;
-        }
-
-        /// <summary>
-        /// Sets the resolver to be used when this field is requested at runtime.
-        /// </summary>
-        /// <remarks>
-        ///  If this method is called more than once the previously set resolver will be replaced.
-        /// </remarks>
-        /// <param name="fieldBuilder">The field being built.</param>
-        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
-        /// parsed to determine input arguments for the field on the target schema.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, Delegate resolverMethod)
-        {
-            fieldBuilder.Resolver = resolverMethod;
-            fieldBuilder.ReturnType = null;
-
-            // since the resolver was declared as non-union, remove any potential union setup that might have
-            // existed via a previous call.
-            var unionAttrib = fieldBuilder.Attributes.OfType<UnionAttribute>().SingleOrDefault();
-            if (unionAttrib != null)
-                fieldBuilder.RemoveAttribute(unionAttrib);
-
-            return fieldBuilder;
-        }
-
-        /// <summary>
-        /// Sets the resolver to be used when this field is requested at runtime.
-        /// </summary>
-        /// <remarks>
-        ///  If this method is called more than once the previously set resolver will be replaced.
-        /// </remarks>
-        /// <typeparam name="TReturnType">The expected, primary return type of the field. Must be provided
-        /// if the supplied delegate returns an <see cref="IGraphActionResult"/>.</typeparam>
-        /// <param name="fieldBuilder">The field being built.</param>
-        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
-        /// parsed to determine input arguments for the field on the target schema.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver<TReturnType>(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, Delegate resolverMethod)
-        {
-            fieldBuilder.Resolver = resolverMethod;
-            fieldBuilder.ReturnType = typeof(TReturnType);
-
-            // since the resolver was declared as non-union, remove any potential union setup that might have
-            // existed via a previous call. if TReturnType is a union proxy it will be
-            // picked up automatically during templating
-            var unionAttrib = fieldBuilder.Attributes.OfType<UnionAttribute>().SingleOrDefault();
-            if (unionAttrib != null)
-                fieldBuilder.RemoveAttribute(unionAttrib);
-
-            return fieldBuilder;
-        }
-
-        /// <summary>
         /// Adds a set of possible return types for this field. This is synonymous to using the
         /// <see cref="PossibleTypesAttribute" /> on a controller's action method.
         /// </summary>
@@ -201,6 +116,120 @@ namespace GraphQL.AspNet.Configuration
         public static IGraphQLRuntimeResolvedFieldDefinition WithName(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, string internalName)
         {
             fieldBuilder.InternalName = internalName?.Trim();
+            return fieldBuilder;
+        }
+
+        /// <summary>
+        /// Indicates this field will return a union and sets the resolver to be used when this field is requested at runtime. The provided
+        /// resolver should return a <see cref="IGraphActionResult" />.
+        /// </summary>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
+        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
+        /// parsed to determine input arguments for the field on the target schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver(
+            this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder,
+            string unionName,
+            Delegate resolverMethod)
+        {
+            return AddResolver(
+                fieldBuilder,
+                null as Type, // return Type
+                unionName,
+                resolverMethod);
+        }
+
+        /// <summary>
+        /// Sets the resolver to be used when this field is requested at runtime.
+        /// </summary>
+        /// <remarks>
+        ///  If this method is called more than once the previously set resolver will be replaced.
+        /// </remarks>
+        /// <typeparam name="TReturnType">The expected, primary return type of the field. Must be provided
+        /// if the supplied delegate returns an <see cref="IGraphActionResult"/>.</typeparam>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
+        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
+        /// parsed to determine input arguments for the field on the target schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver<TReturnType>(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, string unionName, Delegate resolverMethod)
+        {
+            return AddResolver(
+                fieldBuilder,
+                typeof(TReturnType),
+                unionName,
+                resolverMethod);
+        }
+
+        /// <summary>
+        /// Sets the resolver to be used when this field is requested at runtime.
+        /// </summary>
+        /// <remarks>
+        ///  If this method is called more than once the previously set resolver will be replaced.
+        /// </remarks>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
+        /// parsed to determine input arguments for the field on the target schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, Delegate resolverMethod)
+        {
+            return AddResolver(
+                fieldBuilder,
+                null as Type, // return Type
+                null, // unionName
+                resolverMethod);
+        }
+
+        /// <summary>
+        /// Sets the resolver to be used when this field is requested at runtime.
+        /// </summary>
+        /// <remarks>
+        ///  If this method is called more than once the previously set resolver will be replaced.
+        /// </remarks>
+        /// <typeparam name="TReturnType">The expected, primary return type of the field. Must be provided
+        /// if the supplied delegate returns an <see cref="IGraphActionResult"/>.</typeparam>
+        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
+        /// parsed to determine input arguments for the field on the target schema.</param>
+        /// <returns>IGraphQLFieldBuilder.</returns>
+        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver<TReturnType>(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, Delegate resolverMethod)
+        {
+            return AddResolver(
+                fieldBuilder,
+                typeof(TReturnType),
+                null, // unionName
+                resolverMethod);
+        }
+
+        private static IGraphQLRuntimeResolvedFieldDefinition AddResolver(
+            this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder,
+            Type expectedReturnType,
+            string unionName,
+            Delegate resolverMethod)
+        {
+            fieldBuilder.Resolver = resolverMethod;
+            fieldBuilder.ReturnType = expectedReturnType;
+
+            // since the resolver was declared as non-union, remove any potential union setup that might have
+            // existed via a previous call. if TReturnType is a union proxy it will be
+            // picked up automatically during templating
+            var unionAttrib = fieldBuilder.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+            if (string.IsNullOrEmpty(unionName))
+            {
+                if (unionAttrib != null)
+                    fieldBuilder.RemoveAttribute(unionAttrib);
+            }
+            else if (unionAttrib != null)
+            {
+                unionAttrib.UnionName = unionName?.Trim();
+                unionAttrib.UnionMemberTypes.Clear();
+            }
+            else
+            {
+                fieldBuilder.AddAttribute(new UnionAttribute(unionName.Trim()));
+            }
+
             return fieldBuilder;
         }
     }
