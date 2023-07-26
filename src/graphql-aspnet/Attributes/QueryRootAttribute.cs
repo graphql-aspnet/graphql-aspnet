@@ -91,7 +91,11 @@ namespace GraphQL.AspNet.Attributes
         /// be sure to supply any additional concrete types so that they may be included in the object graph.</param>
         /// <param name="additionalTypes">Any additional types to include in the object graph on behalf of this method.</param>
         public QueryRootAttribute(string template, Type returnType, params Type[] additionalTypes)
-            : base(true, SchemaItemCollections.Query, template, (new Type[] { returnType }).Concat(additionalTypes ?? Enumerable.Empty<Type>()).ToArray())
+            : base(
+                  true,
+                  SchemaItemCollections.Query,
+                  template,
+                  (new Type[] { returnType }).Concat(additionalTypes ?? Enumerable.Empty<Type>()).ToArray())
         {
         }
 

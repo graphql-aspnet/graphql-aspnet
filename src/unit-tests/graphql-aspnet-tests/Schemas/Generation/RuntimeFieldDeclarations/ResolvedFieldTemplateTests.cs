@@ -156,5 +156,21 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             Assert.AreEqual(1, possibleTypesAttrib.PossibleTypes.Count);
             Assert.IsNotNull(possibleTypesAttrib.PossibleTypes.FirstOrDefault(x => x == typeof(TwoPropertyObject)));
         }
+
+        [Test]
+        public void ResolvedField_AddingUnionViaAddResolver_UnionIsApplied()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            // no union
+            var field = options.MapQuery("/path1/path2", (string a) => (int?)1);
+
+            // union added
+            field.AddResolver("myUnion", () => 0);
+
+            Assert.AreEqual(1, field.Attributes.Count(x => x is UnionAttribute));
+            Assert.AreEqual("myUnion", field.Attributes.OfType<UnionAttribute>().Single().UnionName);
+        }
     }
 }

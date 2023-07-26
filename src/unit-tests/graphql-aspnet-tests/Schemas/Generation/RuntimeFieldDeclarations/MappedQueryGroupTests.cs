@@ -138,6 +138,45 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
         }
 
         [Test]
+        public void MapField_WithNoResovler_FieldIsMade_ResolverIsNotSet()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var childField = options.MapQueryGroup("/path1/path2")
+                               .MapField("myField");
+
+            Assert.IsNull(childField.Resolver);
+        }
+
+        [Test]
+        public void MapField_WithResovler_AndUnion_BothAreSet()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var childField = options.MapQueryGroup("/path1/path2")
+                               .MapField("myField", "myUnion", () => 1);
+
+            Assert.IsNotNull(childField.Resolver);
+            Assert.AreEqual(1, childField.Attributes.OfType<UnionAttribute>().Count());
+            Assert.AreEqual("myUnion", childField.Attributes.OfType<UnionAttribute>().Single().UnionName);
+        }
+
+        [Test]
+        public void MapField_WithResovler_AndExplicitReturnType_IsMapped()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var childField = options.MapQueryGroup("/path1/path2")
+                               .MapField<int?>("myField", () => 1);
+
+            Assert.IsNotNull(childField.Resolver);
+            Assert.AreEqual(typeof(int?), childField.ReturnType);
+        }
+
+        [Test]
         public void MapQueryGroup_MultipleCopyAttribute_AppliedToGroupAndField_IsAppliedMultipleTimes()
         {
             var services = new ServiceCollection();

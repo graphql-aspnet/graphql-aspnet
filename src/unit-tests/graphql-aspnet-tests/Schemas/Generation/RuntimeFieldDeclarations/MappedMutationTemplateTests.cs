@@ -72,9 +72,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var typeExt = options.MapMutation("myField", null, (string a) => 1);
+            var field = options.MapMutation("myField", null, (string a) => 1);
 
-            var attrib = typeExt.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+            var attrib = field.Attributes.OfType<UnionAttribute>().SingleOrDefault();
 
             Assert.IsNull(attrib);
         }
@@ -85,11 +85,40 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var typeExt = options.MapMutation("myField", "myUnion", (string a) => 1);
+            var field = options.MapMutation("myField", "myUnion", (string a) => 1);
 
-            var attrib = typeExt.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+            var attrib = field.Attributes.OfType<UnionAttribute>().SingleOrDefault();
 
             Assert.AreEqual("myUnion", attrib.UnionName);
+        }
+
+        [Test]
+        public void MapMutation_WithNoResolver_IsCreated()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options.MapMutation("myField");
+
+            Assert.IsNull(field.Resolver);
+            Assert.IsNull(field.ReturnType);
+
+            Assert.IsTrue(options.RuntimeTemplates.Contains(field));
+        }
+
+        [Test]
+        public void MapMutation_WithResolver_AndUnion_IsCreated()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options.MapMutation("myField", "myUnion", () => 1);
+
+            Assert.IsNotNull(field.Resolver);
+
+            Assert.AreEqual(1, field.Attributes.OfType<UnionAttribute>().Count());
+            Assert.AreEqual("myUnion", field.Attributes.OfType<UnionAttribute>().Single().UnionName);
+            Assert.IsTrue(options.RuntimeTemplates.Contains(field));
         }
     }
 }

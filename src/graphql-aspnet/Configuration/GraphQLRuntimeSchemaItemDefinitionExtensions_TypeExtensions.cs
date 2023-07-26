@@ -433,27 +433,5 @@ namespace GraphQL.AspNet.Configuration
                 unionName,
                 resolverMethod);
         }
-
-        /// <summary>
-        /// Sets the resolver to be used when this field is requested at runtime.
-        /// </summary>
-        /// <remarks>
-        ///  If this method is called more than once the previously set resolver will be replaced.
-        /// </remarks>
-        /// <typeparam name="TReturnType">The expected, primary return type of the field. Must be provided
-        /// if the supplied delegate returns an <see cref="IGraphActionResult"/>.</typeparam>
-        /// <param name="fieldBuilder">The field being built.</param>
-        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeTypeExtensionDefinition, Type, Type[])"/> to declare union members.</param>
-        /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
-        /// parsed to determine input arguments for the field on the target schema.</param>
-        /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition AddResolver<TReturnType>(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, string unionName, Delegate resolverMethod)
-        {
-            return AddResolverInternal(
-                fieldBuilder,
-                typeof(TReturnType),
-                unionName,
-                resolverMethod);
-        }
     }
 }
