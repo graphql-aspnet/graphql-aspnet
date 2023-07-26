@@ -136,5 +136,25 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             field.AddResolver((int a) => 0);
             Assert.AreEqual(0, field.Attributes.Count(x => x is UnionAttribute));
         }
+
+        [Test]
+        public void ResolvedField_PossibleTypeSwapping()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options.MapQuery("/path1/path2", (string a) => (int?)1);
+            field.AddPossibleTypes(typeof(TwoPropertyObject), typeof(TwoPropertyObjectV2), typeof(TwoPropertyObjectV3));
+            field.ClearPossibleTypes();
+            field.AddPossibleTypes(typeof(TwoPropertyObject), typeof(TwoPropertyObjectV2));
+            field.ClearPossibleTypes();
+            field.AddPossibleTypes(typeof(TwoPropertyObject));
+
+            Assert.AreEqual(2, field.Attributes.Count());
+            var possibleTypesAttrib = field.Attributes.SingleOrDefault(x => x is PossibleTypesAttribute) as PossibleTypesAttribute;
+
+            Assert.AreEqual(1, possibleTypesAttrib.PossibleTypes.Count);
+            Assert.IsNotNull(possibleTypesAttrib.PossibleTypes.FirstOrDefault(x => x == typeof(TwoPropertyObject)));
+        }
     }
 }

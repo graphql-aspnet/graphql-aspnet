@@ -213,7 +213,7 @@ namespace GraphQL.AspNet.Configuration
             var subField = new RuntimeResolvedFieldDefinition(field, subTemplate);
             subField.Options.AddRuntimeSchemaItem(subField);
 
-            subField.AddResolver(expectedReturnType, unionName, resolverMethod);
+            AddResolverInternal(subField, expectedReturnType, unionName, resolverMethod);
             return subField;
         }
     }

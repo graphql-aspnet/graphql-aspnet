@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Attributes
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>
     /// When an graph field returns an interface, use this attribute
@@ -32,7 +31,10 @@ namespace GraphQL.AspNet.Attributes
         /// <param name="additionalPossibleTypes">Any additional possible types.</param>
         public PossibleTypesAttribute(Type firstPossibleType, params Type[] additionalPossibleTypes)
         {
-            this.PossibleTypes = firstPossibleType.AsEnumerable().Concat(additionalPossibleTypes).Where(x => x != null).ToList();
+            this.PossibleTypes = new Type[] { firstPossibleType }
+                .Concat(additionalPossibleTypes ?? Enumerable.Empty<Type>())
+                .Where(x => x != null)
+                .ToList();
         }
 
         /// <summary>

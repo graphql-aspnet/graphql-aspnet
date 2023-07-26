@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
@@ -43,11 +44,7 @@ namespace GraphQL.AspNet.Configuration
         {
             Validation.ThrowIfNull(directiveTemplate, nameof(directiveTemplate));
 
-            var attrib = new AuthorizeAttribute();
-            attrib.Policy = policyName?.Trim();
-            attrib.Roles = roles?.Trim();
-            directiveTemplate.AddAttribute(attrib);
-            return directiveTemplate;
+            return RequireAuthorizationInternal(directiveTemplate, policyName, roles);
         }
 
         /// <summary>
@@ -67,12 +64,7 @@ namespace GraphQL.AspNet.Configuration
         public static IGraphQLRuntimeDirectiveDefinition AllowAnonymous(this IGraphQLRuntimeDirectiveDefinition directiveTemplate)
         {
             Validation.ThrowIfNull(directiveTemplate, nameof(directiveTemplate));
-            if (directiveTemplate.Attributes.Count(x => x is AllowAnonymousAttribute) == 0)
-            {
-                directiveTemplate.AddAttribute(new AllowAnonymousAttribute());
-            }
-
-            return directiveTemplate;
+            return AllowAnonymousInternal(directiveTemplate);
         }
 
         /// <summary>
@@ -132,11 +124,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
         public static IGraphQLRuntimeDirectiveDefinition AddResolver(this IGraphQLRuntimeDirectiveDefinition directiveTemplate, Delegate resolverMethod)
         {
-            Validation.ThrowIfNull(directiveTemplate, nameof(directiveTemplate));
-            directiveTemplate.Resolver = resolverMethod;
-            directiveTemplate.ReturnType = null;
-
-            return directiveTemplate;
+            return AddResolverInternal(directiveTemplate, null, null, resolverMethod);
         }
 
         /// <summary>

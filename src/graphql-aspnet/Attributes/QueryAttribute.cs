@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Attributes
         /// <param name="template">The template naming scheme to use to generate a graph field from this method.</param>
         /// <param name="unionTypeName">Name of the union type.</param>
         public QueryAttribute(string template, string unionTypeName)
-         : this(template, unionTypeName, null, null)
+         : this(template, unionTypeName, null)
         {
         }
 
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Attributes
         /// be sure to supply any additional concrete types so that they may be included in the object graph.</param>
         /// <param name="additionalTypes">Any additional types to include in the object graph on behalf of this method.</param>
         public QueryAttribute(string template, Type returnType, params Type[] additionalTypes)
-            : base(false, SchemaItemCollections.Query, template, returnType.AsEnumerable().Concat(additionalTypes).ToArray())
+            : base(false, SchemaItemCollections.Query, template, (new Type[] { returnType }).Concat(additionalTypes ?? Enumerable.Empty<Type>()).ToArray())
         {
         }
 
@@ -101,16 +101,15 @@ namespace GraphQL.AspNet.Attributes
         /// </summary>
         /// <param name="template">The template naming scheme to use to generate a graph field from this method.</param>
         /// <param name="unionTypeName">Name of the union type.</param>
-        /// <param name="unionTypeA">The first of two required types to include in the union.</param>
-        /// <param name="unionTypeB">The second of two required types to include in the union.</param>
+        /// <param name="unionTypeA">The first type to include in the union.</param>
         /// <param name="additionalUnionTypes">Any additional union types to include.</param>
-        public QueryAttribute(string template, string unionTypeName, Type unionTypeA, Type unionTypeB, params Type[] additionalUnionTypes)
+        public QueryAttribute(string template, string unionTypeName, Type unionTypeA, params Type[] additionalUnionTypes)
          : base(
                false,
                SchemaItemCollections.Query,
                template,
                unionTypeName,
-               unionTypeA.AsEnumerable().Concat(unionTypeB.AsEnumerable()).Concat(additionalUnionTypes).ToArray())
+               (new Type[] { unionTypeA }).Concat(additionalUnionTypes ?? Enumerable.Empty<Type>()).ToArray())
         {
         }
     }

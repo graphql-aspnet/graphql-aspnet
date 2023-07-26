@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ControllerTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using NUnit.Framework;
@@ -123,6 +124,96 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             var action = Enumerable.First<IGraphFieldTemplate>(template.Actions);
             Assert.AreEqual(nameof(ControllerWithStaticMethod.InstanceMethod), action.Name);
+        }
+
+        [Test]
+        public void Parse_UnionAttributeDefinedUnion_CreatesUnitonCorrectly()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithUnionAttributes));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var action = template.Actions.Single(x => x.InternalName.EndsWith(nameof(ControllerWithUnionAttributes.UnionDeclaredViaUnionAttribute)));
+
+            Assert.IsNotNull(action.UnionProxy);
+            Assert.AreEqual("myUnion", action.UnionProxy.Name);
+            Assert.AreEqual(2, action.UnionProxy.Types.Count);
+            Assert.IsNotNull(action.UnionProxy.Types.Single(x => x == typeof(TwoPropertyObject)));
+            Assert.IsNotNull(action.UnionProxy.Types.Single(x => x == typeof(TwoPropertyObjectV2)));
+        }
+
+        [Test]
+        public void Parse_UnionViaProxy_OnQuery()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithUnionAttributes));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var action = template.Actions.Single(x => x.InternalName.EndsWith(nameof(ControllerWithUnionAttributes.UnionViaProxyOnQuery)));
+
+            Assert.IsNotNull(action.UnionProxy);
+            Assert.AreEqual("TestUnion", action.UnionProxy.Name);
+            Assert.AreEqual(1, action.UnionProxy.Types.Count);
+            Assert.IsNotNull(action.UnionProxy.Types.Single(x => x == typeof(TwoPropertyObject)));
+        }
+
+        [Test]
+        public void Parse_UnionViaProxy_OnUnionAttribute()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithUnionAttributes));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var action = template.Actions.Single(x => x.InternalName.EndsWith(nameof(ControllerWithUnionAttributes.UnionViaProxyOnUnionAttribute)));
+
+            Assert.IsNotNull(action.UnionProxy);
+            Assert.AreEqual("TestUnion", action.UnionProxy.Name);
+            Assert.AreEqual(1, action.UnionProxy.Types.Count);
+            Assert.IsNotNull(action.UnionProxy.Types.Single(x => x == typeof(TwoPropertyObject)));
+        }
+
+        [Test]
+        public void Parse_UnionViaProxy_LotsOfUselessNulls_OnUnionAttribute()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithUnionAttributes));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var action = template.Actions.Single(x => x.InternalName.EndsWith(nameof(ControllerWithUnionAttributes.LotsOfNullsWithProxy)));
+
+            Assert.IsNotNull(action.UnionProxy);
+            Assert.AreEqual("TestUnion", action.UnionProxy.Name);
+            Assert.AreEqual(1, action.UnionProxy.Types.Count);
+            Assert.IsNotNull(action.UnionProxy.Types.Single(x => x == typeof(TwoPropertyObject)));
+        }
+
+        [Test]
+        public void Parse_UnionAttributeDefinedUnion_WithLotsOfNulls()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithUnionAttributes));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var action = template.Actions.Single(x => x.InternalName.EndsWith(nameof(ControllerWithUnionAttributes.LotsOfNullsWithDeclaration)));
+
+            // only two actual types, all nulls are ignored
+            Assert.IsNotNull(action.UnionProxy);
+            Assert.AreEqual("myUnion2", action.UnionProxy.Name);
+            Assert.AreEqual(2, action.UnionProxy.Types.Count);
+            Assert.IsNotNull(action.UnionProxy.Types.Single(x => x == typeof(TwoPropertyObject)));
+            Assert.IsNotNull(action.UnionProxy.Types.Single(x => x == typeof(TwoPropertyObjectV2)));
+        }
+
+        [Test]
+        public void Parse_DoubleDeclaredUnion_ThrowsException()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithDoubleDeclaredUnion));
+            template.Parse();
+
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+                {
+                    template.ValidateOrThrow();
+                });
         }
     }
 }

@@ -11,13 +11,13 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
+    using GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions;
     using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
@@ -179,14 +179,12 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
         public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName)
         {
-            var field = MapTypeExtension(
+            return MapTypeExtension(
                 schemaOptions,
                 fieldOwnerType,
                 fieldName,
                 null, // unionName
                 null as Delegate);
-
-            return field;
         }
 
         /// <summary>
@@ -204,14 +202,12 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
         public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName, Delegate resolverMethod)
         {
-            var field = MapTypeExtension(
+            return MapTypeExtension(
                 schemaOptions,
                 fieldOwnerType,
                 fieldName,
                 null, // unionName
                 resolverMethod);
-
-            return field;
         }
 
         /// <summary>
@@ -258,25 +254,17 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
         public static IGraphQLRuntimeTypeExtensionDefinition MapTypeExtension(this SchemaOptions schemaOptions, Type fieldOwnerType, string fieldName, string unionName, Delegate resolverMethod)
         {
-            var field = MapTypeExtensionInternal(
+            schemaOptions = Validation.ThrowIfNullOrReturn(schemaOptions, nameof(schemaOptions));
+            fieldOwnerType = Validation.ThrowIfNullOrReturn(fieldOwnerType, nameof(fieldOwnerType));
+            fieldName = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
+
+            IGraphQLRuntimeTypeExtensionDefinition field = new RuntimeTypeExtensionDefinition(
                 schemaOptions,
                 fieldOwnerType,
                 fieldName,
                 FieldResolutionMode.PerSourceItem);
 
-            if (!string.IsNullOrWhiteSpace(unionName))
-            {
-                var unionAttrib = field.Attributes.OfType<UnionAttribute>().SingleOrDefault();
-                if (unionAttrib != null)
-                {
-                    unionAttrib.UnionName = unionName?.Trim();
-                    unionAttrib.UnionMemberTypes.Clear();
-                }
-                else
-                {
-                    field.AddAttribute(new UnionAttribute(unionName.Trim()));
-                }
-            }
+            schemaOptions.AddRuntimeSchemaItem(field);
 
             if (resolverMethod != null)
                 field = field.AddResolver(unionName, resolverMethod);
@@ -298,6 +286,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLTypeExtensionTemplate.</returns>
         public static IGraphQLRuntimeTypeExtensionDefinition WithBatchProcessing(this IGraphQLRuntimeTypeExtensionDefinition typeExtension)
         {
+            Validation.ThrowIfNull(typeExtension, nameof(typeExtension));
             typeExtension.ExecutionMode = FieldResolutionMode.Batch;
             return typeExtension;
         }
@@ -309,17 +298,28 @@ namespace GraphQL.AspNet.Configuration
         /// <remarks>
         /// This method can be called multiple times. Any new types will be appended to the field.
         /// </remarks>
-        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="typeExtension">The field being built.</param>
         /// <param name="firstPossibleType">The first possible type that might be returned by this
         /// field.</param>
         /// <param name="additionalPossibleTypes">Any number of additional possible types that
         /// might be returned by this field.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition AddPossibleTypes(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
+        public static IGraphQLRuntimeTypeExtensionDefinition AddPossibleTypes(this IGraphQLRuntimeTypeExtensionDefinition typeExtension, Type firstPossibleType, params Type[] additionalPossibleTypes)
         {
-            var possibleTypes = new PossibleTypesAttribute(firstPossibleType, additionalPossibleTypes);
-            fieldBuilder.AddAttribute(possibleTypes);
-            return fieldBuilder;
+            Validation.ThrowIfNull(typeExtension, nameof(typeExtension));
+            return AddPossibleTypesInternal(typeExtension, firstPossibleType, additionalPossibleTypes);
+        }
+
+        /// <summary>
+        /// Clears all extra defined possible types this field may declare. This will not affect the core type defined by the resolver, if
+        /// a resolver has been defined for this field.
+        /// </summary>
+        /// <param name="typeExtension">The field builder.</param>
+        /// <returns>IGraphQLRuntimeResolvedFieldDefinition.</returns>
+        public static IGraphQLRuntimeTypeExtensionDefinition ClearPossibleTypes(this IGraphQLRuntimeTypeExtensionDefinition typeExtension)
+        {
+            Validation.ThrowIfNull(typeExtension, nameof(typeExtension));
+            return ClearPossibleTypesInternal(typeExtension);
         }
 
         /// <summary>
@@ -331,14 +331,14 @@ namespace GraphQL.AspNet.Configuration
         /// This value does NOT affect the field name as it would appear in a schema. It only effects the internal
         /// name used in log messages and exception text.
         /// </remarks>
-        /// <param name="fieldBuilder">The type exension field being built.</param>
+        /// <param name="typeExtension">The type exension field being built.</param>
         /// <param name="internalName">The value to use as the internal name for this field definition when its
         /// added to the schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition WithName(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, string internalName)
+        public static IGraphQLRuntimeTypeExtensionDefinition WithName(this IGraphQLRuntimeTypeExtensionDefinition typeExtension, string internalName)
         {
-            fieldBuilder.InternalName = internalName;
-            return fieldBuilder;
+            typeExtension.InternalName = internalName;
+            return typeExtension;
         }
 
         /// <summary>
@@ -357,12 +357,7 @@ namespace GraphQL.AspNet.Configuration
             string roles = null)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-
-            var attrib = new AuthorizeAttribute();
-            attrib.Policy = policyName?.Trim();
-            attrib.Roles = roles?.Trim();
-            fieldBuilder.AddAttribute(attrib);
-            return fieldBuilder;
+            return RequireAuthorizationInternal(fieldBuilder, policyName, roles);
         }
 
         /// <summary>
@@ -371,13 +366,12 @@ namespace GraphQL.AspNet.Configuration
         /// <remarks>
         /// This is similar to adding the <see cref="AllowAnonymousAttribute"/> to a controller method
         /// </remarks>
-        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="typeExtension">The field being built.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition AllowAnonymous(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder)
+        public static IGraphQLRuntimeTypeExtensionDefinition AllowAnonymous(this IGraphQLRuntimeTypeExtensionDefinition typeExtension)
         {
-            Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            fieldBuilder.AddAttribute(new AllowAnonymousAttribute());
-            return fieldBuilder;
+            Validation.ThrowIfNull(typeExtension, nameof(typeExtension));
+            return AllowAnonymousInternal(typeExtension);
         }
 
         /// <summary>
@@ -386,14 +380,14 @@ namespace GraphQL.AspNet.Configuration
         /// <remarks>
         ///  If this method is called more than once the previously set resolver will be replaced.
         /// </remarks>
-        /// <param name="fieldBuilder">The field being built.</param>
+        /// <param name="typeExtension">The field being built.</param>
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition AddResolver(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, Delegate resolverMethod)
+        public static IGraphQLRuntimeTypeExtensionDefinition AddResolver(this IGraphQLRuntimeTypeExtensionDefinition typeExtension, Delegate resolverMethod)
         {
-            return AddResolver(
-              fieldBuilder,
+            return AddResolverInternal(
+              typeExtension,
               null as Type, // returnType
               null,  // unionName
               resolverMethod);
@@ -413,7 +407,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeTypeExtensionDefinition AddResolver<TReturnType>(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, Delegate resolverMethod)
         {
-            return AddResolver(
+            return AddResolverInternal(
                 fieldBuilder,
                 typeof(TReturnType),
                 null,  // unionName
@@ -433,7 +427,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeTypeExtensionDefinition AddResolver(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, string unionName, Delegate resolverMethod)
         {
-            return AddResolver(
+            return AddResolverInternal(
                 fieldBuilder,
                 null as Type, // returnType
                 unionName,
@@ -455,38 +449,11 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeTypeExtensionDefinition AddResolver<TReturnType>(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, string unionName, Delegate resolverMethod)
         {
-            return AddResolver(
+            return AddResolverInternal(
                 fieldBuilder,
                 typeof(TReturnType),
                 unionName,
                 resolverMethod);
-        }
-
-        private static IGraphQLRuntimeTypeExtensionDefinition AddResolver(this IGraphQLRuntimeTypeExtensionDefinition fieldBuilder, Type expectedReturnType, string unionName, Delegate resolverMethod)
-        {
-            fieldBuilder.Resolver = resolverMethod;
-            fieldBuilder.ReturnType = expectedReturnType;
-
-            // since the resolver was declared as non-union, remove any potential union setup that might have
-            // existed via a previous call. if TReturnType is a union proxy it will be
-            // picked up automatically during templating
-            var unionAttrib = fieldBuilder.Attributes.OfType<UnionAttribute>().SingleOrDefault();
-            if (string.IsNullOrEmpty(unionName))
-            {
-                if (unionAttrib != null)
-                    fieldBuilder.RemoveAttribute(unionAttrib);
-            }
-            else if (unionAttrib != null)
-            {
-                unionAttrib.UnionName = unionName?.Trim();
-                unionAttrib.UnionMemberTypes.Clear();
-            }
-            else
-            {
-                fieldBuilder.AddAttribute(new UnionAttribute(unionName.Trim()));
-            }
-
-            return fieldBuilder;
         }
     }
 }

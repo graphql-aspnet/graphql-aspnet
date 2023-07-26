@@ -39,12 +39,7 @@ namespace GraphQL.AspNet.Configuration
             string roles = null)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-
-            var attrib = new AuthorizeAttribute();
-            attrib.Policy = policyName?.Trim();
-            attrib.Roles = roles?.Trim();
-            fieldBuilder.AddAttribute(attrib);
-            return fieldBuilder;
+            return RequireAuthorizationInternal(fieldBuilder, policyName, roles);
         }
 
         /// <summary>
@@ -59,8 +54,7 @@ namespace GraphQL.AspNet.Configuration
         public static IGraphQLRuntimeResolvedFieldDefinition AllowAnonymous(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            fieldBuilder.AddAttribute(new AllowAnonymousAttribute());
-            return fieldBuilder;
+            return AllowAnonymousInternal(fieldBuilder);
         }
 
         /// <summary>
@@ -80,9 +74,8 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeResolvedFieldDefinition AddPossibleTypes(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
         {
-            var possibleTypes = new PossibleTypesAttribute(firstPossibleType, additionalPossibleTypes);
-            fieldBuilder.AddAttribute(possibleTypes);
-            return fieldBuilder;
+            Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
+            return AddPossibleTypesInternal(fieldBuilder, firstPossibleType, additionalPossibleTypes);
         }
 
         /// <summary>
@@ -93,11 +86,8 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLRuntimeResolvedFieldDefinition.</returns>
         public static IGraphQLRuntimeResolvedFieldDefinition ClearPossibleTypes(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder)
         {
-            var attributes = fieldBuilder.Attributes.OfType<PossibleTypesAttribute>().ToList();
-            foreach (var att in attributes)
-                fieldBuilder.RemoveAttribute(att);
-
-            return fieldBuilder;
+            Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
+            return ClearPossibleTypesInternal(fieldBuilder);
         }
 
         /// <summary>
@@ -115,6 +105,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeResolvedFieldDefinition WithName(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, string internalName)
         {
+            Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
             fieldBuilder.InternalName = internalName?.Trim();
             return fieldBuilder;
         }
@@ -133,7 +124,8 @@ namespace GraphQL.AspNet.Configuration
             string unionName,
             Delegate resolverMethod)
         {
-            return AddResolver(
+            Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
+            return AddResolverInternal(
                 fieldBuilder,
                 null as Type, // return Type
                 unionName,
@@ -155,7 +147,8 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeResolvedFieldDefinition AddResolver<TReturnType>(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, string unionName, Delegate resolverMethod)
         {
-            return AddResolver(
+            Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
+            return AddResolverInternal(
                 fieldBuilder,
                 typeof(TReturnType),
                 unionName,
@@ -174,7 +167,8 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeResolvedFieldDefinition AddResolver(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, Delegate resolverMethod)
         {
-            return AddResolver(
+            Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
+            return AddResolverInternal(
                 fieldBuilder,
                 null as Type, // return Type
                 null, // unionName
@@ -195,42 +189,12 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLFieldBuilder.</returns>
         public static IGraphQLRuntimeResolvedFieldDefinition AddResolver<TReturnType>(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, Delegate resolverMethod)
         {
-            return AddResolver(
+            Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
+            return AddResolverInternal(
                 fieldBuilder,
                 typeof(TReturnType),
                 null, // unionName
                 resolverMethod);
-        }
-
-        private static IGraphQLRuntimeResolvedFieldDefinition AddResolver(
-            this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder,
-            Type expectedReturnType,
-            string unionName,
-            Delegate resolverMethod)
-        {
-            fieldBuilder.Resolver = resolverMethod;
-            fieldBuilder.ReturnType = expectedReturnType;
-
-            // since the resolver was declared as non-union, remove any potential union setup that might have
-            // existed via a previous call. if TReturnType is a union proxy it will be
-            // picked up automatically during templating
-            var unionAttrib = fieldBuilder.Attributes.OfType<UnionAttribute>().SingleOrDefault();
-            if (string.IsNullOrEmpty(unionName))
-            {
-                if (unionAttrib != null)
-                    fieldBuilder.RemoveAttribute(unionAttrib);
-            }
-            else if (unionAttrib != null)
-            {
-                unionAttrib.UnionName = unionName?.Trim();
-                unionAttrib.UnionMemberTypes.Clear();
-            }
-            else
-            {
-                fieldBuilder.AddAttribute(new UnionAttribute(unionName.Trim()));
-            }
-
-            return fieldBuilder;
         }
     }
 }
