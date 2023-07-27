@@ -111,5 +111,18 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 101, "controller arg" }, appliedDirective.Arguments);
         }
+
+        [Test]
+        public void Parse_InheritedAction_IsIncludedInTheTemplate()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithInheritedAction));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.Actions.Count());
+
+            Assert.IsNotNull(template.Actions.Single(x => x.Name.EndsWith(nameof(BaseControllerWithAction.BaseControllerAction))));
+            Assert.IsNotNull(template.Actions.Single(x => x.Name.EndsWith(nameof(ControllerWithInheritedAction.ChildControllerAction))));
+        }
     }
 }
