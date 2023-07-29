@@ -93,5 +93,45 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             Assert.AreEqual("myUnion", attrib.UnionName);
         }
+
+        [Test]
+        public void MapMutation_FromBuilder_WithNoDelegate_DoesAddFieldToSchema()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var builderMock = new Mock<ISchemaBuilder>();
+            builderMock.Setup(x => x.Options).Returns(options);
+
+            var field = builderMock.Object.MapQuery("/path1/path2");
+
+            Assert.IsNotNull(field);
+            Assert.AreEqual("[query]/path1/path2", field.Route.Path);
+            Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
+            Assert.AreEqual(1, options.RuntimeTemplates.Count());
+
+            Assert.AreEqual(1, field.Attributes.Count());
+            var rootAttrib = field.Attributes.FirstOrDefault(x => x.GetType() == typeof(QueryRootAttribute));
+            Assert.IsNotNull(rootAttrib);
+        }
+
+        [Test]
+        public void MapMutation_FromBuilder_WithUnionName0_AddsUnionNameToType()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var builderMock = new Mock<ISchemaBuilder>();
+            builderMock.Setup(x => x.Options).Returns(options);
+
+            var field = builderMock.Object.MapQuery("myField", "myUnion", (string a) => 1);
+
+            var attrib = field.Attributes.OfType<UnionAttribute>().SingleOrDefault();
+
+            Assert.AreEqual("myUnion", attrib.UnionName);
+
+            var rootAttrib = field.Attributes.FirstOrDefault(x => x.GetType() == typeof(QueryRootAttribute));
+            Assert.IsNotNull(rootAttrib);
+        }
     }
 }

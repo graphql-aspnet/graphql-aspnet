@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Configuration.Startup
             where TSchema : class, ISchema
         {
             // the whole point of this method is to try every possible combination
-            // of parameters and give out a friendly error message if nothing works.
+            // of parameters and give out a friendly error message instead of using the service provider cryptic error message.
             Validation.ThrowIfNull(sp, nameof(sp));
             List<object> paramSet = null;
             if (!SCHEMA_CONSTRUCTORS.TryGetValue(typeof(TSchema), out var schemaConstructor))

@@ -136,6 +136,46 @@ namespace GraphQL.AspNet.Tests.Attributes
         }
 
         [Test]
+        public void QueryAttribute_UnionConstructor_1Type_PropertyCheck()
+        {
+            var attrib = new QueryAttribute("myField", "myUnionType", typeof(AttributeDataIntegrityTests));
+            Assert.AreEqual(SchemaItemCollections.Query, attrib.FieldType);
+            Assert.AreEqual(false, attrib.IsRootFragment);
+            Assert.AreEqual("myUnionType", attrib.UnionTypeName);
+            Assert.AreEqual("myField", attrib.Template);
+            Assert.AreEqual(null, attrib.TypeExpression);
+            Assert.AreEqual(1, attrib.Types.Count);
+            Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
+            Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
+        }
+
+        [Test]
+        public void QueryAttribute_UnionConstructor_NoTypes_PropertyCheck()
+        {
+            var attrib = new QueryAttribute("myField", "myUnionType");
+            Assert.AreEqual(SchemaItemCollections.Query, attrib.FieldType);
+            Assert.AreEqual(false, attrib.IsRootFragment);
+            Assert.AreEqual("myUnionType", attrib.UnionTypeName);
+            Assert.AreEqual("myField", attrib.Template);
+            Assert.AreEqual(null, attrib.TypeExpression);
+            Assert.AreEqual(0, attrib.Types.Count);
+            Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
+        }
+
+        [Test]
+        public void QueryAttribute_UnionConstructor_NullTypes_PropertyCheck()
+        {
+            var attrib = new QueryAttribute("myField", "myUnionType", null, null, null);
+            Assert.AreEqual(SchemaItemCollections.Query, attrib.FieldType);
+            Assert.AreEqual(false, attrib.IsRootFragment);
+            Assert.AreEqual("myUnionType", attrib.UnionTypeName);
+            Assert.AreEqual("myField", attrib.Template);
+            Assert.AreEqual(null, attrib.TypeExpression);
+            Assert.AreEqual(0, attrib.Types.Count);
+            Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
+        }
+
+        [Test]
         public void MutationAttribute_EmptyConstructor_PropertyCheck()
         {
             var attrib = new MutationAttribute();
@@ -217,6 +257,46 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
+            Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
+        }
+
+        [Test]
+        public void MutationAttribute_UnionConstructor_1Type_PropertyCheck()
+        {
+            var attrib = new MutationAttribute("myField", "myUnionType", typeof(AttributeDataIntegrityTests));
+            Assert.AreEqual(SchemaItemCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(false, attrib.IsRootFragment);
+            Assert.AreEqual("myUnionType", attrib.UnionTypeName);
+            Assert.AreEqual("myField", attrib.Template);
+            Assert.AreEqual(null, attrib.TypeExpression);
+            Assert.AreEqual(1, attrib.Types.Count);
+            Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
+            Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
+        }
+
+        [Test]
+        public void MutationAttribute_UnionConstructor_NoTypes_PropertyCheck()
+        {
+            var attrib = new MutationAttribute("myField", "myUnionType");
+            Assert.AreEqual(SchemaItemCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(false, attrib.IsRootFragment);
+            Assert.AreEqual("myUnionType", attrib.UnionTypeName);
+            Assert.AreEqual("myField", attrib.Template);
+            Assert.AreEqual(null, attrib.TypeExpression);
+            Assert.AreEqual(0, attrib.Types.Count);
+            Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
+        }
+
+        [Test]
+        public void MutationAttribute_UnionConstructor_NullTypes_PropertyCheck()
+        {
+            var attrib = new MutationAttribute("myField", "myUnionType", null, null, null);
+            Assert.AreEqual(SchemaItemCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(false, attrib.IsRootFragment);
+            Assert.AreEqual("myUnionType", attrib.UnionTypeName);
+            Assert.AreEqual("myField", attrib.Template);
+            Assert.AreEqual(null, attrib.TypeExpression);
+            Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
 

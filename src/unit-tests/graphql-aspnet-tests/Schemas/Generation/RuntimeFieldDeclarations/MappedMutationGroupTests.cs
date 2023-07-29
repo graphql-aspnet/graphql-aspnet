@@ -12,9 +12,11 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
     using System.Linq;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Schemas;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.DependencyInjection;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -92,6 +94,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
             Assert.AreEqual("[mutation]/path1/path2/path3/path4", childField.Route.Path);
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is MutationRootAttribute));
         }
 
         [Test]
@@ -105,6 +108,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var resolvedField = childField.MapField("/path5/path6", (string a) => 1);
 
             Assert.AreEqual("[mutation]/path1/path2/path3/path4/path5/path6", resolvedField.Route.Path);
+            Assert.AreEqual(1, resolvedField.Attributes.Count(x => x is MutationRootAttribute));
             Assert.IsNotNull(resolvedField.Resolver);
         }
 
@@ -119,6 +123,23 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
             Assert.AreEqual("[mutation]/path1/path2/path3/path4", childField.Route.Path);
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is MutationRootAttribute));
+        }
+
+        [Test]
+        public void MapField_FromSchemaBuilder_WithNoResovler_FieldIsMade_ResolverIsNotSet()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var builderMock = new Mock<ISchemaBuilder>();
+            builderMock.Setup(x => x.Options).Returns(options);
+
+            var childField = builderMock.Object.MapMutationGroup("/path1/path2")
+                               .MapField("myField");
+
+            Assert.IsNull(childField.Resolver);
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is MutationRootAttribute));
         }
     }
 }

@@ -36,6 +36,23 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
         }
 
         [Test]
+        public void ResolvedField_WhenAllowAnonymousAdded_AllAuthorizeAreRemoved()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options.MapQuery("/path1/path2", (string a) => 1);
+            field.AddAttribute(new AuthorizeAttribute("policy1"));
+            Assert.AreEqual(1, field.Attributes.Count(x => x is AuthorizeAttribute));
+
+            field.AllowAnonymous();
+
+            Assert.AreEqual(2, field.Attributes.Count());
+            Assert.IsNotNull(field.Attributes.FirstOrDefault(x => x is AllowAnonymousAttribute));
+            Assert.AreEqual(0, field.Attributes.Count(x => x is AuthorizeAttribute));
+        }
+
+        [Test]
         public void ResolvedField_WhenNameApplied_NameIsAttchedToFieldDeclaration()
         {
             var services = new ServiceCollection();
@@ -64,6 +81,29 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             Assert.IsNotNull(attrib);
             Assert.AreEqual("policy1", attrib.Policy);
             Assert.AreEqual("roles1", attrib.Roles);
+        }
+
+
+        [Test]
+        public void ResolvedField_WhenRequireAuthAdded_AllowAnonIsRemoved()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var field = options.MapQuery("/path1/path2", (string a) => 1);
+            field.AddAttribute(new AllowAnonymousAttribute());
+            Assert.AreEqual(1, field.Attributes.Count(x => x is AllowAnonymousAttribute));
+
+            field.RequireAuthorization("policy1", "roles1");
+
+            Assert.AreEqual(2, field.Attributes.Count());
+
+            var attrib = field.Attributes.FirstOrDefault(x => x is AuthorizeAttribute) as AuthorizeAttribute;
+            Assert.IsNotNull(attrib);
+            Assert.AreEqual("policy1", attrib.Policy);
+            Assert.AreEqual("roles1", attrib.Roles);
+
+            Assert.AreEqual(0, field.Attributes.Count(x => x is AllowAnonymousAttribute));
         }
 
         [Test]

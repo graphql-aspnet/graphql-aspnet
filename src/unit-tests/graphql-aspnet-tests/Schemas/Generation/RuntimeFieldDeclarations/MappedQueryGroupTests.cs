@@ -12,9 +12,11 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
     using System.Linq;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Schemas;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.DependencyInjection;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -75,6 +77,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
             Assert.AreEqual("[query]/path1/path2/path3/path4", childField.Route.Path);
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is QueryRootAttribute));
         }
 
         [Test]
@@ -106,6 +109,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             Assert.AreEqual("[query]/path1/path2/path3/path4/path5/path6", resolvedField.Route.Path);
             Assert.IsNotNull(resolvedField.Resolver);
+            Assert.AreEqual(1, resolvedField.Attributes.Count(x => x is QueryRootAttribute));
         }
 
         [Test]
@@ -119,6 +123,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
             Assert.AreEqual("[query]/path1/path2/path3/path4", childField.Route.Path);
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is QueryRootAttribute));
         }
 
         [Test]
@@ -135,6 +140,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             var anonCount = childField.Attributes.Where(x => x is AllowAnonymousAttribute).Count();
             Assert.AreEqual(1, anonCount);
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is QueryRootAttribute));
         }
 
         [Test]
@@ -147,6 +153,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
                                .MapField("myField");
 
             Assert.IsNull(childField.Resolver);
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is QueryRootAttribute));
         }
 
         [Test]
@@ -161,6 +168,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             Assert.IsNotNull(childField.Resolver);
             Assert.AreEqual(1, childField.Attributes.OfType<UnionAttribute>().Count());
             Assert.AreEqual("myUnion", childField.Attributes.OfType<UnionAttribute>().Single().UnionName);
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is QueryRootAttribute));
         }
 
         [Test]
@@ -174,6 +182,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             Assert.IsNotNull(childField.Resolver);
             Assert.AreEqual(typeof(int?), childField.ReturnType);
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is QueryRootAttribute));
         }
 
         [Test]
@@ -194,6 +203,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             Assert.AreEqual(2, authCount);
             Assert.IsNotNull(childField.Attributes.SingleOrDefault(x => x is AuthorizeAttribute a && a.Policy == "policy1"));
             Assert.IsNotNull(childField.Attributes.SingleOrDefault(x => x is AuthorizeAttribute a && a.Policy == "policy2"));
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is QueryRootAttribute));
 
             // ensure the order of applied attributes is parent field then child field
             var i = 0;
@@ -241,6 +251,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             Assert.IsNotNull(childField1.Attributes.SingleOrDefault(x => x is AuthorizeAttribute a && a.Policy == "policy1"));
             Assert.IsNotNull(childField1.Attributes.SingleOrDefault(x => x is AuthorizeAttribute a && a.Policy == "policy2"));
             Assert.IsNotNull(childField1.Attributes.SingleOrDefault(x => x is AuthorizeAttribute a && a.Policy == "policy3"));
+            Assert.AreEqual(1, childField1.Attributes.Count(x => x is QueryRootAttribute));
 
             // ensure the order of applied attributes is parent field then child field
             var i = 0;
@@ -273,6 +284,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             Assert.IsNotNull(childField2.Attributes.SingleOrDefault(x => x is AuthorizeAttribute a && a.Policy == "policy1"));
             Assert.IsNotNull(childField2.Attributes.SingleOrDefault(x => x is AuthorizeAttribute a && a.Policy == "policy4"));
             Assert.IsNotNull(childField2.Attributes.SingleOrDefault(x => x is AuthorizeAttribute a && a.Policy == "policy5"));
+            Assert.AreEqual(1, childField2.Attributes.Count(x => x is QueryRootAttribute));
 
             i = 0;
             foreach (var attrib in childField2.Attributes)
@@ -295,6 +307,22 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             }
 
             Assert.AreEqual(3, i);
+        }
+
+        [Test]
+        public void MapField_FromSchemaBuilder_WithNoResovler_FieldIsMade_ResolverIsNotSet()
+        {
+            var services = new ServiceCollection();
+            var options = new SchemaOptions<GraphSchema>(services);
+
+            var builderMock = new Mock<ISchemaBuilder>();
+            builderMock.Setup(x => x.Options).Returns(options);
+
+            var childField = builderMock.Object.MapQueryGroup("/path1/path2")
+                               .MapField("myField");
+
+            Assert.IsNull(childField.Resolver);
+            Assert.AreEqual(1, childField.Attributes.Count(x => x is QueryRootAttribute));
         }
     }
 }
