@@ -39,6 +39,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLRuntimeFieldDefinition.</returns>
         public static IGraphQLRuntimeFieldGroupDefinition MapSubscriptionGroup(this SchemaOptions schemaOptions, string template)
         {
+            schemaOptions?.ServiceCollection?.AddSubscriptionRuntimeFieldExecutionSupport();
             return new RuntimeSubscriptionEnabledFieldGroupTemplate(schemaOptions, template);
         }
     }

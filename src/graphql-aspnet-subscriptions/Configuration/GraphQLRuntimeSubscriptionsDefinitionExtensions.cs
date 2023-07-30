@@ -159,6 +159,8 @@ namespace GraphQL.AspNet.Configuration
                 resolvedField.AddAttribute(new UnionAttribute(unionName.Trim()));
 
             resolvedField.AddResolver(unionName, resolverMethod);
+
+            schemaOptions.ServiceCollection?.AddSubscriptionRuntimeFieldExecutionSupport();
             return resolvedField;
         }
 

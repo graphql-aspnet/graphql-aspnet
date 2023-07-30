@@ -10,12 +10,10 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration.Startup;
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -28,25 +26,6 @@ namespace GraphQL.AspNet.Configuration
     /// </summary>
     public static class GraphQLSchemaBuilderExtensions
     {
-        private static readonly Dictionary<Type, ISchemaInjector> SCHEMA_REGISTRATIONS;
-
-        /// <summary>
-        /// Initializes static members of the <see cref="GraphQLSchemaBuilderExtensions"/> class.
-        /// </summary>
-        static GraphQLSchemaBuilderExtensions()
-        {
-            SCHEMA_REGISTRATIONS = new Dictionary<Type, ISchemaInjector>();
-        }
-
-        /// <summary>
-        /// Helper method to null out the schema registration references. Useful in testing and after setup is complete there is no
-        /// need to keep the reference chain in tact.
-        /// </summary>
-        public static void Clear()
-        {
-            SCHEMA_REGISTRATIONS.Clear();
-        }
-
         /// <summary>
         /// Enables the query cache locally, in memory, to retain parsed query plans. When enabled, use the configuration
         /// settings for each added schema to determine how each will interact with the cache. Implement your own cache provider
@@ -75,18 +54,21 @@ namespace GraphQL.AspNet.Configuration
             where TSchema : class, ISchema
         {
             Validation.ThrowIfNull(serviceCollection, nameof(serviceCollection));
-            if (SCHEMA_REGISTRATIONS.ContainsKey(typeof(TSchema)))
+
+            var wasFound = GraphQLSchemaInjectorFactory.TryGetOrCreate(
+                out var injector,
+                serviceCollection,
+                options);
+
+            if (wasFound)
             {
-                throw new GraphTypeDeclarationException(
+                throw new InvalidOperationException(
                     $"The schema type {typeof(TSchema).FriendlyName()} has already been registered. " +
                     "Each schema type may only be registered once with GraphQL.");
             }
 
-            var schemaOptions = new SchemaOptions<TSchema>(serviceCollection);
-            var injector = new GraphQLSchemaInjector<TSchema>(schemaOptions, options);
-            SCHEMA_REGISTRATIONS.Add(typeof(TSchema), injector);
-
             injector.ConfigureServices();
+
             return injector.SchemaBuilder;
         }
 
@@ -111,12 +93,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="app">The application being constructed.</param>
         public static void UseGraphQL(this IApplicationBuilder app)
         {
-            foreach (var injector in SCHEMA_REGISTRATIONS.Values)
-            {
-                injector.UseSchema(app);
-            }
-
-            Clear();
+            UseGraphQL(app?.ApplicationServices);
         }
 
         /// <summary>
@@ -133,12 +110,15 @@ namespace GraphQL.AspNet.Configuration
         /// graphql runtime.</param>
         public static void UseGraphQL(this IServiceProvider serviceProvider)
         {
-            foreach (var injector in SCHEMA_REGISTRATIONS.Values)
+            Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
+            var allInjectors = serviceProvider.GetServices<ISchemaInjector>();
+            if (allInjectors != null)
             {
-                injector.UseSchema(serviceProvider);
+                foreach (var injector in allInjectors)
+                {
+                    injector.UseSchema(serviceProvider);
+                }
             }
-
-            Clear();
         }
     }
 }

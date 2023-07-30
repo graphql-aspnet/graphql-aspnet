@@ -10,9 +10,7 @@
 namespace GraphQL.AspNet.Tests.Configuration
 {
     using System;
-    using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
@@ -21,7 +19,6 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.SubscriptionServer.BackgroundServices;
     using GraphQL.AspNet.SubscriptionServer.Exceptions;
-    using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Configuration.ConfigurationTestData;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -35,9 +32,6 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void AddSubscriptions_RegistrationChecks()
         {
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
-
-            // ensure the runtime is in a default state (just in case the statics got messed up)
-            GraphQLSchemaBuilderExtensions.Clear();
 
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
@@ -58,9 +52,6 @@ namespace GraphQL.AspNet.Tests.Configuration
         {
             // setup the server with a hard declaration of nothing
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
-
-            // ensure the runtime is in a default state (just in case the statics got messed up)
-            GraphQLSchemaBuilderExtensions.Clear();
 
             var serviceCollection = new ServiceCollection();
             var schemaBuilder = serviceCollection.AddGraphQL(options =>
@@ -84,8 +75,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
-            GraphQLSchemaBuilderExtensions.Clear();
-
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
             {
@@ -102,7 +91,6 @@ namespace GraphQL.AspNet.Tests.Configuration
         {
             // setup the server with a hard declaration of nothing
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
-            GraphQLSchemaBuilderExtensions.Clear();
 
             SchemaOptions<GraphSchema> optionsSaved = null;
             var serviceCollection = new ServiceCollection();
@@ -122,10 +110,6 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void AddSubscriptionServer_RegistrationChecks()
         {
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
-
-            // ensure the runtime is in a default state (just in case the statics got messed up)
-            GraphQLSchemaBuilderExtensions.Clear();
-
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
             {

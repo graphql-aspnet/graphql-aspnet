@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Configuration
 {
+    using System;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -16,9 +17,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Web;
@@ -34,12 +33,6 @@ namespace GraphQL.AspNet.Tests.Configuration
     [TestFixture]
     public class ConfigurationSetupTests
     {
-        [TearDown]
-        public void TearDown()
-        {
-            GraphQLSchemaBuilderExtensions.Clear();
-        }
-
         [Test]
         public void AddGraphQL_AddingDefaultSchema_WithOneController_GeneratesAllDefaultEngineParts()
         {
@@ -71,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGraphQL();
 
-            Assert.Throws<GraphTypeDeclarationException>(() =>
+            Assert.Throws<InvalidOperationException>(() =>
             {
                 serviceCollection.AddGraphQL<GraphSchema>();
             });

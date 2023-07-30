@@ -18,6 +18,9 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.Mocks;
     using NuGet.Frameworks;
     using NUnit.Framework;
+    using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     [TestFixture]
     public class SubscriptionQueryExecutionTests
@@ -186,6 +189,45 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.IsNull(context.Result.Data);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_ACTION_RESULT, context.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task Execution_FromMinimalApi_ExecutesAsExpected()
+        {
+            var server = new TestServerBuilder()
+                        .AddGraphQL(o =>
+                        {
+                            o.MapSubscription("retrieveObject", (TwoPropertyObject sourceArg) => sourceArg)
+                            .WithEventName("RetrieveObject")
+                            .WithInternalName("RetrieveObject");
+                        })
+                        .AddSubscriptionServer()
+                        .Build();
+
+            var operation = server.Schema.Operations[GraphOperationType.Subscription];
+            var field = operation.Fields.FindField("retrieveObject");
+
+            var sourceObject = new TwoPropertyObject()
+            {
+                Property1 = "testA",
+                Property2 = 5,
+            };
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("subscription  { retrieveObject { property1 } }")
+                .AddDefaultValue(field.Route, sourceObject);
+
+            var result = await server.RenderResult(builder);
+            var expectedOutput =
+                @"{
+                    ""data"" : {
+                        ""retrieveObject"" : {
+                            ""property1"" : ""testA""
+                        }
+                    }
+                }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
     }
 }

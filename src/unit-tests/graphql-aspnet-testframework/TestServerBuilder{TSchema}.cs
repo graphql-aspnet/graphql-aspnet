@@ -227,8 +227,15 @@ namespace GraphQL.AspNet.Tests.Framework
 
             // perform a schema injection to setup all the registered
             // graph types for the schema in the DI container
-            var injector = GraphQLSchemaInjectorFactory.Create(this.SchemaOptions, masterConfigMethod);
-            injector.ConfigureServices();
+            var wasFound = GraphQLSchemaInjectorFactory.TryGetOrCreate(
+                out var injector,
+                this.SchemaOptions,
+                masterConfigMethod);
+
+            if (!wasFound)
+            {
+                injector.ConfigureServices();
+            }
 
             // allow the typed test components to do their thing with the
             // schema builder

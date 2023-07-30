@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Configuration.Startup
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -29,7 +29,6 @@ namespace GraphQL.AspNet.Configuration.Startup
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.SchemaItemSecurity;
-    using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
@@ -86,6 +85,13 @@ namespace GraphQL.AspNet.Configuration.Startup
         /// <inheritdoc />
         public void ConfigureServices()
         {
+            if (_options.ServiceCollection.Any(x => x.ServiceType == typeof(TSchema)))
+            {
+                throw new InvalidOperationException(
+                    $"The schema type {typeof(TSchema).FriendlyName()} has already been registered. " +
+                    "Each schema type may only be registered once with GraphQL.");
+            }
+
             // create the builder to guide the rest of the setup operations
             _configureOptions?.Invoke(_options);
 
@@ -139,6 +145,9 @@ namespace GraphQL.AspNet.Configuration.Startup
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.SchemaItemSecurityPipeline));
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.QueryExecutionPipeline));
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.DirectiveExecutionPipeline));
+
+            // register self for final "using" extraction
+            _options.ServiceCollection.AddSingleton<ISchemaInjector>(this);
 
             this.RegisterEngineComponents();
 
