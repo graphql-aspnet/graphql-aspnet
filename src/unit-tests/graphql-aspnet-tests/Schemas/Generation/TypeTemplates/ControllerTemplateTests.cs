@@ -215,5 +215,18 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                     template.ValidateOrThrow();
                 });
         }
+
+        [Test]
+        public void Parse_InheritedAction_IsIncludedInTheTemplate()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithInheritedAction));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.Actions.Count());
+
+            Assert.IsNotNull(template.Actions.Single(x => x.Name.EndsWith(nameof(BaseControllerWithAction.BaseControllerAction))));
+            Assert.IsNotNull(template.Actions.Single(x => x.Name.EndsWith(nameof(ControllerWithInheritedAction.ChildControllerAction))));
+        }
     }
 }

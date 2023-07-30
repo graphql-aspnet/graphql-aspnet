@@ -1,4 +1,4 @@
-﻿// *************************************************************
+// *************************************************************
 // project:  graphql-aspnet
 // --
 // repo: https://github.com/graphql-aspnet
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Controllers
                     }
                     else
                     {
-                        // given all the checking and parsing this should be imnpossible, but just in case
+                        // given all the checking and parsing this should be impossible, but just in case
                         invokeReturn = new InternalServerErrorGraphActionResult(
                             $"The action '{_resolverMetaData.InternalName}' on controller '{_resolverMetaData.ParentInternalName}' is defined " +
                             $"as asyncronous but it did not return a {typeof(Task)}.");
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Controllers
             switch (resolverMetaData.DefinitionSource)
             {
                 case ItemSource.DesignTime:
-                    if (resolverMetaData.Method.DeclaringType != this.GetType())
+                    if (!Validation.IsCastable(this.GetType(), resolverMetaData.Method.DeclaringType))
                     {
                         throw new TargetException($"Unable to invoke action '{_resolverMetaData.InternalName}' on controller '{this.GetType().FriendlyName()}'. The controller " +
                                                   "does not own the method.");
