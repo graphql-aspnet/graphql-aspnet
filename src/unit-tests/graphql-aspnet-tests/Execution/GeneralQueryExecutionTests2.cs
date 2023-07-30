@@ -645,5 +645,159 @@ namespace GraphQL.AspNet.Tests.Execution
 
             CommonAssertions.AreEqualJsonStrings(expectedResults, result);
         }
+
+        [Test]
+        public async Task Inherited_ControllerAction_IsMappedCorrectly()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AutoRegisterLocalEntities = false;
+                      o.AddType<EmployeeController>();
+                  })
+                  .Build();
+
+            // totalPeople exists on  base controller
+            // totalEmployees exists on  the added EmployeeController
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                    employees  {
+                        totalEmployees
+                        totalPeople
+                    }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""employees"" : {
+                            ""totalEmployees"": 5,
+                            ""totalPeople"": 99
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task Inherited_ControllerAction_OnAbstractController_IsRegistered()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AutoRegisterLocalEntities = false;
+                      o.AddType<AppleController>();
+                  })
+                  .Build();
+
+            // totalPeople exists on  base controller
+            // totalEmployees exists on  the added EmployeeController
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                    apples  {
+                        totalFruit
+                        totalApples
+                    }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""apples"" : {
+                            ""totalFruit"": 32,
+                            ""totalApples"": 85
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task Inherited_NonAbstractControllerAction_IsRegistered_WhenInheritedControllerIsAlsoRegistered_ActionIsRegisteredTwice()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AutoRegisterLocalEntities = false;
+                      o.AddType<AppleController>();
+                      o.AddType<FruitController>();
+                  })
+                  .Build();
+
+            // totalPeople exists on  base controller
+            // totalEmployees exists on  the added EmployeeController
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                    apples  {
+                        totalFruit   # should be a route on appleController
+                        totalApples
+                    }
+                    fruit {
+                        totalFruit   # should be registered to the base controller as itself
+                    }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""apples"" : {
+                            ""totalFruit"": 32,
+                            ""totalApples"": 85
+                        },
+                        ""fruit"" : {
+                            ""totalFruit"": 32
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task WhenBaseControllerDefinesGraphRoute_ParentControllerCanOverrideTheValueToRegisterItsOwnRouteKey()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AutoRegisterLocalEntities = false;
+                      o.AddType<RoomController>();
+                      o.AddType<HouseController>();
+                  })
+                  .Build();
+
+            // totalPeople exists on  base controller
+            // totalEmployees exists on  the added EmployeeController
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                    houseFloorPlan  {
+                        totalFloors
+                        totalRooms
+                    }
+                    roomsAvailable {
+                        totalRooms
+                    }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""houseFloorPlan"" : {
+                            ""totalFloors"": 2,
+                            ""totalRooms"": 5
+                        },
+                        ""roomsAvailable"" : {
+                            ""totalRooms"": 5
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }

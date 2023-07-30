@@ -74,7 +74,9 @@ namespace GraphQL.AspNet.Controllers
 
                 _schemaItemContext.Logger?.ActionMethodModelStateValidated(_action, this.Request, this.ModelState);
 
-                if (_action.Method.DeclaringType != this.GetType())
+                // ensure this controller type is or inherits from the controller type where the method is actually
+                // declared as the method will be invoked aganst this instance.
+                if (!Validation.IsCastable(this.GetType(), _action.Method.DeclaringType))
                 {
                     throw new TargetException($"Unable to invoke action '{_action.Route.Path}' on controller '{this.GetType().FriendlyName()}'. The controller " +
                                               "does not own the method.");
@@ -97,7 +99,7 @@ namespace GraphQL.AspNet.Controllers
                     }
                     else
                     {
-                        // given all the checking and parsing this should be imnpossible, but just in case
+                        // given all the checking and parsing this should be impossible, but just in case
                         invokeReturn = new InternalServerErrorGraphActionResult(
                             $"The action '{_action.Route.Path}' is defined " +
                             $"as asyncronous but it did not return a {typeof(Task)}.");
