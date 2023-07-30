@@ -10,12 +10,10 @@
 namespace GraphQL.AspNet.Controllers.ActionResults
 {
     using System;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers.ActionResults.Batching;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A helper class to allow the use of common <see cref="IGraphActionResult"/> methods
