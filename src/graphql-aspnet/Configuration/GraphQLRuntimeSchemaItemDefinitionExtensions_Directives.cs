@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="internalName">The value to use as the internal name for this field definition when its
         /// added to the schema.</param>
         /// <returns>IGraphQLRuntimeDirectiveDefinition.</returns>
-        public static IGraphQLRuntimeDirectiveDefinition WithName(this IGraphQLRuntimeDirectiveDefinition directiveTemplate, string internalName)
+        public static IGraphQLRuntimeDirectiveDefinition WithInternalName(this IGraphQLRuntimeDirectiveDefinition directiveTemplate, string internalName)
         {
             Validation.ThrowIfNull(directiveTemplate, nameof(directiveTemplate));
             directiveTemplate.InternalName = internalName;

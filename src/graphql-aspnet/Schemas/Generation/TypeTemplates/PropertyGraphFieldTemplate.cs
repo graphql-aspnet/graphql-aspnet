@@ -135,7 +135,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 this.InternalName,
                 this.Property.Name,
                 this.Parent.ObjectType,
-                this.Parent.InternalName);
+                this.Parent.InternalName,
+                this.Parent.TemplateSource);
         }
 
         /// <inheritdoc />

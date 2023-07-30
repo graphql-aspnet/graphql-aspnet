@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ControllerTestData
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;

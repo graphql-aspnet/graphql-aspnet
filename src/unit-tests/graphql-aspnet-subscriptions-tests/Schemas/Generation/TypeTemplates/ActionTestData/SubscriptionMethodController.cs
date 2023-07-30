@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.ActionTestData
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ActionTestData
 {
     using System.ComponentModel;
     using GraphQL.AspNet.Attributes;

@@ -16,21 +16,21 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
 
     /// <summary>
-    /// A "controller template" representing a single runtime configured field (e.g. minimal api).
+    /// A "controller template" representing a single runtime configured subscription field (e.g. minimal api).
     /// This template is never cached.
     /// </summary>
-    internal class RuntimeGraphControllerTemplate : GraphControllerTemplate
+    internal class RuntimeSubscriptionGraphControllerTemplate : SubscriptionGraphControllerTemplate
     {
         private readonly IMemberInfoProvider _fieldProvider;
         private readonly IGraphQLRuntimeResolvedFieldDefinition _fieldDefinition;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RuntimeGraphControllerTemplate" /> class.
+        /// Initializes a new instance of the <see cref="RuntimeSubscriptionGraphControllerTemplate" /> class.
         /// </summary>
         /// <param name="fieldDefinition">A single, runtime configured, field definition
         /// to templatize for a specfic schema.</param>
-        public RuntimeGraphControllerTemplate(IGraphQLRuntimeResolvedFieldDefinition fieldDefinition)
-            : base(typeof(RuntimeFieldExecutionController))
+        public RuntimeSubscriptionGraphControllerTemplate(IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition fieldDefinition)
+            : base(typeof(SubscriptionEnabledRuntimeFieldExecutionController))
         {
             _fieldDefinition = fieldDefinition;
             if (fieldDefinition.Resolver?.Method != null)

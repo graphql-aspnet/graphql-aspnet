@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
 {
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -37,5 +38,11 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// </summary>
         /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
         bool Publish { get; }
+
+        /// <summary>
+        /// Gets the location where the type this template represents was declared.
+        /// </summary>
+        /// <value>The template source.</value>
+        ItemSource TemplateSource { get; }
     }
 }

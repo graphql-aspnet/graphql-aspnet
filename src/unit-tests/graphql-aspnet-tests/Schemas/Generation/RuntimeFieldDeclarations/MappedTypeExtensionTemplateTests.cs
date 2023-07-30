@@ -69,7 +69,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
             Assert.IsNotNull(typeExtensionAttrib);
         }
 
-
         [Test]
         public void MapTypeExtension_ByOptions_WithTypeParameter_AddsTypeExtensionToOptions()
         {
@@ -92,8 +91,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
             Assert.IsNotNull(typeExtensionAttrib);
         }
 
-
-
         [Test]
         public void MapTypeExtension_WithName_AddsInternalName()
         {
@@ -104,7 +101,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
             builderMock.Setup(x => x.Options).Returns(options);
 
             var typeExt = builderMock.Object.MapTypeExtension<TwoPropertyObject>("mytypeExt")
-                .WithName("internaltypeExtName");
+                .WithInternalName("internaltypeExtName");
 
             Assert.AreEqual("internaltypeExtName", typeExt.InternalName);
         }
@@ -278,7 +275,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
             Assert.AreEqual(0, typeExt.Attributes.Count(x => x is UnionAttribute));
         }
 
-
         [Test]
         public void MappedTypeExension_ViaOptions_WithUnion()
         {
@@ -289,7 +285,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
             Assert.AreEqual(1, typeExt.Attributes.Count(x => x is UnionAttribute));
             Assert.IsNotNull(typeExt.Resolver);
         }
-
 
         [Test]
         public void MappedTypeExension_ViaBuilder_WithUnion()

@@ -330,40 +330,6 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
-        /// Normalizes a given route path fragement removing duplicate seperators, ensuring starting and tail end seperators
-        /// are correct etc.
-        /// </summary>
-        /// <param name="routefragment">The fragment to normalize.</param>
-        /// <returns>System.String.</returns>
-        public static string NormalizeFragment(string routefragment)
-        {
-            // ensure a working path
-            routefragment = routefragment?.Trim() ?? string.Empty;
-            routefragment = routefragment.Replace(RouteConstants.ALT_PATH_SEPERATOR, RouteConstants.PATH_SEPERATOR);
-
-            // doubled up seperators may happen if a 3rd party is joining route fragments (especially if the seperator is a '/')
-            // trim them down
-            while (routefragment.Contains(RouteConstants.DOUBLE_PATH_SEPERATOR))
-            {
-                routefragment = routefragment.Replace(RouteConstants.DOUBLE_PATH_SEPERATOR, RouteConstants.PATH_SEPERATOR);
-            }
-
-            // if the path ends with or starts with a seperator (indicating a potential group segment)
-            // thats fine but is not needed to identify the segment in and of itself, trim it off
-            while (routefragment.EndsWith(RouteConstants.PATH_SEPERATOR))
-            {
-                routefragment = routefragment.Substring(0, routefragment.Length - RouteConstants.PATH_SEPERATOR.Length);
-            }
-
-            while (routefragment.StartsWith(RouteConstants.PATH_SEPERATOR))
-            {
-                routefragment = routefragment.Substring(routefragment.IndexOf(RouteConstants.PATH_SEPERATOR, StringComparison.Ordinal) + RouteConstants.PATH_SEPERATOR.Length);
-            }
-
-            return routefragment;
-        }
-
-        /// <summary>
         /// Creates a list of all the fully qualified parent paths this path is nested under.
         /// </summary>
         /// <returns>List&lt;GraphRoutePath&gt;.</returns>

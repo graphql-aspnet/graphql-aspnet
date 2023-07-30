@@ -7,15 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
-namespace GraphQL.AspNet.Engine.TypeMakers
+namespace GraphQL.AspNet.Schemas.TypeMakers
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Configuration.Formatting;
@@ -23,7 +15,6 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;

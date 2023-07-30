@@ -7,13 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.TypeTemplates
+namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 {
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// An input argument template that is capable of parsing additional information

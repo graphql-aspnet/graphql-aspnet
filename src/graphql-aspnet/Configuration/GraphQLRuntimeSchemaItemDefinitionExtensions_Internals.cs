@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Configuration
             return fieldBuilder;
         }
 
-        private static IGraphQLRuntimeFieldDefinition MapGraphQLFieldInternal(
+        private static IGraphQLRuntimeFieldGroupDefinition MapGraphQLFieldInternal(
             SchemaOptions schemaOptions,
             GraphOperationType operationType,
             string pathTemplate)
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Configuration
             schemaOptions = Validation.ThrowIfNullOrReturn(schemaOptions, nameof(schemaOptions));
             pathTemplate = Validation.ThrowIfNullWhiteSpaceOrReturn(pathTemplate, nameof(pathTemplate));
 
-            var fieldTemplate = new RuntimeVirtualFieldTemplate(
+            var fieldTemplate = new RuntimeFieldGroupTemplate(
                 schemaOptions,
                 (SchemaItemCollections)operationType,
                 pathTemplate);

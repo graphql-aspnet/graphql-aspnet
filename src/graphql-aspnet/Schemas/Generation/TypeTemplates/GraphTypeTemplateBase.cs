@@ -68,5 +68,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public virtual bool Publish { get; private set; }
+
+        /// <inheritdoc />
+        public virtual ItemSource TemplateSource => ItemSource.DesignTime;
     }
 }

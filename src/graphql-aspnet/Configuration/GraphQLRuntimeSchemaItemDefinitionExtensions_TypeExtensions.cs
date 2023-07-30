@@ -335,7 +335,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="internalName">The value to use as the internal name for this field definition when its
         /// added to the schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeTypeExtensionDefinition WithName(this IGraphQLRuntimeTypeExtensionDefinition typeExtension, string internalName)
+        public static IGraphQLRuntimeTypeExtensionDefinition WithInternalName(this IGraphQLRuntimeTypeExtensionDefinition typeExtension, string internalName)
         {
             typeExtension.InternalName = internalName;
             return typeExtension;

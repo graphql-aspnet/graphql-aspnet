@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Controllers
 {
     using System;
+    using System.Data.SqlTypes;
     using System.Reflection;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Web;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -136,22 +138,45 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>The exact return value from the invoked resolver.</returns>
         protected virtual object CreateAndInvokeAction(IGraphFieldResolverMetaData resolverMetaData, object[] invocationArguments)
         {
-            if (resolverMetaData.Method.DeclaringType != this.GetType())
+            switch (resolverMetaData.DefinitionSource)
             {
-                throw new TargetException($"Unable to invoke action '{_resolverMetaData.InternalName}' on controller '{this.GetType().FriendlyName()}'. The controller " +
-                                          "does not own the method.");
+                case ItemSource.DesignTime:
+                    if (resolverMetaData.Method.DeclaringType != this.GetType())
+                    {
+                        throw new TargetException($"Unable to invoke action '{_resolverMetaData.InternalName}' on controller '{this.GetType().FriendlyName()}'. The controller " +
+                                                  "does not own the method.");
+                    }
+
+                    if (resolverMetaData.Method.IsStatic)
+                    {
+                        throw new TargetException($"Unable to invoke action '{_resolverMetaData.InternalName}' on controller '{this.GetType().FriendlyName()}'. The method " +
+                                                  "is static and cannot be directly invoked on this controller instance.");
+                    }
+
+                    var ctrlInvoker = InstanceFactory.CreateInstanceMethodInvoker(resolverMetaData.Method);
+                    var controllerRef = this as object;
+                    return ctrlInvoker(ref controllerRef, invocationArguments);
+
+                case ItemSource.Runtime:
+                    // minimal api resolvers are allowed to be static since there is no
+                    // extra context to setup or make available such as 'this.User' etc.
+                    if (resolverMetaData.Method.IsStatic)
+                    {
+                        var staticInvoker = InstanceFactory.CreateStaticMethodInvoker(resolverMetaData.Method);
+                        return staticInvoker(invocationArguments);
+                    }
+                    else
+                    {
+                        var instanceInvoker = InstanceFactory.CreateInstanceMethodInvoker(resolverMetaData.Method);
+                        var instance = InstanceFactory.CreateInstance(resolverMetaData.Method.DeclaringType);
+                        return instanceInvoker(ref instance, invocationArguments);
+                    }
+
+                default:
+                    throw new TargetException(
+                        $"Unable to execute the target resolver {resolverMetaData.InternalName}. " +
+                        $"Invalid or unsupported source location '{_resolverMetaData.DefinitionSource}'.");
             }
-
-            if (resolverMetaData.Method.IsStatic)
-            {
-                throw new TargetException($"Unable to invoke action '{_resolverMetaData.InternalName}' on controller '{this.GetType().FriendlyName()}'. The method " +
-                                          "is static and cannot be directly invoked on this controller instance.");
-            }
-
-            var invoker = InstanceFactory.CreateInstanceMethodInvoker(resolverMetaData.Method);
-
-            var controllerRef = this as object;
-            return invoker(ref controllerRef, invocationArguments);
         }
 
         /// <summary>

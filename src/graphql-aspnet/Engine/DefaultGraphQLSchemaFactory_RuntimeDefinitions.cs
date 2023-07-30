@@ -9,11 +9,8 @@
 
 namespace GraphQL.AspNet.Engine
 {
-    using System;
-    using System.Reflection.Metadata;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
-    using GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -39,7 +36,6 @@ namespace GraphQL.AspNet.Engine
                     this.AddRuntimeDirectiveDefinition(directiveDef);
                     break;
 
-                    // TODO: Add support for directives
                     // TODO: Add warning log entries for unsupported item defs.
             }
         }

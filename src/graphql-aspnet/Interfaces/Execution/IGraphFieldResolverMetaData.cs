@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
     using System.Reflection;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// A data package describing the details necessary to
@@ -80,5 +81,14 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The arguments defined on this field.</value>
         IGraphFieldResolverParameterMetaDataCollection Parameters { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this resolver is defined at runtime.
+        /// </summary>
+        /// <remarks>
+        /// A runtime defined resolver indicates use of minimal api methods.
+        /// </remarks>
+        /// <value><c>true</c> if this instance is defined at runtime; otherwise, <c>false</c>.</value>
+        ItemSource DefinitionSource { get; }
     }
 }

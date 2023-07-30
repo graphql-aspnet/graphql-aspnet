@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// A helper class for generating valid metadata for introspection and other internal value resolvers
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
         /// </summary>
         /// <param name="owningType">The type that will masqurade as "owning" the resolver.</param>
         /// <returns>IGraphFieldResolverMetaData.</returns>
-        public static IGraphFieldResolverMetaData CreateMetadata(Type owningType)
+        internal static IGraphFieldResolverMetaData CreateMetadata(Type owningType)
         {
             Validation.ThrowIfNull(owningType, nameof(owningType));
 
@@ -41,7 +42,8 @@ namespace GraphQL.AspNet.Execution.Resolvers
                 nameof(InternalValueResolver),
                 methodInfo.Name,
                 owningType,
-                owningType.FriendlyName());
+                owningType.FriendlyName(),
+                ItemSource.DesignTime);
         }
 
         private static int InternalValueResolver()

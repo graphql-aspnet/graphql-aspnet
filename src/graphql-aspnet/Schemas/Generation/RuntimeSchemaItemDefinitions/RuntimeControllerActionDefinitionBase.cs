@@ -22,25 +22,25 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     /// An abstract class containing all the common elements across minimal field builders and
     /// their supporting classes.
     /// </summary>
-    internal abstract class BaseRuntimeControllerActionDefinition : IGraphQLRuntimeSchemaItemDefinition
+    public abstract class RuntimeControllerActionDefinitionBase : IGraphQLRuntimeSchemaItemDefinition
     {
-        private readonly IGraphQLRuntimeFieldDefinition _parentField;
+        private readonly IGraphQLRuntimeFieldGroupDefinition _parentField;
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="BaseRuntimeControllerActionDefinition"/> class from being created.
+        /// Prevents a default instance of the <see cref="RuntimeControllerActionDefinitionBase"/> class from being created.
         /// </summary>
-        private BaseRuntimeControllerActionDefinition()
+        private RuntimeControllerActionDefinitionBase()
         {
             this.AppendedAttributes = new List<Attribute>();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseRuntimeControllerActionDefinition" /> class.
+        /// Initializes a new instance of the <see cref="RuntimeControllerActionDefinitionBase" /> class.
         /// </summary>
         /// <param name="options">The schema options where this field item
         /// is being defined.</param>
         /// <param name="route">The full route to use for this schema item.</param>
-        protected BaseRuntimeControllerActionDefinition(
+        protected RuntimeControllerActionDefinitionBase(
             SchemaOptions options,
             SchemaItemPath route)
             : this()
@@ -50,13 +50,13 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseRuntimeControllerActionDefinition" /> class.
+        /// Initializes a new instance of the <see cref="RuntimeControllerActionDefinitionBase" /> class.
         /// </summary>
         /// <param name="options">The schema options where this field item
         /// is being defined.</param>
         /// <param name="collection">The schema collection this item will belong to.</param>
         /// <param name="pathTemplate">The path template identifying this item.</param>
-        protected BaseRuntimeControllerActionDefinition(
+        protected RuntimeControllerActionDefinitionBase(
             SchemaOptions options,
             SchemaItemCollections collection,
             string pathTemplate)
@@ -69,13 +69,13 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseRuntimeControllerActionDefinition"/> class.
+        /// Initializes a new instance of the <see cref="RuntimeControllerActionDefinitionBase"/> class.
         /// </summary>
         /// <param name="parentField">The field from which this entity is being added.</param>
         /// <param name="partialPathTemplate">The partial path template defined for this
         /// individual entity.</param>
-        protected BaseRuntimeControllerActionDefinition(
-            IGraphQLRuntimeFieldDefinition parentField,
+        protected RuntimeControllerActionDefinitionBase(
+            IGraphQLRuntimeFieldGroupDefinition parentField,
             string partialPathTemplate)
             : this()
         {

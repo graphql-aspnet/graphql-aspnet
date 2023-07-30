@@ -87,5 +87,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             base.ValidateOrThrow();
         }
+
+        /// <inheritdoc />
+        public override ItemSource TemplateSource => ItemSource.Runtime;
     }
 }

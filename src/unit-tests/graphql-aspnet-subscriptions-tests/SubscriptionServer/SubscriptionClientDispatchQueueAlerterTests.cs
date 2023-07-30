@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
 {
     using System;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.SubscriptionEvents;
     using GraphQL.AspNet.SubscriptionServer;

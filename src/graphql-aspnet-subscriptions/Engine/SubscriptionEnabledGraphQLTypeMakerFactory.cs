@@ -12,12 +12,11 @@ namespace GraphQL.AspNet.Engine
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
-    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
+    using GraphQL.AspNet.Schemas.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// A metadata object containing parsed and computed values related to
@@ -35,6 +36,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
         /// <param name="declaredName">The exact name of the resolver method or property name as its declared in source code.</param>
         /// <param name="parentObjectType">The type of the .NET class or struct where the resolver method is declared.</param>
         /// <param name="parentInternalName">The name of the .NET class or struct where the resolver method is declared.</param>
+        /// <param name="itemSource">A value indicating where the code that this resolver represents was declared.</param>
         public FieldResolverMetaData(
             MethodInfo method,
             IGraphFieldResolverParameterMetaDataCollection parameters,
@@ -43,7 +45,8 @@ namespace GraphQL.AspNet.Execution.Resolvers
             string internalName,
             string declaredName,
             Type parentObjectType,
-            string parentInternalName)
+            string parentInternalName,
+            ItemSource itemSource)
         {
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
 
@@ -56,6 +59,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             this.DeclaredName = Validation.ThrowIfNullWhiteSpaceOrReturn(declaredName, nameof(declaredName));
             this.ParentObjectType = Validation.ThrowIfNullOrReturn(parentObjectType, nameof(parentObjectType));
             this.ParentInternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentInternalName, nameof(parentInternalName));
+            this.DefinitionSource = itemSource;
         }
 
         /// <inheritdoc />
@@ -81,5 +85,8 @@ namespace GraphQL.AspNet.Execution.Resolvers
 
         /// <inheritdoc />
         public string DeclaredName { get; }
+
+        /// <inheritdoc />
+        public ItemSource DefinitionSource { get; }
     }
 }

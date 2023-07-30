@@ -14,18 +14,17 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputValueSteps;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// An internal implementation of the <see cref="IGraphQLRuntimeFieldDefinition"/>
+    /// An internal implementation of the <see cref="IGraphQLRuntimeFieldGroupDefinition"/>
     /// used to generate new type extensions via a minimal api style of coding.
     /// </summary>
     [DebuggerDisplay("{Route.Path}")]
-    internal class RuntimeTypeExtensionDefinition : RuntimeResolvedFieldDefinition, IGraphQLRuntimeTypeExtensionDefinition
+    public class RuntimeTypeExtensionDefinition : RuntimeResolvedFieldDefinition, IGraphQLRuntimeTypeExtensionDefinition
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeTypeExtensionDefinition"/> class.

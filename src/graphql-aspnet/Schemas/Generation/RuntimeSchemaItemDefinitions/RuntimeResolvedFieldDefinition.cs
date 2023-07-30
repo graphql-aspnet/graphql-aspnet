@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     /// used to generate new graphql fields via a minimal api style of coding.
     /// </summary>
     [DebuggerDisplay("{Route.Path}")]
-    internal class RuntimeResolvedFieldDefinition : BaseRuntimeControllerActionDefinition, IGraphQLRuntimeResolvedFieldDefinition
+    public class RuntimeResolvedFieldDefinition : RuntimeControllerActionDefinitionBase, IGraphQLRuntimeResolvedFieldDefinition
     {
         /// <summary>
         /// Converts the unresolved field into a resolved field. The newly generated field
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// </summary>
         /// <param name="fieldTemplate">The field template.</param>
         /// <returns>IGraphQLResolvedFieldTemplate.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition FromFieldTemplate(IGraphQLRuntimeFieldDefinition fieldTemplate)
+        internal static IGraphQLRuntimeResolvedFieldDefinition FromFieldTemplate(IGraphQLRuntimeFieldGroupDefinition fieldTemplate)
         {
             Validation.ThrowIfNull(fieldTemplate, nameof(fieldTemplate));
             var field = new RuntimeResolvedFieldDefinition(
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// </summary>
         /// <param name="schemaOptions">The schema options to which this field is being added.</param>
         /// <param name="route">The full route to use for this item.</param>
-        private RuntimeResolvedFieldDefinition(
+        protected RuntimeResolvedFieldDefinition(
             SchemaOptions schemaOptions,
             SchemaItemPath route)
             : base(schemaOptions, route)
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// will be appended.</param>
         /// <param name="fieldSubTemplate">The template part to append to the parent field's template.</param>
         public RuntimeResolvedFieldDefinition(
-            IGraphQLRuntimeFieldDefinition parentFieldBuilder,
+            IGraphQLRuntimeFieldGroupDefinition parentFieldBuilder,
             string fieldSubTemplate)
             : base(parentFieldBuilder, fieldSubTemplate)
         {

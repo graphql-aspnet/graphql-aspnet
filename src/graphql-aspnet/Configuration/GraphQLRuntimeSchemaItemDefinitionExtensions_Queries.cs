@@ -10,20 +10,43 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using System.Linq;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using Microsoft.VisualBasic;
 
     /// <summary>
     /// Extension methods for configuring minimal API methods as fields on the graph.
     /// </summary>
     public static partial class GraphQLRuntimeSchemaItemDefinitionExtensions
     {
+        /// <summary>
+        /// Begins a new field group for the query schema object. All fields created using
+        /// this group will be nested underneath it and inherit any set parameters such as authorization requirements.
+        /// </summary>
+        /// <param name="schemaBuilder">The builder to append the query group to.</param>
+        /// <param name="template">The template path for this group.</param>
+        /// <returns>IGraphQLRuntimeFieldDefinition.</returns>
+        public static IGraphQLRuntimeFieldGroupDefinition MapQueryGroup(this ISchemaBuilder schemaBuilder, string template)
+        {
+            return MapQueryGroup(schemaBuilder?.Options, template);
+        }
+
+        /// <summary>
+        /// Begins a new field group for the query schema object. All fields created using
+        /// this group will be nested underneath it and inherit any set parameters such as authorization requirements.
+        /// </summary>
+        /// <param name="schemaOptions">The schema options to append the query group to.</param>
+        /// <param name="template">The template path for this group.</param>
+        /// <returns>IGraphQLRuntimeFieldDefinition.</returns>
+        public static IGraphQLRuntimeFieldGroupDefinition MapQueryGroup(this SchemaOptions schemaOptions, string template)
+        {
+            return new RuntimeFieldGroupTemplate(schemaOptions, SchemaItemCollections.Query, template);
+        }
+
         /// <summary>
         /// Creates a new, explicitly resolvable field in the query root object with the given path. This field cannot be
         /// further extended or nested with other fields via the Mapping API.

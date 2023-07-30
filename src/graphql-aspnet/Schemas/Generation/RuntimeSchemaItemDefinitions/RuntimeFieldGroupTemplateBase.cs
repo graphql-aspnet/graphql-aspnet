@@ -10,26 +10,25 @@
 namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
 {
     using System;
-    using System.Diagnostics;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
 
     /// <summary>
-    /// An internal implementation of the <see cref="IGraphQLRuntimeFieldDefinition"/>
+    /// An internal implementation of the <see cref="IGraphQLRuntimeFieldGroupDefinition"/>
     /// used to generate new graphql fields via a minimal api style of coding.
     /// </summary>
-    [DebuggerDisplay("{Route.Path}")]
-    internal class RuntimeVirtualFieldTemplate : BaseRuntimeControllerActionDefinition, IGraphQLRuntimeFieldDefinition
+    public abstract class RuntimeFieldGroupTemplateBase : RuntimeControllerActionDefinitionBase, IGraphQLRuntimeFieldGroupDefinition
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RuntimeVirtualFieldTemplate" /> class.
+        /// Initializes a new instance of the <see cref="RuntimeFieldGroupTemplateBase" /> class.
         /// </summary>
         /// <param name="options">The schema options that will own the fields created from
         /// this builder.</param>
         /// <param name="collection">The schema collection this item will belong to.</param>
         /// <param name="pathTemplate">The path template identifying this item.</param>
-        public RuntimeVirtualFieldTemplate(
+        protected RuntimeFieldGroupTemplateBase(
             SchemaOptions options,
             SchemaItemCollections collection,
             string pathTemplate)
@@ -38,14 +37,15 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RuntimeVirtualFieldTemplate" /> class.
+        /// Initializes a new instance of the <see cref="RuntimeFieldGroupTemplateBase" /> class.
         /// </summary>
         /// <param name="parentField">The field from which this entity is being added.</param>
-        /// <param name="fieldSubTemplate">The partial path template to be appended to
-        /// the parent's already defined template.</param>
-        public RuntimeVirtualFieldTemplate(
-            IGraphQLRuntimeFieldDefinition parentField, string fieldSubTemplate)
-            : base(parentField, fieldSubTemplate)
+        /// <param name="partialPathTemplate">The partial path template defined for this
+        /// individual entity.</param>
+        protected RuntimeFieldGroupTemplateBase(
+            IGraphQLRuntimeFieldGroupDefinition parentField,
+            string partialPathTemplate)
+            : base(parentField, partialPathTemplate)
         {
         }
 
@@ -54,5 +54,11 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         {
             return null;
         }
+
+        /// <inheritdoc />
+        public abstract IGraphQLRuntimeResolvedFieldDefinition MapField(string pathTemplate);
+
+        /// <inheritdoc />
+        public abstract IGraphQLRuntimeFieldGroupDefinition MapChildGroup(string pathTemplate);
     }
 }

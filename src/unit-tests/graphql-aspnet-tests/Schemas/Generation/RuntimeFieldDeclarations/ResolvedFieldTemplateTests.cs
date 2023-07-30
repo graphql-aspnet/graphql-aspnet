@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             var field = options
                 .MapQuery("/path1/path2", (string a) => 1)
-                .WithName("theName");
+                .WithInternalName("theName");
 
             Assert.AreEqual("theName", field.InternalName);
         }
@@ -82,7 +82,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             Assert.AreEqual("policy1", attrib.Policy);
             Assert.AreEqual("roles1", attrib.Roles);
         }
-
 
         [Test]
         public void ResolvedField_WhenRequireAuthAdded_AllowAnonIsRemoved()

@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 .AddGraphQL(o =>
                 {
                     o.MapQuery("field1", () => 1)
-                        .WithName("field1_internal_name");
+                        .WithInternalName("field1_internal_name");
                 })
                 .Build();
 
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 .AddGraphQL(o =>
                 {
                     o.MapMutation("field1", () => 1)
-                        .WithName("field1_internal_name");
+                        .WithInternalName("field1_internal_name");
                 })
                 .Build();
 
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 {
                     o.AddType<TwoPropertyObject>();
                     o.MapTypeExtension<TwoPropertyObject>("field1", () => 1)
-                    .WithName("extension_field_Internal_Name");
+                    .WithInternalName("extension_field_Internal_Name");
                 })
                 .Build();
 
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 .AddGraphQL(o =>
                 {
                     o.MapDirective("@myDirective", () => GraphActionResult.Ok())
-                    .WithName("directive_internal_name");
+                    .WithInternalName("directive_internal_name");
                 })
                 .Build();
 

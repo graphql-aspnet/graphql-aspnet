@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
-    using System;
     using System.Linq;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Schemas;
@@ -18,7 +17,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Tests.Common.Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
-    using NUnit.Framework.Constraints;
 
     [TestFixture]
     public class RuntimeControllerActionTemplateTests
@@ -53,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var options = new SchemaOptions<GraphSchema>(new ServiceCollection());
             var field = options.MapQuery("fieldName", (int a) => 0)
-                .WithName("internalFieldName");
+                .WithInternalName("internalFieldName");
 
             var template = new RuntimeGraphControllerTemplate(field);
             template.Parse();

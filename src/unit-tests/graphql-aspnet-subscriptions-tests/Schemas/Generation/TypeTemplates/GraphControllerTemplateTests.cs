@@ -7,12 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 {
     using System.Linq;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
-    using GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData;
+    using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ControllerTestData;
     using NUnit.Framework;
 
     [TestFixture]

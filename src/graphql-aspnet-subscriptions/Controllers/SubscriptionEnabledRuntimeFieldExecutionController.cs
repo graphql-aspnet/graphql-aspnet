@@ -12,11 +12,11 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Attributes;
 
     /// <summary>
-    /// A special controller instance for executing runtime configured controller
-    /// actions (e.g. minimal api defined fields and type exensions).
+    /// A special controller instance for executing subscription runtime configured controller
+    /// actions (e.g. minimal api defined fields).
     /// </summary>
     [GraphRoot]
-    internal sealed class RuntimeFieldExecutionController : GraphController
+    internal class SubscriptionEnabledRuntimeFieldExecutionController : GraphController
     {
     }
 }

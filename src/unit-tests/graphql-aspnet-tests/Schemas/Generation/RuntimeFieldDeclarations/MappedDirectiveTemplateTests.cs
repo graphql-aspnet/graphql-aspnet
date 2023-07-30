@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             var directive = builderMock.Object
                 .MapDirective("@myDirective")
-                .WithName("internalDirectiveName");
+                .WithInternalName("internalDirectiveName");
 
             Assert.AreEqual("internalDirectiveName", directive.InternalName);
         }

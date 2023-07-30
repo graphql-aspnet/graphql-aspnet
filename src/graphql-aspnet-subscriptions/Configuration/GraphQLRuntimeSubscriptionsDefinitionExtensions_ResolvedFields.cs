@@ -10,8 +10,6 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using System.Linq;
-    using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Controllers;
@@ -19,9 +17,9 @@ namespace GraphQL.AspNet.Configuration
     using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
-    /// Extension methods for configuring minimal API methods as fields on the graph.
+    /// Extension methods for defining subscriptions via minimal api.
     /// </summary>
-    public static partial class GraphQLRuntimeSchemaItemDefinitionExtensions
+    public partial class GraphQLRuntimeSubscriptionDefinitionExtensions
     {
         /// <summary>
         /// Adds policy-based authorization requirements to the field.
@@ -33,13 +31,14 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="policyName">The name of the policy to assign via this requirement.</param>
         /// <param name="roles">A comma-seperated list of roles to assign via this requirement.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition RequireAuthorization(
-            this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder,
+        public static IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition RequireAuthorization(
+            this IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition fieldBuilder,
             string policyName = null,
             string roles = null)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            return RequireAuthorizationInternal(fieldBuilder, policyName, roles);
+            GraphQLRuntimeSchemaItemDefinitionExtensions.RequireAuthorization(fieldBuilder, policyName, roles);
+            return fieldBuilder;
         }
 
         /// <summary>
@@ -51,10 +50,11 @@ namespace GraphQL.AspNet.Configuration
         /// </remarks>
         /// <param name="fieldBuilder">The field being built.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition AllowAnonymous(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder)
+        public static IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition AllowAnonymous(this IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition fieldBuilder)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            return AllowAnonymousInternal(fieldBuilder);
+            GraphQLRuntimeSchemaItemDefinitionExtensions.AllowAnonymous(fieldBuilder);
+            return fieldBuilder;
         }
 
         /// <summary>
@@ -72,10 +72,11 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="additionalPossibleTypes">Any number of additional possible types that
         /// might be returned by this field.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition AddPossibleTypes(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
+        public static IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition AddPossibleTypes(this IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition fieldBuilder, Type firstPossibleType, params Type[] additionalPossibleTypes)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            return AddPossibleTypesInternal(fieldBuilder, firstPossibleType, additionalPossibleTypes);
+            GraphQLRuntimeSchemaItemDefinitionExtensions.AddPossibleTypes(fieldBuilder, firstPossibleType, additionalPossibleTypes);
+            return fieldBuilder;
         }
 
         /// <summary>
@@ -83,11 +84,12 @@ namespace GraphQL.AspNet.Configuration
         /// a resolver has been defined for this field.
         /// </summary>
         /// <param name="fieldBuilder">The field builder.</param>
-        /// <returns>IGraphQLRuntimeResolvedFieldDefinition.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition ClearPossibleTypes(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder)
+        /// <returns>IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition.</returns>
+        public static IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition ClearPossibleTypes(this IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition fieldBuilder)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            return ClearPossibleTypesInternal(fieldBuilder);
+            GraphQLRuntimeSchemaItemDefinitionExtensions.ClearPossibleTypes(fieldBuilder);
+            return fieldBuilder;
         }
 
         /// <summary>
@@ -103,10 +105,10 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="internalName">The value to use as the internal name for this field definition when its
         /// added to the schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition WithInternalName(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, string internalName)
+        public static IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition WithInternalName(this IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition fieldBuilder, string internalName)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            fieldBuilder.InternalName = internalName?.Trim();
+            GraphQLRuntimeSchemaItemDefinitionExtensions.WithInternalName(fieldBuilder, internalName);
             return fieldBuilder;
         }
 
@@ -115,21 +117,18 @@ namespace GraphQL.AspNet.Configuration
         /// resolver should return a <see cref="IGraphActionResult" />.
         /// </summary>
         /// <param name="fieldBuilder">The field being built.</param>
-        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
+        /// <param name="unionName">Provide a name and this field will be declared to return a union. Use <see cref="AddPossibleTypes(IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition, Type, Type[])"/> to declare union members.</param>
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver(
-            this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder,
+        public static IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition AddResolver(
+            this IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition fieldBuilder,
             string unionName,
             Delegate resolverMethod)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            return AddResolverInternal(
-                fieldBuilder,
-                null as Type, // return Type
-                unionName,
-                resolverMethod);
+            GraphQLRuntimeSchemaItemDefinitionExtensions.AddResolver(fieldBuilder, unionName, resolverMethod);
+            return fieldBuilder;
         }
 
         /// <summary>
@@ -142,14 +141,11 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, Delegate resolverMethod)
+        public static IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition AddResolver(this IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition fieldBuilder, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            return AddResolverInternal(
-                fieldBuilder,
-                null as Type, // return Type
-                null, // unionName
-                resolverMethod);
+            GraphQLRuntimeSchemaItemDefinitionExtensions.AddResolver(fieldBuilder, resolverMethod);
+            return fieldBuilder;
         }
 
         /// <summary>
@@ -164,14 +160,11 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="resolverMethod">The delegate to assign as the resolver. This method will be
         /// parsed to determine input arguments for the field on the target schema.</param>
         /// <returns>IGraphQLFieldBuilder.</returns>
-        public static IGraphQLRuntimeResolvedFieldDefinition AddResolver<TReturnType>(this IGraphQLRuntimeResolvedFieldDefinition fieldBuilder, Delegate resolverMethod)
+        public static IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition AddResolver<TReturnType>(this IGraphQLSubscriptionEnabledRuntimeResolvedFieldDefinition fieldBuilder, Delegate resolverMethod)
         {
             Validation.ThrowIfNull(fieldBuilder, nameof(fieldBuilder));
-            return AddResolverInternal(
-                fieldBuilder,
-                typeof(TReturnType),
-                null, // unionName
-                resolverMethod);
+            GraphQLRuntimeSchemaItemDefinitionExtensions.AddResolver<TReturnType>(fieldBuilder, resolverMethod);
+            return fieldBuilder;
         }
     }
 }
