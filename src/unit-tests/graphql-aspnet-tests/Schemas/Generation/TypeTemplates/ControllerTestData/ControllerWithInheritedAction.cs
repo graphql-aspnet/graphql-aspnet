@@ -7,7 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-
 namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ControllerTestData
 {
     using GraphQL.AspNet.Attributes;

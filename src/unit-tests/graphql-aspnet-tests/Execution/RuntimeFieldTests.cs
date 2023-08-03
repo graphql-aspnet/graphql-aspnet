@@ -61,6 +61,35 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
+        public async Task BasicMappedQuery_AsAsyncMethod_ExecutesMethod()
+        {
+            var serverBuilder = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.MapQuery("/field1/field2", async (int a, int b) =>
+                    {
+                        await Task.Yield();
+                        return a + b;
+                    });
+                });
+
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"query { field1 { field2(a: 5, b: 33 } } }");
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(
+                @"{
+                    ""data"": {
+                        ""field1"": {
+                            ""field2"" : 38
+                        }
+                    }
+                }",
+                result);
+        }
+
+        [Test]
         public async Task BasicMappedQuery_AddingResolverAfter_ExecutesMethod()
         {
             var serverBuilder = new TestServerBuilder()

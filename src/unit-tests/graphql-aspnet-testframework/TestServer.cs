@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Tests.Framework
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Text.Encodings.Web;
     using System.Text.Json;
     using System.Threading;
@@ -21,31 +20,21 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Engine;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.FieldResolution;
-    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Execution.Source;
-    using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
-    using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Web;
-    using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
 
     /// <summary>
     /// A mocked server instance built for a given schema and with a service provider (such as would exist at runtime)
@@ -225,10 +214,39 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="fieldOrActionName">Name of the field as it appears in the graph or the name of the action, method or property
         /// as it appears on the <typeparamref name="TEntity"/>. This parameter is case sensitive.</param>
         /// <param name="sourceData">(optional) A source data object to supply to the builder.</param>
-        /// <returns>FieldContextBuilder.</returns>
+        /// <returns>A builder that can be invoked against a controller to resolve a field.</returns>
         public virtual FieldContextBuilder CreateFieldContextBuilder<TEntity>(string fieldOrActionName, object sourceData = null)
         {
             return this.CreateFieldContextBuilder(typeof(TEntity), fieldOrActionName, sourceData);
+        }
+
+        /// <summary>
+        /// Attempts to search the schema for a field with the given internal name. If more than one field
+        /// with the same name is found, the first instance is used. A context builder is then created
+        /// for the found field.
+        /// </summary>
+        /// <param name="internalName">The internal name assigned to the fild.</param>
+        /// <param name="sourceData">The source data.</param>
+        /// <returns>A builder that can be invoked against a controller to resolve a field.</returns>
+        public virtual FieldContextBuilder CreateFieldContextBuilder(string internalName, object sourceData = null)
+        {
+            IGraphField field = null;
+            foreach (var f in this.Schema.AllSchemaItems())
+            {
+                if (f is IGraphField gf && gf.InternalName == internalName)
+                {
+                    field = gf;
+                    break;
+                }
+            }
+
+            if (field == null)
+            {
+                throw new InvalidOperationException($"A field with the internal name of '{internalName}' was not found. " +
+                    $"Internal names for fields are case sensitive.");
+            }
+
+            return this.CreateFieldContextBuilder(field, sourceData);
         }
 
         /// <summary>
@@ -239,7 +257,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="fieldOrActionName">Name of the field as it appears in the graph or the name of the action, method or property
         /// as it appears on the <paramref name="entityType" />. This parameter is case sensitive.</param>
         /// <param name="sourceData">(optional) A source data object to supply to the builder.</param>
-        /// <returns>FieldContextBuilder.</returns>
+        /// <returns>A builder that can be invoked against a controller to resolve a field.</returns>
         public virtual FieldContextBuilder CreateFieldContextBuilder(Type entityType, string fieldOrActionName, object sourceData = null)
         {
             Validation.ThrowIfNull(entityType, nameof(entityType));
@@ -296,6 +314,17 @@ namespace GraphQL.AspNet.Tests.Framework
                     $"Field names are case sensitive.");
             }
 
+            return this.CreateFieldContextBuilder(field, sourceData);
+        }
+
+        /// <summary>
+        /// Creates a builder targeting the supplied field.
+        /// </summary>
+        /// <param name="field">The field to create a context builder for.</param>
+        /// <param name="sourceData">(optional) A source data object to supply to the builder.</param>
+        /// <returns>A builder that can be invoked against a controller to resolve a field.</returns>
+        public FieldContextBuilder CreateFieldContextBuilder(IGraphField field, object sourceData = null)
+        {
             var metaData = field.Resolver.MetaData;
             var builder = new FieldContextBuilder(
                 this.ServiceProvider,

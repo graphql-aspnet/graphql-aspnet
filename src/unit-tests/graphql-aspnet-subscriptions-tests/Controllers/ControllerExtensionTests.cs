@@ -20,6 +20,9 @@ namespace GraphQL.AspNet.Tests.Controllers
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Controllers.ControllerTestData;
     using NUnit.Framework;
+    using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Controllers;
 
     [TestFixture]
     public class ControllerExtensionTests
@@ -160,6 +163,46 @@ namespace GraphQL.AspNet.Tests.Controllers
             {
                 var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData.Object, resolutionContext);
             });
+        }
+
+        [Test]
+        public async Task PublishSubEvent_OnRuntimeFIeld_ExistingEventCollectionisAppendedTo()
+        {
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphQL((o) =>
+                {
+                    o.MapMutation("field1")
+                    .WithInternalName("Mutation1")
+                    .AddPossibleTypes(typeof(string))
+                    .AddResolver(
+                        (FieldResolutionContext context, string arg1) =>
+                        {
+                            SubscriptionEvents.PublishSubscriptionEvent(context, "event1", new TwoPropertyObject()
+                            {
+                                Property1 = arg1,
+                            });
+                            return GraphActionResult.Ok("data result");
+                        });
+                })
+                .Build();
+
+            var fieldContextBuilder = server.CreateFieldContextBuilder("Mutation1");
+
+            var arg1Value = "random string";
+            fieldContextBuilder.AddInputArgument("arg1", arg1Value);
+
+            var resolutionContext = fieldContextBuilder.CreateResolutionContext();
+            var eventCollection = new List<SubscriptionEventProxy>();
+            resolutionContext.Session.Items.TryAdd(SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, eventCollection);
+
+            var controller = new RuntimeFieldExecutionController();
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData.Object, resolutionContext);
+
+            // ensure the method executed completely
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result is OperationCompleteGraphActionResult);
+
+            Assert.AreEqual(1, eventCollection.Count);
         }
     }
 }

@@ -229,5 +229,48 @@ namespace GraphQL.AspNet.Tests.Execution
 
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task Execution_FromMinimalApi_AgainstAsyncResolver_ExecutesAsExpected()
+        {
+            var server = new TestServerBuilder()
+                        .AddGraphQL(o =>
+                        {
+                            o.MapSubscription("retrieveObject", async (TwoPropertyObject sourceArg) =>
+                            {
+                                await Task.Yield();
+                                return sourceArg;
+                            })
+                            .WithEventName("RetrieveObject")
+                            .WithInternalName("RetrieveObject");
+                        })
+                        .AddSubscriptionServer()
+                        .Build();
+
+            var operation = server.Schema.Operations[GraphOperationType.Subscription];
+            var field = operation.Fields.FindField("retrieveObject");
+
+            var sourceObject = new TwoPropertyObject()
+            {
+                Property1 = "testA",
+                Property2 = 5,
+            };
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("subscription  { retrieveObject { property1 } }")
+                .AddDefaultValue(field.Route, sourceObject);
+
+            var result = await server.RenderResult(builder);
+            var expectedOutput =
+                @"{
+                    ""data"" : {
+                        ""retrieveObject"" : {
+                            ""property1"" : ""testA""
+                        }
+                    }
+                }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }

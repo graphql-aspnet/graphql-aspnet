@@ -112,6 +112,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockResolverMetaData.Setup(x => x.InternalName).Returns(resolverMetadata.InternalName);
             _mockResolverMetaData.Setup(x => x.InternalName).Returns(resolverMetadata.InternalName);
             _mockResolverMetaData.Setup(x => x.Parameters).Returns(resolverMetadata.Parameters);
+            _mockResolverMetaData.Setup(x => x.DefinitionSource).Returns(resolverMetadata.DefinitionSource);
         }
 
         /// <summary>
@@ -144,7 +145,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <summary>
         /// Adds a value for a given input argument to this field. It is assumed the value will cast correctly.
         /// </summary>
-        /// <param name="argumentName">Name of the input field, as declared in the schema, on the field being mocked.</param>
+        /// <param name="argumentName">Name of the argument, as declared in the schema, on the field.</param>
         /// <param name="value">A fully resolved value to use.</param>
         /// <returns>MockFieldRequest.</returns>
         public FieldContextBuilder AddInputArgument(string argumentName, object value)
@@ -157,9 +158,9 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         }
 
         /// <summary>
-        /// Alters the security context to be different than that provided by the server that created this builder.
+        /// Alters the security context to be different than that provided by the test server that created this builder.
         /// </summary>
-        /// <param name="securityContext">The security context.</param>
+        /// <param name="securityContext">The user security context.</param>
         /// <returns>MockFieldRequest.</returns>
         public FieldContextBuilder AddSecurityContext(IUserSecurityContext securityContext)
         {
