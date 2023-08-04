@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
@@ -33,7 +32,6 @@ namespace GraphQL.AspNet.Tests.Engine
         private IServiceCollection SetupCollection()
         {
             var collection = new ServiceCollection();
-            collection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
             return collection;
         }
 

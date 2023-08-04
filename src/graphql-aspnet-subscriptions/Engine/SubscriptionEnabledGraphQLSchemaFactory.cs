@@ -12,8 +12,9 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
-    using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeMakers;
 
     /// <summary>
     /// A schema creation factory that understands and can generate subscription types.
@@ -22,6 +23,12 @@ namespace GraphQL.AspNet.Engine
     public class SubscriptionEnabledGraphQLSchemaFactory<TSchema> : DefaultGraphQLSchemaFactory<TSchema>
         where TSchema : class, ISchema
     {
+        /// <inheritdoc />
+        protected override GraphTypeMakerFactory CreateMakerFactory()
+        {
+            return new SubscriptionEnabledGraphTypeMakerFactory(this.Schema);
+        }
+
         /// <inheritdoc />
         protected override void AddRuntimeFieldDefinition(IGraphQLRuntimeResolvedFieldDefinition fieldDefinition)
         {

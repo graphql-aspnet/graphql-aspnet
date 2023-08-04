@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Engine
+namespace GraphQL.AspNet.Schemas.TypeMakers
 {
     using System;
     using GraphQL.AspNet.Common;
@@ -15,23 +15,27 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
-    using GraphQL.AspNet.Schemas.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An upgraded "type maker" factory that adds low level subscription field support
     /// to the type system.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this maker factory is registered to handle.</typeparam>
-    public class SubscriptionEnabledGraphQLTypeMakerFactory<TSchema> : DefaultGraphQLTypeMakerFactory<TSchema>
-        where TSchema : class, ISchema
+    public class SubscriptionEnabledGraphTypeMakerFactory : GraphTypeMakerFactory
     {
+        private readonly ISchema _schemaInstance;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionEnabledGraphQLTypeMakerFactory{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="SubscriptionEnabledGraphTypeMakerFactory" /> class.
         /// </summary>
-        public SubscriptionEnabledGraphQLTypeMakerFactory()
+        /// <param name="schemaInstance">The schema instance to reference when making
+        /// types.</param>
+        public SubscriptionEnabledGraphTypeMakerFactory(ISchema schemaInstance)
+            : base(schemaInstance)
         {
+            _schemaInstance = Validation.ThrowIfNullOrReturn(schemaInstance, nameof(schemaInstance));
         }
 
         /// <inheritdoc />
@@ -51,7 +55,7 @@ namespace GraphQL.AspNet.Engine
         /// <inheritdoc />
         public override IGraphFieldMaker CreateFieldMaker()
         {
-            return new SubscriptionEnabledGraphFieldMaker(this.Schema, this.CreateArgumentMaker());
+            return new SubscriptionEnabledGraphFieldMaker(_schemaInstance, this.CreateArgumentMaker());
         }
     }
 }

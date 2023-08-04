@@ -46,7 +46,6 @@ namespace GraphQL.AspNet.Tests.Execution
         public DirectiveProcessorTypeSystemTests()
         {
             _serviceCollection = new ServiceCollection();
-            _serviceCollection.AddTransient<IGraphQLTypeMakerFactory<GraphSchema>, DefaultGraphQLTypeMakerFactory<GraphSchema>>();
 
             _itemsExecuted = new List<object>();
             _typesToAdd = new List<Type>();

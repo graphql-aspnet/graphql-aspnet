@@ -32,8 +32,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var builder = new TestServerBuilder();
             var server = builder.Build();
 
-            var factory = server.CreateMakerFactory();
-
             var template = new GraphDirectiveTemplate(typeof(MultiMethodDirective));
             template.Parse();
             template.ValidateOrThrow();

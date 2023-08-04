@@ -92,26 +92,13 @@ namespace GraphQL.AspNet.SubscriptionServer
                     $"authorization method. (Current authorization method is \"{_schemaBuilder.Options.AuthorizationOptions.Method}\")");
             }
 
-            // swap out the master templating provider for the schema to one that includes
-            // support for the subscription action type if and only if the developer has not
-            // already registered their own custom one
-            var existingTypeMakers = _schemaBuilder.Options.ServiceCollection.FirstOrDefault(x => x.ServiceType == typeof(IGraphQLTypeMakerFactory<TSchema>));
-            if (existingTypeMakers != null)
-            {
-                _schemaBuilder.Options
-                    .ServiceCollection
-                    .RemoveAll(typeof(IGraphQLTypeMakerFactory<TSchema>));
-            }
-
-            _schemaBuilder.Options
+            // swap out the master schema factory to one that includes
+            // support for the subscription action type
+            var existingFactories = _schemaBuilder
+                .Options
                 .ServiceCollection
-                .TryAdd(
-                    new ServiceDescriptor(
-                        typeof(IGraphQLTypeMakerFactory<TSchema>),
-                        typeof(SubscriptionEnabledGraphQLTypeMakerFactory<TSchema>),
-                        ServiceLifetime.Transient));
+                .FirstOrDefault(x => x.ServiceType == typeof(IGraphQLSchemaFactory<TSchema>));
 
-            var existingFactories = _schemaBuilder.Options.ServiceCollection.FirstOrDefault(x => x.ServiceType == typeof(IGraphQLSchemaFactory<TSchema>));
             if (existingFactories != null)
             {
                 _schemaBuilder.Options

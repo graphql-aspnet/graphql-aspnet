@@ -169,8 +169,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>GraphTypeCreationResult.</returns>
         public virtual GraphTypeCreationResult CreateGraphType(Type concreteType, TypeKind kind)
         {
-            var factory = new DefaultGraphQLTypeMakerFactory<TSchema>();
-            factory.Initialize(this.Schema);
+            var factory = new GraphTypeMakerFactory(this.Schema);
 
             var maker = factory.CreateTypeMaker(concreteType, kind);
             var template = factory.MakeTemplate(concreteType);
@@ -599,6 +598,15 @@ namespace GraphQL.AspNet.Tests.Framework
                     return reader.ReadToEnd();
                 }
             }
+        }
+
+        /// <summary>
+        /// Creates a factory object that can generate templates and graph types.
+        /// </summary>
+        /// <returns>DefaultGraphQLTypeMakerFactory.</returns>
+        public GraphTypeMakerFactory CreateMakerFactory()
+        {
+            return new GraphTypeMakerFactory(this.Schema);
         }
 
         /// <summary>

@@ -11,9 +11,11 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 {
     using System.Linq;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.CommonHelpers;
@@ -46,9 +48,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames).Build();
             var template = GraphQLTemplateHelper.CreateGraphTypeTemplate<TypeCreationItem>(TypeKind.OBJECT);
 
-            var factory = server.CreateMakerFactory();
-
-            var objectGraphType = factory
+            var objectGraphType = new GraphTypeMakerFactory(server.Schema)
                 .CreateTypeMaker(typeof(TypeCreationItem))
                 .CreateGraphType(template).GraphType as IObjectGraphType;
 

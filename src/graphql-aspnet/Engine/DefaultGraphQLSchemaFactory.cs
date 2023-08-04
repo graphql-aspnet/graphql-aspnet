@@ -19,10 +19,9 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
-    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -37,7 +36,7 @@ namespace GraphQL.AspNet.Engine
         /// Initializes a new instance of the <see cref="DefaultGraphQLSchemaFactory{TSchema}"/> class.
         /// </summary>
         public DefaultGraphQLSchemaFactory()
-            : this(true, true, null)
+            : this(true, true)
         {
         }
 
@@ -49,16 +48,12 @@ namespace GraphQL.AspNet.Engine
         /// created schema instance.</param>
         /// <param name="processTypeSystemDirectives">if set to <c>true</c> any discovered
         /// type system directives will be applied to their target schema items.</param>
-        /// <param name="factory">A type factory instance to use. When null, one will attempt to be created
-        /// from the schema's service scope.</param>
         public DefaultGraphQLSchemaFactory(
             bool includeBuiltInDirectives = true,
-            bool processTypeSystemDirectives = true,
-            IGraphQLTypeMakerFactory<TSchema> factory = null)
+            bool processTypeSystemDirectives = true)
         {
             this.IncludeBuiltInDirectives = includeBuiltInDirectives;
             this.ProcessTypeSystemDirectives = processTypeSystemDirectives;
-            this.MakerFactory = factory;
         }
 
         /// <inheritdoc />
@@ -84,10 +79,7 @@ namespace GraphQL.AspNet.Engine
                 return this.Schema;
 
             this.Schema.Configuration.Merge(configuration);
-            if (this.MakerFactory == null)
-                this.MakerFactory = this.ServiceProvider.GetRequiredService<IGraphQLTypeMakerFactory<TSchema>>();
-
-            this.MakerFactory.Initialize(this.Schema);
+            this.MakerFactory = this.CreateMakerFactory();
 
             // Step 1: Ensure all the bare bones requirements are set
             // --------------------------------------
@@ -155,6 +147,16 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <summary>
+        /// Creates a new maker factory that will supply templates and graph type
+        /// makers during the schema generation process.
+        /// </summary>
+        /// <returns>DefaultGraphQLTypeMakerFactory.</returns>
+        protected virtual GraphTypeMakerFactory CreateMakerFactory()
+        {
+            return new GraphTypeMakerFactory(this.Schema);
+        }
+
+        /// <summary>
         /// Ensures the target schema has all the "specification required" pieces and dependencies
         /// accounted for.
         /// </summary>
@@ -212,7 +214,7 @@ namespace GraphQL.AspNet.Engine
         /// makers to generate graph types for the building <see cref="Schema"/>.
         /// </summary>
         /// <value>The maker factory to use in this instance.</value>
-        protected virtual IGraphQLTypeMakerFactory MakerFactory { get; set; }
+        protected virtual GraphTypeMakerFactory MakerFactory { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the specification-defined, built-in directives (e.g. skip, include etc.)

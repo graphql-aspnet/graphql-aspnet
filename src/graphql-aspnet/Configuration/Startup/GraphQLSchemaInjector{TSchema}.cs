@@ -171,7 +171,6 @@ namespace GraphQL.AspNet.Configuration.Startup
             // "per request per schema" components
             _options.ServiceCollection.TryAddTransient(typeof(IGraphQLHttpProcessor<TSchema>), _options.QueryHandler.HttpProcessorType);
             _options.ServiceCollection.TryAddTransient<IGraphQLSchemaFactory<TSchema>, DefaultGraphQLSchemaFactory<TSchema>>();
-            _options.ServiceCollection.TryAddTransient<IGraphQLTypeMakerFactory<TSchema>, DefaultGraphQLTypeMakerFactory<TSchema>>();
 
             // "per application server" instance
             _options.ServiceCollection.TryAddScoped<IGraphLogger>(sp => sp?.GetService<IGraphEventLogger>());

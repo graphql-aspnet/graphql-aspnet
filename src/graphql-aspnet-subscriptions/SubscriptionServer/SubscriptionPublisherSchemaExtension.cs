@@ -54,24 +54,8 @@ namespace GraphQL.AspNet.SubscriptionServer
             // support for the subscription action type
 
             // swap out the master templating provider for the schema to one that includes
-            // support for the subscription action type if and only if the developer has not
-            // already registered their own custom one
-            var existing = options.ServiceCollection.FirstOrDefault(x => x.ServiceType == typeof(IGraphQLTypeMakerFactory<TSchema>));
-            if (existing != null)
-            {
-                options
-                    .ServiceCollection
-                    .RemoveAll(typeof(IGraphQLTypeMakerFactory<TSchema>));
-            }
-
-            options
-                .ServiceCollection
-                .TryAdd(
-                    new ServiceDescriptor(
-                        typeof(IGraphQLTypeMakerFactory<TSchema>),
-                        typeof(SubscriptionEnabledGraphQLTypeMakerFactory<TSchema>),
-                        ServiceLifetime.Transient));
-        }
+            // support for the subscription action type
+         }
 
         /// <summary>
         /// Invokes this instance to perform any final setup requirements as part of
