@@ -43,7 +43,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
             // all methods are required to be the same signatured
             // we can just pull the dependnent types on the first
-            var list = new List<DependentType>();
             if (_templateMap.Count > 0)
                 return _templateMap.Values.First().RetrieveRequiredTypes();
 

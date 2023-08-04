@@ -93,7 +93,15 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="app">The application being constructed.</param>
         public static void UseGraphQL(this IApplicationBuilder app)
         {
-            UseGraphQL(app?.ApplicationServices);
+            Validation.ThrowIfNull(app, nameof(app));
+            var allInjectors = app.ApplicationServices.GetServices<ISchemaInjector>();
+            if (allInjectors != null)
+            {
+                foreach (var injector in allInjectors)
+                {
+                    injector.UseSchema(app);
+                }
+            }
         }
 
         /// <summary>

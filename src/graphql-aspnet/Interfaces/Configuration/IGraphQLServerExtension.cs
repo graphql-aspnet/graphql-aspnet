@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// <param name="serviceProvider">The configured service provider created  during setup. In
         /// most instances, this will be the <see cref="IApplicationBuilder.ApplicationServices"/> instances
         /// from <paramref name="app"/>.</param>
-        public void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null)
+        public void UseExtension(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
         }
 
