@@ -17,6 +17,7 @@ on:
   pull_request:
     branches:
       - master
+      - 'release/**'
       
 env: 
   SLN_PATH: ./src/graphql-aspnet.sln
