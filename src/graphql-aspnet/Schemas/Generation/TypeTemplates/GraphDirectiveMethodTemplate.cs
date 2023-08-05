@@ -149,14 +149,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.Method.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive method {this.InternalName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
+                    $"The directive resolver {this.InternalName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
                     "to the object graph.");
             }
 
             if (this.AppliedDirectives.Any())
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive method {this.InternalName} defines an {nameof(ApplyDirectiveAttribute)}. " +
+                    $"The directive resolver {this.InternalName} defines an {nameof(ApplyDirectiveAttribute)}. " +
                     $"Directive methods cannot have applied directives.");
             }
 
@@ -169,9 +169,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 if (genericArgs.Length != 1)
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The directive method '{this.InternalName}' defines a return type of'{typeof(Task).Name}' but " +
+                        $"The directive resolver '{this.InternalName}' defines a return type of'{typeof(Task).Name}' but " +
                         "defines no contained return type for the resultant model object yielding a void return after " +
-                        "completion of the task. All graph methods must return a single model object. Consider using " +
+                        "completion of the task. All resolvers must return a single model object. Consider using " +
                         $"'{typeof(Task<>).Name}' instead for asyncronous methods");
                 }
             }
@@ -179,14 +179,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.ExpectedReturnType != typeof(IGraphActionResult))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive method '{this.InternalName}' does not return a {nameof(IGraphActionResult)}. " +
-                    $"All directive methods must return a {nameof(IGraphActionResult)} or {typeof(Task<IGraphActionResult>).FriendlyName()}");
+                    $"The directive resolver '{this.InternalName}' does not return a {nameof(IGraphActionResult)}. " +
+                    $"All directive resolvers must return a {nameof(IGraphActionResult)} or {typeof(Task<IGraphActionResult>).FriendlyName()}");
             }
 
             if (string.IsNullOrWhiteSpace(this.InternalName))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive method template identified by `{this.Method.Name}` does not declare a valid internal name.");
+                    $"The directive resolver template identified by `{this.Method.Name}` does not declare a valid internal name.");
             }
 
             foreach (var argument in _arguments)

@@ -9,11 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
+    <Compile Remove="Directives\ActionResults\**" />
+    <EmbeddedResource Remove="Directives\ActionResults\**" />
+    <None Remove="Directives\ActionResults\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Directives\ActionResults\" />
+    <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
 
 </Project>

@@ -76,7 +76,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <summary>
-        /// Retrieves the method template mapped to the given lifecycle and location. Returns null if nothing is registered.
+        /// Retrieves the resolver data mapped to the given location usage. Returns null if nothing is registered
+        /// for the provided location.
         /// </summary>
         /// <param name="location">A valid graphql directive location.</param>
         /// <returns>IGraphMethod.</returns>
