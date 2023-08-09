@@ -127,11 +127,11 @@ namespace GraphQL.AspNet.Tests.Logging
             var dictionary = generator.CreateStateDictionary(argumentToTest);
 
             var entry = new ActionMethodModelStateValidatedLogEntry(
-                builder.GraphMethod.Object,
+                builder.GraphMethod,
                 context.Request,
                 dictionary);
 
-            this.ValidateModelDictionaryToLogEntry(builder.GraphMethod.Object, context.Request, dictionary, entry);
+            this.ValidateModelDictionaryToLogEntry(builder.GraphMethod, context.Request, dictionary, entry);
         }
 
         [Test]
@@ -157,11 +157,11 @@ namespace GraphQL.AspNet.Tests.Logging
             var dictionary = generator.CreateStateDictionary(argumentToTest);
 
             var entry = new ActionMethodModelStateValidatedLogEntry(
-                builder.GraphMethod.Object,
+                builder.GraphMethod,
                 context.Request,
                 dictionary);
 
-            this.ValidateModelDictionaryToLogEntry(builder.GraphMethod.Object, context.Request, dictionary, entry);
+            this.ValidateModelDictionaryToLogEntry(builder.GraphMethod, context.Request, dictionary, entry);
         }
     }
 }
