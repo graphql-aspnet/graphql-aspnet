@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -28,14 +28,14 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         private AspNet.Internal.TypeTemplates.GraphTypeExtensionFieldTemplate CreateExtensionTemplate<TControllerType>(string actionName)
             where TControllerType : GraphController
         {
-            var mockController = new Mock<IGraphControllerTemplate>();
-            mockController.Setup(x => x.InternalFullName).Returns(typeof(TControllerType).Name);
-            mockController.Setup(x => x.Route).Returns(new SchemaItemPath("path0"));
-            mockController.Setup(x => x.Name).Returns("path0");
-            mockController.Setup(x => x.ObjectType).Returns(typeof(TControllerType));
+            var mockController = Substitute.For<IGraphControllerTemplate>();
+            mockController.InternalFullName.Returns(typeof(TControllerType).Name);
+            mockController.Route.Returns(new SchemaItemPath("path0"));
+            mockController.Name.Returns("path0");
+            mockController.ObjectType.Returns(typeof(TControllerType));
 
             var methodInfo = typeof(TControllerType).GetMethod(actionName);
-            var template = new AspNet.Internal.TypeTemplates.GraphTypeExtensionFieldTemplate(mockController.Object, methodInfo);
+            var template = new AspNet.Internal.TypeTemplates.GraphTypeExtensionFieldTemplate(mockController, methodInfo);
             template.Parse();
             template.ValidateOrThrow();
 

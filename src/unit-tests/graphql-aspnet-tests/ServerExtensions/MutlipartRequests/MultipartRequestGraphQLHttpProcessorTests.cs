@@ -35,7 +35,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Primitives;
-    using Moq;
+    using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
     using NUnit.Framework;
 
     [TestFixture]
@@ -385,17 +386,17 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         {
             using var restorePoint = new GraphQLGlobalRestorePoint(true);
 
-            var runtime = new Mock<IGraphQLRuntime<GraphSchema>>();
-            runtime.Setup(x => x.ExecuteRequestAsync(
-                It.IsAny<IServiceProvider>(),
-                It.IsAny<IQueryExecutionRequest>(),
-                It.IsAny<IUserSecurityContext>(),
-                It.IsAny<bool>(),
-                It.IsAny<CancellationToken>()))
+            var runtime = Substitute.For<IGraphQLRuntime<GraphSchema>>();
+            runtime.ExecuteRequestAsync(
+                Arg.Any<IServiceProvider>(),
+                Arg.Any<IQueryExecutionRequest>(),
+                Arg.Any<IUserSecurityContext>(),
+                Arg.Any<bool>(),
+                Arg.Any<CancellationToken>())
                 .ThrowsAsync(
                     new Exception("Explicit Failure"));
-            runtime.Setup(x => x.CreateRequest(It.IsAny<GraphQueryData>()))
-                .Returns(new Mock<IQueryExecutionRequest>().Object);
+            runtime.CreateRequest(Arg.Any<GraphQueryData>())
+                .Returns(Substitute.For<IQueryExecutionRequest>());
 
             var (context, processor) = this.CreateTestObjects(
                 fields: new[]
@@ -404,7 +405,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                             ""query"" : ""query doesnt matter for this test"",
                         }"),
                 },
-                runtime: runtime.Object);
+                runtime: runtime);
 
             await processor.InvokeAsync(context);
             var result = this.ExtractResponseString(context);

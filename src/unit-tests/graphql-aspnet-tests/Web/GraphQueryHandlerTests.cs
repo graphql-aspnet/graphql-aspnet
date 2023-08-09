@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Web
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -26,25 +26,22 @@ namespace GraphQL.AspNet.Tests.Web
         [Test]
         public void CallingExecuteYieldsNoExceptionForAGivenBuilder()
         {
-            var mock = new Mock<IApplicationBuilder>();
-            mock.Setup(x => x.Use(It.IsAny<Func<RequestDelegate, RequestDelegate>>()))
-                .Verifiable();
+            var mock = Substitute.For<IApplicationBuilder>();
+            mock.Use(Arg.Any<Func<RequestDelegate, RequestDelegate>>());
 
             var handler = new TestQueryHandler();
-            handler.Execute(mock.Object);
+            handler.Execute(mock);
 
-            mock.Verify(x => x.Use(It.IsAny<Func<RequestDelegate, RequestDelegate>>()), Times.Once());
+            mock.Received(1).Use(Arg.Any<Func<RequestDelegate, RequestDelegate>>());
         }
 
         [Test]
         public async Task InvokeWithHttpContext_IsPassedToProcessor()
         {
-            var mock = new Mock<IGraphQLHttpProcessor<GraphSchema>>();
-            mock.Setup(x => x.InvokeAsync(It.IsAny<HttpContext>()))
-                .Verifiable();
+            var mock = Substitute.For<IGraphQLHttpProcessor<GraphSchema>>();
 
             var collection = new ServiceCollection();
-            collection.AddSingleton(mock.Object);
+            collection.AddSingleton(mock);
 
             var provider = collection.BuildServiceProvider();
 
@@ -54,9 +51,7 @@ namespace GraphQL.AspNet.Tests.Web
             var handler = new TestQueryHandler();
             await handler.TestInvoke(context);
 
-            mock.Verify(
-                x => x.InvokeAsync(It.IsAny<HttpContext>()),
-                Times.Once());
+            await mock.Received(1).InvokeAsync(Arg.Any<HttpContext>());
         }
 
         [Test]

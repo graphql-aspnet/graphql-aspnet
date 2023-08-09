@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.ActionTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -30,14 +30,14 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         private ControllerActionGraphFieldTemplate CreateActionTemplate<TControllerType>(string actionName)
             where TControllerType : GraphController
         {
-            var mockController = new Mock<IGraphControllerTemplate>();
-            mockController.Setup(x => x.InternalFullName).Returns(typeof(TControllerType).Name);
-            mockController.Setup(x => x.Route).Returns(new SchemaItemPath("path0"));
-            mockController.Setup(x => x.Name).Returns("path0");
-            mockController.Setup(x => x.ObjectType).Returns(typeof(TControllerType));
+            var mockController = Substitute.For<IGraphControllerTemplate>();
+            mockController.InternalFullName.Returns(typeof(TControllerType).Name);
+            mockController.Route.Returns(new SchemaItemPath("path0"));
+            mockController.Name.Returns("path0");
+            mockController.ObjectType.Returns(typeof(TControllerType));
 
             var methodInfo = typeof(TControllerType).GetMethod(actionName);
-            var action = new ControllerActionGraphFieldTemplate(mockController.Object, methodInfo);
+            var action = new ControllerActionGraphFieldTemplate(mockController, methodInfo);
             action.Parse();
             action.ValidateOrThrow();
 

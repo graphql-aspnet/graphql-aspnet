@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using System.Linq;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -23,13 +23,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             Assert.AreEqual(1, colllection.Count);
         }
@@ -39,13 +39,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             Assert.AreEqual(1, Enumerable.Count<string>(colllection.Keys));
             Assert.AreEqual("thename", Enumerable.First<string>(colllection.Keys));
@@ -56,13 +56,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             var result = colllection.ContainsKey(name);
             Assert.IsTrue((bool)result);
@@ -73,13 +73,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             var result = colllection.ContainsKey("otherName");
             Assert.IsFalse((bool)result);
@@ -90,13 +90,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = null;
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             Assert.AreEqual(1, colllection.Count);
             Assert.IsTrue((bool)colllection.ContainsKey(string.Empty));
@@ -107,13 +107,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = "long name     ";
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             Assert.AreEqual(1, colllection.Count);
             Assert.IsTrue((bool)colllection.ContainsKey("long name"));
@@ -124,16 +124,16 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = "thename";
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             var found = colllection.RetrieveOperation(name);
-            Assert.AreEqual(operation.Object, found);
+            Assert.AreEqual(operation, found);
         }
 
         [Test]
@@ -141,13 +141,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = "thename";
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             var found = colllection.RetrieveOperation("otehrName");
             Assert.IsNull(found);
@@ -158,16 +158,16 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = string.Empty;
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             var found = colllection.RetrieveOperation(string.Empty);
-            Assert.AreEqual(operation.Object, found);
+            Assert.AreEqual(operation, found);
         }
 
         [Test]
@@ -175,16 +175,16 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = string.Empty;
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             var found = colllection.RetrieveOperation(null);
-            Assert.AreEqual(operation.Object, found);
+            Assert.AreEqual(operation, found);
         }
 
         [Test]
@@ -192,16 +192,16 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             string name = string.Empty;
 
-            var owner = new Mock<IQueryDocument>();
+            var owner = Substitute.For<IQueryDocument>();
 
-            var operation = new Mock<IOperationDocumentPart>();
-            operation.Setup(x => x.Name).Returns(name);
+            var operation = Substitute.For<IOperationDocumentPart>();
+            operation.Name.Returns(name);
 
-            var colllection = new DocumentOperationCollection(owner.Object);
-            colllection.AddOperation(operation.Object);
+            var colllection = new DocumentOperationCollection(owner);
+            colllection.AddOperation(operation);
 
             var found = colllection.RetrieveOperation("      ");
-            Assert.AreEqual(operation.Object, found);
+            Assert.AreEqual(operation, found);
         }
     }
 }

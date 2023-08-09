@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Internal.InputValueNodeTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
     using NUnit.Framework.Constraints;
 
@@ -167,7 +167,7 @@ namespace GraphQL.AspNet.Tests.Internal
         [SetCulture("en-US")]
         public void DefaultScalarValueResolvers(string expressionText, string inputText, object expectedOutput)
         {
-            var owner = new Mock<IDocumentPart>();
+            var owner = Substitute.For<IDocumentPart>();
 
             var generator = new InputValueResolverMethodGenerator(this.CreateSchema());
 
@@ -198,16 +198,16 @@ namespace GraphQL.AspNet.Tests.Internal
 
                 inputValue = DocumentSuppliedValueFactory.CreateInputValue(
                     source,
-                    owner.Object,
+                    owner,
                     testNode);
             }
             else
             {
                 // imitate the lexer parsing a null value as a valid input
                 // rather than trying to lex the value
-                var parent = new Mock<IDocumentPart>();
+                var parent = Substitute.For<IDocumentPart>();
                 inputValue = new DocumentNullSuppliedValue(
-                    parent.Object,
+                    parent,
                     new SourceLocation(1, 1, 1));
             }
 
@@ -228,7 +228,7 @@ namespace GraphQL.AspNet.Tests.Internal
         [TestCaseSource(nameof(_inputValueResolverTestCases_WithInvalidData))]
         public void DefaultScalarValueResolvers_InvalidInputValue(string expressionText, string inputText)
         {
-            var owner = new Mock<IDocumentPart>();
+            var owner = Substitute.For<IDocumentPart>();
 
             var generator = new InputValueResolverMethodGenerator(this.CreateSchema());
 
@@ -256,7 +256,7 @@ namespace GraphQL.AspNet.Tests.Internal
 
             var inputValue = DocumentSuppliedValueFactory.CreateInputValue(
                 source,
-                owner.Object,
+                owner,
                 testNode);
 
             var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
@@ -271,14 +271,17 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public void BasicListValueResolver()
         {
-            var listOwner = new Mock<IDocumentPart>();
+            var listOwner = Substitute.For<IDocumentPart>();
+            listOwner.Parent.Returns(x => null);
 
-            var sourceList = new DocumentListSuppliedValue(listOwner.Object, SourceLocation.None);
+            var sourceList = new DocumentListSuppliedValue(listOwner, SourceLocation.None);
             sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "15", ScalarValueType.Unknown, SourceLocation.None));
             sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "12", ScalarValueType.Unknown, SourceLocation.None));
 
             var typeExpression = GraphTypeExpression.FromDeclaration("[Int]");
-            var generator = new InputValueResolverMethodGenerator(this.CreateSchema());
+
+            var schema = this.CreateSchema();
+            var generator = new InputValueResolverMethodGenerator(schema);
 
             var resolver = generator.CreateResolver(typeExpression);
             var result = resolver.Resolve(sourceList) as IEnumerable;
@@ -289,9 +292,10 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public void ListOfListValueResolver()
         {
-            var listOwner = new Mock<IDocumentPart>();
+            var listOwner = Substitute.For<IDocumentPart>();
+            listOwner.Parent.Returns(x => null);
 
-            var outerList = new DocumentListSuppliedValue(listOwner.Object, SourceLocation.None);
+            var outerList = new DocumentListSuppliedValue(listOwner, SourceLocation.None);
             var innerList1 = new DocumentListSuppliedValue(outerList, SourceLocation.None);
             innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "15", ScalarValueType.Unknown, SourceLocation.None));
             innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "12", ScalarValueType.Unknown, SourceLocation.None));
@@ -318,9 +322,10 @@ namespace GraphQL.AspNet.Tests.Internal
             var schema = this.CreateSchema();
             var obj = schema.KnownTypes.FindGraphType("Input_Telephone") as IInputObjectGraphType;
 
-            var owner = new Mock<IDocumentPart>();
+            var owner = Substitute.For<IDocumentPart>();
+            owner.Parent.Returns(x => null);
 
-            var complexObject = new DocumentComplexSuppliedValue(owner.Object, SourceLocation.None);
+            var complexObject = new DocumentComplexSuppliedValue(owner, SourceLocation.None);
             var idField = new DocumentInputObjectField(complexObject, "id", obj.Fields["id"], SourceLocation.None);
             var brandField = new DocumentInputObjectField(complexObject, "brand", obj.Fields["brand"], SourceLocation.None);
 
@@ -349,9 +354,10 @@ namespace GraphQL.AspNet.Tests.Internal
             var schema = this.CreateSchema();
             var obj = schema.KnownTypes.FindGraphType("Input_Telephone") as IInputObjectGraphType;
 
-            var owner = new Mock<IDocumentPart>();
+            var owner = Substitute.For<IDocumentPart>();
+            owner.Parent.Returns(x => null);
 
-            var complexObject = new DocumentComplexSuppliedValue(owner.Object, SourceLocation.None);
+            var complexObject = new DocumentComplexSuppliedValue(owner, SourceLocation.None);
             var brandField = new DocumentInputObjectField(complexObject, "brand", obj.Fields["brand"], SourceLocation.None);
 
             var brandValue = new DocumentScalarSuppliedValue(brandField, "\"StarTrucks\"", ScalarValueType.String, SourceLocation.None);
@@ -391,13 +397,13 @@ namespace GraphQL.AspNet.Tests.Internal
         {
             var schema = this.CreateSchema();
 
-            var testObject = new Mock<IResolvableNullValue>();
+            var testObject = Substitute.For<IResolvableNullValue>();
 
             var typeExpression = GraphTypeExpression.FromDeclaration("Input_Telephone");
             var generator = new InputValueResolverMethodGenerator(schema);
 
             var resolver = generator.CreateResolver(typeExpression);
-            var result = resolver.Resolve(testObject.Object);
+            var result = resolver.Resolve(testObject);
 
             Assert.IsNull(result);
         }
@@ -407,8 +413,8 @@ namespace GraphQL.AspNet.Tests.Internal
         {
             var schema = this.CreateSchema();
 
-            var owner = new Mock<IDocumentPart>();
-            var idValue = new DocumentScalarSuppliedValue(owner.Object, "15", ScalarValueType.String, SourceLocation.None);
+            var owner = Substitute.For<IDocumentPart>();
+            var idValue = new DocumentScalarSuppliedValue(owner, "15", ScalarValueType.String, SourceLocation.None);
 
             var typeExpression = GraphTypeExpression.FromDeclaration("Input_Telephone");
             var generator = new InputValueResolverMethodGenerator(schema);
@@ -426,13 +432,14 @@ namespace GraphQL.AspNet.Tests.Internal
             var schema = this.CreateSchema();
             var obj = schema.KnownTypes.FindGraphType("Input_Telephone") as IInputObjectGraphType;
 
-            var owner = new Mock<IDocumentPart>();
+            var owner = Substitute.For<IDocumentPart>();
+            owner.Parent.Returns(x => null);
 
             var path = new SourcePath();
             path.AddFieldName("topfield");
-            owner.Setup(x => x.Path).Returns(path);
+            owner.Path.Returns(path);
 
-            var complexObject = new DocumentComplexSuppliedValue(owner.Object, SourceLocation.None);
+            var complexObject = new DocumentComplexSuppliedValue(owner, SourceLocation.None);
             var idField = new DocumentInputObjectField(complexObject, "id", obj.Fields["id"], SourceLocation.None);
             var brandField = new DocumentInputObjectField(complexObject, "brand", obj.Fields["brand"], SourceLocation.None);
 

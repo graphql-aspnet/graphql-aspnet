@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.ValueResolversTestData;
-    using Moq;
     using NSubstitute;
     using NUnit.Framework;
 
@@ -65,10 +64,10 @@ namespace GraphQL.AspNet.Tests.Internal
             // set properties parent to be an interface that the source data is castable
             // this scenario shouldnt be possible in general execution but exists
             // in case of developers extending the framework
-            var parentMock = new Mock<IGraphTypeTemplate>();
-            parentMock.Setup(x => x.ObjectType).Returns(typeof(IResolverInterface));
+            var parentMock = Substitute.For<IGraphTypeTemplate>();
+            parentMock.ObjectType.Returns(typeof(IResolverInterface));
 
-            fieldContextBuilder.GraphMethod.Parent.Returns(parentMock.Object);
+            fieldContextBuilder.GraphMethod.Parent.Returns(parentMock);
             var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.GraphMethod);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
@@ -92,10 +91,10 @@ namespace GraphQL.AspNet.Tests.Internal
 
             // set properties parent to be an interface
             // that hte source data is not castable to
-            var parentMock = new Mock<IGraphTypeTemplate>();
-            parentMock.Setup(x => x.ObjectType).Returns(typeof(ITestInterface));
+            var parentMock = Substitute.For<IGraphTypeTemplate>();
+            parentMock.ObjectType.Returns(typeof(ITestInterface));
 
-            fieldContextBuilder.GraphMethod.Parent.Returns(parentMock.Object);
+            fieldContextBuilder.GraphMethod.Parent.Returns(parentMock);
 
             var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.GraphMethod);
 

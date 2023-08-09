@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Logging;
     using NUnit.Framework;
-    using Moq;
+    using NSubstitute;
     using GraphQL.AspNet.Logging.GeneralEvents;
 
     [TestFixture]
@@ -39,18 +39,18 @@ namespace GraphQL.AspNet.Tests.Logging
             IGraphLogEntry recordedlogEntry = null;
 
             // fake a log to recieve the event generated on the extension method
-            var mock = new Mock<IGraphLogger>();
-            mock.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<IGraphLogEntry>()))
-                .Callback((LogLevel logLevel, IGraphLogEntry logEntry) =>
-                    {
-                        recordedLogLevel = logLevel;
-                        recordedlogEntry = logEntry;
-                    });
+            var mock = Substitute.For<IGraphLogger>();
+            mock.When(x => x.Log(Arg.Any<LogLevel>(), Arg.Any<IGraphLogEntry>()))
+                .Do(x =>
+                {
+                    recordedLogLevel = (LogLevel)x[0];
+                    recordedlogEntry = (IGraphLogEntry)x[1];
+                });
 
-            var factory = new Mock<ILoggerFactory>();
-            factory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(null as ILogger);
+            var factory = Substitute.For<ILoggerFactory>();
+            factory.CreateLogger(Arg.Any<string>()).Returns(null as ILogger);
 
-            mock.Object.UnhandledExceptionEvent(exception);
+            mock.UnhandledExceptionEvent(exception);
 
             var entry = recordedlogEntry as UnhandledExceptionLogEntry;
             Assert.AreEqual(LogLevel.Critical, recordedLogLevel);

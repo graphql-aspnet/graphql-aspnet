@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Logging.LoggerTestData;
     using GraphQL.AspNet.Common.Extensions;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -36,15 +36,15 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             concreteType = concreteType ?? value?.GetType() ?? throw new ArgumentException();
 
-            var argTemplate = new Mock<IGraphArgument>();
+            var argTemplate = Substitute.For<IGraphArgument>();
 
-            argTemplate.Setup(x => x.Name).Returns(name);
-            argTemplate.Setup(x => x.TypeExpression).Returns(new GraphTypeExpression(name, wrappers));
-            argTemplate.Setup(x => x.ArgumentModifiers).Returns(GraphArgumentModifiers.None);
-            argTemplate.Setup(x => x.ObjectType).Returns(concreteType);
-            argTemplate.Setup(x => x.ParameterName).Returns(name);
+            argTemplate.Name.Returns(name);
+            argTemplate.TypeExpression.Returns(new GraphTypeExpression(name, wrappers));
+            argTemplate.ArgumentModifiers.Returns(GraphArgumentModifiers.None);
+            argTemplate.ObjectType.Returns(concreteType);
+            argTemplate.ParameterName.Returns(name);
 
-            return new ExecutionArgument(argTemplate.Object, value);
+            return new ExecutionArgument(argTemplate, value);
         }
 
         private void ValidateModelDictionaryToLogEntry(

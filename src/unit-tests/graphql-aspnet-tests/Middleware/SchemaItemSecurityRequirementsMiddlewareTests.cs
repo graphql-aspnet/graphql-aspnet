@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Middleware.FieldSecurityMiddlewareTestData;
     using Microsoft.AspNetCore.Authorization;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -30,14 +30,13 @@ namespace GraphQL.AspNet.Tests.Middleware
     public class SchemaItemSecurityRequirementsMiddlewareTests
     {
         private IGraphField _field;
-        private Mock<IAuthorizationPolicyProvider> _policyProvider;
+        private IAuthorizationPolicyProvider _policyProvider;
         private AuthorizationPolicy _defaultPolicy;
 
         public SchemaItemSecurityRequirementsMiddlewareTests()
         {
-            _policyProvider = new Mock<IAuthorizationPolicyProvider>();
-            _policyProvider.Setup(x => x.GetDefaultPolicyAsync())
-                .ReturnsAsync(() => _defaultPolicy);
+            _policyProvider = Substitute.For<IAuthorizationPolicyProvider>();
+            _policyProvider.GetDefaultPolicyAsync().Returns((x) => _defaultPolicy);
 
             _defaultPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
@@ -72,15 +71,15 @@ namespace GraphQL.AspNet.Tests.Middleware
 
         private void SetupFieldMock(List<AppliedSecurityPolicyGroup> securityGroups)
         {
-            var field = new Mock<IGraphField>();
+            var field = Substitute.For<IGraphField>();
 
             AppliedSecurityPolicyGroups policyGroups = null;
             if (securityGroups != null)
                 policyGroups = new AppliedSecurityPolicyGroups(securityGroups);
 
-            field.Setup(x => x.SecurityGroups).Returns(policyGroups);
-            field.Setup(x => x.Route).Returns(new SchemaItemPath(AspNet.Execution.SchemaItemCollections.Query, "some", "path"));
-            _field = field.Object;
+            field.SecurityGroups.Returns(policyGroups);
+            field.Route.Returns(new SchemaItemPath(AspNet.Execution.SchemaItemCollections.Query, "some", "path"));
+            _field = field;
         }
 
         private async Task<SchemaItemSecurityChallengeContext> ExecuteTest()
@@ -88,19 +87,18 @@ namespace GraphQL.AspNet.Tests.Middleware
             var builder = new TestServerBuilder();
             var server = builder.Build();
 
-            var defaultResult = new Mock<IAuthenticationResult>();
-            defaultResult.Setup(x => x.Suceeded).Returns(false);
+            var defaultResult = Substitute.For<IAuthenticationResult>();
+            defaultResult.Suceeded.Returns(false);
 
             var contextBuilder = server.CreateQueryContextBuilder();
             var queryContext = contextBuilder.Build();
 
-            var fieldSecurityRequest = new Mock<ISchemaItemSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.SecureSchemaItem)
-                .Returns(_field);
+            var fieldSecurityRequest = Substitute.For<ISchemaItemSecurityRequest>();
+            fieldSecurityRequest.SecureSchemaItem.Returns(_field);
 
-            var securityContext = new SchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest.Object);
+            var securityContext = new SchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest);
 
-            var component = new SchemItemSecurityRequirementsMiddleware(_policyProvider?.Object);
+            var component = new SchemItemSecurityRequirementsMiddleware(_policyProvider);
             await component.InvokeAsync(securityContext, this.EmptyNextDelegate);
 
             return securityContext;
@@ -342,8 +340,8 @@ namespace GraphQL.AspNet.Tests.Middleware
                 .AddAuthenticationSchemes("scheme1", "scheme46")
                 .Build();
 
-            _policyProvider.Setup(x => x.GetPolicyAsync("Policy1"))
-                .ReturnsAsync(policy1);
+            _policyProvider.GetPolicyAsync("Policy1")
+                .Returns(policy1);
 
             var result = await this.ExecuteTest();
 
