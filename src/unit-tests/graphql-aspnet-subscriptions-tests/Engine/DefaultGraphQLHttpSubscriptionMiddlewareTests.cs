@@ -10,9 +10,7 @@
 namespace GraphQL.AspNet.Tests.Engine
 {
     using System;
-    using System.Collections.Generic;
     using System.Net;
-    using System.Net.WebSockets;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
@@ -24,9 +22,9 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.SubscriptionServer.Exceptions;
     using GraphQL.AspNet.Tests.Engine.TestData;
-    using GraphQL.AspNet.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
-    using Moq;
+    using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
     using NUnit.Framework;
 
     [TestFixture]
@@ -45,16 +43,16 @@ namespace GraphQL.AspNet.Tests.Engine
             var next = new RequestDelegate(CallNext);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
-            var factory = new Mock<ISubscriptionServerClientFactory>();
+            var factory = Substitute.For<ISubscriptionServerClientFactory>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                factory.Object,
+                factory,
                 new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new DefaultHttpContext();
-            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.RequestServices = Substitute.For<IServiceProvider>();
             context.Request.Path = options.Route;
 
             await middleware.InvokeAsync(context);
@@ -74,16 +72,16 @@ namespace GraphQL.AspNet.Tests.Engine
             var next = new RequestDelegate(CallNext);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
-            var factory = new Mock<ISubscriptionServerClientFactory>();
+            var factory = Substitute.For<ISubscriptionServerClientFactory>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                factory.Object,
+                factory,
                 new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new DefaultHttpContext();
-            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.RequestServices = Substitute.For<IServiceProvider>();
             context.Request.Path = "/stuff/data";
 
             // not a socket request aginst the route
@@ -104,26 +102,27 @@ namespace GraphQL.AspNet.Tests.Engine
 
             var next = new RequestDelegate(CallNext);
 
-            var connection = new Mock<ISubscriptionClientProxy>();
-            connection.Setup(x => x.StartConnectionAsync(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            var connection = Substitute.For<ISubscriptionClientProxy>();
+            connection.StartConnectionAsync(Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan?>(), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
 
-            var factory = new Mock<ISubscriptionServerClientFactory>();
-            var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
-            client.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+            var factory = Substitute.For<ISubscriptionServerClientFactory>();
+            var client = Substitute.For<ISubscriptionClientProxy<GraphSchema>>();
+            client.Id.Returns(SubscriptionClientId.NewClientId());
 
-            factory.Setup(x => x.CreateSubscriptionClientAsync<GraphSchema>(It.IsAny<IClientConnection>()))
-                .ReturnsAsync(client.Object);
+            factory.CreateSubscriptionClientAsync<GraphSchema>(Arg.Any<IClientConnection>())
+                .Returns(client);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                factory.Object,
+                factory,
                 new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
-            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.RequestServices = Substitute.For<IServiceProvider>();
             context.Request.Path = options.Route;
 
             await middleware.InvokeAsync(context);
@@ -141,20 +140,20 @@ namespace GraphQL.AspNet.Tests.Engine
             }
 
             var next = new RequestDelegate(CallNext);
-            var factory = new Mock<ISubscriptionServerClientFactory>();
-            factory.Setup(x => x.CreateSubscriptionClientAsync<GraphSchema>(It.IsAny<IClientConnection>()))
+            var factory = Substitute.For<ISubscriptionServerClientFactory>();
+            factory.CreateSubscriptionClientAsync<GraphSchema>(Arg.Any<IClientConnection>())
                 .Throws(new InvalidOperationException("failed"));
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                factory.Object,
+                factory,
                 new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
-            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.RequestServices = Substitute.For<IServiceProvider>();
             context.Request.Path = options.Route;
 
             await middleware.InvokeAsync(context);
@@ -174,22 +173,22 @@ namespace GraphQL.AspNet.Tests.Engine
             var next = new RequestDelegate(CallNext);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
-            var factory = new Mock<ISubscriptionServerClientFactory>();
+            var factory = Substitute.For<ISubscriptionServerClientFactory>();
 
-            factory.Setup(x => x.CreateSubscriptionClientAsync<GraphSchema>(It.IsAny<IClientConnection>()))
+            factory.CreateSubscriptionClientAsync<GraphSchema>(Arg.Any<IClientConnection>())
                 .Throws(new UnsupportedClientProtocolException("failed protocol"));
 
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                factory.Object,
+                factory,
                 new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
             context.Request.Host = new HostString("localhost:3000");
             context.Request.Headers[SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER] = "unknown-protocl";
-            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.RequestServices = Substitute.For<IServiceProvider>();
             context.Request.Path = options.Route;
 
             // not a socket request aginst the route
@@ -212,22 +211,22 @@ namespace GraphQL.AspNet.Tests.Engine
             var options = new SubscriptionServerOptions<GraphSchema>();
             options.AuthenticatedRequestsOnly = true;
 
-            var factory = new Mock<ISubscriptionServerClientFactory>();
+            var factory = Substitute.For<ISubscriptionServerClientFactory>();
 
-            factory.Setup(x => x.CreateSubscriptionClientAsync<GraphSchema>(It.IsAny<IClientConnection>()))
+            factory.CreateSubscriptionClientAsync<GraphSchema>(Arg.Any<IClientConnection>())
                 .Throws(new Exception("this should not be invoked"));
 
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                factory.Object,
+                factory,
                 new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
             context.Request.Host = new HostString("localhost:3000");
             context.Request.Headers[SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER] = "graphql-ws";
-            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.RequestServices = Substitute.For<IServiceProvider>();
             context.Request.Path = options.Route;
 
             await middleware.InvokeAsync(context);
@@ -247,25 +246,29 @@ namespace GraphQL.AspNet.Tests.Engine
 
             var next = new RequestDelegate(CallNext);
 
-            var connection = new Mock<ISubscriptionClientProxy>();
-            connection.Setup(x => x.StartConnectionAsync(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            var connection = Substitute.For<ISubscriptionClientProxy>();
+            connection.StartConnectionAsync(
+                Arg.Any<TimeSpan?>(),
+                Arg.Any<TimeSpan?>(),
+                Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
 
-            var factory = new Mock<ISubscriptionServerClientFactory>();
-            var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
+            var factory = Substitute.For<ISubscriptionServerClientFactory>();
+            var client = Substitute.For<ISubscriptionClientProxy<GraphSchema>>();
 
-            factory.Setup(x => x.CreateSubscriptionClientAsync<GraphSchema>(It.IsAny<IClientConnection>()))
-                .ReturnsAsync(client.Object);
+            factory.CreateSubscriptionClientAsync<GraphSchema>(Arg.Any<IClientConnection>())
+                .Returns(client);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                factory.Object,
+                factory,
                 new DefaultGlobalSubscriptionClientProxyCollection(0),
                 options);
 
             var context1 = new FakeWebSocketHttpContext();
-            context1.RequestServices = new Mock<IServiceProvider>().Object;
+            context1.RequestServices = Substitute.For<IServiceProvider>();
             context1.Request.Path = options.Route;
 
             await middleware.InvokeAsync(context1);

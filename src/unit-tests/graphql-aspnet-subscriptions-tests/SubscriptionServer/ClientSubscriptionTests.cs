@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Mocks;
     using GraphQL.AspNet.Tests.SubscriptionServer.ClientSubscriptionTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -68,18 +68,19 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
                 .AddSubscriptionServer()
                 .Build();
 
-            var fakePlan = new Mock<IQueryExecutionPlan>();
-            var fakeOp = new Mock<IExecutableOperation>();
+            var fakePlan = Substitute.For<IQueryExecutionPlan>();
+            var fakeOp = Substitute.For<IExecutableOperation>();
 
-            fakePlan.Setup(x => x.Operation).Returns(fakeOp.Object);
-            fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Query);
+            fakePlan.Operation.Returns(fakeOp);
+            fakePlan.Messages.Returns(null as IGraphMessageCollection);
+            fakeOp.OperationType.Returns(GraphOperationType.Query);
 
             var result = testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
                 result.Client,
                 GraphQueryData.Empty,
-                fakePlan.Object,
+                fakePlan,
                 "abc123");
 
             Assert.IsFalse(sub.IsValid);
@@ -96,24 +97,25 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
                 .AddSubscriptionServer()
                 .Build();
 
-            var fakePlan = new Mock<IQueryExecutionPlan>();
-            var fakeOp = new Mock<IExecutableOperation>();
-            var fakeFieldContext = new Mock<IGraphFieldInvocationContext>();
-            fakeFieldContext.Setup(x => x.Field).Returns(null as IGraphField);
+            var fakePlan = Substitute.For<IQueryExecutionPlan>();
+            var fakeOp = Substitute.For<IExecutableOperation>();
+            var fakeFieldContext = Substitute.For<IGraphFieldInvocationContext>();
+            fakeFieldContext.Field.Returns(null as IGraphField);
 
-            var fakeFieldContexts = new Mock<IFieldInvocationContextCollection>();
-            fakeFieldContexts.Setup(x => x[It.IsAny<int>()]).Returns(fakeFieldContext.Object);
+            var fakeFieldContexts = Substitute.For<IFieldInvocationContextCollection>();
+            fakeFieldContexts[Arg.Any<int>()].Returns(fakeFieldContext);
 
-            fakePlan.Setup(x => x.Operation).Returns(fakeOp.Object);
-            fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Subscription);
-            fakeOp.Setup(x => x.FieldContexts).Returns(fakeFieldContexts.Object);
+            fakePlan.Operation.Returns(fakeOp);
+            fakePlan.Messages.Returns(null as IGraphMessageCollection);
+            fakeOp.OperationType.Returns(GraphOperationType.Subscription);
+            fakeOp.FieldContexts.Returns(fakeFieldContexts);
 
             var result = testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
                 result.Client,
                 GraphQueryData.Empty,
-                fakePlan.Object,
+                fakePlan,
                 "abc123");
 
             Assert.IsFalse(sub.IsValid);

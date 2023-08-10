@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
     using GraphQL.AspNet.SubscriptionServer.BackgroundServices;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -28,15 +28,13 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public async Task PollEventQueue_EmptiesQueueOfEventsAndPublishesThem()
         {
-            var logger = new Mock<IGraphEventLogger>();
-            logger.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<SubscriptionEventPublishedLogEntry>>()));
+            var logger = Substitute.For<IGraphEventLogger>();
 
-            var publisher = new Mock<ISubscriptionEventPublisher>();
-            publisher.Setup(x => x.PublishEventAsync(It.IsAny<SubscriptionEvent>(), It.IsAny<CancellationToken>()));
+            var publisher = Substitute.For<ISubscriptionEventPublisher>();
 
             var collection = new ServiceCollection();
-            collection.AddSingleton(logger.Object);
-            collection.AddSingleton(publisher.Object);
+            collection.AddSingleton(logger);
+            collection.AddSingleton(publisher);
             var provider = collection.BuildServiceProvider();
 
             var eventData = new SubscriptionEvent()
@@ -62,8 +60,8 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             {
             }
 
-            logger.Verify(x => x.Log(LogLevel.Debug, It.IsAny<Func<IGraphLogEntry>>()), Times.Once(), "logger not called exactly once");
-            publisher.Verify(x => x.PublishEventAsync(It.IsAny<SubscriptionEvent>(), It.IsAny<CancellationToken>()), Times.Once(), "published failed to publish one times");
+            logger.Received(1).Log(LogLevel.Debug, Arg.Any<Func<IGraphLogEntry>>());
+            await publisher.Received(1).PublishEventAsync(Arg.Any<SubscriptionEvent>(), Arg.Any<CancellationToken>());
         }
     }
 }

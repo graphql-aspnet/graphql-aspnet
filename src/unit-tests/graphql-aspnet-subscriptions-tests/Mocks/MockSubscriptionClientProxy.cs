@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Mocks
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.SubscriptionServer;
     using GraphQL.AspNet.Web;
-    using Moq;
+    using NSubstitute;
 
     /// <summary>
     /// A fake subscription client used to test server operations against
@@ -42,12 +42,12 @@ namespace GraphQL.AspNet.Tests.Mocks
             IUserSecurityContext securityContext,
             ClientConnectionState connectionState)
         {
-            var connection = new Mock<IClientConnection>();
-            connection.Setup(x => x.ServiceProvider).Returns(serviceProvider);
-            connection.Setup(x => x.SecurityContext).Returns(securityContext);
-            connection.Setup(x => x.State).Returns(connectionState);
+            var connection = Substitute.For<IClientConnection>();
+            connection.ServiceProvider.Returns(serviceProvider);
+            connection.SecurityContext.Returns(securityContext);
+            connection.State.Returns(connectionState);
 
-            this.ClientConnection = connection.Object;
+            this.ClientConnection = connection;
 
             this.Id = SubscriptionClientId.NewClientId();
             this.ReceivedEvents = new List<SubscriptionEvent>();

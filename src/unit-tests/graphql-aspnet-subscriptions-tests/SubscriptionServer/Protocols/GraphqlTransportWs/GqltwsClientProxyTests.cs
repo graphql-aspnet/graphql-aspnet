@@ -27,14 +27,14 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
     using GraphQL.AspNet.Tests.Mocks;
     using GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs.GraphqlTransportWsData;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
     using GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy;
 
     [TestFixture]
     public partial class GqltwsClientProxyTests
     {
-        private (MockClientConnection, GqltwsClientProxy<GraphSchema>, Mock<ISubscriptionEventRouter>) CreateConnection()
+        private (MockClientConnection, GqltwsClientProxy<GraphSchema>, ISubscriptionEventRouter) CreateConnection()
         {
             var server = new TestServerBuilder()
                 .AddGraphController<GqltwsSubscriptionController>()
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
                 })
                 .Build();
 
-            var router = new Mock<ISubscriptionEventRouter>();
+            var router = Substitute.For<ISubscriptionEventRouter>();
 
             var connection = server.CreateClientConnection(GqltwsConstants.PROTOCOL_NAME);
             var serverOptions = server.ServiceProvider.GetRequiredService<SubscriptionServerOptions<GraphSchema>>();
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
             var subClient = new GqltwsClientProxy<GraphSchema>(
                 connection,
                 server.Schema,
-                router.Object,
+                router,
                 server.ServiceProvider.GetService<IQueryResponseWriter<GraphSchema>>());
             return (connection, subClient, router);
         }
@@ -154,7 +154,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
             // execute the connection sequence
             await graphqlWsClient.StartConnectionAsync();
 
-            router.Verify(x => x.AddClient(graphqlWsClient, It.IsAny<SubscriptionEventName>()), Times.Once());
+            router.Received(1).AddClient(graphqlWsClient, Arg.Any<SubscriptionEventName>());
             graphqlWsClient.Dispose();
         }
 

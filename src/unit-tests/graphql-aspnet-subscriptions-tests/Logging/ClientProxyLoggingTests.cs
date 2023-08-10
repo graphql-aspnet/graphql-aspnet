@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.SubscriptionServer;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -29,16 +29,16 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void ClientMessageReceived_PropertyCheck()
         {
-            var client = new Mock<ISubscriptionClientProxy>();
+            var client = Substitute.For<ISubscriptionClientProxy>();
 
             var id = SubscriptionClientId.NewClientId();
-            client.Setup(x => x.Id).Returns(id);
+            client.Id.Returns(id);
 
-            var message = new Mock<ILoggableClientProxyMessage>();
-            message.Setup(x => x.Type).Returns("typeABC");
-            message.Setup(x => x.Id).Returns("idABC");
+            var message = Substitute.For<ILoggableClientProxyMessage>();
+            message.Type.Returns("typeABC");
+            message.Id.Returns("idABC");
 
-            var entry = new ClientProxyMessageReceivedLogEntry(client.Object, message.Object);
+            var entry = new ClientProxyMessageReceivedLogEntry(client, message);
 
             Assert.AreEqual(id.ToString(), entry.ClientId);
             Assert.AreEqual("typeABC", entry.MessageType);
@@ -49,17 +49,17 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void ClientMessageSent_PropertyCheck()
         {
-            var client = new Mock<ISubscriptionClientProxy>();
-            var result = new Mock<IQueryExecutionResult>();
+            var client = Substitute.For<ISubscriptionClientProxy>();
+            var result = Substitute.For<IQueryExecutionResult>();
 
             var id = SubscriptionClientId.NewClientId();
-            client.Setup(x => x.Id).Returns(id);
+            client.Id.Returns(id);
 
-            var message = new Mock<ILoggableClientProxyMessage>();
-            message.Setup(x => x.Type).Returns("typeABC");
-            message.Setup(x => x.Id).Returns("idABC");
+            var message = Substitute.For<ILoggableClientProxyMessage>();
+            message.Type.Returns("typeABC");
+            message.Id.Returns("idABC");
 
-            var entry = new ClientProxyMessageSentLogEntry(client.Object, message.Object);
+            var entry = new ClientProxyMessageSentLogEntry(client, message);
 
             Assert.AreEqual(id.ToString(), entry.ClientId);
             Assert.AreEqual("typeABC", entry.MessageType);
@@ -70,16 +70,16 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void ClientSubscriptionCreated_PropertyCheck()
         {
-            var client = new Mock<ISubscriptionClientProxy>();
+            var client = Substitute.For<ISubscriptionClientProxy>();
 
             var id = SubscriptionClientId.NewClientId();
-            client.Setup(x => x.Id).Returns(id);
+            client.Id.Returns(id);
 
-            var sub = new Mock<ISubscription>();
-            sub.Setup(x => x.Id).Returns("sub1");
-            sub.Setup(x => x.Route).Returns(new SchemaItemPath("[subscription]/bobSub1"));
+            var sub = Substitute.For<ISubscription>();
+            sub.Id.Returns("sub1");
+            sub.Route.Returns(new SchemaItemPath("[subscription]/bobSub1"));
 
-            var entry = new ClientProxySubscriptionCreatedLogEntry(client.Object, sub.Object);
+            var entry = new ClientProxySubscriptionCreatedLogEntry(client, sub);
 
             Assert.AreEqual(id.ToString(), entry.ClientId);
             Assert.AreEqual("sub1", entry.SubscriptionId);
@@ -90,16 +90,16 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void ClientSubscriptionStopped_PropertyCheck()
         {
-            var client = new Mock<ISubscriptionClientProxy>();
+            var client = Substitute.For<ISubscriptionClientProxy>();
 
             var id = SubscriptionClientId.NewClientId();
-            client.Setup(x => x.Id).Returns(id);
+            client.Id.Returns(id);
 
-            var sub = new Mock<ISubscription>();
-            sub.Setup(x => x.Id).Returns("sub1");
-            sub.Setup(x => x.Route).Returns(new SchemaItemPath("[subscription]/bobSub1"));
+            var sub = Substitute.For<ISubscription>();
+            sub.Id.Returns("sub1");
+            sub.Route.Returns(new SchemaItemPath("[subscription]/bobSub1"));
 
-            var entry = new ClientProxySubscriptionStoppedLogEntry(client.Object, sub.Object);
+            var entry = new ClientProxySubscriptionStoppedLogEntry(client, sub);
 
             Assert.AreEqual(id.ToString(), entry.ClientId);
             Assert.AreEqual("sub1", entry.SubscriptionId);
@@ -110,22 +110,22 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void GraphQLWSClientSubscriptionEventReceived_PropertyCheck()
         {
-            var connection = new Mock<IClientConnection>();
-            var proxy = new Mock<ISubscriptionClientProxy<GraphSchema>>();
+            var connection = Substitute.For<IClientConnection>();
+            var proxy = Substitute.For<ISubscriptionClientProxy<GraphSchema>>();
 
             var id = SubscriptionClientId.NewClientId();
-            proxy.Setup(x => x.Id).Returns(id);
+            proxy.Id.Returns(id);
 
-            var sub = new Mock<ISubscription>();
-            sub.Setup(x => x.Id).Returns("sub1");
+            var sub = Substitute.For<ISubscription>();
+            sub.Id.Returns("sub1");
 
             var subs = new List<ISubscription>();
-            subs.Add(sub.Object);
+            subs.Add(sub);
 
             var fieldPath = new SchemaItemPath("[subscription]/bob1");
 
             var entry = new ClientProxySubscriptionEventReceived<GraphSchema>(
-                proxy.Object,
+                proxy,
                 fieldPath,
                 subs);
 

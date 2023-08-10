@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.SubscriptionServer;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -22,15 +22,14 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task PublishEvent_ForwardsEventToRouter()
         {
-            var router = new Mock<ISubscriptionEventRouter>();
-            router.Setup(x => x.RaisePublishedEvent(It.IsAny<SubscriptionEvent>()));
+            var router = Substitute.For<ISubscriptionEventRouter>();
 
-            var publisher = new InProcessSubscriptionPublisher(router.Object);
+            var publisher = new InProcessSubscriptionPublisher(router);
 
             var eventData = new SubscriptionEvent();
             await publisher.PublishEventAsync(eventData);
 
-            router.Verify(x => x.RaisePublishedEvent(It.IsAny<SubscriptionEvent>()), Times.Once(), "failed to raise the event");
+            router.Received(1).RaisePublishedEvent(Arg.Any<SubscriptionEvent>());
         }
     }
 }

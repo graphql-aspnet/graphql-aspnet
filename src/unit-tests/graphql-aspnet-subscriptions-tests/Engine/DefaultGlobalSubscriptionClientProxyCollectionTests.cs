@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.VisualStudio.TestPlatform.Utilities;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -25,10 +25,10 @@ namespace GraphQL.AspNet.Tests.Engine
         {
             var collection = new DefaultGlobalSubscriptionClientProxyCollection(5);
 
-            var client = new Mock<ISubscriptionClientProxy>();
-            client.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+            var client = Substitute.For<ISubscriptionClientProxy>();
+            client.Id.Returns(SubscriptionClientId.NewClientId());
 
-            var result = collection.TryAddClient(client.Object);
+            var result = collection.TryAddClient(client);
 
             Assert.IsTrue(result);
             Assert.AreEqual(1, collection.Count);
@@ -39,14 +39,14 @@ namespace GraphQL.AspNet.Tests.Engine
         {
             var collection = new DefaultGlobalSubscriptionClientProxyCollection(1);
 
-            var client = new Mock<ISubscriptionClientProxy>();
-            client.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+            var client = Substitute.For<ISubscriptionClientProxy>();
+            client.Id.Returns(SubscriptionClientId.NewClientId());
 
-            var client2 = new Mock<ISubscriptionClientProxy>();
-            client2.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+            var client2 = Substitute.For<ISubscriptionClientProxy>();
+            client2.Id.Returns(SubscriptionClientId.NewClientId());
 
-            collection.TryAddClient(client.Object);
-            var result = collection.TryAddClient(client2.Object);
+            collection.TryAddClient(client);
+            var result = collection.TryAddClient(client2);
 
             Assert.IsFalse(result);
             Assert.AreEqual(1, collection.Count);
@@ -57,16 +57,16 @@ namespace GraphQL.AspNet.Tests.Engine
         {
             var collection = new DefaultGlobalSubscriptionClientProxyCollection(1);
 
-            var client = new Mock<ISubscriptionClientProxy>();
-            client.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+            var client = Substitute.For<ISubscriptionClientProxy>();
+            client.Id.Returns(SubscriptionClientId.NewClientId());
 
-            collection.TryAddClient(client.Object);
+            collection.TryAddClient(client);
             Assert.AreEqual(1, collection.Count);
 
-            var result = collection.TryRemoveClient(client.Object.Id, out var obj);
+            var result = collection.TryRemoveClient(client.Id, out var obj);
 
             Assert.IsTrue(result);
-            Assert.AreEqual(client.Object, obj);
+            Assert.AreEqual(client, obj);
             Assert.AreEqual(0, collection.Count);
         }
 
@@ -101,15 +101,15 @@ namespace GraphQL.AspNet.Tests.Engine
         {
             var collection = new DefaultGlobalSubscriptionClientProxyCollection(1);
 
-            var client = new Mock<ISubscriptionClientProxy>();
-            client.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+            var client = Substitute.For<ISubscriptionClientProxy>();
+            client.Id.Returns(SubscriptionClientId.NewClientId());
 
-            collection.TryAddClient(client.Object);
+            collection.TryAddClient(client);
 
-            var result = collection.TryGetClient(client.Object.Id, out var obj);
+            var result = collection.TryGetClient(client.Id, out var obj);
 
             Assert.IsTrue(result);
-            Assert.AreEqual(client.Object, obj);
+            Assert.AreEqual(client, obj);
             Assert.AreEqual(1, collection.Count);
         }
 
