@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.Execution.TestData.VariableExecutionTestData;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.Hosting;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]

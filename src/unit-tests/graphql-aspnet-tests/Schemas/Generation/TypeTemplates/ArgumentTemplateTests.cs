@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ParameterTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -36,19 +36,19 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
                 .GetParameters()
                 .FirstOrDefault(x => x.Name == paramName);
 
-            var mockMethod = new Mock<IGraphFieldTemplateBase>();
-            mockMethod.Setup(x => x.InternalName)
+            var mockMethod = Substitute.For<IGraphFieldTemplateBase>();
+            mockMethod.InternalName
                 .Returns($"{nameof(ParameterTestClass)}.{nameof(ParameterTestClass.TestMethod)}");
-            mockMethod.Setup(x => x.ObjectType).Returns(typeof(ParameterTestClass));
-            mockMethod.Setup(x => x.Arguments).Returns(new List<IGraphArgumentTemplate>());
+            mockMethod.ObjectType.Returns(typeof(ParameterTestClass));
+            mockMethod.Arguments.Returns(new List<IGraphArgumentTemplate>());
 
             var route = new SchemaItemPath(SchemaItemPath.Join(
                 SchemaItemCollections.Query,
                 nameof(ParameterTestClass),
                 nameof(ParameterTestClass.TestMethod)));
-            mockMethod.Setup(x => x.Route).Returns(route);
+            mockMethod.Route.Returns(route);
 
-            var argTemplate = new GraphArgumentTemplate(mockMethod.Object, paramInfo);
+            var argTemplate = new GraphArgumentTemplate(mockMethod, paramInfo);
             argTemplate.Parse();
             argTemplate.ValidateOrThrow();
 

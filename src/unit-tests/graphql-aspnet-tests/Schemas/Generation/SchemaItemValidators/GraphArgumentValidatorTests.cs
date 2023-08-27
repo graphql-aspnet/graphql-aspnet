@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.SchemaItemValidators
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Common.Interfaces;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -34,12 +34,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.SchemaItemValidators
         {
             var validator = GraphArgumentValidator.Instance;
 
-            var item = new Mock<ISchemaItem>();
+            var item = Substitute.For<ISchemaItem>();
             var schema = new GraphSchema();
 
             Assert.Throws<InvalidCastException>(() =>
             {
-                validator.ValidateOrThrow(item.Object, schema);
+                validator.ValidateOrThrow(item, schema);
             });
         }
 
@@ -48,13 +48,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.SchemaItemValidators
         {
             var validator = GraphArgumentValidator.Instance;
 
-            var item = new Mock<IGraphArgument>();
-            item.Setup(x => x.ObjectType).Returns(typeof(ISinglePropertyObject));
+            var item = Substitute.For<IGraphArgument>();
+            item.ObjectType.Returns(typeof(ISinglePropertyObject));
+            item.Parent.Returns(null as ISchemaItem);
 
             var schema = new GraphSchema();
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                validator.ValidateOrThrow(item.Object, schema);
+                validator.ValidateOrThrow(item, schema);
             });
         }
 
@@ -63,23 +64,24 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.SchemaItemValidators
         {
             var validator = GraphArgumentValidator.Instance;
 
-            var item = new Mock<IGraphArgument>();
-            item.Setup(x => x.ObjectType).Returns(typeof(TwoPropertyObject));
-            item.Setup(x => x.Name).Returns("theName");
+            var item = Substitute.For<IGraphArgument>();
+            item.Parent.Returns(null as ISchemaItem);
+            item.ObjectType.Returns(typeof(TwoPropertyObject));
+            item.Name.Returns("theName");
 
-            var schema = new Mock<ISchema>();
-            var typesCollection = new Mock<ISchemaTypeCollection>();
+            var schema = Substitute.For<ISchema>();
+            var typesCollection = Substitute.For<ISchemaTypeCollection>();
 
             // the tested type is not found
             typesCollection
-                .Setup(x => x.FindGraphType(It.IsAny<Type>(), It.IsAny<TypeKind>()))
+                .FindGraphType(Arg.Any<Type>(), Arg.Any<TypeKind>())
                 .Returns(null as IGraphType);
 
-            schema.Setup(x => x.KnownTypes).Returns(typesCollection.Object);
+            schema.KnownTypes.Returns(typesCollection);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                validator.ValidateOrThrow(item.Object, schema.Object);
+                validator.ValidateOrThrow(item, schema);
             });
         }
     }

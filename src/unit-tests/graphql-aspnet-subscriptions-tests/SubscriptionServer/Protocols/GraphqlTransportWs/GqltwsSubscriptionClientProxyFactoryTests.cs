@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -37,16 +37,16 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
             var collection = new ServiceCollection();
             collection.AddSingleton(new GraphSchema());
             collection.AddSingleton(new SubscriptionServerOptions<GraphSchema>());
-            collection.AddSingleton(new Mock<IGraphEventLogger>().Object);
-            collection.AddSingleton(new Mock<ISubscriptionEventRouter>().Object);
-            collection.AddSingleton(new Mock<IQueryResponseWriter<GraphSchema>>().Object);
+            collection.AddSingleton(Substitute.For<IGraphEventLogger>());
+            collection.AddSingleton(Substitute.For<ISubscriptionEventRouter>());
+            collection.AddSingleton(Substitute.For<IQueryResponseWriter<GraphSchema>>());
 
-            var connect = new Mock<IClientConnection>();
-            connect.Setup(x => x.ServiceProvider).Returns(collection.BuildServiceProvider());
+            var connect = Substitute.For<IClientConnection>();
+            connect.ServiceProvider.Returns(collection.BuildServiceProvider());
 
             var factory = new GqltwsSubscriptionClientProxyFactory();
 
-            var instance = await factory.CreateClient<GraphSchema>(connect.Object);
+            var instance = await factory.CreateClient<GraphSchema>(connect);
 
             Assert.IsNotNull(instance);
             Assert.AreEqual(factory.Protocol, instance.Protocol);

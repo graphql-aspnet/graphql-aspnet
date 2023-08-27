@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 nameof(ResolverObject.MethodRetrieveData),
                 null);
 
-            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData);
 
             var context = builder.CreateResolutionContext();
             await resolver.ResolveAsync(context);
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new TwoPropertyObject());
-            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData);
 
             var context = builder.CreateResolutionContext();
             await resolver.ResolveAsync(context);
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
-            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData);
 
             var context = builder.CreateResolutionContext();
             await resolver.ResolveAsync(context);
@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
-            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData);
 
             var context = builder.CreateResolutionContext();
             await resolver.ResolveAsync(context);
@@ -126,7 +126,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 nameof(ResolverObject.MethodRetrieveDataAsync),
                 null);
 
-            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData);
 
             var context = builder.CreateResolutionContext();
             await resolver.ResolveAsync(context);
@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new TwoPropertyObject());
-            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData);
 
             var context = builder.CreateResolutionContext();
             await resolver.ResolveAsync(context);
@@ -171,7 +171,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
-            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData);
 
             var context = builder.CreateResolutionContext();
             await resolver.ResolveAsync(context);
@@ -199,7 +199,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
-            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData.Object);
+            var resolver = new ObjectMethodGraphFieldResolver(builder.ResolverMetaData);
 
             var context = builder.CreateResolutionContext();
             await resolver.ResolveAsync(context);

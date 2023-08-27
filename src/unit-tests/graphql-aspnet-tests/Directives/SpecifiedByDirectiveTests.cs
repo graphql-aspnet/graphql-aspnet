@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Directives
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputValueSteps;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
@@ -42,8 +42,8 @@ namespace GraphQL.AspNet.Tests.Directives
         private ISchemaPipeline<GraphSchema, GraphDirectiveExecutionContext> _pipeline;
 
         private IDirective _directive;
-        private Mock<IInputArgumentCollection> _argCollection;
-        private Mock<IInputValue> _argValue;
+        private IInputArgumentCollection _argCollection;
+        private IInputValue _argValue;
         private string _url = null;
         private QueryExecutionRequest _queryRequest;
         private DirectiveInvocationContext _invocationContext;
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Directives
         private object _directiveTarget;
         private ISchema _schema;
         private InputArgument _arg;
-        private Mock<IGraphEventLogger> _logger;
+        private IGraphEventLogger _logger;
 
         public SpecifiedByDirectiveTests()
         {
@@ -72,23 +72,23 @@ namespace GraphQL.AspNet.Tests.Directives
 
             var arg1 = _directive.Arguments[0];
 
-            _argValue = new Mock<IInputValue>();
-            _argValue.Setup(x => x.Resolve(It.IsAny<IResolvedVariableCollection>()))
-                .Returns(() => _url);
+            _argValue = Substitute.For<IInputValue>();
+            _argValue.Resolve(Arg.Any<IResolvedVariableCollection>())
+                .Returns((x) => _url);
 
             _arg = new InputArgument(
                 _directive.Arguments[0],
-                _argValue.Object,
+                _argValue,
                 SourceOrigin.None);
 
             var argList = new List<InputArgument>();
             argList.Add(_arg);
 
-            _argCollection = new Mock<IInputArgumentCollection>();
-            _argCollection.Setup(m => m.GetEnumerator())
-                .Returns(() => argList.GetEnumerator());
+            _argCollection = Substitute.For<IInputArgumentCollection>();
+            _argCollection.GetEnumerator()
+                .Returns((x) => argList.GetEnumerator());
 
-            _logger = new Mock<IGraphEventLogger>();
+            _logger = Substitute.For<IGraphEventLogger>();
         }
 
         private async Task<GraphDirectiveExecutionContext> ExecuteRequest()
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.Directives
                 _directive,
                 _directiveLocation,
                 SourceOrigin.None,
-                _argCollection.Object);
+                _argCollection);
 
             var directiveRequest = new GraphDirectiveRequest(
                 _invocationContext,
@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Tests.Directives
                 _queryRequest,
                 _scopedProvider.ServiceProvider,
                 new QuerySession(),
-                logger: _logger.Object);
+                logger: _logger);
 
             await _pipeline.InvokeAsync(context, default);
             return context;

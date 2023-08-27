@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -25,12 +25,12 @@ namespace GraphQL.AspNet.Tests.Schemas
             var directives = new AppliedDirectiveCollection();
             directives.Add(new AppliedDirective("directive1", 3));
 
-            var parentField = new Mock<ISchemaItem>();
-            parentField.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/GraphType1/Field1"));
-            parentField.Setup(x => x.Name).Returns("Field1");
+            var parentField = Substitute.For<ISchemaItem>();
+            parentField.Route.Returns(new SchemaItemPath("[type]/GraphType1/Field1"));
+            parentField.Name.Returns("Field1");
 
             var arg = new GraphFieldArgument(
-                parentField.Object,
+                parentField,
                 "argName",
                 "internalName",
                 "paramName",
@@ -42,11 +42,11 @@ namespace GraphQL.AspNet.Tests.Schemas
                 "a description",
                 directives);
 
-            var newParentField = new Mock<ISchemaItem>();
-            newParentField.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/GraphType2/Field1"));
-            newParentField.Setup(x => x.Name).Returns("Field1");
+            var newParentField = Substitute.For<ISchemaItem>();
+            newParentField.Route.Returns(new SchemaItemPath("[type]/GraphType2/Field1"));
+            newParentField.Name.Returns("Field1");
 
-            var clonedArg = arg.Clone(newParentField.Object) as GraphFieldArgument;
+            var clonedArg = arg.Clone(newParentField) as GraphFieldArgument;
 
             Assert.AreEqual(arg.Name, clonedArg.Name);
             Assert.AreEqual(arg.Description, clonedArg.Description);

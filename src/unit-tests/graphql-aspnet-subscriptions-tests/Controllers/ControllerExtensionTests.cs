@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
             var controller = new InvokableController();
-            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData.Object, resolutionContext);
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
 
             // ensure the method executed completely
             Assert.IsNotNull(result);
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Controllers
 
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData.Object, resolutionContext);
+                var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
             });
         }
 
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             resolutionContext.Session.Items.TryAdd(SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, eventCollection);
 
             var controller = new InvokableController();
-            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData.Object, resolutionContext);
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
 
             // ensure the method executed completely
             Assert.IsNotNull(result);
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var controller = new InvokableController();
             Assert.ThrowsAsync<GraphExecutionException>(async () =>
             {
-                var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData.Object, resolutionContext);
+                var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
             });
         }
 
@@ -161,7 +161,7 @@ namespace GraphQL.AspNet.Tests.Controllers
 
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData.Object, resolutionContext);
+                var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
             });
         }
 
@@ -196,7 +196,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             resolutionContext.Session.Items.TryAdd(SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, eventCollection);
 
             var controller = new RuntimeFieldExecutionController();
-            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData.Object, resolutionContext);
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
 
             // ensure the method executed completely
             Assert.IsNotNull(result);

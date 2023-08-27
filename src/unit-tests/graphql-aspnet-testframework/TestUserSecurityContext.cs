@@ -15,8 +15,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Tests.Framework.ServerBuilders;
-    using Moq;
+    using NSubstitute;
 
     /// <summary>
     /// A security context that can be used on a graph query execution that returns
@@ -93,12 +92,12 @@ namespace GraphQL.AspNet.Tests.Framework
             if (_schemeAuthedWith != null && _schemeAuthedWith == schemeToCheckAgainst)
                 user = _userPrincipal;
 
-            var mock = new Mock<IAuthenticationResult>();
-            mock.Setup(x => x.AuthenticationScheme).Returns(scheme);
-            mock.Setup(x => x.User).Returns(user);
-            mock.Setup(x => x.Suceeded).Returns(user != null);
+            var mock = Substitute.For<IAuthenticationResult>();
+            mock.AuthenticationScheme.Returns(scheme);
+            mock.User.Returns(user);
+            mock.Suceeded.Returns(user != null);
 
-            return Task.FromResult(mock.Object);
+            return Task.FromResult(mock);
         }
 
         /// <inheritdoc />

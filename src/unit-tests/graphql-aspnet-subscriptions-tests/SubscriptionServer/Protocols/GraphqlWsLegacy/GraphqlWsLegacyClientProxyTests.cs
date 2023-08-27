@@ -25,13 +25,13 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
     using GraphQL.AspNet.Tests.Mocks;
     using GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.GraphqlWsLegacyData;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
     public partial class GraphqlWsLegacyClientProxyTests
     {
-        private (MockClientConnection, GraphqlWsLegacyClientProxy<GraphSchema>, Mock<ISubscriptionEventRouter>) CreateConnection()
+        private (MockClientConnection, GraphqlWsLegacyClientProxy<GraphSchema>, ISubscriptionEventRouter) CreateConnection()
         {
             var server = new TestServerBuilder()
                 .AddController<GraphqlWsLegacySubscriptionController>()
@@ -42,14 +42,14 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
                 })
                 .Build();
 
-            var router = new Mock<ISubscriptionEventRouter>();
+            var router = Substitute.For<ISubscriptionEventRouter>();
 
             var connection = server.CreateClientConnection(GraphqlWsLegacyConstants.PROTOCOL_NAME);
 
             var subClient = new GraphqlWsLegacyClientProxy<GraphSchema>(
                 server.Schema,
                 connection,
-                router.Object,
+                router,
                 GraphqlWsLegacyConstants.PROTOCOL_NAME,
                 server.ServiceProvider.GetService<IQueryResponseWriter<GraphSchema>>());
 
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertClientClosedConnection();
 
-            router.Verify(x => x.AddClient(client, It.IsAny<SubscriptionEventName>()), Times.Once());
+            router.Received(1).AddClient(client, Arg.Any<SubscriptionEventName>());
         }
 
         [Test]
@@ -360,7 +360,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
             socketClient.AssertClientClosedConnection();
 
-            router.Verify(x => x.AddClient(client, It.IsAny<SubscriptionEventName>()), Times.Once());
+            router.Received(1).AddClient(client, Arg.Any<SubscriptionEventName>());
         }
 
         [Test]

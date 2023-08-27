@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -204,10 +204,10 @@ namespace GraphQL.AspNet.Tests.Execution
                 o.ResponseOptions.ExposeMetrics = true;
             });
 
-            var batchService = new Mock<IBatchCounterService>();
-            batchService.Setup(x => x.CallCount).Returns(counter);
+            var batchService = Substitute.For<IBatchCounterService>();
+            batchService.CallCount.Returns(counter);
 
-            serverBuilder.AddSingleton(batchService.Object);
+            serverBuilder.AddSingleton(batchService);
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -348,10 +348,10 @@ namespace GraphQL.AspNet.Tests.Execution
                 o.ResponseOptions.ExposeMetrics = true;
             });
 
-            var batchService = new Mock<IBatchCounterService>();
-            batchService.Setup(x => x.CallCount).Returns(counter);
+            var batchService = Substitute.For<IBatchCounterService>();
+            batchService.CallCount.Returns(counter);
 
-            serverBuilder.AddSingleton(batchService.Object);
+            serverBuilder.AddSingleton(batchService);
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();

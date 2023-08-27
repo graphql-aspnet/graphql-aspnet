@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -23,15 +23,15 @@ namespace GraphQL.AspNet.Tests.Execution
     {
         private GraphFieldExecutionContext CreateFakeContext()
         {
-            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
-            parentContext.Setup(x => x.QueryRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
-            parentContext.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            parentContext.Setup(x => x.Session).Returns(new QuerySession());
+            var parentContext = Substitute.For<IGraphQLMiddlewareExecutionContext>();
+            parentContext.QueryRequest.Returns(Substitute.For<IQueryExecutionRequest>());
+            parentContext.ServiceProvider.Returns(Substitute.For<IServiceProvider>());
+            parentContext.Session.Returns(new QuerySession());
 
-            var request = new Mock<IGraphFieldRequest>();
-            var variableData = new Mock<IResolvedVariableCollection>();
+            var request = Substitute.For<IGraphFieldRequest>();
+            var variableData = Substitute.For<IResolvedVariableCollection>();
 
-            return new GraphFieldExecutionContext(parentContext.Object, request.Object, variableData.Object);
+            return new GraphFieldExecutionContext(parentContext, request, variableData);
         }
 
         [Test]
@@ -59,9 +59,9 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var list = new SortedFieldExecutionContextList();
 
-            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
-            var request = new Mock<IGraphFieldRequest>();
-            var variableData = new Mock<IResolvedVariableCollection>();
+            var parentContext = Substitute.For<IGraphQLMiddlewareExecutionContext>();
+            var request = Substitute.For<IGraphFieldRequest>();
+            var variableData = Substitute.For<IResolvedVariableCollection>();
 
             var context1 = this.CreateFakeContext();
             var context2 = this.CreateFakeContext();

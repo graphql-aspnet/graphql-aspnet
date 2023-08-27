@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Tests.Configuration.ConfigurationTestData;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -147,8 +147,8 @@ namespace GraphQL.AspNet.Tests.Configuration
             // both of which are not "publishing specific"
             //
             // register this mock one to remove the dependency
-            var externalPublisher = new Mock<ISubscriptionEventPublisher>();
-            serviceCollection.AddSingleton(externalPublisher.Object);
+            var externalPublisher = Substitute.For<ISubscriptionEventPublisher>();
+            serviceCollection.AddSingleton(externalPublisher);
 
             var returned = serviceCollection.AddGraphQL(options =>
             {

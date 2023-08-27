@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -53,10 +53,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var builderMock = new Mock<ISchemaBuilder>();
-            builderMock.Setup(x => x.Options).Returns(options);
+            var builderMock = Substitute.For<ISchemaBuilder>();
+            builderMock.Options.Returns(options);
 
-            var directive = builderMock.Object
+            var directive = builderMock
                 .MapDirective("@myDirective")
                 .WithInternalName("internalDirectiveName");
 
@@ -69,10 +69,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var builderMock = new Mock<ISchemaBuilder>();
-            builderMock.Setup(x => x.Options).Returns(options);
+            var builderMock = Substitute.For<ISchemaBuilder>();
+            builderMock.Options.Returns(options);
 
-            var directive = builderMock.Object.MapDirective("@myDirective");
+            var directive = builderMock.MapDirective("@myDirective");
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveDefinition), directive);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
@@ -101,10 +101,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var builderMock = new Mock<ISchemaBuilder>();
-            builderMock.Setup(x => x.Options).Returns(options);
+            var builderMock = Substitute.For<ISchemaBuilder>();
+            builderMock.Options.Returns(options);
 
-            var directive = builderMock.Object.MapDirective("@myDirective", (string a) => 1);
+            var directive = builderMock.MapDirective("@myDirective", (string a) => 1);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeDirectiveDefinition), directive);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());

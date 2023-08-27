@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.PropertyTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     public class InputGraphFieldTemplateTests
@@ -24,12 +24,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         [Test]
         public void Parse_GeneralPropertyCheck()
         {
-            var obj = new Mock<IInputObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
+            var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Name));
             var template = new InputGraphFieldTemplate(parent, propInfo);
             template.Parse();
@@ -49,12 +49,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         [Test]
         public void Parse_IsRequired_IsNotSet()
         {
-            var obj = new Mock<IInputObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
+            var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Age));
             var template = new InputGraphFieldTemplate(parent, propInfo);
             template.Parse();
@@ -68,12 +68,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         [Test]
         public void Parse_IsRequired_IsSet()
         {
-            var obj = new Mock<IInputObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
+            var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.RequiredAge));
             var template = new InputGraphFieldTemplate(parent, propInfo);
             template.Parse();
@@ -86,12 +86,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         [Test]
         public void Parse_NotRequired_NullableType_ButWithExplicitNonNullTypeExpression_IsFlaggedNonNullable()
         {
-            var obj = new Mock<IInputObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
+            var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Shoes));
             var template = new InputGraphFieldTemplate(parent, propInfo);
             template.Parse();
@@ -104,12 +104,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         [Test]
         public void Parse_InterfaceAsPropertyType_ThrowsException()
         {
-            var obj = new Mock<IInputObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
+            var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.InterfaceProperty));
             var template = new InputGraphFieldTemplate(parent, propInfo);
             template.Parse();
@@ -123,12 +123,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         [Test]
         public void Parse_TaskAsPropertyType_ThrowsException()
         {
-            var obj = new Mock<IInputObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
+            var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.TaskProperty));
             var template = new InputGraphFieldTemplate(parent, propInfo);
             template.Parse();
@@ -142,12 +142,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         [Test]
         public void Parse_UnionAsPropertyType_ThrowsException()
         {
-            var obj = new Mock<IInputObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
+            var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.UnionProxyProperty));
             var template = new InputGraphFieldTemplate(parent, propInfo);
             template.Parse();
@@ -161,12 +161,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         [Test]
         public void Parse_ActionResultAsPropertyType_ThrowsException()
         {
-            var obj = new Mock<IInputObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.Kind).Returns(TypeKind.INPUT_OBJECT);
+            var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.ActionResultProperty));
             var template = new InputGraphFieldTemplate(parent, propInfo);
             template.Parse();

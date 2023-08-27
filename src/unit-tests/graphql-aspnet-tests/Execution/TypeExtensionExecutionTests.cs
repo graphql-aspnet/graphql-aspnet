@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Tests.Framework;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
     using Microsoft.Extensions.DependencyInjection;
     using GraphQL.AspNet.Common.Extensions;
@@ -53,13 +53,13 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task BatchExtension_ToAnObject_SingleQueryForMultipleChildren_ExecutesOnce_AndReturnsData()
         {
             var counter = new Dictionary<string, int>();
-            var batchService = new Mock<IBatchCounterService>();
-            batchService.Setup(x => x.CallCount).Returns(counter);
+            var batchService = Substitute.For<IBatchCounterService>();
+            batchService.CallCount.Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
             .AddType<BatchObjectController>();
 
-            serverBuilder.AddSingleton(batchService.Object);
+            serverBuilder.AddSingleton(batchService);
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -125,12 +125,12 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task BatchExtension_ToAnObject_SingleQueryForSingleSybling_ExecutesOnce_AndReturnsData()
         {
             var counter = new Dictionary<string, int>();
-            var batchService = new Mock<IBatchCounterService>();
-            batchService.Setup(x => x.CallCount).Returns(counter);
+            var batchService = Substitute.For<IBatchCounterService>();
+            batchService.CallCount.Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
                 .AddType<BatchObjectController>();
-            serverBuilder.AddSingleton(batchService.Object);
+            serverBuilder.AddSingleton(batchService);
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -181,13 +181,13 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task BatchExtension_ToAStruct_SingleQueryForMultipleChildren_ExecutesOnce_AndReturnsData()
         {
             var counter = new Dictionary<string, int>();
-            var batchService = new Mock<IBatchCounterService>();
-            batchService.Setup(x => x.CallCount).Returns(counter);
+            var batchService = Substitute.For<IBatchCounterService>();
+            batchService.CallCount.Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
             .AddType<BatchStructController>();
 
-            serverBuilder.AddSingleton(batchService.Object);
+            serverBuilder.AddSingleton(batchService);
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -253,12 +253,12 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task BatchExtension_ToAStruct_SingleQueryForSingleSybling_ExecutesOnce_AndReturnsData()
         {
             var counter = new Dictionary<string, int>();
-            var batchService = new Mock<IBatchCounterService>();
-            batchService.Setup(x => x.CallCount).Returns(counter);
+            var batchService = Substitute.For<IBatchCounterService>();
+            batchService.CallCount.Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
                 .AddType<BatchStructController>();
-            serverBuilder.AddSingleton(batchService.Object);
+            serverBuilder.AddSingleton(batchService);
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -309,8 +309,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task BatchExtension_ToAnInterface_SingleQueryForMultipleChildren_ExecutesOnce_AndReturnsData()
         {
             var counter = new Dictionary<string, int>();
-            var batchService = new Mock<IBatchCounterService>();
-            batchService.Setup(x => x.CallCount).Returns(counter);
+            var batchService = Substitute.For<IBatchCounterService>();
+            batchService.CallCount.Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
                 .AddType<BatchInterfaceController>()
@@ -319,7 +319,7 @@ namespace GraphQL.AspNet.Tests.Execution
                     o.ResponseOptions.ExposeExceptions = true;
                 });
 
-            serverBuilder.AddSingleton(batchService.Object);
+            serverBuilder.AddSingleton(batchService);
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -382,12 +382,12 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task BatchExtension_ToAInterface_SingleQueryForSingleSybling_ExecutesOnce_AndReturnsData()
         {
             var counter = new Dictionary<string, int>();
-            var batchService = new Mock<IBatchCounterService>();
-            batchService.Setup(x => x.CallCount).Returns(counter);
+            var batchService = Substitute.For<IBatchCounterService>();
+            batchService.CallCount.Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
                 .AddType<BatchInterfaceController>();
-            serverBuilder.AddSingleton(batchService.Object);
+            serverBuilder.AddSingleton(batchService);
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();

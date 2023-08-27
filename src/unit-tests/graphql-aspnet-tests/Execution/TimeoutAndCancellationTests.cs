@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.Execution.TestData.TimeoutAndCancellationTestData;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task WhenARuntimeTimeoutOccurs_AResultIsRendered_TimeoutMessageIsCaptured()
         {
-            var logger = new Mock<IGraphEventLogger>();
+            var logger = Substitute.For<IGraphEventLogger>();
 
             var instance = new TimeoutCancellationController();
 
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var context = server.CreateQueryContextBuilder()
                 .AddQueryText("query {  timedOutMethod(ms: 2000)  }")
-                .AddLogger(logger.Object)
+                .AddLogger(logger)
                 .Build();
 
             await server.ExecuteQuery(context);
@@ -57,15 +57,15 @@ namespace GraphQL.AspNet.Tests.Execution
 
             // a timeout should log the timeout operation as well as complete the request
             // with an error message
-            logger.Verify(x => x.RequestCancelled(It.IsAny<QueryExecutionContext>()), Times.Never());
-            logger.Verify(x => x.RequestTimedOut(It.IsAny<QueryExecutionContext>()), Times.Once());
-            logger.Verify(x => x.RequestCompleted(It.IsAny<QueryExecutionContext>()), Times.Once());
+            logger.Received(0).RequestCancelled(Arg.Any<QueryExecutionContext>());
+            logger.Received(1).RequestTimedOut(Arg.Any<QueryExecutionContext>());
+            logger.Received(1).RequestCompleted(Arg.Any<QueryExecutionContext>());
         }
 
         [Test]
         public async Task WhenExternalCancellationOccurs_AfterTheQueryStarts_NoResultIsRendered_ButContextCapturesErrors()
         {
-            var logger = new Mock<IGraphEventLogger>();
+            var logger = Substitute.For<IGraphEventLogger>();
 
             var instance = new TimeoutCancellationController();
 
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var context = server.CreateQueryContextBuilder()
                 .AddQueryText("query {  timedOutMethod(ms: 3000)  }")
-                .AddLogger(logger.Object)
+                .AddLogger(logger)
                 .Build();
 
             // simulated HttpContext supplied CancelToken
@@ -104,15 +104,15 @@ namespace GraphQL.AspNet.Tests.Execution
 
             // since the query started, the runtime should process the cancellation
             // but not a request completed
-            logger.Verify(x => x.RequestCancelled(It.IsAny<QueryExecutionContext>()), Times.Once());
-            logger.Verify(x => x.RequestTimedOut(It.IsAny<QueryExecutionContext>()), Times.Never());
-            logger.Verify(x => x.RequestCompleted(It.IsAny<QueryExecutionContext>()), Times.Never());
+            logger.Received(1).RequestCancelled(Arg.Any<QueryExecutionContext>());
+            logger.Received(0).RequestTimedOut(Arg.Any<QueryExecutionContext>());
+            logger.Received(0).RequestCompleted(Arg.Any<QueryExecutionContext>());
         }
 
         [Test]
         public async Task WhenExternalCancellationOccurs_BeforeTheQueryStarts_NoResultIsRendered_ContextCapturesNothing()
         {
-            var logger = new Mock<IGraphEventLogger>();
+            var logger = Substitute.For<IGraphEventLogger>();
             var instance = new TimeoutCancellationController();
 
             var serverBuilder = new TestServerBuilder()
@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var context = server.CreateQueryContextBuilder()
                 .AddQueryText("query {  timedOutMethod(ms: 3000)  }")
-                .AddLogger(logger.Object)
+                .AddLogger(logger)
                 .Build();
 
             // trigger an external cancellation before the runtime can even
@@ -139,9 +139,9 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(0, context.Messages.Count); // no messages should be recorded
 
             // the runtime should never process the message so nothing can be logged.
-            logger.Verify(x => x.RequestCancelled(It.IsAny<QueryExecutionContext>()), Times.Never());
-            logger.Verify(x => x.RequestTimedOut(It.IsAny<QueryExecutionContext>()), Times.Never());
-            logger.Verify(x => x.RequestCompleted(It.IsAny<QueryExecutionContext>()), Times.Never());
+            logger.Received(0).RequestCancelled(Arg.Any<QueryExecutionContext>());
+            logger.Received(0).RequestTimedOut(Arg.Any<QueryExecutionContext>());
+            logger.Received(0).RequestCompleted(Arg.Any<QueryExecutionContext>());
         }
     }
 }

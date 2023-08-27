@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using System.Threading.Tasks;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using Microsoft.AspNetCore.Http;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -22,12 +22,12 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public async Task StreamOnFormFile_IsReturned()
         {
-            var formFile = new Mock<IFormFile>();
+            var formFile = Substitute.For<IFormFile>();
             using var stream = new MemoryStream();
 
-            formFile.Setup(x => x.OpenReadStream()).Returns(stream);
+            formFile.OpenReadStream().Returns(stream);
 
-            var container = new FormFileStreamContainer(formFile.Object);
+            var container = new FormFileStreamContainer(formFile);
 
             var outputStream = await container.OpenFileStreamAsync();
 

@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Primitives;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]

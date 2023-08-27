@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
     using static System.Formats.Asn1.AsnWriter;
 
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
         private IQueryExecutionResult CreateTestResult(string errorMessage, string errorCode)
         {
-            var result = new QueryExecutionResult(new Mock<IQueryExecutionRequest>().Object);
+            var result = new QueryExecutionResult(Substitute.For<IQueryExecutionRequest>());
             result.Messages.Add(GraphMessageSeverity.Critical, errorMessage, errorCode);
 
             return result;
@@ -180,10 +180,10 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var httpContext = context;
             var response = httpContext.Response;
 
-            var queryResult = new Mock<IQueryExecutionResult>();
+            var queryResult = Substitute.For<IQueryExecutionResult>();
             var result = new BatchGraphQLHttpResponseWriter(
                 server.Schema,
-                new Mock<IQueryExecutionResult>().Object,
+                Substitute.For<IQueryExecutionResult>(),
                 null);
 
             await result.WriteResultAsync(httpContext);
@@ -219,7 +219,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var httpContext = context;
             var response = httpContext.Response;
 
-            var queryResult = new Mock<IQueryExecutionResult>();
+            var queryResult = Substitute.For<IQueryExecutionResult>();
             var result = new BatchGraphQLHttpResponseWriter(
                 server.Schema,
                 null as IQueryExecutionResult,

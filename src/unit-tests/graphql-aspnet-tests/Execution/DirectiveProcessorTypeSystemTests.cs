@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Execution.TestData.GraphSchemaProcessorTestData;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Tests.Execution
         private IServiceProvider _serviceProvider = null;
         private IServiceCollection _serviceCollection = null;
         private DirectiveProcessorTypeSystem<GraphSchema> _instance = null;
-        private Mock<ISchemaPipeline<GraphSchema, GraphDirectiveExecutionContext>> _directivePipeline = null;
+        private ISchemaPipeline<GraphSchema, GraphDirectiveExecutionContext> _directivePipeline = null;
         private List<object> _itemsExecuted;
         private GraphSchema _schemaInstance;
         private List<Type> _typesToAdd;
@@ -76,12 +76,12 @@ namespace GraphQL.AspNet.Tests.Execution
                     };
 
                 var invocationDelegate = delegateToExecute ?? defaultDelegate;
-                _directivePipeline = new Mock<ISchemaPipeline<GraphSchema, GraphDirectiveExecutionContext>>();
-                _directivePipeline.Setup(x => x.InvokeAsync).Returns(invocationDelegate);
+                _directivePipeline = Substitute.For<ISchemaPipeline<GraphSchema, GraphDirectiveExecutionContext>>();
+                _directivePipeline.InvokeAsync.Returns(invocationDelegate);
             }
 
             _serviceCollection.AddTransient<ISchemaPipeline<GraphSchema, GraphDirectiveExecutionContext>>(
-                (sp) => _directivePipeline?.Object);
+                (sp) => _directivePipeline);
 
             // build the test object
             _serviceProvider = _serviceCollection.BuildServiceProvider();

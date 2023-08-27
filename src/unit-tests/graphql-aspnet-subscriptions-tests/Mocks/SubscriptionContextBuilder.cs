@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Mocks
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
-    using Moq;
+    using NSubstitute;
 
     /// <summary>
     /// A test builder to create a subscription query context that can be
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Mocks
     public class SubscriptionContextBuilder
     {
         private readonly IUserSecurityContext _seceurityContext;
-        private readonly Mock<IQueryExecutionRequest> _mockRequest;
+        private readonly IQueryExecutionRequest _mockRequest;
 
         private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
 
@@ -54,15 +54,17 @@ namespace GraphQL.AspNet.Tests.Mocks
             _client = client;
             _serviceProvider = serviceProvider;
             _seceurityContext = securityContext;
-            _mockRequest = new Mock<IQueryExecutionRequest>();
+            _mockRequest = Substitute.For<IQueryExecutionRequest>();
+            _mockRequest.OperationName.Returns(string.Empty);
+
             _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
 
-            _mockRequest.Setup(x => x.ToDataPackage()).Returns(
+            _mockRequest.ToDataPackage().Returns((x) =>
                 new AspNet.GraphQueryData()
                 {
-                    Query = _mockRequest.Object.QueryText,
-                    Variables = new InputVariableCollection(_mockRequest.Object.VariableData),
-                    OperationName = _mockRequest.Object.OperationName,
+                    Query = _mockRequest.QueryText,
+                    Variables = new InputVariableCollection(_mockRequest.VariableData),
+                    OperationName = _mockRequest.OperationName,
                 });
         }
 
@@ -74,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Mocks
         public SubscriptionContextBuilder AddVariableData(string jsonDocument)
         {
             var variableData = JsonSerializer.Deserialize<InputVariableCollection>(jsonDocument);
-            _mockRequest.Setup(x => x.VariableData).Returns(variableData);
+            _mockRequest.VariableData.Returns(variableData);
             return this;
         }
 
@@ -85,7 +87,7 @@ namespace GraphQL.AspNet.Tests.Mocks
         /// <returns>SubscriptionContextBuilder.</returns>
         public SubscriptionContextBuilder AddOperationName(string operationName)
         {
-            _mockRequest.Setup(x => x.OperationName).Returns(operationName);
+            _mockRequest.OperationName.Returns(operationName);
             return this;
         }
 
@@ -107,7 +109,7 @@ namespace GraphQL.AspNet.Tests.Mocks
         /// <returns>SubscriptionContextBuilder.</returns>
         public SubscriptionContextBuilder AddQueryText(string queryText)
         {
-            _mockRequest.Setup(x => x.QueryText).Returns(queryText);
+            _mockRequest.QueryText.Returns(queryText);
             return this;
         }
 
@@ -145,7 +147,7 @@ namespace GraphQL.AspNet.Tests.Mocks
             var metaData = new MetaDataCollection();
 
             // unchangable items about the request
-            var request = new Mock<IQueryExecutionRequest>();
+            var request = Substitute.For<IQueryExecutionRequest>();
 
             // updateable items about the request
             var context = new SubcriptionQueryExecutionContext(
@@ -160,10 +162,10 @@ namespace GraphQL.AspNet.Tests.Mocks
 
             foreach (var kvp in _sourceData)
             {
-                var mockField = new Mock<IGraphField>();
-                mockField.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
-                mockField.Setup(x => x.Route).Returns(kvp.Key);
-                context.DefaultFieldSources.AddSource(mockField.Object, kvp.Value);
+                var mockField = Substitute.For<IGraphField>();
+                mockField.FieldSource.Returns(GraphFieldSource.Action);
+                mockField.Route.Returns(kvp.Key);
+                context.DefaultFieldSources.AddSource(mockField, kvp.Value);
             }
 
             return context;
@@ -173,6 +175,6 @@ namespace GraphQL.AspNet.Tests.Mocks
         /// Gets the mocked request as its currently defined by this builder.
         /// </summary>
         /// <value>The operation request.</value>
-        public IQueryExecutionRequest QueryRequest => _mockRequest.Object;
+        public IQueryExecutionRequest QueryRequest => _mockRequest;
     }
 }

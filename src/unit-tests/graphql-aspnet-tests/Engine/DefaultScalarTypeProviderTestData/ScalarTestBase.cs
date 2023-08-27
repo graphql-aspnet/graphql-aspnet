@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
-    using Moq;
+    using NSubstitute;
 
     public abstract class ScalarTestBase : IScalarGraphType
     {
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
             this.SpecifiedByUrl = null;
 
-            this.SourceResolver = new Mock<ILeafValueResolver>().Object;
+            this.SourceResolver = Substitute.For<ILeafValueResolver>();
         }
 
         public virtual IScalarGraphType Clone(string newName)

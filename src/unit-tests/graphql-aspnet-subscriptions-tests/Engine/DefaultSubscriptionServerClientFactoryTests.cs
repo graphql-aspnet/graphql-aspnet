@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer.Exceptions;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -36,9 +36,9 @@ namespace GraphQL.AspNet.Tests.Engine
             public Task<ISubscriptionClientProxy<TSchema>> CreateClient<TSchema>(IClientConnection connection)
                 where TSchema : class, ISchema
             {
-                var proxy = new Mock<ISubscriptionClientProxy<TSchema>>();
-                proxy.Setup(x => x.Protocol).Returns(this.Protocol);
-                return Task.FromResult(proxy.Object);
+                var proxy = Substitute.For<ISubscriptionClientProxy<TSchema>>();
+                proxy.Protocol.Returns(this.Protocol);
+                return Task.FromResult(proxy);
             }
 
             public string Protocol { get; }
@@ -51,11 +51,11 @@ namespace GraphQL.AspNet.Tests.Engine
             var collection = new ServiceCollection();
             collection.AddSingleton(schemaOptions);
 
-            var connection = new Mock<IClientConnection>();
-            connection.Setup(x => x.RequestedProtocols).Returns(requestedProtocols);
-            connection.Setup(x => x.ServiceProvider).Returns(collection.BuildServiceProvider());
+            var connection = Substitute.For<IClientConnection>();
+            connection.RequestedProtocols.Returns(requestedProtocols);
+            connection.ServiceProvider.Returns(collection.BuildServiceProvider());
 
-            return connection.Object;
+            return connection;
         }
 
         [Test]

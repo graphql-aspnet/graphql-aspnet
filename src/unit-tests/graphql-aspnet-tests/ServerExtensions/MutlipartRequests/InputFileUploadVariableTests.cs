@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using System;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void PropertyCheck()
         {
-            var file = new FileUpload("someKey", new Mock<IFileUploadStreamContainer>().Object);
+            var file = new FileUpload("someKey", Substitute.For<IFileUploadStreamContainer>());
 
             var variable = new InputFileUploadVariable("variableKey", file);
 

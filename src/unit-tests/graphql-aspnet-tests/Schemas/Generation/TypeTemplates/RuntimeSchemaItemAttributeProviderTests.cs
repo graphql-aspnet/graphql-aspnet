@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Tests.Middleware.FieldSecurityMiddlewareTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.RuntimeSchemaItemAttributeProviderTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             // sanity check to ensure the world is working right and MethodInfo
             // as an attribute provider behaves as expected
-            var mock = new Mock<IGraphQLResolvableSchemaItemDefinition>();
+            var mock = Substitute.For<IGraphQLResolvableSchemaItemDefinition>();
 
             var method = typeof(RuntimeSchemaItemAttributeProviderTests)
                 .GetMethod(nameof(MethodWithTeacherAttribute));
@@ -62,21 +62,21 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         [TestCase(typeof(AuthorAttribute), false)]
         public void HasAttribute_AllProvidedExternally(Type typeToSearchFor, bool shouldBeFound)
         {
-            var mock = new Mock<IGraphQLResolvableSchemaItemDefinition>();
+            var mock = Substitute.For<IGraphQLResolvableSchemaItemDefinition>();
 
             var method = typeof(RuntimeSchemaItemAttributeProviderTests)
                 .GetMethod(nameof(MethodWithNoAttributes));
 
             var del = method.CreateDelegate<NoParamDelegate>(this);
-            mock.Setup(x => x.Resolver).Returns(del);
+            mock.Resolver.Returns(del);
 
             // append the teacher attribute to a list in the provider
             // not as part of the method
             var attribs = new List<Attribute>();
             attribs.Add(new TeacherAttribute());
-            mock.Setup(x => x.Attributes).Returns(attribs);
+            mock.Attributes.Returns(attribs);
 
-            var provider = new RuntimeSchemaItemAttributeProvider(mock.Object);
+            var provider = new RuntimeSchemaItemAttributeProvider(mock);
 
             var wasFound = provider.HasAttribute(typeToSearchFor);
             Assert.AreEqual(shouldBeFound, wasFound);

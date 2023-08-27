@@ -21,33 +21,33 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.AspNetCore.Authorization;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class SchemaItemAuthorizationMiddlewareTests
     {
-        private Mock<IAuthorizationService> _authService;
+        private IAuthorizationService _authService;
         private string _userName;
         private ClaimsPrincipal _user = null;
 
         public SchemaItemAuthorizationMiddlewareTests()
         {
-            _authService = new Mock<IAuthorizationService>();
+            _authService = Substitute.For<IAuthorizationService>();
             _userName = "john-doe";
 
             // auto fail any auth checks
-            _authService.Setup(x => x.AuthorizeAsync(
-                    It.IsAny<ClaimsPrincipal>(),
-                    It.IsAny<object>(),
-                    It.IsAny<string>()))
-                .ReturnsAsync(AuthorizationResult.Failed());
-            _authService.Setup(x => x.AuthorizeAsync(
-                    It.IsAny<ClaimsPrincipal>(),
-                    It.IsAny<object>(),
-                    It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
-                .ReturnsAsync(AuthorizationResult.Failed());
+            _authService.AuthorizeAsync(
+                    Arg.Any<ClaimsPrincipal>(),
+                    Arg.Any<object>(),
+                    Arg.Any<string>())
+                .Returns(AuthorizationResult.Failed());
+            _authService.AuthorizeAsync(
+                    Arg.Any<ClaimsPrincipal>(),
+                    Arg.Any<object>(),
+                    Arg.Any<IEnumerable<IAuthorizationRequirement>>())
+                .Returns(AuthorizationResult.Failed());
         }
 
         public Task EmptyNextDelegate(SchemaItemSecurityChallengeContext context, CancellationToken token)
@@ -86,16 +86,16 @@ namespace GraphQL.AspNet.Tests.Middleware
             var contextBuilder = server.CreateQueryContextBuilder();
             var queryContext = contextBuilder.Build();
 
-            var field = new Mock<IGraphField>();
-            var securityRequest = new Mock<ISchemaItemSecurityRequest>();
-            securityRequest.Setup(x => x.SecureSchemaItem)
-                .Returns(field.Object);
+            var field = Substitute.For<IGraphField>();
+            var securityRequest = Substitute.For<ISchemaItemSecurityRequest>();
+            securityRequest.SecureSchemaItem
+                .Returns(field);
 
-            var fieldSecurityContext = new SchemaItemSecurityChallengeContext(queryContext, securityRequest.Object);
+            var fieldSecurityContext = new SchemaItemSecurityChallengeContext(queryContext, securityRequest);
             fieldSecurityContext.AuthenticatedUser = _user;
             fieldSecurityContext.SecurityRequirements = secRequirements;
 
-            var middleware = new SchemaItemAuthorizationMiddleware(_authService?.Object);
+            var middleware = new SchemaItemAuthorizationMiddleware(_authService);
             await middleware.InvokeAsync(fieldSecurityContext, this.EmptyNextDelegate);
 
             return fieldSecurityContext;
@@ -109,11 +109,11 @@ namespace GraphQL.AspNet.Tests.Middleware
             else
                 result = AuthorizationResult.Failed();
 
-            _authService.Setup(x => x.AuthorizeAsync(
-                It.IsAny<ClaimsPrincipal>(),
-                It.IsAny<object>(),
-                policy.Requirements))
-                .ReturnsAsync(result);
+            _authService.AuthorizeAsync(
+                Arg.Any<ClaimsPrincipal>(),
+                Arg.Any<object>(),
+                policy.Requirements)
+                .Returns(result);
         }
 
         [Test]

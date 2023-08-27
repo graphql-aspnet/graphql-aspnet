@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Middleware.MiddlewarePipelineTestData;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -37,11 +37,11 @@ namespace GraphQL.AspNet.Tests.Middleware
             var orderOfBeforeCalls = new List<string>();
             var orderOfAfterCalls = new List<string>();
 
-            var middlewareService = new Mock<IMiddlewareTestService>();
-            middlewareService.Setup(x => x.AfterNext(It.IsAny<string>())).Callback(
-                (string name) => { orderOfAfterCalls.Add(name); }).Verifiable();
-            middlewareService.Setup(x => x.BeforeNext(It.IsAny<string>())).Callback(
-                (string name) => { orderOfBeforeCalls.Add(name); }).Verifiable();
+            var middlewareService = Substitute.For<IMiddlewareTestService>();
+            middlewareService.When(x => x.AfterNext(Arg.Any<string>()))
+                .Do((x) => { orderOfAfterCalls.Add((string)x[0]); });
+            middlewareService.When(x => x.BeforeNext(Arg.Any<string>()))
+                .Do((x) => { orderOfBeforeCalls.Add((string)x[0]); });
 
             // mock the calls that would be made through the primary builder to generate a fake pipeline
             var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             pipelineBuilder.AddMiddleware<TestMiddleware3>(ServiceLifetime.Singleton);
 
             // ensure types were added via the event
-            serverBuilder.AddSingleton(middlewareService.Object);
+            serverBuilder.AddSingleton(middlewareService);
             Assert.AreEqual(4, serverBuilder.Count); // 3 middleware components + the service
 
             // create the pipleine
@@ -68,14 +68,14 @@ namespace GraphQL.AspNet.Tests.Middleware
             await pipeline.InvokeAsync(executionContext, CancellationToken.None);
 
             // ensure all methods that were expected to be called, were called
-            middlewareService.Verify(x => x.BeforeNext(nameof(TestMiddleware1)), Times.Exactly(1));
-            middlewareService.Verify(x => x.AfterNext(nameof(TestMiddleware1)), Times.Exactly(1));
+            middlewareService.Received(1).BeforeNext(nameof(TestMiddleware1));
+            middlewareService.Received(1).AfterNext(nameof(TestMiddleware1));
 
-            middlewareService.Verify(x => x.BeforeNext(nameof(TestMiddleware2)), Times.Exactly(1));
-            middlewareService.Verify(x => x.AfterNext(nameof(TestMiddleware2)), Times.Exactly(1));
+            middlewareService.Received(1).BeforeNext(nameof(TestMiddleware2));
+            middlewareService.Received(1).AfterNext(nameof(TestMiddleware2));
 
-            middlewareService.Verify(x => x.BeforeNext(nameof(TestMiddleware3)), Times.Exactly(1));
-            middlewareService.Verify(x => x.AfterNext(nameof(TestMiddleware3)), Times.Exactly(1));
+            middlewareService.Received(1).BeforeNext(nameof(TestMiddleware3));
+            middlewareService.Received(1).AfterNext(nameof(TestMiddleware3));
 
             // ensure the invocation order was as expected
             // in ccreated order for the "before calls"
@@ -169,11 +169,11 @@ namespace GraphQL.AspNet.Tests.Middleware
                 .AddType<MiddlewareController>();
 
             var idsCalled = new List<string>();
-            var middlewareService = new Mock<IMiddlewareTestService>();
-            middlewareService.Setup(x => x.BeforeNext(It.IsAny<string>())).Callback(
-                (string idValue) => { idsCalled.Add(idValue); }).Verifiable();
+            var middlewareService = Substitute.For<IMiddlewareTestService>();
+            middlewareService.When(x => x.BeforeNext(Arg.Any<string>()))
+            .Do(x => { idsCalled.Add((string)x[0]); });
 
-            serverBuilder.AddSingleton(middlewareService.Object);
+            serverBuilder.AddSingleton(middlewareService);
 
             // mock the calls that would be made through the primary builder to generate a fake pipeline
             var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
@@ -199,7 +199,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             await pipeline.InvokeAsync(builder.CreateExecutionContext(), CancellationToken.None);
 
             // ensure all methods that were expected to be called, were called
-            middlewareService.Verify(x => x.BeforeNext(It.IsAny<string>()), Times.Exactly(5));
+            middlewareService.Received(5).BeforeNext(Arg.Any<string>());
 
             // ensure that each time the middleware was called and an id saved off
             // that hte Id never changed (it was never "newed up" more than once)
@@ -218,17 +218,17 @@ namespace GraphQL.AspNet.Tests.Middleware
                 .AddType<MiddlewareController>();
 
             var idsCalled = new List<string>();
-            var middlewareService = new Mock<IMiddlewareTestService>();
-            middlewareService.Setup(x => x.BeforeNext(It.IsAny<string>())).Callback(
-                (string idValue) => { idsCalled.Add(idValue); }).Verifiable();
+            var middlewareService = Substitute.For<IMiddlewareTestService>();
+            middlewareService.When(x => x.BeforeNext(Arg.Any<string>()))
+                .Do(x => { idsCalled.Add((string)x[0]); });
 
-            serverBuilder.AddSingleton(middlewareService.Object);
+            serverBuilder.AddSingleton(middlewareService);
 
             // mock the calls that would be made through the primary builder to generate a fake pipeline
             var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
 
             // premake the singleton middleware component
-            var component = new TestMiddlewareSingleton(middlewareService.Object);
+            var component = new TestMiddlewareSingleton(middlewareService);
 
             // inject the component into the pipeline as an item, not just a type reference
             pipelineBuilder.AddMiddleware(component);
@@ -253,7 +253,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             await pipeline.InvokeAsync(builder.CreateExecutionContext(), CancellationToken.None);
 
             // ensure all methods that were expected to be called, were called
-            middlewareService.Verify(x => x.BeforeNext(It.IsAny<string>()), Times.Exactly(5));
+            middlewareService.Received(5).BeforeNext(Arg.Any<string>());
 
             // ensure that each time the middleware was called and an id saved off
             // that hte Id never changed (it was never "newed up" more than once and the original object id was used each time)

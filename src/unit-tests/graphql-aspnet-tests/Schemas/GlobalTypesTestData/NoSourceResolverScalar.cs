@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
-    using Moq;
 
     public class NoSourceResolverScalar : IScalarGraphType
     {

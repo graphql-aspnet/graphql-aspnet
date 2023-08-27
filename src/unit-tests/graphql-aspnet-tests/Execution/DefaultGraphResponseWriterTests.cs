@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -263,13 +263,14 @@ namespace GraphQL.AspNet.Tests.Execution
             var dic = new ResponseFieldSet();
             dic.Add("testKey", new ResponseSingleValue(testValue));
 
-            var mockResult = new Mock<IQueryExecutionResult>();
-            mockResult.Setup(x => x.Data).Returns(dic);
-            mockResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
-            mockResult.Setup(x => x.QueryRequest).Returns(queryBuilder.QueryRequest.Object);
+            var mockResult = Substitute.For<IQueryExecutionResult>();
+            mockResult.Data.Returns(dic);
+            mockResult.Messages.Returns(new GraphMessageCollection());
+            mockResult.QueryRequest.Returns(queryBuilder.QueryRequest);
+            mockResult.Metrics.Returns((x) => null);
 
             var writer = new DefaultQueryResponseWriter<GraphSchema>(server.Schema);
-            var result = await this.WriteResponse(writer, mockResult.Object);
+            var result = await this.WriteResponse(writer, mockResult);
 
             var expected = @"
                             {

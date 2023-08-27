@@ -26,7 +26,6 @@ namespace GraphQL.AspNet.Tests.Execution
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
     using NUnit.Framework;
 
     [TestFixture]

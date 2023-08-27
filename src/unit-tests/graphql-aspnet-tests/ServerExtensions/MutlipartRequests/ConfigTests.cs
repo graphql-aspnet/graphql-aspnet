@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Primitives;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -108,9 +108,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     ""operationName"" : ""bob""
                 }";
 
-            var config = new Mock<IMultipartRequestConfiguration<GraphSchema>>();
-            config.Setup(x => x.RequestMode).Returns(MultipartRequestMode.Default);
-            config.Setup(x => x.MapMode).Returns(mode);
+            var config = Substitute.For<IMultipartRequestConfiguration<GraphSchema>>();
+            config.RequestMode.Returns(MultipartRequestMode.Default);
+            config.MapMode.Returns(mode);
 
             var map = @"{ ""0"": " + mapValue + "}";
 
@@ -119,7 +119,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var (parser, context) = this.CreateTestObject(
                 operations,
                 map,
-                config.Object,
+                config,
                 files: new[] { file });
 
             if (shouldThrow)
@@ -151,9 +151,9 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     ""operationName"" : ""bob""
                 }";
 
-            var config = new Mock<IMultipartRequestConfiguration<GraphSchema>>();
-            config.Setup(x => x.RequestMode).Returns(MultipartRequestMode.Default);
-            config.Setup(x => x.MapMode).Returns(mode);
+            var config = Substitute.For<IMultipartRequestConfiguration<GraphSchema>>();
+            config.RequestMode.Returns(MultipartRequestMode.Default);
+            config.MapMode.Returns(mode);
 
             var map = @"{ ""0"": " + mapValue + "}";
 
@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var (parser, context) = this.CreateTestObject(
                 operations,
                 map,
-                config.Object,
+                config,
                 files: new[] { file });
 
             if (shouldThrow)
@@ -195,11 +195,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     ""operationName"" : ""bob""
                 }";
 
-            var config = new Mock<IMultipartRequestConfiguration<GraphSchema>>();
-            config.Setup(x => x.RequestMode).Returns(MultipartRequestMode.Default);
-            config.Setup(x => x.MapMode).Returns(MultipartRequestMapHandlingMode.Default);
-            config.Setup(x => x.MaxFileCount).Returns(maxAllowedFiles);
-            config.Setup(x => x.MaxBlobCount).Returns(1000);
+            var config = Substitute.For<IMultipartRequestConfiguration<GraphSchema>>();
+            config.RequestMode.Returns(MultipartRequestMode.Default);
+            config.MapMode.Returns(MultipartRequestMapHandlingMode.Default);
+            config.MaxFileCount.Returns(maxAllowedFiles);
+            config.MaxBlobCount.Returns(1000);
 
             var map = @"{
                 ""0"": ""variables.var1"",
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var (parser, context) = this.CreateTestObject(
                 operations,
                 map,
-                config.Object,
+                config,
                 files: new[] { file, file1 });
 
             if (shouldThrow)
@@ -244,11 +244,11 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                     ""operationName"" : ""bob""
                 }";
 
-            var config = new Mock<IMultipartRequestConfiguration<GraphSchema>>();
-            config.Setup(x => x.RequestMode).Returns(MultipartRequestMode.Default);
-            config.Setup(x => x.MapMode).Returns(MultipartRequestMapHandlingMode.Default);
-            config.Setup(x => x.MaxFileCount).Returns(1900);
-            config.Setup(x => x.MaxBlobCount).Returns(maxAllowedBlobs);
+            var config = Substitute.For<IMultipartRequestConfiguration<GraphSchema>>();
+            config.RequestMode.Returns(MultipartRequestMode.Default);
+            config.MapMode.Returns(MultipartRequestMapHandlingMode.Default);
+            config.MaxFileCount.Returns(1900);
+            config.MaxBlobCount.Returns(maxAllowedBlobs);
 
             var map = @"{
                 ""0"": ""variables.var1"",
@@ -261,7 +261,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             var (parser, context) = this.CreateTestObject(
                 operations,
                 map,
-                config.Object,
+                config,
                 additionalFields: new[] { blob, blob1 });
 
             if (shouldThrow)

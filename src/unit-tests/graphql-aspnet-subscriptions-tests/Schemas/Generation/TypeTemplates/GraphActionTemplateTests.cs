@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ActionTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -28,15 +28,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         private SubscriptionControllerActionGraphFieldTemplate CreateActionTemplate<TControllerType>(string actionName)
             where TControllerType : GraphController
         {
-            var mockController = new Mock<IGraphControllerTemplate>();
-            mockController.Setup(x => x.InternalName).Returns(typeof(TControllerType).FullName);
-            mockController.Setup(x => x.InternalName).Returns(typeof(TControllerType).Name);
-            mockController.Setup(x => x.Route).Returns(new SchemaItemPath("path0"));
-            mockController.Setup(x => x.Name).Returns("path0");
-            mockController.Setup(x => x.ObjectType).Returns(typeof(TControllerType));
+            var mockController = Substitute.For<IGraphControllerTemplate>();
+            mockController.InternalName.Returns(typeof(TControllerType).Name);
+            mockController.Route.Returns(new SchemaItemPath("path0"));
+            mockController.Name.Returns("path0");
+            mockController.ObjectType.Returns(typeof(TControllerType));
 
             var methodInfo = typeof(TControllerType).GetMethod(actionName);
-            var action = new SubscriptionControllerActionGraphFieldTemplate(mockController.Object, methodInfo);
+            var action = new SubscriptionControllerActionGraphFieldTemplate(mockController, methodInfo);
             action.Parse();
             action.ValidateOrThrow();
 

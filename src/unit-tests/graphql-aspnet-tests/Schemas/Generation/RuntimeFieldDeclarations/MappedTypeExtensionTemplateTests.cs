@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -97,10 +97,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var builderMock = new Mock<ISchemaBuilder>();
-            builderMock.Setup(x => x.Options).Returns(options);
+            var builderMock = Substitute.For<ISchemaBuilder>();
+            builderMock.Options.Returns(options);
 
-            var typeExt = builderMock.Object.MapTypeExtension<TwoPropertyObject>("mytypeExt")
+            var typeExt = builderMock.MapTypeExtension<TwoPropertyObject>("mytypeExt")
                 .WithInternalName("internaltypeExtName");
 
             Assert.AreEqual("internaltypeExtName", typeExt.InternalName);
@@ -112,10 +112,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var builderMock = new Mock<ISchemaBuilder>();
-            builderMock.Setup(x => x.Options).Returns(options);
+            var builderMock = Substitute.For<ISchemaBuilder>();
+            builderMock.Options.Returns(options);
 
-            var typeExt = builderMock.Object.MapTypeExtension<TwoPropertyObject>("mytypeExt");
+            var typeExt = builderMock.MapTypeExtension<TwoPropertyObject>("mytypeExt");
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionDefinition), typeExt);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
@@ -145,10 +145,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var builderMock = new Mock<ISchemaBuilder>();
-            builderMock.Setup(x => x.Options).Returns(options);
+            var builderMock = Substitute.For<ISchemaBuilder>();
+            builderMock.Options.Returns(options);
 
-            var typeExt = builderMock.Object.MapTypeExtension<TwoPropertyObject>("mytypeExt", (string a) => 1);
+            var typeExt = builderMock.MapTypeExtension<TwoPropertyObject>("mytypeExt", (string a) => 1);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeTypeExtensionDefinition), typeExt);
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
@@ -292,10 +292,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
             var services = new ServiceCollection();
             var options = new SchemaOptions<GraphSchema>(services);
 
-            var builderMock = new Mock<ISchemaBuilder>();
-            builderMock.Setup(x => x.Options).Returns(options);
+            var builderMock = Substitute.For<ISchemaBuilder>();
+            builderMock.Options.Returns(options);
 
-            var typeExt = builderMock.Object.MapTypeExtension<TwoPropertyObject>("mytypeExt", "myUnion", (string a) => 1);
+            var typeExt = builderMock.MapTypeExtension<TwoPropertyObject>("mytypeExt", "myUnion", (string a) => 1);
             Assert.AreEqual(1, typeExt.Attributes.Count(x => x is UnionAttribute));
             Assert.IsNotNull(typeExt.Resolver);
         }

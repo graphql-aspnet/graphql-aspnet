@@ -11,19 +11,17 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
     using System;
     using System.Collections.Generic;
-    using System.Text.Json;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
-    using Moq;
+    using NSubstitute;
 
     /// <summary>
     /// A subclassed <see cref="QueryExecutionContext"/> allowing for inline mocked replacements
@@ -32,9 +30,9 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     public class QueryContextBuilder
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IQueryExecutionRequest _mockRequest;
         private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
 
-        private Mock<IQueryExecutionRequest> _mockRequest;
         private IUserSecurityContext _userSecurityContext;
         private IQueryExecutionMetrics _metrics;
         private IGraphEventLogger _eventLogger;
@@ -53,8 +51,8 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _userSecurityContext = userSecurityContext;
 
             _items = new MetaDataCollection();
-            _mockRequest = new Mock<IQueryExecutionRequest>();
-            _mockRequest.Setup(x => x.Items).Returns(_items);
+            _mockRequest = Substitute.For<IQueryExecutionRequest>();
+            _mockRequest.Items.Returns(_items);
             _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
         }
 
@@ -66,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         public QueryContextBuilder AddVariableData(string jsonDocument)
         {
             var variableData = InputVariableCollection.FromJsonDocument(jsonDocument);
-            _mockRequest.Setup(x => x.VariableData).Returns(variableData);
+            _mockRequest.VariableData.Returns(variableData);
             return this;
         }
 
@@ -77,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <returns>QueryContextBuilder.</returns>
         public QueryContextBuilder AddOperationName(string operationName)
         {
-            _mockRequest.Setup(x => x.OperationName).Returns(operationName);
+            _mockRequest.OperationName.Returns(operationName);
             return this;
         }
 
@@ -99,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <returns>QueryContextBuilder.</returns>
         public QueryContextBuilder AddQueryText(string queryText)
         {
-            _mockRequest.Setup(x => x.QueryText).Returns(queryText);
+            _mockRequest.QueryText.Returns(queryText);
             return this;
         }
 
@@ -145,37 +143,33 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         public virtual QueryExecutionContext Build()
         {
             var startDate = DateTimeOffset.UtcNow;
-            _mockRequest.Setup(x => x.StartTimeUTC).Returns(startDate);
+            _mockRequest.StartTimeUTC.Returns(startDate);
 
             // updateable items about the request
             var context = new QueryExecutionContext(
-                this.QueryRequest.Object,
+                this.QueryRequest,
                 _serviceProvider,
                 new QuerySession(),
                 securityContext: _userSecurityContext,
-                items: this.QueryRequest.Object.Items,
+                items: this.QueryRequest.Items,
                 metrics: _metrics,
                 logger: _eventLogger);
 
             foreach (var kvp in _sourceData)
             {
-                var mockField = new Mock<IGraphField>();
-                mockField.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
-                mockField.Setup(x => x.Route).Returns(kvp.Key);
-                context.DefaultFieldSources.AddSource(mockField.Object, kvp.Value);
+                var mockField = Substitute.For<IGraphField>();
+                mockField.FieldSource.Returns(GraphFieldSource.Action);
+                mockField.Route.Returns(kvp.Key);
+                context.DefaultFieldSources.AddSource(mockField, kvp.Value);
             }
 
             return context;
         }
 
         /// <summary>
-        /// Gets or sets the mocked request as its currently defined by this builder.
+        /// Gets the mocked request as its currently defined by this builder.
         /// </summary>
         /// <value>The request.</value>
-        public Mock<IQueryExecutionRequest> QueryRequest
-        {
-            get { return _mockRequest; }
-            set { _mockRequest = value; }
-        }
+        public IQueryExecutionRequest QueryRequest => _mockRequest;
     }
 }

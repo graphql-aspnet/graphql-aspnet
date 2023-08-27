@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Logging.LoggerTestData;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     /// <summary>
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var builder = server.CreateQueryContextBuilder();
             builder.AddQueryText("{ testField }");
-            var request = builder.QueryRequest.Object;
+            var request = builder.QueryRequest;
             var context = builder.Build();
 
             var entry = new RequestReceivedLogEntry(context);
@@ -153,15 +153,15 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var builder = server.CreateQueryContextBuilder();
             builder.AddQueryText("{ testField }");
-            var request = builder.QueryRequest.Object;
+            var request = builder.QueryRequest;
             var context = builder.Build();
 
-            var mock = new Mock<IQueryExecutionResult>();
-            mock.Setup(x => x.QueryRequest).Returns(request);
-            mock.Setup(x => x.Data).Returns(new ResponseFieldSet());
-            mock.Setup(x => x.Messages).Returns(new GraphMessageCollection());
+            var mock = Substitute.For<IQueryExecutionResult>();
+            mock.QueryRequest.Returns(request);
+            mock.Data.Returns(new ResponseFieldSet());
+            mock.Messages.Returns(new GraphMessageCollection());
 
-            context.Result = mock.Object;
+            context.Result = mock;
 
             var entry = new RequestCompletedLogEntry(context);
 
@@ -264,7 +264,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
-            var fieldRequest = package.FieldRequest.Object;
+            var fieldRequest = package.FieldRequest;
 
             resolutionContext.Result = "15";
 
@@ -289,7 +289,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var fieldRequest = package.FieldRequest.Object;
+            var fieldRequest = package.FieldRequest;
 
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
@@ -314,7 +314,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var fieldRequest = package.FieldRequest.Object;
+            var fieldRequest = package.FieldRequest;
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
 
@@ -341,7 +341,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var fieldRequest = package.FieldRequest.Object;
+            var fieldRequest = package.FieldRequest;
 
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
@@ -362,25 +362,25 @@ namespace GraphQL.AspNet.Tests.Logging
             builder.UserContext.Authenticate("bob-smith");
             var server = builder.Build();
 
-            var ident = new Mock<IIdentity>();
-            ident.Setup(x => x.Name).Returns("someOtherUser");
+            var ident = Substitute.For<IIdentity>();
+            ident.Name.Returns("someOtherUser");
             var testUser = new ClaimsPrincipal();
-            testUser.AddIdentity(new ClaimsIdentity(ident.Object));
+            testUser.AddIdentity(new ClaimsIdentity(ident));
 
-            var authResult = new Mock<IAuthenticationResult>();
-            authResult.Setup(x => x.User).Returns(testUser);
-            authResult.Setup(x => x.AuthenticationScheme).Returns("testScheme");
-            authResult.Setup(x => x.Suceeded).Returns(true);
+            var authResult = Substitute.For<IAuthenticationResult>();
+            authResult.User.Returns(testUser);
+            authResult.AuthenticationScheme.Returns("testScheme");
+            authResult.Suceeded.Returns(true);
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
 
-            var fieldRequest = package.FieldRequest.Object;
+            var fieldRequest = package.FieldRequest;
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
             authContext.Result = SchemaItemSecurityChallengeResult.Fail("test message 1");
 
-            var entry = new SchemaItemAuthenticationCompletedLogEntry(authContext, authResult.Object);
+            var entry = new SchemaItemAuthenticationCompletedLogEntry(authContext, authResult);
 
             Assert.AreEqual(LogEventIds.SchemaItemAuthenticationCompleted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
@@ -405,7 +405,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var fieldRequest = package.FieldRequest.Object;
+            var fieldRequest = package.FieldRequest;
 
             var entry = new ActionMethodInvocationStartedLogEntry(resolverMetaData, fieldRequest);
 
@@ -428,7 +428,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
-            var fieldRequest = package.FieldRequest.Object;
+            var fieldRequest = package.FieldRequest;
 
             var result = new object();
 
@@ -452,7 +452,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var metaData = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)).CreateResolverMetaData();
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2));
-            var fieldRequest = package.FieldRequest.Object;
+            var fieldRequest = package.FieldRequest;
 
             var result = new object();
 
@@ -484,7 +484,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 nameof(LogTestController.ExecuteField2));
             var template = GraphQLTemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2));
             var metaData = template.CreateResolverMetaData();
-            var fieldRequest = package.FieldRequest.Object;
+            var fieldRequest = package.FieldRequest;
 
             var result = new object();
 
@@ -507,42 +507,42 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void TypeSystemDirectiveAppliedLogEntry()
         {
-            var directive = new Mock<IDirective>();
-            directive.Setup(x => x.Name).Returns("The Directive");
-            directive.Setup(x => x.InternalName).Returns("The Directive Internal");
+            var directive = Substitute.For<IDirective>();
+            directive.Name.Returns("The Directive");
+            directive.InternalName.Returns("The Directive Internal");
 
-            var item = new Mock<ISchemaItem>();
-            item.Setup(x => x.Route).Returns(new AspNet.Schemas.Structural.SchemaItemPath(SchemaItemCollections.Types, "path1"));
+            var item = Substitute.For<ISchemaItem>();
+            item.Route.Returns(new AspNet.Schemas.Structural.SchemaItemPath(SchemaItemCollections.Types, "path1"));
 
-            var entry = new TypeSystemDirectiveAppliedLogEntry<GraphSchema>(directive.Object, item.Object);
+            var entry = new TypeSystemDirectiveAppliedLogEntry<GraphSchema>(directive, item);
 
             Assert.AreEqual(LogEventIds.TypeSystemDirectiveApplied.Id, entry.EventId);
-            Assert.AreEqual(directive.Object.Name, entry.DirectiveName);
-            Assert.AreEqual(directive.Object.InternalName, entry.DirectiveInternalName);
-            Assert.AreEqual(item.Object.Route.Path, entry.SchemaItemPath);
+            Assert.AreEqual(directive.Name, entry.DirectiveName);
+            Assert.AreEqual(directive.InternalName, entry.DirectiveInternalName);
+            Assert.AreEqual(item.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
         }
 
         [Test]
         public void ExecutionDirectiveAppliedLogEntry()
         {
-            var directive = new Mock<IDirective>();
-            directive.Setup(x => x.Name).Returns("The Directive");
-            directive.Setup(x => x.InternalName).Returns("The Directive Internal");
+            var directive = Substitute.For<IDirective>();
+            directive.Name.Returns("The Directive");
+            directive.InternalName.Returns("The Directive Internal");
 
             var docPart = new DocumentOperation(
-                new Mock<IDocumentPart>().Object,
+                Substitute.For<IDocumentPart>(),
                 string.Empty,
                 GraphOperationType.Query,
                 new SourceLocation(999, 33, 5));
 
             var path = new SchemaItemPath(SchemaItemCollections.Types, "type1");
 
-            var entry = new ExecutionDirectiveAppliedLogEntry<GraphSchema>(directive.Object, docPart);
+            var entry = new ExecutionDirectiveAppliedLogEntry<GraphSchema>(directive, docPart);
 
             Assert.AreEqual(LogEventIds.ExecutionDirectiveApplied.Id, entry.EventId);
-            Assert.AreEqual(directive.Object.Name, entry.DirectiveName);
-            Assert.AreEqual(directive.Object.InternalName, entry.DirectiveInternalName);
+            Assert.AreEqual(directive.Name, entry.DirectiveName);
+            Assert.AreEqual(directive.InternalName, entry.DirectiveInternalName);
             Assert.AreEqual(DirectiveLocation.QUERY.ToString(), entry.DirectiveLocation);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
             Assert.AreEqual(33, entry.SourceLine);

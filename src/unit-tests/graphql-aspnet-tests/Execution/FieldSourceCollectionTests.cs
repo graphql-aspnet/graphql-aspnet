@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -23,17 +23,17 @@ namespace GraphQL.AspNet.Tests.Execution
         public void AllowedFieldIsAdded_CanBeRetrieved()
         {
             var path = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path2");
-            var mock = new Mock<IGraphField>();
-            mock.Setup(x => x.Route).Returns(path);
-            mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
+            var mock = Substitute.For<IGraphField>();
+            mock.Route.Returns(path);
+            mock.FieldSource.Returns(GraphFieldSource.Action);
 
             var o = new object();
             var collection = new FieldSourceCollection(GraphFieldSource.Action);
-            collection.AddSource(mock.Object, o);
+            collection.AddSource(mock, o);
 
-            var found = collection.TryRetrieveSource(mock.Object, out var result);
+            var found = collection.TryRetrieveSource(mock, out var result);
 
-            Assert.IsTrue(collection.ContainsKey(mock.Object));
+            Assert.IsTrue(collection.ContainsKey(mock));
             Assert.AreEqual(1, collection.Count);
 
             Assert.IsTrue(found);
@@ -45,9 +45,9 @@ namespace GraphQL.AspNet.Tests.Execution
         public void UpdatedFieldIsAdded_CanBeRetrieved()
         {
             var path = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path2");
-            var mock = new Mock<IGraphField>();
-            mock.Setup(x => x.Route).Returns(path);
-            mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
+            var mock = Substitute.For<IGraphField>();
+            mock.Route.Returns(path);
+            mock.FieldSource.Returns(GraphFieldSource.Action);
 
             var o = new object();
             var o1 = new object();
@@ -55,12 +55,12 @@ namespace GraphQL.AspNet.Tests.Execution
             var collection = new FieldSourceCollection(GraphFieldSource.Action);
 
             // add then update the source
-            collection.AddSource(mock.Object, o);
-            collection.AddSource(mock.Object, o1);
+            collection.AddSource(mock, o);
+            collection.AddSource(mock, o1);
 
-            var found = collection.TryRetrieveSource(mock.Object, out var result);
+            var found = collection.TryRetrieveSource(mock, out var result);
 
-            Assert.IsTrue(collection.ContainsKey(mock.Object));
+            Assert.IsTrue(collection.ContainsKey(mock));
             Assert.AreEqual(1, collection.Count);
 
             Assert.IsTrue(found);
@@ -74,17 +74,17 @@ namespace GraphQL.AspNet.Tests.Execution
         public void DisallowedFieldIsNotAdded_CanNotBeRetrieved()
         {
             var path = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path2");
-            var mock = new Mock<IGraphField>();
-            mock.Setup(x => x.Route).Returns(path);
-            mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Method);
+            var mock = Substitute.For<IGraphField>();
+            mock.Route.Returns(path);
+            mock.FieldSource.Returns(GraphFieldSource.Method);
 
             var o = new object();
             var collection = new FieldSourceCollection();
-            collection.AddSource(mock.Object, o);
+            collection.AddSource(mock, o);
 
-            var found = collection.TryRetrieveSource(mock.Object, out var result);
+            var found = collection.TryRetrieveSource(mock, out var result);
 
-            Assert.IsFalse(collection.ContainsKey(mock.Object));
+            Assert.IsFalse(collection.ContainsKey(mock));
             Assert.AreEqual(0, collection.Count);
 
             Assert.IsFalse(found);
@@ -95,22 +95,22 @@ namespace GraphQL.AspNet.Tests.Execution
         public void UnFoundField_IsNotReturned()
         {
             var path = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path2");
-            var mock = new Mock<IGraphField>();
-            mock.Setup(x => x.Route).Returns(path);
-            mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
+            var mock = Substitute.For<IGraphField>();
+            mock.Route.Returns(path);
+            mock.FieldSource.Returns(GraphFieldSource.Action);
 
             var path1 = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path3");
-            var mock1 = new Mock<IGraphField>();
-            mock1.Setup(x => x.Route).Returns(path1);
-            mock1.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
+            var mock1 = Substitute.For<IGraphField>();
+            mock1.Route.Returns(path1);
+            mock1.FieldSource.Returns(GraphFieldSource.Action);
 
             var o = new object();
             var collection = new FieldSourceCollection();
-            collection.AddSource(mock.Object, o);
+            collection.AddSource(mock, o);
             Assert.AreEqual(1, collection.Count);
 
             // retreive for an object def. not in the collection
-            var found = collection.TryRetrieveSource(mock1.Object, out var result);
+            var found = collection.TryRetrieveSource(mock1, out var result);
 
             Assert.IsFalse(found);
             Assert.IsNull(result);
@@ -120,26 +120,26 @@ namespace GraphQL.AspNet.Tests.Execution
         public void WhenMultipleAllowedSources_AllCanBeRetrieved()
         {
             var path = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path2");
-            var mock = new Mock<IGraphField>();
-            mock.Setup(x => x.Route).Returns(path);
-            mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Method);
+            var mock = Substitute.For<IGraphField>();
+            mock.Route.Returns(path);
+            mock.FieldSource.Returns(GraphFieldSource.Method);
 
             var path1 = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path3");
-            var mock1 = new Mock<IGraphField>();
-            mock1.Setup(x => x.Route).Returns(path1);
-            mock1.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
+            var mock1 = Substitute.For<IGraphField>();
+            mock1.Route.Returns(path1);
+            mock1.FieldSource.Returns(GraphFieldSource.Action);
 
             var o = new object();
             var o1 = new object();
             var collection = new FieldSourceCollection(GraphFieldSource.Action | GraphFieldSource.Method);
-            collection.AddSource(mock.Object, o);
-            collection.AddSource(mock1.Object, o1);
+            collection.AddSource(mock, o);
+            collection.AddSource(mock1, o1);
 
-            var found = collection.TryRetrieveSource(mock.Object, out var result);
-            var found1 = collection.TryRetrieveSource(mock1.Object, out var result1);
+            var found = collection.TryRetrieveSource(mock, out var result);
+            var found1 = collection.TryRetrieveSource(mock1, out var result1);
 
-            Assert.IsTrue(collection.ContainsKey(mock.Object));
-            Assert.IsTrue(collection.ContainsKey(mock1.Object));
+            Assert.IsTrue(collection.ContainsKey(mock));
+            Assert.IsTrue(collection.ContainsKey(mock1));
             Assert.AreEqual(2, collection.Count);
 
             Assert.IsTrue(found);

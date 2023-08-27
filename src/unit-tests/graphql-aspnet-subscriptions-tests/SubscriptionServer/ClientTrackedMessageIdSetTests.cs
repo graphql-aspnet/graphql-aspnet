@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
 {
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.SubscriptionServer;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void DuplicateIdIsRejected()
         {
-            var client = new Mock<ISubscriptionClientProxy>().Object;
+            var client = Substitute.For<ISubscriptionClientProxy>();
             var idSet = new ClientTrackedMessageIdSet();
 
             var result = idSet.ReserveMessageId("abc123");
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void ContainsReturnsTrue_WhenIdIsPresent()
         {
-            var client = new Mock<ISubscriptionClientProxy>().Object;
+            var client = Substitute.For<ISubscriptionClientProxy>();
             var idSet = new ClientTrackedMessageIdSet();
 
             var result = idSet.ReserveMessageId("abc123");
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void ReleasedIdIsAllowedToBeAdded()
         {
-            var client = new Mock<ISubscriptionClientProxy>().Object;
+            var client = Substitute.For<ISubscriptionClientProxy>();
             var idSet = new ClientTrackedMessageIdSet();
 
             var result = idSet.ReserveMessageId("abc123");
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void ClearDropsAllIds()
         {
-            var client = new Mock<ISubscriptionClientProxy>().Object;
+            var client = Substitute.For<ISubscriptionClientProxy>();
             var idSet = new ClientTrackedMessageIdSet();
 
             var result = idSet.ReserveMessageId("abc123");

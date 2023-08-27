@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Schemas.TypeMakers;
     using GraphQL.AspNet.Tests.Engine.TestData;
     using GraphQL.AspNet.Tests.Framework;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -26,15 +26,14 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void SubscriptionActionField_TransfersDirectives()
         {
-            var mockController = new Mock<IGraphControllerTemplate>();
-            mockController.Setup(x => x.InternalName).Returns(typeof(SubscriptionTestController).FullName);
-            mockController.Setup(x => x.InternalName).Returns(typeof(SubscriptionTestController).Name);
-            mockController.Setup(x => x.Route).Returns(new SchemaItemPath("path0"));
-            mockController.Setup(x => x.Name).Returns("path0");
-            mockController.Setup(x => x.ObjectType).Returns(typeof(SubscriptionTestController));
+            var mockController = Substitute.For<IGraphControllerTemplate>();
+            mockController.InternalName.Returns(typeof(SubscriptionTestController).Name);
+            mockController.Route.Returns(new SchemaItemPath("path0"));
+            mockController.Name.Returns("path0");
+            mockController.ObjectType.Returns(typeof(SubscriptionTestController));
 
             var methodInfo = typeof(SubscriptionTestController).GetMethod(nameof(SubscriptionTestController.DoSub));
-            var actionTemplate = new SubscriptionControllerActionGraphFieldTemplate(mockController.Object, methodInfo);
+            var actionTemplate = new SubscriptionControllerActionGraphFieldTemplate(mockController, methodInfo);
             actionTemplate.Parse();
             actionTemplate.ValidateOrThrow();
 

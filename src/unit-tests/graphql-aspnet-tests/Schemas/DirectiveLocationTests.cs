@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System.Linq;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -25,27 +25,27 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             _schemaItemToLocationSource = new List<object[]>();
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<ISchema>().Object, DirectiveLocation.SCHEMA });
+                new object[] { Substitute.For<ISchema>(), DirectiveLocation.SCHEMA });
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<IScalarGraphType>().Object, DirectiveLocation.SCALAR });
+                new object[] { Substitute.For<IScalarGraphType>(), DirectiveLocation.SCALAR });
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<IObjectGraphType>().Object, DirectiveLocation.OBJECT });
+                new object[] { Substitute.For<IObjectGraphType>(), DirectiveLocation.OBJECT });
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<IGraphField>().Object, DirectiveLocation.FIELD_DEFINITION });
+                new object[] { Substitute.For<IGraphField>(), DirectiveLocation.FIELD_DEFINITION });
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<IGraphArgument>().Object, DirectiveLocation.ARGUMENT_DEFINITION });
+                new object[] { Substitute.For<IGraphArgument>(), DirectiveLocation.ARGUMENT_DEFINITION });
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<IInterfaceGraphType>().Object, DirectiveLocation.INTERFACE });
+                new object[] { Substitute.For<IInterfaceGraphType>(), DirectiveLocation.INTERFACE });
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<IUnionGraphType>().Object, DirectiveLocation.UNION });
+                new object[] { Substitute.For<IUnionGraphType>(), DirectiveLocation.UNION });
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<IEnumGraphType>().Object, DirectiveLocation.ENUM });
+                new object[] { Substitute.For<IEnumGraphType>(), DirectiveLocation.ENUM });
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<IEnumValue>().Object, DirectiveLocation.ENUM_VALUE });
+                new object[] { Substitute.For<IEnumValue>(), DirectiveLocation.ENUM_VALUE });
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<IInputObjectGraphType>().Object, DirectiveLocation.INPUT_OBJECT });
+                new object[] { Substitute.For<IInputObjectGraphType>(), DirectiveLocation.INPUT_OBJECT });
             _schemaItemToLocationSource.Add(
-                new object[] { new Mock<IInputGraphField>().Object, DirectiveLocation.INPUT_FIELD_DEFINITION });
+                new object[] { Substitute.For<IInputGraphField>(), DirectiveLocation.INPUT_FIELD_DEFINITION });
         }
 
         [Test]

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ScalarTestData
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
-    using Moq;
+    using NSubstitute;
 
     [ApplyDirective("directive1")]
     public class MyTestScalar : IScalarGraphType
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ScalarTestData
             this.Route = new SchemaItemPath(SchemaItemCollections.Scalars, this.Name);
             this.InternalName = "My.Test.Scalar";
             this.ObjectType = typeof(MyTestObject);
-            this.SourceResolver = new Mock<ILeafValueResolver>().Object;
+            this.SourceResolver = Substitute.For<ILeafValueResolver>();
             this.Publish = true;
 
             var dir = new AppliedDirectiveCollection(this);

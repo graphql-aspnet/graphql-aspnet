@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -29,15 +29,15 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var method = typeof(SimpleExecutableDirective)
                 .GetMethod(nameof(SimpleExecutableDirective.Execute));
 
-            var mock = new Mock<IGraphTypeTemplate>();
-            mock.Setup(x => x.InternalName).Returns("Simple");
+            var mock = Substitute.For<IGraphTypeTemplate>();
+            mock.InternalName.Returns("Simple");
             var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
-            mock.Setup(x => x.Route).Returns(route);
-            var template = new GraphDirectiveMethodTemplate(mock.Object, method);
+            mock.Route.Returns(route);
+            var template = new GraphDirectiveMethodTemplate(mock, method);
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual(mock.Object, template.Parent);
+            Assert.AreEqual(mock, template.Parent);
             Assert.AreEqual(method, template.Method);
 
             Assert.AreEqual("IGraphActionResult (object source, int arg1, string arg2)", template.MethodSignature);
@@ -66,11 +66,11 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var method = typeof(TestDirectiveMethodTemplateContainer)
                 .GetMethod(nameof(TestDirectiveMethodTemplateContainer.SkippedMethod));
 
-            var mock = new Mock<IGraphTypeTemplate>();
-            mock.Setup(x => x.InternalName).Returns("Simple");
+            var mock = Substitute.For<IGraphTypeTemplate>();
+            mock.InternalName.Returns("Simple");
             var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
-            mock.Setup(x => x.Route).Returns(route);
-            var template = new GraphDirectiveMethodTemplate(mock.Object, method);
+            mock.Route.Returns(route);
+            var template = new GraphDirectiveMethodTemplate(mock, method);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -85,14 +85,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var method = typeof(TestDirectiveMethodTemplateContainer)
                 .GetMethod(nameof(TestDirectiveMethodTemplateContainer.IncorrrectReturnType));
 
-            var mock = new Mock<IGraphTypeTemplate>();
-            mock.Setup(x => x.InternalName).Returns("Simple");
+            var mock = Substitute.For<IGraphTypeTemplate>();
+            mock.InternalName.Returns("Simple");
             var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
-            mock.Setup(x => x.Route).Returns(route);
+            mock.Route.Returns(route);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new GraphDirectiveMethodTemplate(mock.Object, method);
+                var template = new GraphDirectiveMethodTemplate(mock, method);
                 template.Parse();
                 template.ValidateOrThrow();
             });
@@ -104,14 +104,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var method = typeof(TestDirectiveMethodTemplateContainer2)
                 .GetMethod(nameof(TestDirectiveMethodTemplateContainer2.InvalidTaskReference));
 
-            var mock = new Mock<IGraphTypeTemplate>();
-            mock.Setup(x => x.InternalName).Returns("Simple");
+            var mock = Substitute.For<IGraphTypeTemplate>();
+            mock.InternalName.Returns("Simple");
             var route = new SchemaItemPath(SchemaItemCollections.Directives, "Simple");
-            mock.Setup(x => x.Route).Returns(route);
+            mock.Route.Returns(route);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new GraphDirectiveMethodTemplate(mock.Object, method);
+                var template = new GraphDirectiveMethodTemplate(mock, method);
                 template.Parse();
                 template.ValidateOrThrow();
             });

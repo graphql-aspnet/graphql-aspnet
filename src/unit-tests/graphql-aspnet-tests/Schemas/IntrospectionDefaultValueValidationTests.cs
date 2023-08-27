@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Schemas.IntrospectionDefaultValueTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -120,14 +120,14 @@ namespace GraphQL.AspNet.Tests.Schemas
                 .AddType<TwoPropertyObject>(TypeKind.INPUT_OBJECT)
                 .Build();
 
-            var graphType = new Mock<IGraphType>();
+            var graphType = Substitute.For<IGraphType>();
 
-            var introspectedType = new IntrospectedType(graphType.Object);
-            var inputField = new Mock<IInputGraphField>();
-            inputField.Setup(x => x.Route).Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
-            inputField.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration(typeExpression));
+            var introspectedType = new IntrospectedType(graphType);
+            var inputField = Substitute.For<IInputGraphField>();
+            inputField.Route.Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
+            inputField.TypeExpression.Returns(GraphTypeExpression.FromDeclaration(typeExpression));
 
-            var introspectedField = new IntrospectedInputValueType(inputField.Object, introspectedType, defaultValue);
+            var introspectedField = new IntrospectedInputValueType(inputField, introspectedType, defaultValue);
             var spectedSchema = new IntrospectedSchema(server.Schema);
 
             try
@@ -160,16 +160,16 @@ namespace GraphQL.AspNet.Tests.Schemas
                 .AddType<TwoPropertyObject>(TypeKind.INPUT_OBJECT)
                 .Build();
 
-            var graphType = new Mock<IGraphType>();
+            var graphType = Substitute.For<IGraphType>();
 
-            var introspectedType = new IntrospectedType(graphType.Object);
-            var argument = new Mock<IGraphArgument>();
-            argument.Setup(x => x.Route).Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
-            argument.Setup(x => x.DefaultValue).Returns(defaultValue);
-            argument.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration(typeExpression));
-            argument.Setup(x => x.HasDefaultValue).Returns(hasDefaultValue);
+            var introspectedType = new IntrospectedType(graphType);
+            var argument = Substitute.For<IGraphArgument>();
+            argument.Route.Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
+            argument.DefaultValue.Returns(defaultValue);
+            argument.TypeExpression.Returns(GraphTypeExpression.FromDeclaration(typeExpression));
+            argument.HasDefaultValue.Returns(hasDefaultValue);
 
-            var introspectedField = new IntrospectedInputValueType(argument.Object, introspectedType);
+            var introspectedField = new IntrospectedInputValueType(argument, introspectedType);
             var spectedSchema = new IntrospectedSchema(server.Schema);
 
             try
@@ -208,14 +208,14 @@ namespace GraphQL.AspNet.Tests.Schemas
                 .AddType<TwoPropertyObject>(TypeKind.INPUT_OBJECT)
                 .Build();
 
-            var graphType = new Mock<IGraphType>();
+            var graphType = Substitute.For<IGraphType>();
 
-            var introspectedType = new IntrospectedType(graphType.Object);
-            var inputField = new Mock<IInputGraphField>();
-            inputField.Setup(x => x.Route).Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
-            inputField.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration(typeExpression));
+            var introspectedType = new IntrospectedType(graphType);
+            var inputField = Substitute.For<IInputGraphField>();
+            inputField.Route.Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
+            inputField.TypeExpression.Returns(GraphTypeExpression.FromDeclaration(typeExpression));
 
-            var introspectedField = new IntrospectedInputValueType(inputField.Object, introspectedType);
+            var introspectedField = new IntrospectedInputValueType(inputField, introspectedType);
             var spectedSchema = new IntrospectedSchema(server.Schema);
 
             // should never throw an exception

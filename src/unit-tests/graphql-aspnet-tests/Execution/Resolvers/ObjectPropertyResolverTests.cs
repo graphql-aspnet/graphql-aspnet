@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
     using GraphQL.AspNet.Tests.Common.Extensions.DiExtensionTestData;
     using GraphQL.AspNet.Tests.Execution.Resolvers.ValueResolversTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
             fieldContextBuilder.AddSourceData(null);
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData);
             await resolver.ResolveAsync(resolutionContext);
 
             Assert.AreEqual(null, resolutionContext.Result);
@@ -65,11 +65,11 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
             // set properties parent to be an interface that the source data is castable
             // this scenario shouldnt be possible in general execution but exists
             // in case of developers extending the framework
-            var parentMock = new Mock<IGraphTypeTemplate>();
-            parentMock.Setup(x => x.ObjectType).Returns(typeof(IResolverInterface));
+            var parentMock = Substitute.For<IGraphTypeTemplate>();
+            parentMock.ObjectType.Returns(typeof(IResolverInterface));
 
-            fieldContextBuilder.ResolverMetaData.Setup(x => x.ParentObjectType).Returns(parentMock.Object.ObjectType);
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
+            fieldContextBuilder.ResolverMetaData.ParentObjectType.Returns(parentMock.ObjectType);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             await resolver.ResolveAsync(resolutionContext);
@@ -92,12 +92,12 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
 
             // set properties parent to be an interface
             // that hte source data is not castable to
-            var parentMock = new Mock<IGraphTypeTemplate>();
-            parentMock.Setup(x => x.ObjectType).Returns(typeof(ITestInterface));
+            var parentMock = Substitute.For<IGraphTypeTemplate>();
+            parentMock.ObjectType.Returns(typeof(ITestInterface));
 
-            fieldContextBuilder.ResolverMetaData.Setup(x => x.ParentObjectType).Returns(parentMock.Object.ObjectType);
+            fieldContextBuilder.ResolverMetaData.ParentObjectType.Returns(parentMock.ObjectType);
 
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             await resolver.ResolveAsync(resolutionContext);
@@ -119,7 +119,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
                 new ResolverStructB("struct"));
 
             // source data is not of the type the resolver is for
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             await resolver.ResolveAsync(resolutionContext);
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
 
             // source data is not of the type the resolver is for
             fieldContextBuilder.AddSourceData(new ResolverObject());
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             await resolver.ResolveAsync(resolutionContext);
@@ -165,7 +165,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData);
             await resolver.ResolveAsync(resolutionContext);
 
             Assert.IsNotNull(resolutionContext.Result);
@@ -186,7 +186,7 @@ namespace GraphQL.AspNet.Tests.Execution.Resolvers
 
             // source data is not of the type the resolver is for
             fieldContextBuilder.AddSourceData(new ResolverObject());
-            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData.Object);
+            var resolver = new ObjectPropertyGraphFieldResolver(fieldContextBuilder.ResolverMetaData);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             await resolver.ResolveAsync(resolutionContext);

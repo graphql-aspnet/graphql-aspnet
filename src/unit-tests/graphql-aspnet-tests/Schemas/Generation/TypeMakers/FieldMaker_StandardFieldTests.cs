@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers.TestData;
     using Microsoft.AspNetCore.Hosting.Server;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -126,13 +126,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         {
             var server = new TestServerBuilder().Build();
 
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("LongItem0");
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.ObjectType).Returns(typeof(SimplePropertyObject));
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.ObjectType.Returns(typeof(SimplePropertyObject));
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Name));
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
@@ -147,13 +146,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         [Test]
         public void PropertyGraphField_GraphName_OverridesDefaultName()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("LongItem0");
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.ObjectType).Returns(typeof(SimplePropertyObject));
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.ObjectType.Returns(typeof(SimplePropertyObject));
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Age));
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
@@ -172,13 +170,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         public void PropertyGraphField_DirectivesAreAppliedToCreatedField()
         {
             var server = new TestServerBuilder().Build();
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("LongItem0");
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.ObjectType).Returns(typeof(SimplePropertyObject));
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.ObjectType.Returns(typeof(SimplePropertyObject));
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(ObjectDirectiveTestItem).GetProperty(nameof(ObjectDirectiveTestItem.Prop1));
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
@@ -198,13 +195,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         public void MethodGraphField_DirectivesAreAppliedToCreatedField()
         {
             var server = new TestServerBuilder().Build();
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("LongItem0");
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.ObjectType).Returns(typeof(ObjectDirectiveTestItem));
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.ObjectType.Returns(typeof(ObjectDirectiveTestItem));
 
-            var parent = obj.Object;
+            var parent = obj;
             var methodInfo = typeof(ObjectDirectiveTestItem).GetMethod(nameof(ObjectDirectiveTestItem.Method1));
             var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();
@@ -224,13 +220,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         public void Arguments_DirectivesAreApplied()
         {
             var server = new TestServerBuilder().Build();
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("LongItem0");
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.ObjectType).Returns(typeof(ObjectDirectiveTestItem));
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.ObjectType.Returns(typeof(ObjectDirectiveTestItem));
 
-            var parent = obj.Object;
+            var parent = obj;
             var methodInfo = typeof(ObjectDirectiveTestItem).GetMethod(nameof(ObjectDirectiveTestItem.MethodWithArgDirectives));
             var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();
@@ -308,13 +303,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 })
                 .Build();
 
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("LongItem0");
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.ObjectType).Returns(typeof(ObjectWithAttributedFieldArguments));
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.ObjectType.Returns(typeof(ObjectWithAttributedFieldArguments));
 
-            var parent = obj.Object;
+            var parent = obj;
             var methodInfo = typeof(ObjectWithAttributedFieldArguments).GetMethod(fieldName);
             var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();
@@ -337,13 +331,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         {
             var server = new TestServerBuilder().Build();
 
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("LongItem0");
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.ObjectType).Returns(typeof(ObjectWithInternalName));
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("Item0");
+            obj.ObjectType.Returns(typeof(ObjectWithInternalName));
 
-            var parent = obj.Object;
+            var parent = obj;
             var methodInfo = typeof(ObjectWithInternalName).GetProperty("Prop1");
             var template = new PropertyGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();
@@ -361,13 +354,13 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         {
             var server = new TestServerBuilder().Build();
 
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalName).Returns("LongItem0");
-            obj.Setup(x => x.InternalName).Returns("Item0");
-            obj.Setup(x => x.ObjectType).Returns(typeof(ObjectWithInternalName));
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalName.Returns("LongItem0");
+            obj.InternalName.Returns("Item0");
+            obj.ObjectType.Returns(typeof(ObjectWithInternalName));
 
-            var parent = obj.Object;
+            var parent = obj;
             var methodInfo = typeof(ObjectWithInternalName).GetMethod("Method1");
             var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();

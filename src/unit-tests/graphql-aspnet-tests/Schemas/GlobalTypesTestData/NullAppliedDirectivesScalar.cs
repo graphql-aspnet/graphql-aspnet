@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
-    using Moq;
+    using NSubstitute;
 
     public class NullAppliedDirectivesScalar : IScalarGraphType
     {
@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
         {
             this.Name = "ValidName";
             this.ValueType = ScalarValueType.String;
-            this.SourceResolver = new Mock<ILeafValueResolver>().Object;
+            this.SourceResolver = Substitute.For<ILeafValueResolver>();
             this.ObjectType = typeof(TwoPropertyStruct);
             this.AppliedDirectives = null;
         }

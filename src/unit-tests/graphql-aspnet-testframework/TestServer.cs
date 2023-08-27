@@ -35,6 +35,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using NSubstitute;
 
     /// <summary>
     /// A mocked server instance built for a given schema and with a service provider (such as would exist at runtime)
@@ -481,7 +482,7 @@ namespace GraphQL.AspNet.Tests.Framework
         public virtual IGraphFieldResolverMetaData CreateResolverMetadata(Type entityType, string fieldOrActionName)
         {
             var builder = CreateFieldContextBuilder(entityType, fieldOrActionName);
-            return builder?.ResolverMetaData.Object;
+            return builder?.ResolverMetaData;
         }
 
         /// <summary>

@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -30,22 +30,22 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void Add_DuplicateEnumValueNameThrowsException()
         {
-            var owner = new Mock<IEnumGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
-            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
 
-            var enumValue = new Mock<IEnumValue>();
-            enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
-            var enumValue2 = new Mock<IEnumValue>();
-            enumValue2.Setup(x => x.Name).Returns("VALUE1");
-            enumValue2.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            var enumValue2 = Substitute.For<IEnumValue>();
+            enumValue2.Name.Returns("VALUE1");
+            enumValue2.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
-            var collection = new EnumValueCollection(owner.Object);
-            collection.Add(enumValue.Object);
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
 
             Assert.AreEqual(1, collection.Count);
             Assert.AreEqual(1, collection.Keys.Count());
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                collection.Add(enumValue2.Object);
+                collection.Add(enumValue2);
             });
         }
 
@@ -62,23 +62,23 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase(EnumValueTestEnum.Value2, true, false)]
         public void FindEnumValue(EnumValueTestEnum testValue, bool doesValidate, bool shouldBeFound)
         {
-            var owner = new Mock<IEnumGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
-            owner.Setup(x => x.ValidateObject(It.IsAny<object>())).Returns(doesValidate);
-            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ValidateObject(Arg.Any<object>()).Returns(doesValidate);
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
 
-            var enumValue = new Mock<IEnumValue>();
-            enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
-            var collection = new EnumValueCollection(owner.Object);
-            collection.Add(enumValue.Object);
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
 
             var result = collection.FindByEnumValue(testValue);
 
             if (shouldBeFound)
-                Assert.AreEqual(enumValue.Object, result);
+                Assert.AreEqual(enumValue, result);
             else
                 Assert.IsNull(result);
         }
@@ -86,18 +86,18 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void FindEnumValue_NullPassed_RetunsNull()
         {
-            var owner = new Mock<IEnumGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
-            owner.Setup(x => x.ValidateObject(It.IsAny<object>())).Returns(true);
-            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ValidateObject(Arg.Any<object>()).Returns(true);
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
 
-            var enumValue = new Mock<IEnumValue>();
-            enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
-            var collection = new EnumValueCollection(owner.Object);
-            collection.Add(enumValue.Object);
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
 
             var result = collection.FindByEnumValue(null);
             Assert.IsNull(result);
@@ -108,17 +108,17 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase("VALUE2", false)]
         public void ContainsKey(string testValue, bool shouldBeFound)
         {
-            var owner = new Mock<IEnumGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
-            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
 
-            var enumValue = new Mock<IEnumValue>();
-            enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
-            var collection = new EnumValueCollection(owner.Object);
-            collection.Add(enumValue.Object);
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
 
             var result = collection.ContainsKey(testValue);
 
@@ -129,22 +129,22 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase("VALUE2", false)]
         public void ThisByName(string name, bool shouldBeFound)
         {
-            var owner = new Mock<IEnumGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
-            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
 
-            var enumValue = new Mock<IEnumValue>();
-            enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
-            var collection = new EnumValueCollection(owner.Object);
-            collection.Add(enumValue.Object);
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
 
             if (shouldBeFound)
             {
                 var result = collection[name];
-                Assert.AreEqual(enumValue.Object, result);
+                Assert.AreEqual(enumValue, result);
             }
             else
             {
@@ -161,24 +161,24 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase("VALUE2", false)]
         public void TryGetValue(string name, bool shouldBeFound)
         {
-            var owner = new Mock<IEnumGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
-            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
 
-            var enumValue = new Mock<IEnumValue>();
-            enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
-            var collection = new EnumValueCollection(owner.Object);
-            collection.Add(enumValue.Object);
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
 
             var result = collection.TryGetValue(name, out var item);
             if (shouldBeFound)
             {
                 Assert.IsTrue(result);
                 Assert.IsNotNull(item);
-                Assert.AreEqual(enumValue.Object, item);
+                Assert.AreEqual(enumValue, item);
             }
             else
             {
@@ -190,17 +190,17 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void Remove_ValidValueIsRemoved()
         {
-            var owner = new Mock<IEnumGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
-            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
 
-            var enumValue = new Mock<IEnumValue>();
-            enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
-            var collection = new EnumValueCollection(owner.Object);
-            collection.Add(enumValue.Object);
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
 
             Assert.AreEqual(1, collection.Count);
             collection.Remove("VALUE1");
@@ -210,17 +210,17 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void Remove_InvalidValueIsIgnored()
         {
-            var owner = new Mock<IEnumGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
-            owner.Setup(x => x.ObjectType).Returns(typeof(EnumValueTestEnum));
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
 
-            var enumValue = new Mock<IEnumValue>();
-            enumValue.Setup(x => x.Name).Returns("VALUE1");
-            enumValue.Setup(x => x.DeclaredValue).Returns(EnumValueTestEnum.Value1);
-            enumValue.Setup(x => x.DeclaredLabel).Returns(EnumValueTestEnum.Value1.ToString());
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
-            var collection = new EnumValueCollection(owner.Object);
-            collection.Add(enumValue.Object);
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
 
             Assert.AreEqual(1, collection.Count);
             collection.Remove("VALUE1DDD");

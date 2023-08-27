@@ -9,18 +9,16 @@
 
 namespace GraphQL.AspNet.Tests.Execution
 {
-    using System.Linq;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Tests.Execution.ExecutionArgumentTestData;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -30,10 +28,10 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var argSet = new ExecutionArgumentCollection();
 
-            var mockFieldArg = new Mock<IGraphArgument>();
-            mockFieldArg.Setup(x => x.ParameterName).Returns(key);
+            var mockFieldArg = Substitute.For<IGraphArgument>();
+            mockFieldArg.ParameterName.Returns(key);
 
-            argSet.Add(new ExecutionArgument(mockFieldArg.Object, value));
+            argSet.Add(new ExecutionArgument(mockFieldArg, value));
             return argSet;
         }
 
@@ -91,7 +89,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
             argSet = argSet.ForContext(context);
 
-            var resolvedArgs = argSet.PrepareArguments(contextBuilder.ResolverMetaData.Object);
+            var resolvedArgs = argSet.PrepareArguments(contextBuilder.ResolverMetaData);
 
             Assert.IsNotNull(resolvedArgs);
             Assert.AreEqual(1, resolvedArgs.Length);
@@ -124,7 +122,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             Assert.Throws<GraphExecutionException>(() =>
             {
-                var resolvedArgs = argSet.PrepareArguments(contextBuilder.ResolverMetaData.Object);
+                var resolvedArgs = argSet.PrepareArguments(contextBuilder.ResolverMetaData);
             });
         }
 
@@ -151,7 +149,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
             argSet = argSet.ForContext(contextBuilder.CreateResolutionContext());
 
-            var resolvedArgs = argSet.PrepareArguments(contextBuilder.ResolverMetaData.Object);
+            var resolvedArgs = argSet.PrepareArguments(contextBuilder.ResolverMetaData);
             Assert.IsNotNull(resolvedArgs);
             Assert.AreEqual(1, resolvedArgs.Length);
             Assert.IsNull(resolvedArgs[0]);
@@ -184,7 +182,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
             argSet = argSet.ForContext(fieldBuilder.CreateResolutionContext());
 
-            var resolvedArgs = argSet.PrepareArguments(fieldBuilder.ResolverMetaData.Object);
+            var resolvedArgs = argSet.PrepareArguments(fieldBuilder.ResolverMetaData);
             Assert.IsNotNull(resolvedArgs);
             Assert.AreEqual(1, resolvedArgs.Length);
             Assert.IsNull(resolvedArgs[0]);
@@ -214,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var argSet = new ExecutionArgumentCollection() as IExecutionArgumentCollection;
             argSet = argSet.ForContext(fieldBuilder.CreateResolutionContext());
 
-            var resolvedArgs = argSet.PrepareArguments(fieldBuilder.ResolverMetaData.Object);
+            var resolvedArgs = argSet.PrepareArguments(fieldBuilder.ResolverMetaData);
             Assert.IsNotNull(resolvedArgs);
             Assert.AreEqual(1, resolvedArgs.Length);
             Assert.AreEqual(3, resolvedArgs[0]);
@@ -244,7 +242,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             Assert.Throws<GraphExecutionException>(() =>
             {
-                var resolvedArgs = argSet.PrepareArguments(fieldBuilder.ResolverMetaData.Object);
+                var resolvedArgs = argSet.PrepareArguments(fieldBuilder.ResolverMetaData);
             });
         }
     }
