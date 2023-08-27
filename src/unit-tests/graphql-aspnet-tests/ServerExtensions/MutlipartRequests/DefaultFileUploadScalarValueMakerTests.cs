@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using System.Threading.Tasks;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine.TypeMakers;
     using Microsoft.AspNetCore.Http;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -80,19 +80,19 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             writer.Close();
             streamIn.Seek(0, SeekOrigin.Begin);
 
-            var fileIn = new Mock<IFormFile>();
-            fileIn.Setup(x => x.OpenReadStream())
+            var fileIn = Substitute.For<IFormFile>();
+            fileIn.OpenReadStream()
                 .Returns(streamIn);
-            fileIn.Setup(x => x.FileName).Returns("test file.txt");
-            fileIn.Setup(x => x.ContentType).Returns("test content type");
-            fileIn.Setup(x => x.Name).Returns("test map key");
-            fileIn.Setup(x => x.Headers).Returns(new HeaderDictionary());
+            fileIn.FileName.Returns("test file.txt");
+            fileIn.ContentType.Returns("test content type");
+            fileIn.Name.Returns("test map key");
+            fileIn.Headers.Returns(new HeaderDictionary());
 
             var bytes = Encoding.UTF8.GetBytes(data);
 
             var maker = new DefaultFileUploadScalarValueMaker();
 
-            var fileOut = await maker.CreateFileScalarAsync(fileIn.Object);
+            var fileOut = await maker.CreateFileScalarAsync(fileIn);
             var stream = await fileOut.OpenFileAsync();
             using var reader = new StreamReader(stream);
             var text = reader.ReadToEnd();
@@ -116,13 +116,13 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             writer.Close();
             streamIn.Seek(0, SeekOrigin.Begin);
 
-            var fileIn = new Mock<IFormFile>();
-            fileIn.Setup(x => x.OpenReadStream())
+            var fileIn = Substitute.For<IFormFile>();
+            fileIn.OpenReadStream()
                 .Returns(streamIn);
-            fileIn.Setup(x => x.FileName).Returns("test file.txt");
-            fileIn.Setup(x => x.ContentType).Returns("test content type");
-            fileIn.Setup(x => x.Name).Returns("test map key");
-            fileIn.Setup(x => x.Headers).Returns(new HeaderDictionary()
+            fileIn.FileName.Returns("test file.txt");
+            fileIn.ContentType.Returns("test content type");
+            fileIn.Name.Returns("test map key");
+            fileIn.Headers.Returns(new HeaderDictionary()
             {
                 { "header1", "value1" },
             });
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
             var maker = new DefaultFileUploadScalarValueMaker();
 
-            var fileOut = await maker.CreateFileScalarAsync(fileIn.Object);
+            var fileOut = await maker.CreateFileScalarAsync(fileIn);
             var stream = await fileOut.OpenFileAsync();
             using var reader = new StreamReader(stream);
             var text = reader.ReadToEnd();
@@ -154,19 +154,19 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             writer.Close();
             streamIn.Seek(0, SeekOrigin.Begin);
 
-            var fileIn = new Mock<IFormFile>();
-            fileIn.Setup(x => x.OpenReadStream())
+            var fileIn = Substitute.For<IFormFile>();
+            fileIn.OpenReadStream()
                 .Returns(streamIn);
-            fileIn.Setup(x => x.FileName).Returns("test file.txt");
-            fileIn.Setup(x => x.ContentType).Returns("test content type");
-            fileIn.Setup(x => x.Name).Returns("test map key");
-            fileIn.Setup(x => x.Headers).Returns(null as IHeaderDictionary);
+            fileIn.FileName.Returns("test file.txt");
+            fileIn.ContentType.Returns("test content type");
+            fileIn.Name.Returns("test map key");
+            fileIn.Headers.Returns(null as IHeaderDictionary);
 
             var bytes = Encoding.UTF8.GetBytes(data);
 
             var maker = new DefaultFileUploadScalarValueMaker();
 
-            var fileOut = await maker.CreateFileScalarAsync(fileIn.Object);
+            var fileOut = await maker.CreateFileScalarAsync(fileIn);
             var stream = await fileOut.OpenFileAsync();
             using var reader = new StreamReader(stream);
             var text = reader.ReadToEnd();
@@ -177,16 +177,16 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public async Task CreateFileScalar_FromFormFile_NullStreams_DeliversStreamUnaltered()
         {
-            var fileIn = new Mock<IFormFile>();
-            fileIn.Setup(x => x.OpenReadStream()).Returns(null as Stream);
-            fileIn.Setup(x => x.FileName).Returns("test file.txt");
-            fileIn.Setup(x => x.ContentType).Returns("test content type");
-            fileIn.Setup(x => x.Name).Returns("test map key");
-            fileIn.Setup(x => x.Headers).Returns(null as IHeaderDictionary);
+            var fileIn = Substitute.For<IFormFile>();
+            fileIn.OpenReadStream().Returns(null as Stream);
+            fileIn.FileName.Returns("test file.txt");
+            fileIn.ContentType.Returns("test content type");
+            fileIn.Name.Returns("test map key");
+            fileIn.Headers.Returns(null as IHeaderDictionary);
 
             var maker = new DefaultFileUploadScalarValueMaker();
 
-            var fileOut = await maker.CreateFileScalarAsync(fileIn.Object);
+            var fileOut = await maker.CreateFileScalarAsync(fileIn);
             var stream = await fileOut.OpenFileAsync();
 
             Assert.IsNull(stream);

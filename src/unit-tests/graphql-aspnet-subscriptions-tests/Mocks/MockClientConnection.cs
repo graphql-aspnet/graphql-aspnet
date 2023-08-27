@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Mocks
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Web;
-    using Moq;
+    using NSubstitute;
 
     /// <summary>
     /// A fake client connection to mock how an <see cref="IClientConnection"/> would send and recieve
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Mocks
             ClientConnectionState broadcastState = ClientConnectionState.Connecting,
             string requestedProtocol = null)
         {
-            this.ServiceProvider = serviceProvider ?? new Mock<IServiceProvider>().Object;
+            this.ServiceProvider = serviceProvider ?? Substitute.For<IServiceProvider>();
             this.SecurityContext = securityContext;
             this.State = broadcastState;
 

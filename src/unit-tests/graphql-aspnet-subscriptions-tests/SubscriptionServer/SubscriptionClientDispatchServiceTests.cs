@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.SubscriptionServer.BackgroundServices;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -22,17 +22,15 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public async Task ExecuteService_InvokesDispatchQueueWithoutError()
         {
-            var dispatchQueue = new Mock<ISubscriptionEventDispatchQueue>();
+            var dispatchQueue = Substitute.For<ISubscriptionEventDispatchQueue>();
 
-            var service = new SubscriptionClientDispatchService(dispatchQueue.Object);
+            var service = new SubscriptionClientDispatchService(dispatchQueue);
 
             var tokenSource = new CancellationTokenSource(15);
             await service.StartAsync(tokenSource.Token);
             service.Dispose();
 
-            dispatchQueue.Verify(
-                x => x.BeginProcessingQueueAsync(It.IsAny<CancellationToken>()),
-                Times.Once());
+            await dispatchQueue.Received(1).BeginProcessingQueueAsync(Arg.Any<CancellationToken>());
         }
     }
 }

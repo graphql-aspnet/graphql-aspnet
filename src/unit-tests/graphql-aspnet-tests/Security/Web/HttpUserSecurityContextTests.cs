@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Security.Web
     using GraphQL.AspNet.Web.Security;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -40,17 +40,17 @@ namespace GraphQL.AspNet.Tests.Security.Web
 
             var user = new ClaimsPrincipal();
 
-            var authService = new Mock<IAuthenticationService>();
-            authService.Setup(x => x.AuthenticateAsync(It.IsAny<HttpContext>(), It.IsAny<string>()))
-                .ReturnsAsync(AuthenticateResult.Success(new AuthenticationTicket(user, schemeToTest)));
+            var authService = Substitute.For<IAuthenticationService>();
+            authService.AuthenticateAsync(Arg.Any<HttpContext>(), Arg.Any<string>())
+                .Returns(AuthenticateResult.Success(new AuthenticationTicket(user, schemeToTest)));
 
-            var serviceProvider = new Mock<IServiceProvider>();
-            serviceProvider.Setup(x => x.GetService(It.IsAny<Type>()))
-                .Returns(authService.Object);
+            var serviceProvider = Substitute.For<IServiceProvider>();
+            serviceProvider.GetService(Arg.Any<Type>())
+                .Returns(authService);
 
             var httpContext = new DefaultHttpContext();
             httpContext.User = user;
-            httpContext.RequestServices = serviceProvider.Object;
+            httpContext.RequestServices = serviceProvider;
 
             using var userContext = new HttpUserSecurityContext(httpContext);
             var result = await userContext.AuthenticateAsync(schemeToTest);
@@ -66,17 +66,17 @@ namespace GraphQL.AspNet.Tests.Security.Web
         {
             var user = new ClaimsPrincipal();
 
-            var authService = new Mock<IAuthenticationService>();
-            authService.Setup(x => x.AuthenticateAsync(It.IsAny<HttpContext>(), null))
-                .ReturnsAsync(AuthenticateResult.Success(new AuthenticationTicket(user, null)));
+            var authService = Substitute.For<IAuthenticationService>();
+            authService.AuthenticateAsync(Arg.Any<HttpContext>(), null)
+                .Returns(AuthenticateResult.Success(new AuthenticationTicket(user, null)));
 
-            var serviceProvider = new Mock<IServiceProvider>();
-            serviceProvider.Setup(x => x.GetService(It.IsAny<Type>()))
-                .Returns(authService.Object);
+            var serviceProvider = Substitute.For<IServiceProvider>();
+            serviceProvider.GetService(Arg.Any<Type>())
+                .Returns(authService);
 
             var httpContext = new DefaultHttpContext();
             httpContext.User = user;
-            httpContext.RequestServices = serviceProvider.Object;
+            httpContext.RequestServices = serviceProvider;
 
             using var userContext = new HttpUserSecurityContext(httpContext);
             var result = await userContext.AuthenticateAsync();
@@ -92,17 +92,17 @@ namespace GraphQL.AspNet.Tests.Security.Web
         {
             var user = new ClaimsPrincipal();
 
-            var authService = new Mock<IAuthenticationService>();
-            authService.Setup(x => x.AuthenticateAsync(It.IsAny<HttpContext>(), null))
-                .ReturnsAsync(AuthenticateResult.Success(new AuthenticationTicket(user, null)));
+            var authService = Substitute.For<IAuthenticationService>();
+            authService.AuthenticateAsync(Arg.Any<HttpContext>(), null)
+                .Returns(AuthenticateResult.Success(new AuthenticationTicket(user, null)));
 
-            var serviceProvider = new Mock<IServiceProvider>();
-            serviceProvider.Setup(x => x.GetService(It.IsAny<Type>()))
-                .Returns(authService.Object);
+            var serviceProvider = Substitute.For<IServiceProvider>();
+            serviceProvider.GetService(Arg.Any<Type>())
+                .Returns(authService);
 
             var httpContext = new DefaultHttpContext();
             httpContext.User = user;
-            httpContext.RequestServices = serviceProvider.Object;
+            httpContext.RequestServices = serviceProvider;
 
             using var userContext = new HttpUserSecurityContext(httpContext);
             var result = await userContext.AuthenticateAsync();
@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Security.Web
             Assert.IsTrue(result.Suceeded);
             Assert.AreEqual(result, result1);
 
-            authService.Verify(x => x.AuthenticateAsync(It.IsAny<HttpContext>(), null), Times.Once());
+            await authService.Received(1).AuthenticateAsync(Arg.Any<HttpContext>(), null);
         }
     }
 }

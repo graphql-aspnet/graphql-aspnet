@@ -33,35 +33,35 @@ namespace GraphQL.AspNet.Tests
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
     public class SubscriptionReceiverExtensionTests
     {
         private (
-            Mock<ISchemaBuilder<GraphSchema>>,
-            Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>>,
-            Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>)
+            ISchemaBuilder<GraphSchema>,
+            ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>,
+            ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>)
             CreateSchemaBuilderMock(SchemaOptions<GraphSchema> options)
         {
-            var queryPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>>();
-            var fieldPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>();
+            var queryPipeline = Substitute.For<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>>();
+            var fieldPipeline = Substitute.For<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>();
 
-            var builder = new Mock<ISchemaBuilder<GraphSchema>>();
-            builder.Setup(x => x.QueryExecutionPipeline).Returns(queryPipeline.Object);
-            builder.Setup(x => x.FieldExecutionPipeline).Returns(fieldPipeline.Object);
-            builder.Setup(x => x.Options).Returns(options);
+            var builder = Substitute.For<ISchemaBuilder<GraphSchema>>();
+            builder.QueryExecutionPipeline.Returns(queryPipeline);
+            builder.FieldExecutionPipeline.Returns(fieldPipeline);
+            builder.Options.Returns(options);
 
-            queryPipeline.Setup(x => x.Clear());
-            queryPipeline.Setup(x => x.AddMiddleware<IGraphQLMiddlewareComponent<QueryExecutionContext>>(
-                It.IsAny<ServiceLifetime>(),
-                It.IsAny<string>())).Returns(queryPipeline.Object);
+            queryPipeline.Clear();
+            queryPipeline.AddMiddleware<IGraphQLMiddlewareComponent<QueryExecutionContext>>(
+                Arg.Any<ServiceLifetime>(),
+                Arg.Any<string>()).Returns(queryPipeline);
 
-            queryPipeline.Setup(x => x.Clear());
-            queryPipeline.Setup(x => x.AddMiddleware(
-                It.IsAny<IGraphQLMiddlewareComponent<QueryExecutionContext>>(),
-                It.IsAny<string>())).Returns(queryPipeline.Object);
+            queryPipeline.Clear();
+            queryPipeline.AddMiddleware(
+                Arg.Any<IGraphQLMiddlewareComponent<QueryExecutionContext>>(),
+                Arg.Any<string>()).Returns(queryPipeline);
 
             return (builder, queryPipeline, fieldPipeline);
         }
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Tests
 
             (var builder, var queryPipeline, var fieldPipeline) = CreateSchemaBuilderMock(primaryOptions);
 
-            var extension = new SubscriptionReceiverSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
+            var extension = new SubscriptionReceiverSchemaExtension<GraphSchema>(builder, subscriptionOptions);
             extension.Configure(primaryOptions);
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphOperationType.Subscription));
@@ -106,11 +106,11 @@ namespace GraphQL.AspNet.Tests
         [Test]
         public void UseExtension_RegistersMiddlewareComponent()
         {
-            var logger = new Mock<IGraphEventLogger>();
+            var logger = Substitute.For<IGraphEventLogger>();
             using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
 
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IGraphEventLogger>(logger.Object);
+            serviceCollection.AddSingleton<IGraphEventLogger>(logger);
 
             var primaryOptions = new SchemaOptions<GraphSchema>(serviceCollection);
             var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();
@@ -118,15 +118,15 @@ namespace GraphQL.AspNet.Tests
 
             (var builder, var queryPipeline, var fieldPipeline) = CreateSchemaBuilderMock(primaryOptions);
 
-            var extension = new SubscriptionReceiverSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
+            var extension = new SubscriptionReceiverSchemaExtension<GraphSchema>(builder, subscriptionOptions);
             extension.Configure(primaryOptions);
 
-            var appBuilder = new Mock<IApplicationBuilder>();
+            var appBuilder = Substitute.For<IApplicationBuilder>();
 
-            extension.UseExtension(appBuilder.Object, serviceCollection.BuildServiceProvider());
+            extension.UseExtension(appBuilder, serviceCollection.BuildServiceProvider());
 
-            appBuilder.Verify(x => x.Use(It.IsAny<Func<RequestDelegate, RequestDelegate>>()), Times.Once);
-            logger.Verify(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<IGraphLogEntry>>()), Times.Once);
+            appBuilder.Received(1).Use(Arg.Any<Func<RequestDelegate, RequestDelegate>>());
+            logger.Received(1).Log(Arg.Any<LogLevel>(), Arg.Any<Func<IGraphLogEntry>>());
         }
 
         [Test]
@@ -142,48 +142,33 @@ namespace GraphQL.AspNet.Tests
 
             (var builder, var queryPipeline, var fieldPipeline) = CreateSchemaBuilderMock(primaryOptions);
 
-            var extension = new SubscriptionReceiverSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
+            var extension = new SubscriptionReceiverSchemaExtension<GraphSchema>(builder, subscriptionOptions);
             extension.Configure(primaryOptions);
 
             // 12 middleware components in the subscription-swapped primary query pipeline
             //    registered by type
             // 1 middleware component registered by instance
-            queryPipeline.Verify(x => x.Clear());
-            queryPipeline.Verify(
-                x =>
-                    x.AddMiddleware<IGraphQLMiddlewareComponent<QueryExecutionContext>>(
-                            It.IsAny<ServiceLifetime>(),
-                            It.IsAny<string>()),
-                Times.Exactly(12));
+            queryPipeline.Received().Clear();
+            queryPipeline.Received(12).AddMiddleware<IGraphQLMiddlewareComponent<QueryExecutionContext>>(
+                            Arg.Any<ServiceLifetime>(),
+                            Arg.Any<string>());
 
-            queryPipeline.Verify(
-                x =>
-                    x.AddMiddleware(
-                        It.IsAny<IGraphQLMiddlewareComponent<QueryExecutionContext>>(),
-                        It.IsAny<string>()),
-                Times.Exactly(1));
+            queryPipeline.Received(1).AddMiddleware(
+                        Arg.Any<IGraphQLMiddlewareComponent<QueryExecutionContext>>(),
+                        Arg.Any<string>());
 
             // ensure query level authorzation component was added
-            queryPipeline.Verify(
-              x =>
-                  x.AddMiddleware<AuthorizeQueryOperationMiddleware<GraphSchema>>(
-                          It.IsAny<ServiceLifetime>(),
-                          It.IsAny<string>()),
-              Times.Exactly(1));
+            queryPipeline.Received(1).AddMiddleware<AuthorizeQueryOperationMiddleware<GraphSchema>>(
+                          Arg.Any<ServiceLifetime>(),
+                          Arg.Any<string>());
 
             // original three components in the sub swaped field pipeline
-            fieldPipeline.Verify(x => x.Clear());
-            fieldPipeline.Verify(
-                x =>
-                    x.AddMiddleware<IGraphQLMiddlewareComponent<GraphFieldExecutionContext>>(It.IsAny<ServiceLifetime>(), It.IsAny<string>()),
-                Times.Exactly(3));
+            fieldPipeline.Received().Clear();
+            fieldPipeline.Received(3).AddMiddleware<IGraphQLMiddlewareComponent<GraphFieldExecutionContext>>(Arg.Any<ServiceLifetime>(), Arg.Any<string>());
 
             // ensure field authroization component was NOT added
             // to the field pipeline
-            fieldPipeline.Verify(
-                x =>
-                    x.AddMiddleware<AuthorizeFieldMiddleware<GraphSchema>>(It.IsAny<ServiceLifetime>(), It.IsAny<string>()),
-                Times.Exactly(0));
+            fieldPipeline.Received(0).AddMiddleware<AuthorizeFieldMiddleware<GraphSchema>>(Arg.Any<ServiceLifetime>(), Arg.Any<string>());
         }
     }
 }

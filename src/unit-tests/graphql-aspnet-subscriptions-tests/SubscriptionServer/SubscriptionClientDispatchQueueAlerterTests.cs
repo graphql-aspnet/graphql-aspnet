@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
     using GraphQL.AspNet.Logging.SubscriptionEvents;
     using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.Extensions.Logging;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -25,15 +25,15 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void NoThresholds_ExceptionIsThrown()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
 
             Assert.Throws<ArgumentException>(() =>
             {
                 var alerter = new SubscriptionClientDispatchQueueAlerter(
-                    logger.Object,
+                    logger,
                     settings);
             });
         }
@@ -41,8 +41,8 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void NegativeTimeOnThreshold_ExceptionIsThrown()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(LogLevel.Warning, 5, TimeSpan.FromSeconds(-5));
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             Assert.Throws<ArgumentException>(() =>
             {
                 var alerter = new SubscriptionClientDispatchQueueAlerter(
-                    logger.Object,
+                    logger,
                     settings);
             });
         }
@@ -58,8 +58,8 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void NegativeEventCount_ExceptionIsThrown()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(LogLevel.Warning, -5, TimeSpan.FromSeconds(15));
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             Assert.Throws<ArgumentException>(() =>
             {
                 var alerter = new SubscriptionClientDispatchQueueAlerter(
-                    logger.Object,
+                    logger,
                     settings);
             });
         }
@@ -75,8 +75,8 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void ZeroEventCount_ExceptionIsThrown()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(LogLevel.Warning, 0, TimeSpan.FromSeconds(15));
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             Assert.Throws<ArgumentException>(() =>
             {
                 var alerter = new SubscriptionClientDispatchQueueAlerter(
-                    logger.Object,
+                    logger,
                     settings);
             });
         }
@@ -92,39 +92,37 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void NoThresholdReached_NoEventRecorded()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(LogLevel.Debug, 500, TimeSpan.FromMinutes(25));
 
             var alerter = new SubscriptionClientDispatchQueueAlerter(
-                logger.Object,
+                logger,
                 settings);
 
             alerter.CheckQueueCount(250);
 
-            logger.Verify(
-                x => x.Log(
-                    It.IsAny<LogLevel>(),
+            logger.Received(0).Log(
+                    Arg.Any<LogLevel>(),
                     SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                    It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-                Times.Never());
+                    Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
         }
 
         [Test]
         public void ConfiguredThresholdIsLessThan1_1IsSetAsThreshold()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(LogLevel.Debug, 500, TimeSpan.FromMinutes(25));
 
             var alerter = new SubscriptionClientDispatchQueueAlerter(
-                logger.Object,
+                logger,
                 settings,
                 -1);
 
@@ -134,58 +132,54 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void ThresholdReachedExactly_EventIsRecorded()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(LogLevel.Debug, 500, TimeSpan.FromMinutes(25));
 
             var alerter = new SubscriptionClientDispatchQueueAlerter(
-                logger.Object,
+                logger,
                 settings);
 
             alerter.CheckQueueCount(500);
 
-            logger.Verify(
-                x => x.Log(
+            logger.Received(1).Log(
                     LogLevel.Debug,
                     SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                    It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-                Times.Once());
+                    Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
         }
 
         [Test]
         public void ThresholdReachedCrossed_EventIsRecorded()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(LogLevel.Debug, 500, TimeSpan.FromMinutes(25));
 
             var alerter = new SubscriptionClientDispatchQueueAlerter(
-                logger.Object,
+                logger,
                 settings);
 
             alerter.CheckQueueCount(501);
 
-            logger.Verify(
-                x => x.Log(
+            logger.Received(1).Log(
                     LogLevel.Debug,
                     SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                    It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-                Times.Once());
+                    Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
         }
 
         [Test]
         public void ThresholdSkipped_CorrectThresholdIsRecorded()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(
@@ -199,37 +193,33 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
                 TimeSpan.FromMinutes(25));
 
             var alerter = new SubscriptionClientDispatchQueueAlerter(
-                logger.Object,
+                logger,
                 settings);
 
             // skip the 500 level and go straight to 700 level
             // only 700 level should be recorded
             alerter.CheckQueueCount(701);
 
-            logger.Verify(
-                x => x.Log(
+            logger.Received(0).Log(
                     LogLevel.Debug,
                     SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                    It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-                Times.Never());
+                    Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
 
-            logger.Verify(
-               x => x.Log(
+            logger.Received(1).Log(
                    LogLevel.Warning,
                    SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                   It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                   It.IsAny<Exception>(),
-                   It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-               Times.Once());
+                   Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                   Arg.Any<Exception>(),
+                   Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
         }
 
         [Test]
         public async Task TwiceRaisedEvent_WhenCooldownNotReached_IsNotAlertedTwice()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(
@@ -243,7 +233,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
                 TimeSpan.FromMinutes(25));
 
             var alerter = new SubscriptionClientDispatchQueueAlerter(
-                logger.Object,
+                logger,
                 settings,
                 10);
 
@@ -259,21 +249,19 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             alerter.CheckQueueCount(501);
 
             // ensure both events fired
-            logger.Verify(
-                x => x.Log(
+            logger.Received(1).Log(
                     LogLevel.Debug,
                     SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                    It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-                Times.Once());
+                    Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
         }
 
         [Test]
         public async Task TwiceRaisedEvent_WhenCooldownReached_IsAlertedTwice()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(
@@ -287,7 +275,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
                 TimeSpan.FromMinutes(25));
 
             var alerter = new SubscriptionClientDispatchQueueAlerter(
-                logger.Object,
+                logger,
                 settings,
                 10);
 
@@ -303,21 +291,19 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             alerter.CheckQueueCount(501);
 
             // ensure both events fired
-            logger.Verify(
-                x => x.Log(
+            logger.Received(2).Log(
                     LogLevel.Debug,
                     SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                    It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-                Times.Exactly(2));
+                    Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
         }
 
         [Test]
         public void SuccessiveEventThresholds_AreAlertedAsExpected()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(
@@ -336,7 +322,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
                 TimeSpan.FromMilliseconds(500));
 
             var alerter = new SubscriptionClientDispatchQueueAlerter(
-                logger.Object,
+                logger,
                 settings,
                 10);
 
@@ -345,39 +331,33 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             alerter.CheckQueueCount(100_001);
 
             // ensure all events fired
-            logger.Verify(
-                x => x.Log(
+            logger.Received(1).Log(
                     LogLevel.Debug,
                     SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                    It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-                Times.Once());
+                    Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
 
-            logger.Verify(
-                x => x.Log(
+            logger.Received(1).Log(
                     LogLevel.Information,
                     SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                    It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-                Times.Once());
+                    Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
 
-            logger.Verify(
-                x => x.Log(
+            logger.Received(1).Log(
                     LogLevel.Critical,
                     SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                    It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-                Times.Once());
+                    Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
         }
 
         [Test]
         public void AfterAllThresholdsAreAlerted_NoAdditionalAlertsSent()
         {
-            var logger = new Mock<ILogger>();
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var logger = Substitute.For<ILogger>();
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
             var settings = new SubscriptionClientDispatchQueueAlertSettings();
             settings.AddThreshold(
@@ -386,7 +366,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
                 TimeSpan.FromMilliseconds(500));
 
             var alerter = new SubscriptionClientDispatchQueueAlerter(
-                logger.Object,
+                logger,
                 settings,
                 10);
 
@@ -397,14 +377,12 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             alerter.CheckQueueCount(1_000_001); // no more alert thresholds, skipped
 
             // ensure only single threshold event is fired
-            logger.Verify(
-                x => x.Log(
+            logger.Received(1).Log(
                     LogLevel.Critical,
                     SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
-                    It.IsAny<SubscriptionEventDispatchQueueAlertLogEntry>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>()),
-                Times.Once());
+                    Arg.Any<SubscriptionEventDispatchQueueAlertLogEntry>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<SubscriptionEventDispatchQueueAlertLogEntry, Exception, string>>());
         }
     }
 }

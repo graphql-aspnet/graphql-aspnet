@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using Microsoft.Extensions.Primitives;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         public void PropertyCheck()
         {
             var headers = new Dictionary<string, StringValues>();
-            var container = new Mock<IFileUploadStreamContainer>().Object;
+            var container = Substitute.For<IFileUploadStreamContainer>();
             var file = new FileUpload(
                 "testKey",
                 container,
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         {
             Assert.Throws<ArgumentException>(() =>
             {
-                var file = new FileUpload(null, new Mock<IFileUploadStreamContainer>().Object);
+                var file = new FileUpload(null, Substitute.For<IFileUploadStreamContainer>());
             });
         }
 
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         {
             var file = new FileUpload(
                 "testKey",
-                new Mock<IFileUploadStreamContainer>().Object,
+                Substitute.For<IFileUploadStreamContainer>(),
                 headers: null);
 
             Assert.IsNull(file.Headers);
@@ -74,13 +74,13 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         {
             var memStream = new MemoryStream();
 
-            var container = new Mock<IFileUploadStreamContainer>();
-            container.Setup(x => x.OpenFileStreamAsync())
-                .ReturnsAsync(memStream);
+            var container = Substitute.For<IFileUploadStreamContainer>();
+            container.OpenFileStreamAsync()
+                .Returns(memStream);
 
             var file = new FileUpload(
                 "testKey",
-                container.Object);
+                container);
 
             var stream = await file.OpenFileAsync();
 

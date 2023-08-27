@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Engine
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Security;
     using Microsoft.Extensions.Logging;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -39,60 +39,51 @@ namespace GraphQL.AspNet.Tests.Engine
             LogLevel? expectedLogLevel = null,
             EventId? expectedEventId = null)
         {
-            var loggerFactory = new Mock<ILoggerFactory>();
-            var logger = new Mock<ILogger>();
+            var loggerFactory = Substitute.For<ILoggerFactory>();
+            var logger = Substitute.For<ILogger>();
 
-            logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(shouldLogLevelBeEnabled);
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(shouldLogLevelBeEnabled);
 
-            loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+            loggerFactory.CreateLogger(Arg.Any<string>()).Returns(logger);
 
             IGraphLogEntry recordedEntry = null;
 
             if (shouldLogLevelBeEnabled)
             {
-                logger.Setup(x => x.Log(
+                logger.When(x => x.Log(
                      expectedLogLevel.Value,
                      expectedEventId.Value,
-                     It.IsAny<IGraphLogEntry>(),
-                     It.IsAny<Exception>(),
-                     It.IsAny<Func<IGraphLogEntry, Exception, string>>()))
-                    .Callback((
-                        LogLevel level,
-                        EventId evtId,
-                        IGraphLogEntry entry,
-                        Exception ex,
-                        Func<IGraphLogEntry, Exception, string> func) =>
+                     Arg.Any<IGraphLogEntry>(),
+                     Arg.Any<Exception>(),
+                     Arg.Any<Func<IGraphLogEntry, Exception, string>>()))
+                    .Do(x =>
                     {
-                        recordedEntry = entry;
+                        recordedEntry = (IGraphLogEntry)x[2];
                     });
             }
 
-            var eventLogger = new DefaultGraphEventLogger(loggerFactory.Object);
+            var eventLogger = new DefaultGraphEventLogger(loggerFactory);
             execute(eventLogger);
 
             if (shouldLogLevelBeEnabled)
             {
-                logger.Verify(
-                   x => x.Log(
+                logger.Received(1).Log(
                         expectedLogLevel.Value,
                         expectedEventId.Value,
-                        It.IsAny<IGraphLogEntry>(),
-                        It.IsAny<Exception>(),
-                        It.IsAny<Func<IGraphLogEntry, Exception, string>>()),
-                   Times.Once());
+                        Arg.Any<IGraphLogEntry>(),
+                        Arg.Any<Exception>(),
+                        Arg.Any<Func<IGraphLogEntry, Exception, string>>());
 
                 Assert.AreEqual(logEntryType, recordedEntry.GetType());
             }
             else
             {
-                logger.Verify(
-                   x => x.Log(
-                        It.IsAny<LogLevel>(),
-                        It.IsAny<EventId>(),
-                        It.IsAny<IGraphLogEntry>(),
-                        It.IsAny<Exception>(),
-                        It.IsAny<Func<IGraphLogEntry, Exception, string>>()),
-                   Times.Never());
+                logger.Received(0).Log(
+                        Arg.Any<LogLevel>(),
+                        Arg.Any<EventId>(),
+                        Arg.Any<IGraphLogEntry>(),
+                        Arg.Any<Exception>(),
+                        Arg.Any<Func<IGraphLogEntry, Exception, string>>());
 
                 Assert.IsNull(recordedEntry);
             }
@@ -129,7 +120,7 @@ namespace GraphQL.AspNet.Tests.Engine
                 new object[]
                 {
                     (DefaultGraphEventLogger x) => x.SchemaPipelineRegistered<GraphSchema>(
-                        new Mock<ISchemaPipeline>().Object),
+                        Substitute.For<ISchemaPipeline>()),
                     true,
                     typeof(SchemaPipelineRegisteredLogEntry<GraphSchema>),
                     LogLevel.Debug,
@@ -140,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Engine
                 new object[]
                 {
                     (DefaultGraphEventLogger x) => x.SchemaPipelineRegistered<GraphSchema>(
-                        new Mock<ISchemaPipeline>().Object),
+                        Substitute.For<ISchemaPipeline>()),
                     false,
                     null,
                     null,
@@ -551,8 +542,8 @@ namespace GraphQL.AspNet.Tests.Engine
                 new object[]
                 {
                     (DefaultGraphEventLogger x) => x.ExecutionDirectiveApplied<GraphSchema>(
-                        new Mock<IDirective>().Object,
-                        new Mock<IDocumentPart>().Object),
+                        Substitute.For<IDirective>(),
+                        Substitute.For<IDocumentPart>()),
                     true,
                     typeof(ExecutionDirectiveAppliedLogEntry<GraphSchema>),
                     LogLevel.Trace,
@@ -563,8 +554,8 @@ namespace GraphQL.AspNet.Tests.Engine
                 new object[]
                 {
                     (DefaultGraphEventLogger x) => x.ExecutionDirectiveApplied<GraphSchema>(
-                        new Mock<IDirective>().Object,
-                        new Mock<IDocumentPart>().Object),
+                        Substitute.For<IDirective>(),
+                        Substitute.For<IDocumentPart>()),
                     false,
                     null,
                     null,
@@ -586,15 +577,15 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthorizationChallengeResult_Unauthorized()
         {
-            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
-            var secRequest = new Mock<ISchemaItemSecurityRequest>();
-            context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.QueryRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
-            context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
+            var context = Substitute.For<IGraphQLMiddlewareExecutionContext>();
+            var secRequest = Substitute.For<ISchemaItemSecurityRequest>();
+            context.ServiceProvider.Returns(Substitute.For<IServiceProvider>());
+            context.QueryRequest.Returns(Substitute.For<IQueryExecutionRequest>());
+            context.Session.Returns(Substitute.For<IQuerySession>());
 
             var failedAuthResult = new SchemaItemSecurityChallengeContext(
-                            context.Object,
-                            secRequest.Object);
+                            context,
+                            secRequest);
             failedAuthResult.Result = SchemaItemSecurityChallengeResult.Unauthorized("fail");
 
             this.ExecuteTest(
@@ -608,15 +599,15 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthorizationChallengeResult_Success()
         {
-            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
-            var secRequest = new Mock<ISchemaItemSecurityRequest>();
-            context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.QueryRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
-            context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
+            var context = Substitute.For<IGraphQLMiddlewareExecutionContext>();
+            var secRequest = Substitute.For<ISchemaItemSecurityRequest>();
+            context.ServiceProvider.Returns(Substitute.For<IServiceProvider>());
+            context.QueryRequest.Returns(Substitute.For<IQueryExecutionRequest>());
+            context.Session.Returns(Substitute.For<IQuerySession>());
 
             var nonFailResult = new SchemaItemSecurityChallengeContext(
-                          context.Object,
-                          secRequest.Object);
+                          context,
+                          secRequest);
             nonFailResult.Result = SchemaItemSecurityChallengeResult.Success(new ClaimsPrincipal());
 
             this.ExecuteTest(
@@ -630,15 +621,15 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthorizationChallengeResult_Skip()
         {
-            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
-            var secRequest = new Mock<ISchemaItemSecurityRequest>();
-            context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.QueryRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
-            context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
+            var context = Substitute.For<IGraphQLMiddlewareExecutionContext>();
+            var secRequest = Substitute.For<ISchemaItemSecurityRequest>();
+            context.ServiceProvider.Returns(Substitute.For<IServiceProvider>());
+            context.QueryRequest.Returns(Substitute.For<IQueryExecutionRequest>());
+            context.Session.Returns(Substitute.For<IQuerySession>());
 
             var nonResult = new SchemaItemSecurityChallengeContext(
-                          context.Object,
-                          secRequest.Object);
+                          context,
+                          secRequest);
             nonResult.Result = SchemaItemSecurityChallengeResult.Skipped(new ClaimsPrincipal());
 
             this.ExecuteTest(
@@ -652,15 +643,15 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_FailedResult_LoggedAtWarning()
         {
-            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
-            var secRequest = new Mock<ISchemaItemSecurityRequest>();
-            context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.QueryRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
-            context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
+            var context = Substitute.For<IGraphQLMiddlewareExecutionContext>();
+            var secRequest = Substitute.For<ISchemaItemSecurityRequest>();
+            context.ServiceProvider.Returns(Substitute.For<IServiceProvider>());
+            context.QueryRequest.Returns(Substitute.For<IQueryExecutionRequest>());
+            context.Session.Returns(Substitute.For<IQuerySession>());
 
             var nonResult = new SchemaItemSecurityChallengeContext(
-                          context.Object,
-                          secRequest.Object);
+                          context,
+                          secRequest);
             nonResult.Result = SchemaItemSecurityChallengeResult.Fail("null");
 
             this.ExecuteTest(
@@ -674,15 +665,15 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_SuccessResult_LoggedAtTrace()
         {
-            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
-            var secRequest = new Mock<ISchemaItemSecurityRequest>();
-            context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.QueryRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
-            context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
+            var context = Substitute.For<IGraphQLMiddlewareExecutionContext>();
+            var secRequest = Substitute.For<ISchemaItemSecurityRequest>();
+            context.ServiceProvider.Returns(Substitute.For<IServiceProvider>());
+            context.QueryRequest.Returns(Substitute.For<IQueryExecutionRequest>());
+            context.Session.Returns(Substitute.For<IQuerySession>());
 
             var nonResult = new SchemaItemSecurityChallengeContext(
-                          context.Object,
-                          secRequest.Object);
+                          context,
+                          secRequest);
             nonResult.Result = SchemaItemSecurityChallengeResult.Success(new ClaimsPrincipal());
 
             this.ExecuteTest(
@@ -707,17 +698,17 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_UnSucessfulAuthenticationResult_LoggedAtTrace()
         {
-            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
-            var secRequest = new Mock<ISchemaItemSecurityRequest>();
-            context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.QueryRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
-            context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
+            var context = Substitute.For<IGraphQLMiddlewareExecutionContext>();
+            var secRequest = Substitute.For<ISchemaItemSecurityRequest>();
+            context.ServiceProvider.Returns(Substitute.For<IServiceProvider>());
+            context.QueryRequest.Returns(Substitute.For<IQueryExecutionRequest>());
+            context.Session.Returns(Substitute.For<IQuerySession>());
 
-            var authResult = new Mock<IAuthenticationResult>();
-            authResult.Setup(x => x.Suceeded).Returns(false);
+            var authResult = Substitute.For<IAuthenticationResult>();
+            authResult.Suceeded.Returns(false);
 
             this.ExecuteTest(
-                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, authResult.Object),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, authResult),
                     true,
                     typeof(SchemaItemAuthenticationCompletedLogEntry),
                     LogLevel.Warning,
@@ -727,17 +718,17 @@ namespace GraphQL.AspNet.Tests.Engine
         [Test]
         public void AuthenticationChallengeResult_SucessfulAuthenticationResult_LoggedAtTrace()
         {
-            var context = new Mock<IGraphQLMiddlewareExecutionContext>();
-            var secRequest = new Mock<ISchemaItemSecurityRequest>();
-            context.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
-            context.Setup(x => x.QueryRequest).Returns(new Mock<IQueryExecutionRequest>().Object);
-            context.Setup(x => x.Session).Returns(new Mock<IQuerySession>().Object);
+            var context = Substitute.For<IGraphQLMiddlewareExecutionContext>();
+            var secRequest = Substitute.For<ISchemaItemSecurityRequest>();
+            context.ServiceProvider.Returns(Substitute.For<IServiceProvider>());
+            context.QueryRequest.Returns(Substitute.For<IQueryExecutionRequest>());
+            context.Session.Returns(Substitute.For<IQuerySession>());
 
-            var authResult = new Mock<IAuthenticationResult>();
-            authResult.Setup(x => x.Suceeded).Returns(true);
+            var authResult = Substitute.For<IAuthenticationResult>();
+            authResult.Suceeded.Returns(true);
 
             this.ExecuteTest(
-                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, authResult.Object),
+                    (DefaultGraphEventLogger x) => x.SchemaItemAuthenticationChallengeResult(null, authResult),
                     true,
                     typeof(SchemaItemAuthenticationCompletedLogEntry),
                     LogLevel.Trace,

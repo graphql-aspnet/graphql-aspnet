@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -19,7 +20,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.Extensions.Logging;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -28,14 +29,14 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public async Task QueuedEvents_AreDispatchedWhenQueueIsProcessed()
         {
-            var receiver = new Mock<ISubscriptionClientProxy>();
-            receiver.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+            var receiver = Substitute.For<ISubscriptionClientProxy>();
+            receiver.Id.Returns(SubscriptionClientId.NewClientId());
 
-            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
-            collection.Setup(x => x.TryGetClient(It.IsAny<SubscriptionClientId>(), out It.Ref<ISubscriptionClientProxy>.IsAny))
-                .Returns((SubscriptionClientId id, out ISubscriptionClientProxy proxy) =>
+            var collection = Substitute.For<IGlobalSubscriptionClientProxyCollection>();
+            collection.TryGetClient(Arg.Any<SubscriptionClientId>(), out Arg.Any<ISubscriptionClientProxy>())
+                .Returns(x =>
                 {
-                    proxy = receiver.Object;
+                    x[1] = receiver;
                     return true;
                 });
 
@@ -43,26 +44,26 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             var evt2 = new SubscriptionEvent();
 
             var queue = new SubscriptionClientDispatchQueue(
-                collection.Object,
+                collection,
                 maxConcurrentEvents: 1);
-            var wasQueued = queue.EnqueueEvent(receiver.Object.Id, evt, true);
+            var wasQueued = queue.EnqueueEvent(receiver.Id, evt, true);
 
             await queue.BeginProcessingQueueAsync();
 
             Assert.True(wasQueued);
-            receiver.Verify(x => x.ReceiveEventAsync(evt, It.IsAny<CancellationToken>()), Times.Once);
+            await receiver.Received(1).ReceiveEventAsync(evt, Arg.Any<CancellationToken>());
         }
 
         [Test]
         public async Task QueuedEvents_AgainstANotFOundCLient_AreNotDispatched()
         {
-            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            var collection = Substitute.For<IGlobalSubscriptionClientProxyCollection>();
 
             var evt = new SubscriptionEvent();
             var evt2 = new SubscriptionEvent();
 
             var queue = new SubscriptionClientDispatchQueue(
-                collection.Object,
+                collection,
                 maxConcurrentEvents: 1);
             var wasQueued = queue.EnqueueEvent(SubscriptionClientId.NewClientId(), evt, true);
 
@@ -76,10 +77,10 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [TestCase(-45)]
         public void CreatingWithMaxConcurrentLessThan1_CreatesWith1(int maxConcurrent)
         {
-            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            var collection = Substitute.For<IGlobalSubscriptionClientProxyCollection>();
 
             var queue = new SubscriptionClientDispatchQueue(
-                collection.Object,
+                collection,
                 maxConcurrentEvents: maxConcurrent);
             Assert.AreEqual(1, queue.MaxConcurrentEvents);
         }
@@ -87,10 +88,10 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void StartingAStoppedQueue_ThrowsException()
         {
-            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            var collection = Substitute.For<IGlobalSubscriptionClientProxyCollection>();
 
             var queue = new SubscriptionClientDispatchQueue(
-                collection.Object,
+                collection,
                 maxConcurrentEvents: 1);
 
             queue.StopQueue();
@@ -103,9 +104,9 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void StartingADisposedQueue_ThrowsException()
         {
-            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            var collection = Substitute.For<IGlobalSubscriptionClientProxyCollection>();
             var queue = new SubscriptionClientDispatchQueue(
-                collection.Object,
+                collection,
                 maxConcurrentEvents: 1);
             queue.Dispose();
             Assert.ThrowsAsync<ObjectDisposedException>(async () =>
@@ -117,9 +118,9 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void StoppingADisposedQueue_DoesNothing()
         {
-            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            var collection = Substitute.For<IGlobalSubscriptionClientProxyCollection>();
             var queue = new SubscriptionClientDispatchQueue(
-                collection.Object,
+                collection,
                 maxConcurrentEvents: 1);
             queue.Dispose();
             queue.StopQueue();
@@ -128,9 +129,9 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void CountOnDisposedQueue_ThrowsException()
         {
-            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            var collection = Substitute.For<IGlobalSubscriptionClientProxyCollection>();
             var queue = new SubscriptionClientDispatchQueue(
-                collection.Object,
+                collection,
                 maxConcurrentEvents: 1);
             queue.Dispose();
 
@@ -143,14 +144,14 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         [Test]
         public void AlerterAllowedToTest_WhenPresent()
         {
-            var factory = new Mock<ILoggerFactory>();
-            var logger = new Mock<ILogger>();
-            factory.Setup(x => x.CreateLogger(It.IsAny<string>()))
-                .Returns(logger.Object);
+            var factory = Substitute.For<ILoggerFactory>();
+            var logger = Substitute.For<ILogger>();
+            factory.CreateLogger(Arg.Any<string>())
+                .Returns(logger);
 
-            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
-            var settings = new Mock<ISubscriptionClientDispatchQueueAlertSettings>();
-            settings.Setup(x => x.AlertThresholds)
+            var collection = Substitute.For<IGlobalSubscriptionClientProxyCollection>();
+            var settings = Substitute.For<ISubscriptionClientDispatchQueueAlertSettings>();
+            settings.AlertThresholds
                 .Returns(new List<SubscriptionEventAlertThreshold>()
                 {
                     new SubscriptionEventAlertThreshold(LogLevel.Warning, 45, TimeSpan.FromSeconds(23)),
@@ -159,15 +160,17 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             var evt = new SubscriptionEvent();
 
             var queue = new SubscriptionClientDispatchQueue(
-                collection.Object,
-                settings.Object,
-                factory.Object,
+                collection,
+                settings,
+                factory,
                 maxConcurrentEvents: 1);
 
             var wasQueued = queue.EnqueueEvent(SubscriptionClientId.NewClientId(), evt);
 
             Assert.IsTrue(wasQueued);
-            settings.Verify(x => x.AlertThresholds, Times.AtLeastOnce());
+            var count = settings.ReceivedCalls()
+                .Count(x => x.GetMethodInfo().Name.Contains(nameof(ISubscriptionClientDispatchQueueAlertSettings.AlertThresholds)));
+            Assert.IsTrue(count > 0);
         }
     }
 }

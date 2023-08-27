@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -35,9 +35,9 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols
         [Test]
         public void SubscriptionRegsitered_PropCheck()
         {
-            var sub = new Mock<IGraphMessageCollection>();
+            var sub = Substitute.For<IGraphMessageCollection>();
 
-            var result = SubscriptionQueryExecutionResult<GraphSchema>.OperationFailure("abc", sub.Object);
+            var result = SubscriptionQueryExecutionResult<GraphSchema>.OperationFailure("abc", sub);
 
             Assert.AreEqual("abc", result.SubscriptionId);
             Assert.IsNull(result.Subscription);
@@ -58,11 +58,11 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols
         [Test]
         public void SingleOperationCompleted_PropCheck()
         {
-            var queryResult = new Mock<IQueryExecutionResult>();
+            var queryResult = Substitute.For<IQueryExecutionResult>();
 
-            var result = SubscriptionQueryExecutionResult<GraphSchema>.SingleOperationCompleted("abc", queryResult.Object);
+            var result = SubscriptionQueryExecutionResult<GraphSchema>.SingleOperationCompleted("abc", queryResult);
 
-            Assert.AreEqual(queryResult.Object, result.QueryResult);
+            Assert.AreEqual(queryResult, result.QueryResult);
             Assert.AreEqual(SubscriptionQueryResultType.SingleQueryCompleted, result.Status);
         }
     }

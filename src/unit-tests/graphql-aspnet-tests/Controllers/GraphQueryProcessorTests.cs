@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Controllers
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Net.Http.Headers;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -44,8 +44,8 @@ namespace GraphQL.AspNet.Tests.Controllers
             var httpContext = context;
             var response = httpContext.Response;
 
-            var queryResult = new Mock<IQueryExecutionResult>();
-            var result = new GraphQLHttpResponseWriter(queryResult.Object, null, false, exposeExceptions);
+            var queryResult = Substitute.For<IQueryExecutionResult>();
+            var result = new GraphQLHttpResponseWriter(queryResult, null, false, exposeExceptions);
 
             await result.WriteResultAsync(httpContext);
 
@@ -66,8 +66,8 @@ namespace GraphQL.AspNet.Tests.Controllers
             var httpContext = context;
             var response = httpContext.Response;
 
-            var writer = new Mock<IQueryResponseWriter>();
-            var result = new GraphQLHttpResponseWriter(null, writer.Object, false, exposeExceptions);
+            var writer = Substitute.For<IQueryResponseWriter>();
+            var result = new GraphQLHttpResponseWriter(null, writer, false, exposeExceptions);
 
             await result.WriteResultAsync(httpContext);
 

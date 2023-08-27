@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -21,16 +21,16 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
         [Test]
         public void TryGetField_ForFoundVariable_IsTrue()
         {
-            var mockvar = new Mock<IInputVariable>();
-            mockvar.Setup(x => x.Name).Returns("var1Data");
+            var mockvar = Substitute.For<IInputVariable>();
+            mockvar.Name.Returns("var1Data");
 
             var variable = new InputFieldSetVariable("var1");
-            variable.AddVariable(mockvar.Object);
+            variable.AddVariable(mockvar);
 
             var found = ((IResolvableFieldSet)variable).TryGetField("var1Data", out var fieldOut);
 
             Assert.IsTrue((bool)found);
-            Assert.AreEqual(mockvar.Object, fieldOut);
+            Assert.AreEqual(mockvar, fieldOut);
         }
 
         [Test]

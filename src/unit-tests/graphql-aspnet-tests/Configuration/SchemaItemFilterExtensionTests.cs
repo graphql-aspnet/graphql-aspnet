@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Tests.Configuration.SchemaItemExtensionTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -275,8 +275,8 @@ namespace GraphQL.AspNet.Tests.Configuration
         [Test]
         public void ISchema_IsConsideredNotVirtual()
         {
-            var schema = new Mock<ISchema>();
-            Assert.IsFalse(schema.Object.IsVirtualItem());
+            var schema = Substitute.For<ISchema>();
+            Assert.IsFalse(schema.IsVirtualItem());
         }
 
         [Test]

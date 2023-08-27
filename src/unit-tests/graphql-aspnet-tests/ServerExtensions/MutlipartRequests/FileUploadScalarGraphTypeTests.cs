@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         {
             var file = new FileUpload(
                 "key",
-                new Mock<IFileUploadStreamContainer>().Object,
+                Substitute.For<IFileUploadStreamContainer>(),
                 fileName: "file.name");
 
             var scalar = new FileUploadScalarGraphType();

@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
     using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -38,14 +38,14 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(new DateOnly(2021, 11, 11)));
 
-            var fieldSet = new Mock<IQueryResponseFieldSet>();
-            fieldSet.Setup(x => x.Fields).Returns(data);
+            var fieldSet = Substitute.For<IQueryResponseFieldSet>();
+            fieldSet.Fields.Returns(data);
 
-            var queryResult = new Mock<IQueryExecutionResult>();
-            queryResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
-            queryResult.Setup(x => x.Data).Returns(fieldSet.Object);
+            var queryResult = Substitute.For<IQueryExecutionResult>();
+            queryResult.Messages.Returns(new GraphMessageCollection());
+            queryResult.Data.Returns(fieldSet);
 
-            await writer.WriteAsync(stream, queryResult.Object);
+            await writer.WriteAsync(stream, queryResult);
 
             stream.Seek(0, SeekOrigin.Begin);
 
@@ -69,14 +69,14 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(new TimeOnly(8, 10, 9, 123)));
 
-            var fieldSet = new Mock<IQueryResponseFieldSet>();
-            fieldSet.Setup(x => x.Fields).Returns(data);
+            var fieldSet = Substitute.For<IQueryResponseFieldSet>();
+            fieldSet.Fields.Returns(data);
 
-            var queryResult = new Mock<IQueryExecutionResult>();
-            queryResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
-            queryResult.Setup(x => x.Data).Returns(fieldSet.Object);
+            var queryResult = Substitute.For<IQueryExecutionResult>();
+            queryResult.Messages.Returns(new GraphMessageCollection());
+            queryResult.Data.Returns(fieldSet);
 
-            await writer.WriteAsync(stream, queryResult.Object);
+            await writer.WriteAsync(stream, queryResult);
 
             stream.Seek(0, SeekOrigin.Begin);
 
@@ -100,14 +100,14 @@ namespace GraphQL.AspNet.Tests.Execution.Response
             var data = new Dictionary<string, IQueryResponseItem>();
             data.Add("item1", new ResponseSingleValue(new TimeOnly(0, 0, 0, 0)));
 
-            var fieldSet = new Mock<IQueryResponseFieldSet>();
-            fieldSet.Setup(x => x.Fields).Returns(data);
+            var fieldSet = Substitute.For<IQueryResponseFieldSet>();
+            fieldSet.Fields.Returns(data);
 
-            var queryResult = new Mock<IQueryExecutionResult>();
-            queryResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
-            queryResult.Setup(x => x.Data).Returns(fieldSet.Object);
+            var queryResult = Substitute.For<IQueryExecutionResult>();
+            queryResult.Messages.Returns(new GraphMessageCollection());
+            queryResult.Data.Returns(fieldSet);
 
-            await writer.WriteAsync(stream, queryResult.Object);
+            await writer.WriteAsync(stream, queryResult);
 
             stream.Seek(0, SeekOrigin.Begin);
 

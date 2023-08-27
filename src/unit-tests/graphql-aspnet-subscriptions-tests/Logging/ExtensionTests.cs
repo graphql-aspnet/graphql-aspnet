@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer;
     using Microsoft.Extensions.Logging;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -32,15 +32,15 @@ namespace GraphQL.AspNet.Tests.Logging
             IGraphLogEntry recordedlogEntry = null;
 
             // fake a log to recieve the event generated on the extension method
-            var mock = new Mock<IGraphEventLogger>();
-            mock.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<IGraphLogEntry>>()))
-                .Callback((LogLevel logLevel, Func<IGraphLogEntry> entryMaker) =>
+            var mock = Substitute.For<IGraphEventLogger>();
+            mock.When(x => x.Log(Arg.Any<LogLevel>(), Arg.Any<Func<IGraphLogEntry>>()))
+                .Do(x =>
                 {
-                    recordedLogLevel = logLevel;
-                    recordedlogEntry = entryMaker();
+                    recordedLogLevel = (LogLevel)x[0];
+                    recordedlogEntry = ((Func<IGraphLogEntry>)x[1])();
                 });
 
-            mock.Object.SchemaSubscriptionRouteRegistered<GraphSchema>("testPath");
+            mock.SchemaSubscriptionRouteRegistered<GraphSchema>("testPath");
 
             var entry = recordedlogEntry as SchemaSubscriptionRouteRegisteredLogEntry<GraphSchema>;
             Assert.IsNotNull(entry);
@@ -57,26 +57,26 @@ namespace GraphQL.AspNet.Tests.Logging
             IGraphLogEntry recordedlogEntry = null;
 
             // fake a log to recieve the event generated on the extension method
-            var mock = new Mock<IGraphEventLogger>();
-            mock.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<IGraphLogEntry>>()))
-                .Callback((LogLevel logLevel, Func<IGraphLogEntry> entryMaker) =>
-                {
-                    recordedLogLevel = logLevel;
-                    recordedlogEntry = entryMaker();
-                });
+            var mock = Substitute.For<IGraphEventLogger>();
+            mock.When(x => x.Log(Arg.Any<LogLevel>(), Arg.Any<Func<IGraphLogEntry>>()))
+               .Do(x =>
+               {
+                   recordedLogLevel = (LogLevel)x[0];
+                   recordedlogEntry = ((Func<IGraphLogEntry>)x[1])();
+               });
 
-            var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
+            var client = Substitute.For<ISubscriptionClientProxy<GraphSchema>>();
 
             var id = SubscriptionClientId.NewClientId();
-            client.Setup(x => x.Id).Returns(id);
+            client.Id.Returns(id);
 
-            mock.Object.SubscriptionClientRegistered<GraphSchema>(client.Object);
+            mock.SubscriptionClientRegistered<GraphSchema>(client);
 
             var entry = recordedlogEntry as SubscriptionClientRegisteredLogEntry<GraphSchema>;
             Assert.IsNotNull(entry);
             Assert.AreEqual(LogLevel.Debug, recordedLogLevel);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
-            Assert.AreEqual(client.Object.GetType().FriendlyName(true), entry.ClientTypeName);
+            Assert.AreEqual(client.GetType().FriendlyName(true), entry.ClientTypeName);
             Assert.AreEqual(id.ToString(), entry.ClientId);
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
         }
@@ -88,25 +88,25 @@ namespace GraphQL.AspNet.Tests.Logging
             IGraphLogEntry recordedlogEntry = null;
 
             // fake a log to recieve the event generated on the extension method
-            var mock = new Mock<IGraphEventLogger>();
-            mock.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<IGraphLogEntry>>()))
-                .Callback((LogLevel logLevel, Func<IGraphLogEntry> entryMaker) =>
-                {
-                    recordedLogLevel = logLevel;
-                    recordedlogEntry = entryMaker();
-                });
+            var mock = Substitute.For<IGraphEventLogger>();
+            mock.When(x => x.Log(Arg.Any<LogLevel>(), Arg.Any<Func<IGraphLogEntry>>()))
+               .Do(x =>
+               {
+                   recordedLogLevel = (LogLevel)x[0];
+                   recordedlogEntry = ((Func<IGraphLogEntry>)x[1])();
+               });
 
-            var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
+            var client = Substitute.For<ISubscriptionClientProxy<GraphSchema>>();
 
             var id = SubscriptionClientId.NewClientId();
-            client.Setup(x => x.Id).Returns(id);
+            client.Id.Returns(id);
 
-            mock.Object.SubscriptionClientDropped(client.Object);
+            mock.SubscriptionClientDropped(client);
 
             var entry = recordedlogEntry as SubscriptionClientDroppedLogEntry;
             Assert.IsNotNull(entry);
             Assert.AreEqual(LogLevel.Debug, recordedLogLevel);
-            Assert.AreEqual(client.Object.GetType().FriendlyName(true), entry.ClientTypeName);
+            Assert.AreEqual(client.GetType().FriendlyName(true), entry.ClientTypeName);
             Assert.AreEqual(id.ToString(), entry.ClientId);
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
         }
@@ -118,25 +118,20 @@ namespace GraphQL.AspNet.Tests.Logging
             IGraphLogEntry recordedlogEntry = null;
 
             // fake a log to recieve the event generated on the extension method
-            var mock = new Mock<ILogger>();
-            mock.Setup(x => x.Log(
-                It.IsAny<LogLevel>(),
-                It.IsAny<EventId>(),
-                It.IsAny<SubscriptionEventReceivedLogEntry>(),
+            var mock = Substitute.For<ILogger>();
+            mock.When(x => x.Log(
+                Arg.Any<LogLevel>(),
+                Arg.Any<EventId>(),
+                Arg.Any<SubscriptionEventReceivedLogEntry>(),
                 null,
-                It.IsAny<Func<SubscriptionEventReceivedLogEntry, Exception, string>>()))
-                .Callback((
-                    LogLevel logLevel,
-                    EventId eventId,
-                    SubscriptionEventReceivedLogEntry state,
-                    Exception ex,
-                    Func<SubscriptionEventReceivedLogEntry, Exception, string> entryMaker) =>
+                Arg.Any<Func<SubscriptionEventReceivedLogEntry, Exception, string>>()))
+                .Do(x =>
                 {
-                    recordedLogLevel = logLevel;
-                    recordedlogEntry = state;
+                    recordedLogLevel = (LogLevel)x[0];
+                    recordedlogEntry = (SubscriptionEventReceivedLogEntry)x[2];
                 });
 
-            mock.Setup(x => x.IsEnabled(LogLevel.Debug)).Returns(true);
+            mock.IsEnabled(LogLevel.Debug).Returns(true);
 
             var eventData = new SubscriptionEvent()
             {
@@ -147,7 +142,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 EventName = "testEvent",
             };
 
-            mock.Object.SubscriptionEventReceived(eventData);
+            mock.SubscriptionEventReceived(eventData);
 
             var entry = recordedlogEntry as SubscriptionEventReceivedLogEntry;
             Assert.IsNotNull(entry);
@@ -167,13 +162,13 @@ namespace GraphQL.AspNet.Tests.Logging
             IGraphLogEntry recordedlogEntry = null;
 
             // fake a log to recieve the event generated on the extension method
-            var mock = new Mock<IGraphEventLogger>();
-            mock.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<IGraphLogEntry>>()))
-                .Callback((LogLevel logLevel, Func<IGraphLogEntry> entryMaker) =>
-                {
-                    recordedLogLevel = logLevel;
-                    recordedlogEntry = entryMaker();
-                });
+            var mock = Substitute.For<IGraphEventLogger>();
+            mock.When(x => x.Log(Arg.Any<LogLevel>(), Arg.Any<Func<IGraphLogEntry>>()))
+                  .Do(x =>
+                  {
+                      recordedLogLevel = (LogLevel)x[0];
+                      recordedlogEntry = ((Func<IGraphLogEntry>)x[1])();
+                  });
 
             var eventData = new SubscriptionEvent()
             {
@@ -184,7 +179,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 EventName = "testEvent",
             };
 
-            mock.Object.SubscriptionEventPublished(eventData);
+            mock.SubscriptionEventPublished(eventData);
 
             var entry = recordedlogEntry as SubscriptionEventPublishedLogEntry;
             Assert.IsNotNull(entry);

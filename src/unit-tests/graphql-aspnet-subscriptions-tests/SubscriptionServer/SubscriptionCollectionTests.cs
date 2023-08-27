@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.SubscriptionServer;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -26,19 +26,19 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         {
             var collection = new SubscriptionCollection<GraphSchema>();
 
-            var fakeSub = new Mock<ISubscription<GraphSchema>>();
+            var fakeSub = Substitute.For<ISubscription<GraphSchema>>();
 
             var field = new SchemaItemPath("[subscription]/field1");
-            fakeSub.Setup(x => x.Id).Returns("abc123");
-            fakeSub.Setup(x => x.Route).Returns(field);
+            fakeSub.Id.Returns("abc123");
+            fakeSub.Route.Returns(field);
 
-            collection.Add(fakeSub.Object);
+            collection.Add(fakeSub);
             Assert.AreEqual(1, collection.CountByRoute(field));
             Assert.AreEqual(1, collection.Count);
 
             Assert.AreEqual(1, collection.Keys.Count());
             Assert.AreEqual(1, collection.Values.Count());
-            Assert.AreEqual(fakeSub.Object, collection["abc123"]);
+            Assert.AreEqual(fakeSub, collection["abc123"]);
             Assert.IsTrue(collection.ContainsKey("abc123"));
         }
 
@@ -47,18 +47,18 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         {
             var collection = new SubscriptionCollection<GraphSchema>();
 
-            var fakeSub = new Mock<ISubscription<GraphSchema>>();
+            var fakeSub = Substitute.For<ISubscription<GraphSchema>>();
 
             var field = new SchemaItemPath("[subscription]/field1");
-            fakeSub.Setup(x => x.Id).Returns("abc123");
-            fakeSub.Setup(x => x.Route).Returns(field);
+            fakeSub.Id.Returns("abc123");
+            fakeSub.Route.Returns(field);
 
-            var fakeSub2 = new Mock<ISubscription<GraphSchema>>();
-            fakeSub2.Setup(x => x.Id).Returns("abc1234");
-            fakeSub2.Setup(x => x.Route).Returns(field);
+            var fakeSub2 = Substitute.For<ISubscription<GraphSchema>>();
+            fakeSub2.Id.Returns("abc1234");
+            fakeSub2.Route.Returns(field);
 
-            collection.Add(fakeSub.Object);
-            collection.Add(fakeSub2.Object);
+            collection.Add(fakeSub);
+            collection.Add(fakeSub2);
             Assert.AreEqual(2, collection.CountByRoute(field));
             Assert.AreEqual(2, collection.Count);
         }
@@ -68,30 +68,30 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         {
             var collection = new SubscriptionCollection<GraphSchema>();
 
-            var fakeSub = new Mock<ISubscription<GraphSchema>>();
+            var fakeSub = Substitute.For<ISubscription<GraphSchema>>();
 
             var field = new SchemaItemPath("[subscription]/field1");
             var field2 = new SchemaItemPath("[subscription]/field2");
             var field3 = new SchemaItemPath("[subscription]/field3");
 
-            fakeSub.Setup(x => x.Id).Returns("abc123");
-            fakeSub.Setup(x => x.Route).Returns(field);
+            fakeSub.Id.Returns("abc123");
+            fakeSub.Route.Returns(field);
 
-            var fakeSub2 = new Mock<ISubscription<GraphSchema>>();
-            fakeSub2.Setup(x => x.Id).Returns("abc1234");
-            fakeSub2.Setup(x => x.Route).Returns(field2);
+            var fakeSub2 = Substitute.For<ISubscription<GraphSchema>>();
+            fakeSub2.Id.Returns("abc1234");
+            fakeSub2.Route.Returns(field2);
 
-            collection.Add(fakeSub.Object);
-            collection.Add(fakeSub2.Object);
+            collection.Add(fakeSub);
+            collection.Add(fakeSub2);
             Assert.AreEqual(1, collection.CountByRoute(field));
             Assert.AreEqual(1, collection.CountByRoute(field2));
             Assert.AreEqual(2, collection.Count);
 
             var foundSubs = collection.RetreiveByRoute(field);
-            Assert.AreEqual(fakeSub.Object, foundSubs.Single());
+            Assert.AreEqual(fakeSub, foundSubs.Single());
 
             foundSubs = collection.RetreiveByRoute(field2);
-            Assert.AreEqual(fakeSub2.Object, foundSubs.Single());
+            Assert.AreEqual(fakeSub2, foundSubs.Single());
 
             foundSubs = collection.RetreiveByRoute(field3);
             CollectionAssert.IsEmpty(foundSubs);
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             var counted = 0;
             foreach (var sub in collection)
             {
-                Assert.IsTrue(sub == fakeSub.Object || sub == fakeSub2.Object);
+                Assert.IsTrue(sub == fakeSub || sub == fakeSub2);
                 counted++;
             }
 
@@ -111,19 +111,19 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         {
             var collection = new SubscriptionCollection<GraphSchema>();
 
-            var fakeSub = new Mock<ISubscription<GraphSchema>>();
+            var fakeSub = Substitute.For<ISubscription<GraphSchema>>();
 
             var field = new SchemaItemPath("[subscription]/field1");
-            fakeSub.Setup(x => x.Id).Returns("abc123");
-            fakeSub.Setup(x => x.Route).Returns(field);
+            fakeSub.Id.Returns("abc123");
+            fakeSub.Route.Returns(field);
 
-            collection.Add(fakeSub.Object);
+            collection.Add(fakeSub);
             Assert.AreEqual(1, collection.Count);
 
-            collection.Remove(fakeSub.Object.Id, out var subOut);
+            collection.Remove(fakeSub.Id, out var subOut);
 
             Assert.AreEqual(0, collection.Count);
-            Assert.AreEqual(subOut, fakeSub.Object);
+            Assert.AreEqual(subOut, fakeSub);
         }
 
         [Test]
@@ -132,17 +132,17 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
             var collection = new SubscriptionCollection<GraphSchema>();
             var field = new SchemaItemPath("[subscription]/field1");
 
-            var fakeSub = new Mock<ISubscription<GraphSchema>>();
-            fakeSub.Setup(x => x.Id).Returns("abc123");
-            fakeSub.Setup(x => x.Route).Returns(field);
+            var fakeSub = Substitute.For<ISubscription<GraphSchema>>();
+            fakeSub.Id.Returns("abc123");
+            fakeSub.Route.Returns(field);
 
-            var fakeSub2 = new Mock<ISubscription<GraphSchema>>();
-            fakeSub2.Setup(x => x.Id).Returns("abc123");
-            fakeSub2.Setup(x => x.Route).Returns(field);
+            var fakeSub2 = Substitute.For<ISubscription<GraphSchema>>();
+            fakeSub2.Id.Returns("abc123");
+            fakeSub2.Route.Returns(field);
 
-            collection.Add(fakeSub.Object);
+            collection.Add(fakeSub);
 
-            Assert.Throws<ArgumentException>(() => collection.Add(fakeSub.Object));
+            Assert.Throws<ArgumentException>(() => collection.Add(fakeSub));
         }
 
         [Test]
@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         {
             var collection = new SubscriptionCollection<GraphSchema>();
 
-            var fakeSub = new Mock<ISubscription<GraphSchema>>();
+            var fakeSub = Substitute.For<ISubscription<GraphSchema>>();
 
             collection.Remove("bobSub", out var subOut);
 
@@ -163,14 +163,14 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         {
             var collection = new SubscriptionCollection<GraphSchema>();
 
-            var fakeSub = new Mock<ISubscription<GraphSchema>>();
+            var fakeSub = Substitute.For<ISubscription<GraphSchema>>();
 
             var field = new SchemaItemPath("[subscription]/field1");
             var field2 = new SchemaItemPath("[wrong]/field2");
-            fakeSub.Setup(x => x.Id).Returns("abc123");
-            fakeSub.Setup(x => x.Route).Returns(field);
+            fakeSub.Id.Returns("abc123");
+            fakeSub.Route.Returns(field);
 
-            collection.Add(fakeSub.Object);
+            collection.Add(fakeSub);
             Assert.AreEqual(0, collection.CountByRoute(field2));
         }
 
@@ -179,13 +179,13 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
         {
             var collection = new SubscriptionCollection<GraphSchema>();
 
-            var fakeSub = new Mock<ISubscription<GraphSchema>>();
+            var fakeSub = Substitute.For<ISubscription<GraphSchema>>();
 
             var field = new SchemaItemPath("[subscription]/field1");
-            fakeSub.Setup(x => x.Id).Returns("abc123");
-            fakeSub.Setup(x => x.Route).Returns(field);
+            fakeSub.Id.Returns("abc123");
+            fakeSub.Route.Returns(field);
 
-            collection.Add(fakeSub.Object);
+            collection.Add(fakeSub);
             Assert.AreEqual(0, collection.CountByRoute(null));
         }
     }
