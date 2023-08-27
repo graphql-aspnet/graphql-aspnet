@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
     using GraphQL.AspNet.Tests.Execution.RulesEngine.DirectiveTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -31,11 +31,11 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
                 .AddType<ObjectTypeDirective>()
                 .Build();
 
-            var obj = new Mock<IObjectGraphType>();
+            var obj = Substitute.For<IObjectGraphType>();
 
             var context = server.CreateDirectiveExecutionContext<ObjectTypeDirective>(
                 DirectiveLocation.NONE,
-                obj.Object);
+                obj);
 
             var ruleSet = new DirectiveValidationRuleProcessor();
             var complete = ruleSet.Execute(context.AsEnumerable());
@@ -51,11 +51,11 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             var server = new TestServerBuilder()
                 .AddType<ObjectTypeDirective>()
                 .Build();
-            var obj = new Mock<IObjectGraphType>();
+            var obj = Substitute.For<IObjectGraphType>();
 
             var context = server.CreateDirectiveExecutionContext<ObjectTypeDirective>(
                 DirectiveLocation.OBJECT,
-                obj.Object,
+                obj,
                 DirectiveInvocationPhase.Unknown);
 
             var ruleSet = new DirectiveValidationRuleProcessor();
@@ -72,11 +72,11 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             var server = new TestServerBuilder()
                 .AddType<ObjectTypeDirective>()
                 .Build();
-            var obj = new Mock<IObjectGraphType>();
+            var obj = Substitute.For<IObjectGraphType>();
 
             var context = server.CreateDirectiveExecutionContext<ObjectTypeDirective>(
                 DirectiveLocation.FIELD,
-                obj.Object,
+                obj,
                 DirectiveInvocationPhase.SchemaGeneration);
 
             var ruleSet = new DirectiveValidationRuleProcessor();
@@ -94,11 +94,11 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             var server = new TestServerBuilder()
                 .AddType<TwoPropertyObject>()
                 .Build();
-            var obj = new Mock<IObjectGraphType>();
+            var obj = Substitute.For<IObjectGraphType>();
 
             var context = server.CreateDirectiveExecutionContext<TwoPropertyObject>(
                 DirectiveLocation.OBJECT,
-                obj.Object,
+                obj,
                 DirectiveInvocationPhase.SchemaGeneration);
 
             var ruleSet = new DirectiveValidationRuleProcessor();
@@ -116,11 +116,11 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             var server = new TestServerBuilder()
                 .AddType<ObjectTypeDirectiveWithParams>()
                 .Build();
-            var obj = new Mock<IObjectGraphType>();
+            var obj = Substitute.For<IObjectGraphType>();
 
             var context = server.CreateDirectiveExecutionContext<ObjectTypeDirectiveWithParams>(
                 DirectiveLocation.OBJECT,
-                obj.Object,
+                obj,
                 DirectiveInvocationPhase.SchemaGeneration,
                 SourceOrigin.None,
                 new object[] { 5, "someValue" });
@@ -140,11 +140,11 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
                 .AddType<ObjectTypeDirectiveWithParams>()
                 .Build();
 
-            var obj = new Mock<IObjectGraphType>();
+            var obj = Substitute.For<IObjectGraphType>();
 
             var context = server.CreateDirectiveExecutionContext<ObjectTypeDirectiveWithParams>(
                 DirectiveLocation.OBJECT,
-                obj.Object,
+                obj,
                 DirectiveInvocationPhase.SchemaGeneration,
                 SourceOrigin.None,
                 new object[] { 5 }); // directive requires 2 argument, only 1 supplied
@@ -165,11 +165,11 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
                 .AddType<ObjectTypeDirectiveWithParams>()
                 .Build();
 
-            var obj = new Mock<IObjectGraphType>();
+            var obj = Substitute.For<IObjectGraphType>();
 
             var context = server.CreateDirectiveExecutionContext<ObjectTypeDirectiveWithParams>(
                 DirectiveLocation.OBJECT,
-                obj.Object,
+                obj,
                 DirectiveInvocationPhase.SchemaGeneration,
                 SourceOrigin.None,
                 new object[] { "notAInt", "validString" }); // arg 1 should be an int

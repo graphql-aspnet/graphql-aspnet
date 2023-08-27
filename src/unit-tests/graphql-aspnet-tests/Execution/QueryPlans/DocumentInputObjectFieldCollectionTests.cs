@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -24,18 +24,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.FindFieldByName("thename");
             Assert.IsNotNull(item);
@@ -46,18 +46,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.FindFieldByName("notAnArgument");
             Assert.IsNull(item);
@@ -68,18 +68,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.FindFieldByName(name);
             Assert.IsNotNull(item);
@@ -91,18 +91,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             var name = "thename".AsMemory();
             var othername = "theothername".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.FindFieldByName(othername);
             Assert.IsNull(item);
@@ -113,22 +113,22 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var result = colllection.TryGetValue("thename", out var fieldOut);
             Assert.IsTrue((bool)result);
-            Assert.AreEqual(fieldPart.Object, fieldOut);
+            Assert.AreEqual(fieldPart, fieldOut);
         }
 
         [Test]
@@ -136,18 +136,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var result = colllection.TryGetValue("theOthername", out var fieldOut);
             Assert.IsFalse((bool)result);
@@ -159,18 +159,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.ContainsKey("notAnArgument");
             Assert.IsFalse((bool)item);
@@ -181,18 +181,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.ContainsKey("thename");
             Assert.IsTrue((bool)item);
@@ -203,18 +203,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.ContainsKey("notAnArgument".AsMemory());
             Assert.IsFalse((bool)item);
@@ -225,18 +225,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.ContainsKey(name);
             Assert.IsTrue((bool)item);
@@ -247,18 +247,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.IsUnique("thename");
             Assert.IsTrue((bool)item);
@@ -269,18 +269,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.IsUnique(null);
             Assert.IsFalse((bool)item);
@@ -291,18 +291,18 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
             var item = colllection.IsUnique(name.Span);
             Assert.IsTrue((bool)item);
@@ -313,24 +313,24 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
-            var fieldPart2 = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart2.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart2.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart2 = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart2.Field.Returns(graphField);
+            fieldPart2.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart2.Object);
+            colllection.AddField(fieldPart2);
 
             var item = colllection.IsUnique("thename");
             Assert.IsFalse((bool)item);
@@ -341,24 +341,24 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename".AsMemory();
 
-            var owner = new Mock<IFieldDocumentPart>();
-            var colllection = new DocumentInputObjectFieldCollection(owner.Object);
+            var owner = Substitute.For<IFieldDocumentPart>();
+            var colllection = new DocumentInputObjectFieldCollection(owner);
 
-            var graphField = new Mock<IInputGraphField>();
-            graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
-            graphField.Setup(x => x.Name).Returns(name.ToString());
+            var graphField = Substitute.For<IInputGraphField>();
+            graphField.TypeExpression.Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphField.Name.Returns(name.ToString());
 
-            var fieldPart = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart.Field.Returns(graphField);
+            fieldPart.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart.Object);
+            colllection.AddField(fieldPart);
 
-            var fieldPart2 = new Mock<IInputObjectFieldDocumentPart>();
-            fieldPart2.Setup(x => x.Field).Returns(graphField.Object);
-            fieldPart2.Setup(x => x.Name).Returns(name.ToString());
+            var fieldPart2 = Substitute.For<IInputObjectFieldDocumentPart>();
+            fieldPart2.Field.Returns(graphField);
+            fieldPart2.Name.Returns(name.ToString());
 
-            colllection.AddField(fieldPart2.Object);
+            colllection.AddField(fieldPart2);
 
             var item = colllection.IsUnique(name.Span);
             Assert.IsFalse((bool)item);

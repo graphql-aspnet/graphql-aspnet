@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
     using System.Linq;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -23,14 +23,14 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IReferenceDocumentPart>();
+            var owner = Substitute.For<IReferenceDocumentPart>();
 
-            var varUsage = new Mock<IVariableUsageDocumentPart>();
-            varUsage.Setup(x => x.VariableName).Returns(name);
+            var varUsage = Substitute.For<IVariableUsageDocumentPart>();
+            varUsage.VariableName.Returns(name);
 
-            var colllection = new DocumentVariableUsageCollection(owner.Object);
+            var colllection = new DocumentVariableUsageCollection(owner);
 
-            Assert.AreEqual(owner.Object, colllection.Owner);
+            Assert.AreEqual(owner, colllection.Owner);
         }
 
         [Test]
@@ -38,13 +38,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IReferenceDocumentPart>();
+            var owner = Substitute.For<IReferenceDocumentPart>();
 
-            var varUsage = new Mock<IVariableUsageDocumentPart>();
-            varUsage.Setup(x => x.VariableName).Returns(name);
+            var varUsage = Substitute.For<IVariableUsageDocumentPart>();
+            varUsage.VariableName.Returns(name);
 
-            var colllection = new DocumentVariableUsageCollection(owner.Object);
-            colllection.Add(varUsage.Object);
+            var colllection = new DocumentVariableUsageCollection(owner);
+            colllection.Add(varUsage);
 
             Assert.AreEqual(1, colllection.Count);
         }
@@ -54,13 +54,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IReferenceDocumentPart>();
+            var owner = Substitute.For<IReferenceDocumentPart>();
 
-            var varUsage = new Mock<IVariableUsageDocumentPart>();
-            varUsage.Setup(x => x.VariableName).Returns(name);
+            var varUsage = Substitute.For<IVariableUsageDocumentPart>();
+            varUsage.VariableName.Returns(name);
 
-            var colllection = new DocumentVariableUsageCollection(owner.Object);
-            colllection.Add(varUsage.Object);
+            var colllection = new DocumentVariableUsageCollection(owner);
+            colllection.Add(varUsage);
 
             var refs = colllection.FindReferences("thename");
 
@@ -72,13 +72,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IReferenceDocumentPart>();
+            var owner = Substitute.For<IReferenceDocumentPart>();
 
-            var varUsage = new Mock<IVariableUsageDocumentPart>();
-            varUsage.Setup(x => x.VariableName).Returns(name);
+            var varUsage = Substitute.For<IVariableUsageDocumentPart>();
+            varUsage.VariableName.Returns(name);
 
-            var colllection = new DocumentVariableUsageCollection(owner.Object);
-            colllection.Add(varUsage.Object);
+            var colllection = new DocumentVariableUsageCollection(owner);
+            colllection.Add(varUsage);
 
             var refs = colllection.FindReferences("theOthername");
 
@@ -90,13 +90,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IReferenceDocumentPart>();
+            var owner = Substitute.For<IReferenceDocumentPart>();
 
-            var varUsage = new Mock<IVariableUsageDocumentPart>();
-            varUsage.Setup(x => x.VariableName).Returns(name);
+            var varUsage = Substitute.For<IVariableUsageDocumentPart>();
+            varUsage.VariableName.Returns(name);
 
-            var colllection = new DocumentVariableUsageCollection(owner.Object);
-            colllection.Add(varUsage.Object);
+            var colllection = new DocumentVariableUsageCollection(owner);
+            colllection.Add(varUsage);
 
             var refs = colllection.FindReferences(null);
 
@@ -108,13 +108,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IReferenceDocumentPart>();
+            var owner = Substitute.For<IReferenceDocumentPart>();
 
-            var varUsage = new Mock<IVariableUsageDocumentPart>();
-            varUsage.Setup(x => x.VariableName).Returns(name);
+            var varUsage = Substitute.For<IVariableUsageDocumentPart>();
+            varUsage.VariableName.Returns(name);
 
-            var colllection = new DocumentVariableUsageCollection(owner.Object);
-            colllection.Add(varUsage.Object);
+            var colllection = new DocumentVariableUsageCollection(owner);
+            colllection.Add(varUsage);
 
             var result = colllection.HasUsages("thename");
             Assert.IsTrue((bool)result);
@@ -125,13 +125,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IReferenceDocumentPart>();
+            var owner = Substitute.For<IReferenceDocumentPart>();
 
-            var varUsage = new Mock<IVariableUsageDocumentPart>();
-            varUsage.Setup(x => x.VariableName).Returns(name);
+            var varUsage = Substitute.For<IVariableUsageDocumentPart>();
+            varUsage.VariableName.Returns(name);
 
-            var colllection = new DocumentVariableUsageCollection(owner.Object);
-            colllection.Add(varUsage.Object);
+            var colllection = new DocumentVariableUsageCollection(owner);
+            colllection.Add(varUsage);
 
             var result = colllection.HasUsages("theOthername");
             Assert.IsFalse((bool)result);
@@ -142,13 +142,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
         {
             var name = "thename";
 
-            var owner = new Mock<IReferenceDocumentPart>();
+            var owner = Substitute.For<IReferenceDocumentPart>();
 
-            var varUsage = new Mock<IVariableUsageDocumentPart>();
-            varUsage.Setup(x => x.VariableName).Returns(name);
+            var varUsage = Substitute.For<IVariableUsageDocumentPart>();
+            varUsage.VariableName.Returns(name);
 
-            var colllection = new DocumentVariableUsageCollection(owner.Object);
-            colllection.Add(varUsage.Object);
+            var colllection = new DocumentVariableUsageCollection(owner);
+            colllection.Add(varUsage);
 
             var result = colllection.HasUsages(null);
             Assert.IsFalse((bool)result);

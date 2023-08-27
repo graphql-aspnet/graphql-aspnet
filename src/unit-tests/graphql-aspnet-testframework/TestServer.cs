@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
+    using NSubstitute;
 
     /// <summary>
     /// A mocked server instance built for a given schema and with a service provider (such as would exist at runtime)
@@ -251,38 +251,38 @@ namespace GraphQL.AspNet.Tests.Framework
             var messages = new GraphMessageCollection();
             var metaData = new MetaDataCollection();
 
-            var queryRequest = new Mock<IQueryExecutionRequest>();
-            var fieldInvocationContext = new Mock<IGraphFieldInvocationContext>();
-            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
-            var graphFieldRequest = new Mock<IGraphFieldRequest>();
-            var fieldDocumentPart = new Mock<IFieldDocumentPart>();
+            var queryRequest = Substitute.For<IQueryExecutionRequest>();
+            var fieldInvocationContext = Substitute.For<IGraphFieldInvocationContext>();
+            var parentContext = Substitute.For<IGraphQLMiddlewareExecutionContext>();
+            var graphFieldRequest = Substitute.For<IGraphFieldRequest>();
+            var fieldDocumentPart = Substitute.For<IFieldDocumentPart>();
 
-            queryRequest.Setup(x => x.Items).Returns(metaData);
+            queryRequest.Items.Returns(metaData);
 
-            parentContext.Setup(x => x.QueryRequest).Returns(queryRequest.Object);
-            parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
-            parentContext.Setup(x => x.SecurityContext).Returns(this.SecurityContext);
-            parentContext.Setup(x => x.Metrics).Returns(null as IQueryExecutionMetrics);
-            parentContext.Setup(x => x.Logger).Returns(null as IGraphEventLogger);
-            parentContext.Setup(x => x.Messages).Returns(() => messages);
-            parentContext.Setup(x => x.IsValid).Returns(() => messages.IsSucessful);
-            parentContext.Setup(x => x.Session).Returns(new QuerySession());
+            parentContext.QueryRequest.Returns(queryRequest);
+            parentContext.ServiceProvider.Returns(this.ServiceProvider);
+            parentContext.SecurityContext.Returns(this.SecurityContext);
+            parentContext.Metrics.Returns(null as IQueryExecutionMetrics);
+            parentContext.Logger.Returns(null as IGraphEventLogger);
+            parentContext.Messages.Returns((x) => messages);
+            parentContext.IsValid.Returns((x) => messages.IsSucessful);
+            parentContext.Session.Returns(new QuerySession());
 
-            fieldDocumentPart.Setup(x => x.Name).Returns(field.Name);
-            fieldDocumentPart.Setup(x => x.Alias).Returns(field.Name);
-            fieldDocumentPart.Setup(x => x.Field).Returns(field);
+            fieldDocumentPart.Name.Returns(field.Name);
+            fieldDocumentPart.Alias.Returns(field.Name);
+            fieldDocumentPart.Field.Returns(field);
 
-            fieldInvocationContext.Setup(x => x.ExpectedSourceType).Returns(typeof(TType));
-            fieldInvocationContext.Setup(x => x.Field).Returns(field);
-            fieldInvocationContext.Setup(x => x.Arguments).Returns(arguments);
-            fieldInvocationContext.Setup(x => x.Name).Returns(field.Name);
-            fieldInvocationContext.Setup(x => x.ChildContexts).Returns(new FieldInvocationContextCollection());
-            fieldInvocationContext.Setup(x => x.Origin).Returns(SourceOrigin.None);
-            fieldInvocationContext.Setup(x => x.Schema).Returns(this.Schema);
-            fieldInvocationContext.Setup(x => x.FieldDocumentPart).Returns(fieldDocumentPart.Object);
+            fieldInvocationContext.ExpectedSourceType.Returns(typeof(TType));
+            fieldInvocationContext.Field.Returns(field);
+            fieldInvocationContext.Arguments.Returns(arguments);
+            fieldInvocationContext.Name.Returns(field.Name);
+            fieldInvocationContext.ChildContexts.Returns(new FieldInvocationContextCollection());
+            fieldInvocationContext.Origin.Returns(SourceOrigin.None);
+            fieldInvocationContext.Schema.Returns(this.Schema);
+            fieldInvocationContext.FieldDocumentPart.Returns(fieldDocumentPart);
 
             var resolvedParentDataItem = new FieldDataItem(
-                fieldInvocationContext.Object,
+                fieldInvocationContext,
                 sourceData,
                 SourcePath.None);
 
@@ -292,15 +292,15 @@ namespace GraphQL.AspNet.Tests.Framework
                 resolvedParentDataItem);
 
             var id = Guid.NewGuid();
-            graphFieldRequest.Setup(x => x.Id).Returns(id);
-            graphFieldRequest.Setup(x => x.Origin).Returns(SourceOrigin.None);
-            graphFieldRequest.Setup(x => x.Field).Returns(field);
-            graphFieldRequest.Setup(x => x.InvocationContext).Returns(fieldInvocationContext.Object);
-            graphFieldRequest.Setup(x => x.Data).Returns(() => sourceDataContainer);
+            graphFieldRequest.Id.Returns(id);
+            graphFieldRequest.Origin.Returns(SourceOrigin.None);
+            graphFieldRequest.Field.Returns(field);
+            graphFieldRequest.InvocationContext.Returns(fieldInvocationContext);
+            graphFieldRequest.Data.Returns((x) => sourceDataContainer);
 
             return new GraphFieldExecutionContext(
-                parentContext.Object,
-                graphFieldRequest.Object,
+                parentContext,
+                graphFieldRequest,
                 ResolvedVariableCollectionFactory.Create());
         }
 
@@ -416,19 +416,19 @@ namespace GraphQL.AspNet.Tests.Framework
 
             var targetDirective = server.Schema.KnownTypes.FindDirective(typeof(TDirective));
 
-            var queryRequest = new Mock<IQueryExecutionRequest>();
-            var directiveRequest = new Mock<IGraphDirectiveRequest>();
-            var invocationContext = new Mock<IDirectiveInvocationContext>();
+            var queryRequest = Substitute.For<IQueryExecutionRequest>();
+            var directiveRequest = Substitute.For<IGraphDirectiveRequest>();
+            var invocationContext = Substitute.For<IDirectiveInvocationContext>();
             var argCollection = InputArgumentCollectionFactory.Create();
 
-            directiveRequest.Setup(x => x.DirectivePhase).Returns(phase);
-            directiveRequest.Setup(x => x.InvocationContext).Returns(invocationContext.Object);
-            directiveRequest.Setup(x => x.DirectiveTarget).Returns(directiveTarget);
+            directiveRequest.DirectivePhase.Returns(phase);
+            directiveRequest.InvocationContext.Returns(invocationContext);
+            directiveRequest.DirectiveTarget.Returns(directiveTarget);
 
-            invocationContext.Setup(x => x.Location).Returns(location);
-            invocationContext.Setup(x => x.Arguments).Returns(argCollection);
-            invocationContext.Setup(x => x.Origin).Returns(origin);
-            invocationContext.Setup(x => x.Directive).Returns(targetDirective);
+            invocationContext.Location.Returns(location);
+            invocationContext.Arguments.Returns(argCollection);
+            invocationContext.Origin.Returns(origin);
+            invocationContext.Directive.Returns(targetDirective);
 
             if (targetDirective != null && targetDirective.Kind == TypeKind.DIRECTIVE
                 && arguments != null)
@@ -449,8 +449,8 @@ namespace GraphQL.AspNet.Tests.Framework
 
             var context = new GraphDirectiveExecutionContext(
                 server.Schema,
-                directiveRequest.Object,
-                queryRequest.Object,
+                directiveRequest,
+                queryRequest,
                 server.ServiceProvider,
                 new QuerySession());
 

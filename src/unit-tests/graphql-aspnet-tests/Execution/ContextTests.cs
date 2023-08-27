@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Schemas;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -26,75 +26,75 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void GraphFieldExecutionContext_PropertyCheck()
         {
-            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
+            var parentContext = Substitute.For<IGraphQLMiddlewareExecutionContext>();
 
-            var queryRequest = new Mock<IQueryExecutionRequest>();
-            var variableData = new Mock<IResolvedVariableCollection>();
-            var serviceProvider = new Mock<IServiceProvider>();
-            var logger = new Mock<IGraphEventLogger>();
-            var metrics = new Mock<IQueryExecutionMetrics>();
-            var securityContext = new Mock<IUserSecurityContext>();
+            var queryRequest = Substitute.For<IQueryExecutionRequest>();
+            var variableData = Substitute.For<IResolvedVariableCollection>();
+            var serviceProvider = Substitute.For<IServiceProvider>();
+            var logger = Substitute.For<IGraphEventLogger>();
+            var metrics = Substitute.For<IQueryExecutionMetrics>();
+            var securityContext = Substitute.For<IUserSecurityContext>();
 
-            parentContext.Setup(x => x.QueryRequest).Returns(queryRequest.Object);
-            parentContext.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
-            parentContext.Setup(x => x.SecurityContext).Returns(securityContext.Object);
-            parentContext.Setup(x => x.Metrics).Returns(metrics.Object);
-            parentContext.Setup(x => x.Logger).Returns(logger.Object);
-            parentContext.Setup(x => x.Session).Returns(new QuerySession());
+            parentContext.QueryRequest.Returns(queryRequest);
+            parentContext.ServiceProvider.Returns(serviceProvider);
+            parentContext.SecurityContext.Returns(securityContext);
+            parentContext.Metrics.Returns(metrics);
+            parentContext.Logger.Returns(logger);
+            parentContext.Session.Returns(new QuerySession());
 
-            var fieldRequest = new Mock<IGraphFieldRequest>();
+            var fieldRequest = Substitute.For<IGraphFieldRequest>();
             var sourceFieldCollection = new FieldSourceCollection();
 
             var context = new GraphFieldExecutionContext(
-                parentContext.Object,
-                fieldRequest.Object,
-                variableData.Object,
+                parentContext,
+                fieldRequest,
+                variableData,
                 sourceFieldCollection);
 
-            Assert.AreEqual(queryRequest.Object, context.QueryRequest);
-            Assert.AreEqual(variableData.Object, context.VariableData);
+            Assert.AreEqual(queryRequest, context.QueryRequest);
+            Assert.AreEqual(variableData, context.VariableData);
             Assert.AreEqual(sourceFieldCollection, context.DefaultFieldSources);
-            Assert.AreEqual(fieldRequest.Object, context.Request);
+            Assert.AreEqual(fieldRequest, context.Request);
             Assert.IsEmpty(context.ResolvedSourceItems);
-            Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
-            Assert.AreEqual(logger.Object, context.Logger);
-            Assert.AreEqual(metrics.Object, context.Metrics);
-            Assert.AreEqual(securityContext.Object, context.SecurityContext);
+            Assert.AreEqual(serviceProvider, context.ServiceProvider);
+            Assert.AreEqual(logger, context.Logger);
+            Assert.AreEqual(metrics, context.Metrics);
+            Assert.AreEqual(securityContext, context.SecurityContext);
         }
 
         [Test]
         public void GraphQueryExecutionContext_PropertyCheck()
         {
-            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
+            var parentContext = Substitute.For<IGraphQLMiddlewareExecutionContext>();
 
-            var queryRequest = new Mock<IQueryExecutionRequest>();
-            var variableData = new Mock<IResolvedVariableCollection>();
-            var serviceProvider = new Mock<IServiceProvider>();
-            var logger = new Mock<IGraphEventLogger>();
-            var metrics = new Mock<IQueryExecutionMetrics>();
-            var securityContext = new Mock<IUserSecurityContext>();
+            var queryRequest = Substitute.For<IQueryExecutionRequest>();
+            var variableData = Substitute.For<IResolvedVariableCollection>();
+            var serviceProvider = Substitute.For<IServiceProvider>();
+            var logger = Substitute.For<IGraphEventLogger>();
+            var metrics = Substitute.For<IQueryExecutionMetrics>();
+            var securityContext = Substitute.For<IUserSecurityContext>();
 
-            var fieldRequest = new Mock<IGraphFieldRequest>();
+            var fieldRequest = Substitute.For<IGraphFieldRequest>();
             var sourceFieldCollection = new FieldSourceCollection();
 
             var session = new QuerySession();
             var items = new MetaDataCollection();
 
             var context = new QueryExecutionContext(
-                queryRequest.Object,
-                serviceProvider.Object,
+                queryRequest,
+                serviceProvider,
                 session,
                 items,
-                securityContext.Object,
-                metrics.Object,
-                logger.Object);
+                securityContext,
+                metrics,
+                logger);
 
-            Assert.AreEqual(queryRequest.Object, context.QueryRequest);
+            Assert.AreEqual(queryRequest, context.QueryRequest);
             Assert.AreEqual(sourceFieldCollection, context.DefaultFieldSources);
-            Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
-            Assert.AreEqual(logger.Object, context.Logger);
-            Assert.AreEqual(metrics.Object, context.Metrics);
-            Assert.AreEqual(securityContext.Object, context.SecurityContext);
+            Assert.AreEqual(serviceProvider, context.ServiceProvider);
+            Assert.AreEqual(logger, context.Logger);
+            Assert.AreEqual(metrics, context.Metrics);
+            Assert.AreEqual(securityContext, context.SecurityContext);
             Assert.AreEqual(session, context.Session);
             Assert.AreEqual(items, context.Items);
             Assert.IsNotNull(context.DefaultFieldSources);
@@ -105,39 +105,39 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void GraphDirectiveExecutionContext_PropertyCheck()
         {
-            var parentContext = new Mock<IGraphQLMiddlewareExecutionContext>();
+            var parentContext = Substitute.For<IGraphQLMiddlewareExecutionContext>();
 
-            var queryRequest = new Mock<IQueryExecutionRequest>();
-            var variableData = new Mock<IResolvedVariableCollection>();
-            var serviceProvider = new Mock<IServiceProvider>();
-            var logger = new Mock<IGraphEventLogger>();
-            var metrics = new Mock<IQueryExecutionMetrics>();
-            var securityContext = new Mock<IUserSecurityContext>();
+            var queryRequest = Substitute.For<IQueryExecutionRequest>();
+            var variableData = Substitute.For<IResolvedVariableCollection>();
+            var serviceProvider = Substitute.For<IServiceProvider>();
+            var logger = Substitute.For<IGraphEventLogger>();
+            var metrics = Substitute.For<IQueryExecutionMetrics>();
+            var securityContext = Substitute.For<IUserSecurityContext>();
             var schema = new GraphSchema();
 
-            parentContext.Setup(x => x.QueryRequest).Returns(queryRequest.Object);
-            parentContext.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
-            parentContext.Setup(x => x.SecurityContext).Returns(securityContext.Object);
-            parentContext.Setup(x => x.Metrics).Returns(metrics.Object);
-            parentContext.Setup(x => x.Logger).Returns(logger.Object);
-            parentContext.Setup(x => x.Session).Returns(new QuerySession());
+            parentContext.QueryRequest.Returns(queryRequest);
+            parentContext.ServiceProvider.Returns(serviceProvider);
+            parentContext.SecurityContext.Returns(securityContext);
+            parentContext.Metrics.Returns(metrics);
+            parentContext.Logger.Returns(logger);
+            parentContext.Session.Returns(new QuerySession());
 
-            var args = new Mock<IExecutionArgumentCollection>();
-            var directiveRequest = new Mock<IGraphDirectiveRequest>();
+            var args = Substitute.For<IExecutionArgumentCollection>();
+            var directiveRequest = Substitute.For<IGraphDirectiveRequest>();
             var sourceFieldCollection = new FieldSourceCollection();
 
             var context = new DirectiveResolutionContext(
                 schema,
-                parentContext.Object,
-                directiveRequest.Object,
-                args.Object);
+                parentContext,
+                directiveRequest,
+                args);
 
-            Assert.AreEqual(queryRequest.Object, context.QueryRequest);
-            Assert.AreEqual(directiveRequest.Object, context.Request);
-            Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
-            Assert.AreEqual(logger.Object, context.Logger);
-            Assert.AreEqual(metrics.Object, context.Metrics);
-            Assert.AreEqual(securityContext.Object, context.SecurityContext);
+            Assert.AreEqual(queryRequest, context.QueryRequest);
+            Assert.AreEqual(directiveRequest, context.Request);
+            Assert.AreEqual(serviceProvider, context.ServiceProvider);
+            Assert.AreEqual(logger, context.Logger);
+            Assert.AreEqual(metrics, context.Metrics);
+            Assert.AreEqual(securityContext, context.SecurityContext);
             Assert.AreEqual(schema, context.Schema);
         }
     }

@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -22,10 +22,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void PropertyCheck()
         {
-            var owner = new Mock<ISchemaItemTemplate>();
-            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            var owner = Substitute.For<ISchemaItemTemplate>();
+            owner.InternalFullName.Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
-                owner.Object,
+                owner,
                 typeof(DirectiveWithArgs),
                 1,
                 "bob");
@@ -40,10 +40,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void NulLTemplateType_ThrowsException()
         {
-            var owner = new Mock<ISchemaItemTemplate>();
-            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            var owner = Substitute.For<ISchemaItemTemplate>();
+            owner.InternalFullName.Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
-                owner.Object,
+                owner,
                 null as Type,
                 1,
                 "bob");
@@ -58,10 +58,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void NullName_ThrowsException()
         {
-            var owner = new Mock<ISchemaItemTemplate>();
-            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            var owner = Substitute.For<ISchemaItemTemplate>();
+            owner.InternalFullName.Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
-                owner.Object,
+                owner,
                 null as string,
                 1,
                 "bob");
@@ -76,10 +76,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void EmptyName_ThrowsException()
         {
-            var owner = new Mock<ISchemaItemTemplate>();
-            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            var owner = Substitute.For<ISchemaItemTemplate>();
+            owner.InternalFullName.Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
-                owner.Object,
+                owner,
                 string.Empty,
                 1,
                 "bob");
@@ -94,10 +94,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void NonDirectiveType_ThrowsException()
         {
-            var owner = new Mock<ISchemaItemTemplate>();
-            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            var owner = Substitute.For<ISchemaItemTemplate>();
+            owner.InternalFullName.Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
-                owner.Object,
+                owner,
                 typeof(AppliedDirectiveTemplateTests),
                 1,
                 "bob");

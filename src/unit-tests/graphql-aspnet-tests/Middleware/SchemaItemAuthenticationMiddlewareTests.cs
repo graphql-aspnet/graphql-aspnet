@@ -21,7 +21,8 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
-    using Moq;
+    using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
     using NUnit.Framework;
 
     [TestFixture]
@@ -40,8 +41,8 @@ namespace GraphQL.AspNet.Tests.Middleware
         }
 
         private const string DEFAULT_SCHEME = "Default";
-        private Mock<IAuthenticationSchemeProvider> _provider;
-        private Mock<IUserSecurityContext> _userSecurityContext;
+        private IAuthenticationSchemeProvider _provider;
+        private IUserSecurityContext _userSecurityContext;
         private Dictionary<string, ClaimsPrincipal> _usersByScheme;
 
         public SchemaItemAuthenticationMiddlewareTests()
@@ -51,14 +52,15 @@ namespace GraphQL.AspNet.Tests.Middleware
                 null,
                 typeof(TestHandler));
 
-            _provider = new Mock<IAuthenticationSchemeProvider>();
-            _provider.Setup(x => x.GetDefaultAuthenticateSchemeAsync())
-                .ReturnsAsync(defaultScheme);
+            _provider = Substitute.For<IAuthenticationSchemeProvider>();
+            _provider.GetDefaultAuthenticateSchemeAsync()
+                .Returns(defaultScheme);
 
-            _provider.Setup(x => x.GetAllSchemesAsync())
-                .ReturnsAsync(new[] { defaultScheme });
+            _provider.GetAllSchemesAsync()
+                .Returns(new[] { defaultScheme });
 
-            _userSecurityContext = new Mock<IUserSecurityContext>();
+            _userSecurityContext = Substitute.For<IUserSecurityContext>();
+            _userSecurityContext.DefaultUser.Returns(x => null);
 
             _usersByScheme = new Dictionary<string, ClaimsPrincipal>();
             _usersByScheme.Add(DEFAULT_SCHEME, new ClaimsPrincipal());
@@ -74,24 +76,24 @@ namespace GraphQL.AspNet.Tests.Middleware
             var defaultSet = false;
             foreach (var kvp in _usersByScheme)
             {
-                var authResult = new Mock<IAuthenticationResult>();
-                authResult.Setup(x => x.Suceeded).Returns(kvp.Value != null);
-                authResult.Setup(x => x.User).Returns(kvp.Value);
-                authResult.Setup(x => x.AuthenticationScheme).Returns(kvp.Key);
-                _userSecurityContext?.Setup(x => x.AuthenticateAsync(kvp.Key, It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(authResult.Object);
+                var authResult = Substitute.For<IAuthenticationResult>();
+                authResult.Suceeded.Returns(kvp.Value != null);
+                authResult.User.Returns(kvp.Value);
+                authResult.AuthenticationScheme.Returns(kvp.Key);
+                _userSecurityContext?.AuthenticateAsync(kvp.Key, Arg.Any<CancellationToken>())
+                    .Returns(authResult);
 
                 if (kvp.Key == DEFAULT_SCHEME)
                 {
-                    _userSecurityContext?.Setup(x => x.AuthenticateAsync(It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(authResult.Object);
+                    _userSecurityContext?.AuthenticateAsync(Arg.Any<CancellationToken>())
+                        .Returns(authResult);
                     defaultSet = true;
                 }
             }
 
             if (!defaultSet)
             {
-                _userSecurityContext?.Setup(x => x.AuthenticateAsync(It.IsAny<CancellationToken>()))
+                _userSecurityContext?.AuthenticateAsync(Arg.Any<CancellationToken>())
                     .ThrowsAsync(new InvalidOperationException("No Default Scheme Defined"));
             }
 
@@ -99,18 +101,17 @@ namespace GraphQL.AspNet.Tests.Middleware
             var server = builder.Build();
 
             var contextBuilder = server.CreateQueryContextBuilder();
-            contextBuilder.AddUserSecurityContext(_userSecurityContext?.Object);
+            contextBuilder.AddUserSecurityContext(_userSecurityContext);
             var queryContext = contextBuilder.Build();
 
-            var field = new Mock<IGraphField>();
-            var fieldSecurityRequest = new Mock<ISchemaItemSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.SecureSchemaItem)
-                .Returns(field.Object);
+            var field = Substitute.For<IGraphField>();
+            var fieldSecurityRequest = Substitute.For<ISchemaItemSecurityRequest>();
+            fieldSecurityRequest.SecureSchemaItem.Returns(field);
 
-            var fieldSecurityContext = new SchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest.Object);
+            var fieldSecurityContext = new SchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest);
             fieldSecurityContext.SecurityRequirements = secRequirements;
 
-            var middleware = new SchemaItemAuthenticationMiddleware(_provider?.Object);
+            var middleware = new SchemaItemAuthenticationMiddleware(_provider);
             await middleware.InvokeAsync(fieldSecurityContext, this.EmptyNextDelegate);
             middleware.Dispose();
 

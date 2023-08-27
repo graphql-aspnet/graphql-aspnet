@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.MethodTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -27,11 +27,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     {
         private AspNet.Internal.TypeTemplates.MethodGraphFieldTemplate CreateMethodTemplate<TObject>(string methodName)
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var methodInfo = typeof(TObject).GetMethod(methodName);
             var template = new AspNet.Internal.TypeTemplates.MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();
@@ -42,11 +42,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void DefaultValuesCheck()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var methodInfo = typeof(MethodClass).GetMethod(nameof(MethodClass.SimpleMethodNoAttributes));
             var template = new AspNet.Internal.TypeTemplates.MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();
@@ -163,15 +163,15 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void ArrayFromMethod_YieldsTemplate()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
                 typeof(TwoPropertyObject).FriendlyName(),
                 MetaGraphTypes.IsList);
 
-            var parent = obj.Object;
+            var parent = obj;
             var template = this.CreateMethodTemplate<ArrayMethodObject>(nameof(ArrayMethodObject.RetrieveData));
 
             Assert.AreEqual(expectedTypeExpression, template.TypeExpression);
@@ -181,15 +181,15 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_AssignedDirective_IsTemplatized()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
                 typeof(TwoPropertyObject).FriendlyName(),
                 MetaGraphTypes.IsList);
 
-            var parent = obj.Object;
+            var parent = obj;
             var template = this.CreateMethodTemplate<MethodClassWithDirective>(nameof(MethodClassWithDirective.Counter));
 
             Assert.AreEqual(1, template.AppliedDirectives.Count());
@@ -202,11 +202,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void DefaultNonNullableParameter_NotMarkedRequired()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.DefaultNonNullableParameter));
 
             Assert.AreEqual(0, template.AppliedDirectives.Count());

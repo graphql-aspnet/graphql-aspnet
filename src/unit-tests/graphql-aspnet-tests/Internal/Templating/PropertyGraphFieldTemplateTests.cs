@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.PropertyTestData;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -31,11 +31,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_DescriptionAttribute_SetsValue()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Address1));
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
@@ -47,11 +47,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_DepreciationAttribute_SetsValues()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Address2));
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
@@ -61,11 +61,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_PropertyAsAnObject_SetsReturnTypeCorrectly()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Hair));
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
@@ -77,11 +77,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_PropertyAsAList_SetsReturnType_AsCoreItemNotTheList()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
 
             // wigs is List<HairData>
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Wigs));
@@ -95,11 +95,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_SecurityPolices_AreAdded()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.LastName));
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
@@ -111,11 +111,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_InvalidName_ThrowsException()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.City));
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
@@ -129,11 +129,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_SkipDefined_ThrowsException()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.State));
 
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
@@ -148,11 +148,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_BasicObject_PropertyWithNoGetter_ThrowsException()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(NoGetterOnProperty).GetProperty(nameof(NoGetterOnProperty.Prop1));
 
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
@@ -167,15 +167,15 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_BasicObject_PropertyReturnsArray_YieldsTemplate()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
                 typeof(TwoPropertyObject).FriendlyName(),
                 MetaGraphTypes.IsList);
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(ArrayPropertyObject).GetProperty(nameof(ArrayPropertyObject.PropertyA));
 
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
@@ -189,16 +189,16 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_BasicObject_PropertyReturnsArrayOfKeyValuePair_YieldsTemplate()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
                 typeof(KeyValuePair<string, string>).FriendlyGraphTypeName(),
                 MetaGraphTypes.IsList,
                 MetaGraphTypes.IsNotNull); // structs can't be null
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(ArrayKeyValuePairObject).GetProperty(nameof(ArrayKeyValuePairObject.PropertyA));
 
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
@@ -212,16 +212,16 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_AssignedDirective_IsTemplatized()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
                 typeof(KeyValuePair<string, string>).FriendlyGraphTypeName(),
                 MetaGraphTypes.IsList,
                 MetaGraphTypes.IsNotNull); // structs can't be null
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(PropertyClassWithDirective).GetProperty(nameof(PropertyClassWithDirective.Prop1));
 
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
@@ -237,11 +237,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void InvalidTypeExpression_ThrowsException()
         {
-            var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
-            obj.Setup(x => x.InternalFullName).Returns("Item0");
+            var obj = Substitute.For<IObjectGraphTypeTemplate>();
+            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.InternalFullName.Returns("Item0");
 
-            var parent = obj.Object;
+            var parent = obj;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.InvalidTypeExpression));
 
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);

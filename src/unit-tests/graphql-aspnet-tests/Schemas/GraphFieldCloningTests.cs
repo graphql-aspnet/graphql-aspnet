@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.AspNetCore.Authorization;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [AllowAnonymous]
@@ -30,11 +30,11 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void MethodField_PropertyCheck()
         {
-            var originalParent = new Mock<IGraphType>();
-            originalParent.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/JohnType"));
-            originalParent.Setup(x => x.Name).Returns("JohnType");
+            var originalParent = Substitute.For<IGraphType>();
+            originalParent.Route.Returns(new SchemaItemPath("[type]/JohnType"));
+            originalParent.Name.Returns("JohnType");
 
-            var resolver = new Mock<IGraphFieldResolver>();
+            var resolver = Substitute.For<IGraphFieldResolver>();
             var polices = new List<AppliedSecurityPolicyGroup>();
             polices.Add(AppliedSecurityPolicyGroup.FromAttributeCollection(typeof(GraphFieldCloningTests)));
 
@@ -48,11 +48,11 @@ namespace GraphQL.AspNet.Tests.Schemas
                 typeof(TwoPropertyObject),
                 typeof(List<TwoPropertyObject>),
                 AspNet.Execution.FieldResolutionMode.PerSourceItem,
-                resolver.Object,
+                resolver,
                 polices,
                 appliedDirectives);
 
-            field.AssignParent(originalParent.Object);
+            field.AssignParent(originalParent);
 
             field.Arguments.AddArgument(new GraphFieldArgument(
                 field,
@@ -71,10 +71,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             field.Publish = false;
             field.FieldSource = GraphFieldSource.Method;
 
-            var clonedParent = new Mock<IGraphType>();
-            clonedParent.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/BobType"));
-            clonedParent.Setup(x => x.Name).Returns("BobType");
-            var clonedField = field.Clone(clonedParent.Object);
+            var clonedParent = Substitute.For<IGraphType>();
+            clonedParent.Route.Returns(new SchemaItemPath("[type]/BobType"));
+            clonedParent.Name.Returns("BobType");
+            var clonedField = field.Clone(clonedParent);
 
             Assert.AreEqual(field.Name, clonedField.Name);
             Assert.AreEqual(field.ObjectType, clonedField.ObjectType);
@@ -110,11 +110,11 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void PropertyField_PropertyCheck()
         {
-            var originalParent = new Mock<IGraphType>();
-            originalParent.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/JohnType"));
-            originalParent.Setup(x => x.Name).Returns("JohnType");
+            var originalParent = Substitute.For<IGraphType>();
+            originalParent.Route.Returns(new SchemaItemPath("[type]/JohnType"));
+            originalParent.Name.Returns("JohnType");
 
-            var resolver = new Mock<IGraphFieldResolver>();
+            var resolver = Substitute.For<IGraphFieldResolver>();
             var polices = new List<AppliedSecurityPolicyGroup>();
             polices.Add(AppliedSecurityPolicyGroup.FromAttributeCollection(typeof(GraphFieldCloningTests)));
 
@@ -129,11 +129,11 @@ namespace GraphQL.AspNet.Tests.Schemas
                 typeof(TwoPropertyObject),
                 typeof(List<TwoPropertyObject>),
                 AspNet.Execution.FieldResolutionMode.PerSourceItem,
-                resolver.Object,
+                resolver,
                 polices,
                 appliedDirectives);
 
-            field.AssignParent(originalParent.Object);
+            field.AssignParent(originalParent);
 
             field.Arguments.AddArgument(new GraphFieldArgument(
                 field,
@@ -152,10 +152,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             field.Publish = false;
             field.FieldSource = AspNet.Internal.TypeTemplates.GraphFieldSource.Method;
 
-            var clonedParent = new Mock<IGraphType>();
-            clonedParent.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/BobType"));
-            clonedParent.Setup(x => x.Name).Returns("BobType");
-            var clonedField = field.Clone(clonedParent.Object) as PropertyGraphField;
+            var clonedParent = Substitute.For<IGraphType>();
+            clonedParent.Route.Returns(new SchemaItemPath("[type]/BobType"));
+            clonedParent.Name.Returns("BobType");
+            var clonedField = field.Clone(clonedParent) as PropertyGraphField;
 
             Assert.IsNotNull(clonedField);
             Assert.AreEqual(field.InternalName, clonedField.InternalName);

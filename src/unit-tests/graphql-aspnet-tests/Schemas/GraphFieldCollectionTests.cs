@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -23,23 +23,23 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void AddField_DuplicateFIeldNameThrowsException()
         {
-            var owner = new Mock<IGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
+            var owner = Substitute.For<IGraphType>();
+            owner.Name.Returns("graphType");
 
-            var field1 = new Mock<IGraphField>();
-            field1.Setup(x => x.Name).Returns("field1");
-            field1.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration("Bob!"));
+            var field1 = Substitute.For<IGraphField>();
+            field1.Name.Returns("field1");
+            field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var field2 = new Mock<IGraphField>();
-            field2.Setup(x => x.Name).Returns("field1");
-            field2.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration("Bob!"));
+            var field2 = Substitute.For<IGraphField>();
+            field2.Name.Returns("field1");
+            field2.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new GraphFieldCollection(owner.Object);
-            collection.AddField(field1.Object);
+            var collection = new GraphFieldCollection(owner);
+            collection.AddField(field1);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                collection.AddField(field2.Object);
+                collection.AddField(field2);
             });
         }
 
@@ -50,20 +50,20 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase("FIELD1", false)] // wrong case
         public void FindField(string fieldName, bool shouldBeFound)
         {
-            var owner = new Mock<IGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
+            var owner = Substitute.For<IGraphType>();
+            owner.Name.Returns("graphType");
 
-            var field1 = new Mock<IGraphField>();
-            field1.Setup(x => x.Name).Returns("field1");
-            field1.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration("Bob!"));
+            var field1 = Substitute.For<IGraphField>();
+            field1.Name.Returns("field1");
+            field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new GraphFieldCollection(owner.Object);
-            collection.AddField(field1.Object);
+            var collection = new GraphFieldCollection(owner);
+            collection.AddField(field1);
 
             var result = collection.FindField(fieldName);
 
             if (shouldBeFound)
-                Assert.AreEqual(field1.Object, result);
+                Assert.AreEqual(field1, result);
             else
                 Assert.IsNull(result);
         }
@@ -75,15 +75,15 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase("FIELD1", false)] // wrong case
         public void ContainsKey(string fieldName, bool shouldBeFound)
         {
-            var owner = new Mock<IGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
+            var owner = Substitute.For<IGraphType>();
+            owner.Name.Returns("graphType");
 
-            var field1 = new Mock<IGraphField>();
-            field1.Setup(x => x.Name).Returns("field1");
-            field1.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration("Bob!"));
+            var field1 = Substitute.For<IGraphField>();
+            field1.Name.Returns("field1");
+            field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new GraphFieldCollection(owner.Object);
-            collection.AddField(field1.Object);
+            var collection = new GraphFieldCollection(owner);
+            collection.AddField(field1);
 
             var result = collection.ContainsKey(fieldName);
 
@@ -97,20 +97,20 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase("FIELD1", false)] // wrong case
         public void ThisByName(string fieldName, bool shouldBeFound)
         {
-            var owner = new Mock<IGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
+            var owner = Substitute.For<IGraphType>();
+            owner.Name.Returns("graphType");
 
-            var field1 = new Mock<IGraphField>();
-            field1.Setup(x => x.Name).Returns("field1");
-            field1.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration("Bob!"));
+            var field1 = Substitute.For<IGraphField>();
+            field1.Name.Returns("field1");
+            field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new GraphFieldCollection(owner.Object);
-            collection.AddField(field1.Object);
+            var collection = new GraphFieldCollection(owner);
+            collection.AddField(field1);
 
             if (shouldBeFound)
             {
                 var result = collection[fieldName];
-                Assert.AreEqual(field1.Object, result);
+                Assert.AreEqual(field1, result);
             }
             else
             {
@@ -126,38 +126,38 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void Contains_ForReferencedField_IsFound()
         {
-            var owner = new Mock<IGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
+            var owner = Substitute.For<IGraphType>();
+            owner.Name.Returns("graphType");
 
-            var field1 = new Mock<IGraphField>();
-            field1.Setup(x => x.Name).Returns("field1");
-            field1.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration("Bob!"));
+            var field1 = Substitute.For<IGraphField>();
+            field1.Name.Returns("field1");
+            field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new GraphFieldCollection(owner.Object);
-            collection.AddField(field1.Object);
+            var collection = new GraphFieldCollection(owner);
+            collection.AddField(field1);
 
-            var result = collection.Contains(field1.Object);
+            var result = collection.Contains(field1);
             Assert.IsTrue(result);
         }
 
         [Test]
         public void Contains_ForUnReferencedField_IsNotFound()
         {
-            var owner = new Mock<IGraphType>();
-            owner.Setup(x => x.Name).Returns("graphType");
+            var owner = Substitute.For<IGraphType>();
+            owner.Name.Returns("graphType");
 
-            var field1 = new Mock<IGraphField>();
-            field1.Setup(x => x.Name).Returns("field1");
-            field1.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration("Bob!"));
+            var field1 = Substitute.For<IGraphField>();
+            field1.Name.Returns("field1");
+            field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var field1Other = new Mock<IGraphField>();
-            field1Other.Setup(x => x.Name).Returns("field1");
-            field1Other.Setup(x => x.TypeExpression).Returns(GraphTypeExpression.FromDeclaration("Bob!"));
+            var field1Other = Substitute.For<IGraphField>();
+            field1Other.Name.Returns("field1");
+            field1Other.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new GraphFieldCollection(owner.Object);
-            collection.AddField(field1.Object);
+            var collection = new GraphFieldCollection(owner);
+            collection.AddField(field1);
 
-            var result = collection.Contains(field1Other.Object);
+            var result = collection.Contains(field1Other);
             Assert.IsFalse(result);
         }
     }

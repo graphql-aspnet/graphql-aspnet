@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 var concreteType = GraphQLProviders.ScalarProvider.RetrieveConcreteType(scalar.Name);
                 foreach (var typeKind in Enum.GetValues(typeof(TypeKind)).Cast<TypeKind>())
                 {
-                    var name = GraphTypeNames.ParseName(concreteType, typeKind);
+                    var name = GraphTypeNames.ParseName(concreteType, TypeKind.OBJECT);
                     if (!nameSet.Contains(name))
                         nameSet.Add(name);
 
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var nameSet = new HashSet<string>();
             foreach (var typeKind in Enum.GetValues(typeof(TypeKind)).Cast<TypeKind>())
             {
-                var name = GraphTypeNames.ParseName(typeof(EnumNameTest), typeKind);
+                var name = GraphTypeNames.ParseName(typeof(EnumNameTest), TypeKind.OBJECT);
                 if (!nameSet.Contains(name))
                     nameSet.Add(name);
 
@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var nameSet = new HashSet<string>();
             foreach (var typeKind in Enum.GetValues(typeof(TypeKind)).Cast<TypeKind>())
             {
-                var name = GraphTypeNames.ParseName(typeof(EnumNameTestWithTypeName), typeKind);
+                var name = GraphTypeNames.ParseName(typeof(EnumNameTestWithTypeName), TypeKind.OBJECT);
                 if (!nameSet.Contains(name))
                     nameSet.Add(name);
 

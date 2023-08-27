@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using Microsoft.AspNetCore.Http;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -44,12 +44,12 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task ValidateRequestMiddleware_EmptyQueryText_YieldsCriticalMessage()
         {
             var component = new ValidateQueryRequestMiddleware();
-            var req = new Mock<IQueryExecutionRequest>();
-            req.Setup(x => x.QueryText).Returns(null as string);
+            var req = Substitute.For<IQueryExecutionRequest>();
+            req.QueryText.Returns(null as string);
             var context = new QueryExecutionContext(
-                req.Object,
-                new Mock<IServiceProvider>().Object,
-                new Mock<IQuerySession>().Object);
+                req,
+                Substitute.For<IServiceProvider>(),
+                Substitute.For<IQuerySession>());
 
             await component.InvokeAsync(context, EmptyNextDelegate, default);
             Assert.AreEqual(1, context.Messages.Count);
