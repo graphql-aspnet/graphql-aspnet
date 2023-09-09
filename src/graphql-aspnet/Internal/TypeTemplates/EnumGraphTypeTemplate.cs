@@ -144,8 +144,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 foreach (var option in this.Values)
                     option.ValidateOrThrow(validateChildren);
             }
-
-            _valuesTolabels = null;
         }
 
         /// <inheritdoc />

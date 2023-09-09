@@ -36,7 +36,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         protected override IEnumerable<MemberInfo> GatherPossibleTemplateMembers()
         {
             return this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-              .Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
+              .Where(x =>
+                        !x.IsAbstract &&
+                        !x.IsGenericMethod &&
+                        !x.IsSpecialName &&
+                        x.DeclaringType != typeof(object) &&
+                        x.DeclaringType != typeof(ValueType))
+              .Cast<MemberInfo>()
               .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance));
         }
 

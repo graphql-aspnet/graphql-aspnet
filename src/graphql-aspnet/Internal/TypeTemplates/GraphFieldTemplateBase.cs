@@ -220,6 +220,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                         "or remove the union.");
                 }
             }
+            else
+            {
+                // when not a union proxy the return type of the field matters and must be valid
+                if (!GraphValidation.IsValidGraphType(this.ObjectType))
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The field  '{this.InternalFullName}' defines a a return type of {this.ObjectType.FriendlyName()}, which is cannot a be used as a graph type. " +
+                        $"Change the return type or skip the field and try again.");
+                }
+            }
 
             // ensure the object type returned by the graph field is set correctly
             bool returnsActionResult = Validation.IsCastable<IGraphActionResult>(this.ObjectType);

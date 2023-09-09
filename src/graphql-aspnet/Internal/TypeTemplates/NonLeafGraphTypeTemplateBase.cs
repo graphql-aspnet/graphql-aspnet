@@ -201,9 +201,33 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (Constants.IgnoredFieldNames.Contains(memberInfo.Name))
                 return false;
 
-            // assuming its not a "hard no" allow it to be templated
-            // the makers, with a schema in focus, will determine waht is actually being
-            // added to a schema and decide what is valid or invalid at that time.
+            // when the member declares any known attribute in the library include it
+            // and allow it to generate validation failures if its not properly constructed
+            if (memberInfo.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>() != null)
+                return true;
+
+            // do some preliminary validation and skip those items that could never be valid
+            // this is different in v2+
+            switch (memberInfo)
+            {
+                case MethodInfo mi:
+                    if (!GraphValidation.IsValidGraphType(mi.ReturnType, false))
+                        return false;
+                    if (mi.GetParameters().Any(x => !GraphValidation.IsValidGraphType(x.ParameterType, false)))
+                        return false;
+                    break;
+
+                case PropertyInfo pi:
+                    if (pi.GetGetMethod() == null)
+                        return false;
+                    if (pi.GetIndexParameters().Length > 0)
+                        return false;
+
+                    if (!GraphValidation.IsValidGraphType(pi.PropertyType, false))
+                        return false;
+                    break;
+            }
+
             return true;
         }
 

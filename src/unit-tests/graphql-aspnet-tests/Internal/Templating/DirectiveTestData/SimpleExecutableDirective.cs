@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     public class SimpleExecutableDirective : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.FIELD)]
-        public Task<IGraphActionResult> Execute(object source, int arg1, string arg2)
+        public Task<IGraphActionResult> Execute(int arg1, string arg2)
         {
             return Task.FromResult(null as IGraphActionResult);
         }

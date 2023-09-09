@@ -76,7 +76,8 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             result.AddDependentRange(template.RetrieveRequiredTypes());
 
             var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
-            foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
+            var templatesToRender = ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema);
+            foreach (var fieldTemplate in templatesToRender)
             {
                 var fieldResult = fieldMaker.CreateField(fieldTemplate);
                 objectType.Extend(fieldResult.Field);
