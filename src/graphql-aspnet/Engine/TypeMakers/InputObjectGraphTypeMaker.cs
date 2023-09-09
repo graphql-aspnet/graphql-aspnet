@@ -41,6 +41,8 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             if (template == null)
                 return null;
 
+            template.ValidateOrThrow(false);
+
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphTypeCreationResult();
 

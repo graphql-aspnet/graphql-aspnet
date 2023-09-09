@@ -38,9 +38,13 @@ namespace GraphQL.AspNet.Engine.TypeMakers
         /// <inheritdoc />
         public GraphTypeCreationResult CreateGraphType(Type concreteType)
         {
+            Validation.ThrowIfNull(concreteType, nameof(concreteType));
+
             var template = GraphQLProviders.TemplateProvider.ParseType(concreteType, TypeKind.ENUM) as IEnumGraphTypeTemplate;
             if (template == null)
                 return null;
+
+            template.ValidateOrThrow(false);
 
             var requirements = template.DeclarationRequirements ?? _schema.Configuration.DeclarationOptions.FieldDeclarationRequirements;
 
@@ -70,6 +74,8 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             var enumValuesToInclude = template.Values.Where(value => requirements.AllowImplicitEnumValues() || value.IsExplicitDeclaration);
             foreach (var value in enumValuesToInclude)
             {
+                value.ValidateOrThrow(false);
+
                 // enum option directives
                 var valueDirectives = value.CreateAppliedDirectives();
 
