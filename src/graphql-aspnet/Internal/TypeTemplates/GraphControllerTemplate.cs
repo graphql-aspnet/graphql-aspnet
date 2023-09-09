@@ -165,6 +165,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.FieldTemplates.Values.OfType<GraphTypeExtensionFieldTemplate>();
 
         /// <inheritdoc />
-        public override TypeKind Kind => TypeKind.NONE;
+        public override TypeKind Kind => TypeKind.CONTROLLER;
     }
 }

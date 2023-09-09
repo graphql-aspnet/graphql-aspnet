@@ -11,6 +11,8 @@ namespace GraphQL.AspNet.Engine.TypeMakers
 {
     using System;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -70,6 +72,16 @@ namespace GraphQL.AspNet.Engine.TypeMakers
                 interfaceType.Extend(fieldResult.Field);
 
                 result.MergeDependents(fieldResult);
+            }
+
+            // at least one field should have been rendered
+            // the type is invalid if there are no fields othe than __typename
+            if (interfaceType.Fields.Count == 1)
+            {
+                throw new GraphTypeDeclarationException(
+                  $"The interface graph type '{template.ObjectType.FriendlyName()}' defines 0 fields. " +
+                  $"All interface types must define at least one field.",
+                  template.ObjectType);
             }
 
             // add in declared interfaces by name

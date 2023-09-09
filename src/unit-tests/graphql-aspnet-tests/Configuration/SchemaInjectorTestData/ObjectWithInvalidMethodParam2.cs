@@ -18,5 +18,7 @@ namespace GraphQL.AspNet.Tests.Configuration.SchemaInjectorTestData
         {
             return 1;
         }
+
+        public int Prop1 { get; set; }
     }
 }

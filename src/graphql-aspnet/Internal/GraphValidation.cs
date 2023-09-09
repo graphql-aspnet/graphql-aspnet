@@ -343,13 +343,13 @@ namespace GraphQL.AspNet.Internal
             }
 
             // Func<T>, Action<T>, any declared "delegate"
-            if (Validation.IsCastable<MulticastDelegate>(type))
+            if (Validation.IsCastable<Delegate>(type))
             {
                 if (throwOnFailure)
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The type '{type.FriendlyName()}' appears to be a {nameof(MulticastDelegate)} (e.g. Func<T>, Action<T>). " +
-                        "Multicast delegates cannot be used as schema items under any circumstances.",
+                        $"The type '{type.FriendlyName()}' appears to be a {nameof(Delegate)} (e.g. Func<T>, Action<T>). " +
+                        "Delegates cannot be used as schema items under any circumstances.",
                         type);
                 }
 

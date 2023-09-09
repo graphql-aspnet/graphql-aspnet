@@ -375,7 +375,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // input type checks  (TwoPropertyObject, EmptyObject)
             Assert.AreEqual(2, schema.KnownTypes.Count(x => x.Kind == TypeKind.INPUT_OBJECT));
-            Assert.IsTrue(schema.KnownTypes.Contains(typeof(EmptyObject), TypeKind.INPUT_OBJECT));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(SimpleObject), TypeKind.INPUT_OBJECT));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject), TypeKind.INPUT_OBJECT));
 
             // general object types

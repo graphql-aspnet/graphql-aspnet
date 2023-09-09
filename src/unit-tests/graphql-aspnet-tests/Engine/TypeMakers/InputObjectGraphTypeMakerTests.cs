@@ -195,8 +195,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         [Test]
         public void InputObject_CreateGraphType_DirectivesAreApplied()
         {
-            // config says properties DO require declaration, override on type says it does not
-            var result = this.MakeGraphType(typeof(InputTypeWithDirective), TypeKind.INPUT_OBJECT, TemplateDeclarationRequirements.Property);
+            var result = this.MakeGraphType(typeof(InputTypeWithDirective), TypeKind.INPUT_OBJECT);
             var inputType = result.GraphType as IInputObjectGraphType;
 
             Assert.IsNotNull(inputType);

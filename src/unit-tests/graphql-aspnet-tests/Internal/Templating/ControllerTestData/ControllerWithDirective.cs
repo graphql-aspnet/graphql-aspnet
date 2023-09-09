@@ -16,5 +16,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData
     [ApplyDirective(typeof(DirectiveWithArgs), 101, "controller arg")]
     public class ControllerWithDirective : GraphController
     {
+
     }
 }

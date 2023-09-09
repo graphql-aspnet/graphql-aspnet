@@ -421,5 +421,39 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectThatInheritsNonExplicitMethodField.FieldOnObject)));
             Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectWithNonExplicitMethodField.FieldOnBaseObject)));
         }
+
+        [Test]
+        public void Parse_InternalMembers_AreNotTemplated()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithInternalFields));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count());
+
+            var fieldTemplate0 = template.FieldTemplates.ElementAt(0).Value;
+            var fieldTemplate1 = template.FieldTemplates.ElementAt(1).Value;
+
+            // the only public property and method (regardless of field inclusions)
+            Assert.AreEqual("Method3", fieldTemplate0.Name);
+            Assert.AreEqual("Field1", fieldTemplate1.Name);
+        }
+
+        [Test]
+        public void Parse_InternalInheritedMembers_AreNotTemplated()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithInternalInheritedFields));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count());
+
+            var fieldTemplate0 = template.FieldTemplates.ElementAt(0).Value;
+            var fieldTemplate1 = template.FieldTemplates.ElementAt(1).Value;
+
+            // only public property and methods are shown (regardless of field inclusions)
+            Assert.AreEqual("Method3", fieldTemplate0.Name);
+            Assert.AreEqual("Field1", fieldTemplate1.Name);
+        }
     }
 }

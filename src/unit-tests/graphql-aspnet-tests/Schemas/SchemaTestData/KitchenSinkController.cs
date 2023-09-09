@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
         }
 
         [Query("TestAction2")]
-        public TwoPropertyObjectV2 TestActionMethod2(IEnumerable<EmptyObject> arg1, DateTime arg2)
+        public TwoPropertyObjectV2 TestActionMethod2(IEnumerable<SimpleObject> arg1, DateTime arg2)
         {
             return new TwoPropertyObjectV2();
         }

@@ -17,5 +17,7 @@ namespace GraphQL.AspNet.Tests.Configuration.SchemaInjectorTestData
     {
         // interfaces aren't allowed
         public Func<int> InvalidProperty { get; set; }
+
+        public int Prop1 { get; set; }
     }
 }
