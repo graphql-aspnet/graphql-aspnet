@@ -199,7 +199,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public void ValidateOrThrow()
+        public void ValidateOrThrow(bool validateChildren = true)
         {
             GraphValidation.EnsureGraphNameOrThrow(this.InternalFullName, this.Name);
 

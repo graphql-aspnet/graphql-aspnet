@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
             // cant use type naming on controllers (they arent real types and arent included directly in the object graph)
             if (this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphTypeAttribute>() != null)
@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     "one or the other.");
             }
 
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
         }
 
         /// <inheritdoc />

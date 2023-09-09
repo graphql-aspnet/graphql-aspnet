@@ -201,31 +201,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (Constants.IgnoredFieldNames.Contains(memberInfo.Name))
                 return false;
 
-            // when the member declares any known attribute in the library include it
-            // and allow it to generate validation failures if its not properly constructed
-            if (memberInfo.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>() != null)
-                return true;
-
-            switch (memberInfo)
-            {
-                case MethodInfo mi:
-                    if (!GraphValidation.IsValidGraphType(mi.ReturnType, false))
-                        return false;
-                    if (mi.GetParameters().Any(x => !GraphValidation.IsValidGraphType(x.ParameterType, false)))
-                        return false;
-                    break;
-
-                case PropertyInfo pi:
-                    if (pi.GetGetMethod() == null)
-                        return false;
-                    if (pi.GetIndexParameters().Length > 0)
-                        return false;
-
-                    if (!GraphValidation.IsValidGraphType(pi.PropertyType, false))
-                        return false;
-                    break;
-            }
-
+            // assuming its not a "hard no" allow it to be templated
+            // the makers, with a schema in focus, will determine waht is actually being
+            // added to a schema and decide what is valid or invalid at that time.
             return true;
         }
 
@@ -243,9 +221,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
 
             if (_duplicateNames != null && _duplicateNames.Any())
             {
@@ -267,8 +245,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.ObjectType);
             }
 
-            foreach (var field in this.FieldTemplates.Values)
-                field.ValidateOrThrow();
+            if (validateChildren)
+            {
+                foreach (var field in this.FieldTemplates.Values)
+                    field.ValidateOrThrow(validateChildren);
+            }
         }
 
         /// <summary>

@@ -179,9 +179,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
 
             if (_invalidTypeExpression)
             {
@@ -300,9 +300,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 }
             }
 
-            // general validation of any declaraed parameter for this field
-            foreach (var argument in this.Arguments)
-                argument.ValidateOrThrow();
+            if (validateChildren)
+            {
+                // general validation of any declaraed parameter for this field
+                foreach (var argument in this.Arguments)
+                    argument.ValidateOrThrow(validateChildren);
+            }
 
             if (this.Complexity.HasValue && this.Complexity < 0)
             {
