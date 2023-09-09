@@ -800,18 +800,16 @@ namespace GraphQL.AspNet.Tests.Schemas
             schema.SetNoAlterationConfiguration();
 
             var manager = new GraphSchemaManager(schema);
-            try
+
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 manager.EnsureGraphType<ControllerWithInterfaceInput>();
-            }
-            catch (GraphTypeDeclarationException ex)
-            {
-                var name = typeof(IPersonData).FriendlyName();
-                Assert.IsTrue(ex.Message.Contains(name));
-                return;
-            }
+            });
 
-            Assert.Fail("No exception was thrown when one was expected.");
+            Assert.AreEqual(typeof(ControllerWithInterfaceInput), ex.FailedObjectType);
+            Assert.IsNotNull(ex.InnerException);
+            var name = typeof(IPersonData).FriendlyName();
+            Assert.IsTrue(ex.InnerException.Message.Contains(name));
         }
 
         [Test]
@@ -822,18 +820,16 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var manager = new GraphSchemaManager(schema);
 
-            try
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 manager.EnsureGraphType<ControllerWithDirectAndIndirectTypeExtension>();
-            }
-            catch (GraphTypeDeclarationException ex)
-            {
-                var name = typeof(TwoPropertyObject).FriendlyName();
-                Assert.IsTrue(ex.Message.Contains(name));
-                return;
-            }
+            });
 
-            Assert.Fail("No exception was thrown when one was expected.");
+            Assert.AreEqual(typeof(ControllerWithDirectAndIndirectTypeExtension), ex.FailedObjectType);
+            Assert.IsNotNull(ex.InnerException);
+
+            var name = typeof(TwoPropertyObject).FriendlyName();
+            Assert.IsTrue(ex.InnerException.Message.Contains(name));
         }
 
         [Test]
@@ -853,6 +849,56 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(ObjectWithNoStrings))); // the item itself
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));  // for the declared property
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(string))); // for __typename
+        }
+
+        [Test]
+        public void TwoTypesWithSharePublicInvalidInterface_WhenInterfaceIsNotexplicitlyReferenced_InterfaceIsNotAdded()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+
+            // both types reference INoFieldInterface which would be invalid
+            // in the schema
+            // the schema should not see it though
+            manager.EnsureGraphType<Object1ReferencesNoFieldInterface>();
+            manager.EnsureGraphType<Object2ReferencesNoFieldInterface>();
+
+            // query, Object1, Object2, int, string
+            Assert.AreEqual(5, schema.KnownTypes.Count);
+
+            Assert.AreEqual(1, schema.Operations.Values.Count);  // query type
+            Assert.AreEqual(GraphOperationType.Query, schema.Operations.Values.First().OperationType);
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(Object1ReferencesNoFieldInterface)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(Object2ReferencesNoFieldInterface)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string))); // for __typename
+        }
+
+        [Test]
+        public void TwoTypesWithSharePublicInvalidInterface_WhenInterfaceIsReturnedFromController_FailsToCreate()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+
+            // both types reference INoFieldInterface which would be invalid
+            // in the schema
+            // the schema should not see it though
+            manager.EnsureGraphType<Object1ReferencesNoFieldInterface>();
+            manager.EnsureGraphType<Object2ReferencesNoFieldInterface>();
+
+            // explicitly references INoFieldInterface, causing it to be parsed
+            // and causing a failure
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                manager.EnsureGraphType<ControllerWithNoFieldInterfaceReturned>();
+            });
+
+            Assert.AreEqual(typeof(ControllerWithNoFieldInterfaceReturned), ex.FailedObjectType);
         }
     }
 }

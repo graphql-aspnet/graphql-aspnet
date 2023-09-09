@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Engine.TypeMakers;
@@ -373,6 +374,27 @@ namespace GraphQL.AspNet.Schemas
         /// <param name="kind">The kind of graph type to create from the supplied concrete type. If not supplied the concrete type will
         /// attempt to auto assign a type of scalar, enum or object as necessary.</param>
         public void EnsureGraphType(Type type, TypeKind? kind = null)
+        {
+            Validation.ThrowIfNull(type, nameof(type));
+            try
+            {
+                this.EnsureGraphTypeInternal(type, kind);
+            }
+            catch (GraphTypeDeclarationException ex)
+            {
+                if (ex.FailedObjectType == type)
+                    throw;
+
+                // wrap a thrown exception to be nested within this type that was being parsed
+                throw new GraphTypeDeclarationException(
+                    $"An error occured while trying to add a dependent of '{type.FriendlyName()}' " +
+                    $"to the target schema. See inner exception for details.",
+                    type,
+                    ex);
+            }
+        }
+
+        private void EnsureGraphTypeInternal(Type type, TypeKind? kind = null)
         {
             Validation.ThrowIfNull(type, nameof(type));
             if (Validation.IsCastable<GraphController>(type))

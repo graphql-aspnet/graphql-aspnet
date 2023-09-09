@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The fields.</value>
         public IEnumerable<IGraphFieldTemplate> Actions =>
-            this.FieldTemplates.Values.OfType<ControllerActionGraphFieldTemplate>();
+            this.FieldTemplates.OfType<ControllerActionGraphFieldTemplate>();
 
         /// <summary>
         /// Gets operation types to which this object can declare a field.
@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The extensions.</value>
         public IEnumerable<IGraphFieldTemplate> Extensions =>
-            this.FieldTemplates.Values.OfType<GraphTypeExtensionFieldTemplate>();
+            this.FieldTemplates.OfType<GraphTypeExtensionFieldTemplate>();
 
         /// <inheritdoc />
         public override TypeKind Kind => TypeKind.CONTROLLER;

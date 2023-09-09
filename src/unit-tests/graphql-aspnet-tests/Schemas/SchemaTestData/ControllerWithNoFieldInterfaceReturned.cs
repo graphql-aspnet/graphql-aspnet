@@ -7,14 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData
+namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
 
-    [ApplyDirective(typeof(DirectiveWithArgs), 101, "controller arg")]
-    public class ControllerWithDirective : GraphController
+    public class ControllerWithNoFieldInterfaceReturned : GraphController
     {
+        [Query]
+        public INoFieldInterface QueryMethod1()
+        {
+            return null;
+        }
     }
 }

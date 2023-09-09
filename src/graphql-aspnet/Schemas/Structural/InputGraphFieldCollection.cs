@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             if (_fields.ContainsKey(field.Name))
             {
                 throw new GraphTypeDeclarationException(
-                    $"Duplciate field name detected. The input object type '{_owner.Name}' already " +
+                    $"Duplicate field name detected. The input object type '{_owner.Name}' already " +
                     $"declares a field named '{field.Name}'.");
             }
 

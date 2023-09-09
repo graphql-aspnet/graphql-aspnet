@@ -7,14 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData
+namespace GraphQL.AspNet.Tests.Internal.Templating.InterfaceTestData
 {
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
 
-    [ApplyDirective(typeof(DirectiveWithArgs), 101, "controller arg")]
-    public class ControllerWithDirective : GraphController
+    public interface IInterfaceWithOverloads
     {
+        int Method1(int i);
+
+        [GraphField]
+        int Method1();
     }
 }

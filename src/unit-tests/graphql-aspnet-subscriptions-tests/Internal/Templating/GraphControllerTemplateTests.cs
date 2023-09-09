@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             Assert.AreEqual(1, template.FieldTemplates.Count());
             Assert.AreEqual(1, template.Actions.Count());
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[subscription]/SimpleSubscription/WidgetWatcher"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[subscription]/SimpleSubscription/WidgetWatcher"));
         }
     }
 }

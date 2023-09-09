@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Tests.Internal
     public class GraphValidationTests
     {
         public delegate int MyTestDelegate(int arg1);
+
         public enum ValidationTestEnum
         {
             Value1,
