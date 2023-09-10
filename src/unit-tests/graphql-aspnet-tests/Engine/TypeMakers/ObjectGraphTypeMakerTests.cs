@@ -311,5 +311,17 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
                     TemplateDeclarationRequirements.None);
             });
         }
+
+        [Test]
+        public void CreateGraphType_AsObject_WithNoFields_ThrowsError()
+        {
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var result = this.MakeGraphType(
+                    typeof(ObjectWithNoFields),
+                    TypeKind.OBJECT,
+                    TemplateDeclarationRequirements.None);
+            });
+        }
     }
 }

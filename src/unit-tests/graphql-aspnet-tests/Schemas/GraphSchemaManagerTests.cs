@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Resolvers;
@@ -23,6 +24,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
+    using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
     [TestFixture]
@@ -878,7 +880,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         }
 
         [Test]
-        public void TwoTypesWithSharePublicInvalidInterface_WhenInterfaceIsReturnedFromController_FailsToCreate()
+        public void TwoTypesWithSharedPublicInvalidInterface_WhenInterfaceIsReturnedFromController_FailsToCreate()
         {
             var schema = new GraphSchema() as ISchema;
             schema.SetNoAlterationConfiguration();
@@ -899,6 +901,52 @@ namespace GraphQL.AspNet.Tests.Schemas
             });
 
             Assert.AreEqual(typeof(ControllerWithNoFieldInterfaceReturned), ex.FailedObjectType);
+        }
+
+        [Test]
+        public void ObjectTypeWithMethodOverloads_WhenOnlyOneWillBeAddedToTheSchema_IsAllowed()
+        {
+            var schema = new GraphSchema() as ISchema;
+            var options = new SchemaOptions<GraphSchema>(new ServiceCollection());
+            options.DeclarationOptions.FieldDeclarationRequirements = TemplateDeclarationRequirements.Method;
+
+            schema.Configuration.Merge(options.CreateConfiguration());
+
+            var manager = new GraphSchemaManager(schema);
+
+            // even though this object declares a method overloads
+            // because of the inclusion rules only the explicitly decalred one shouldbe included
+            // and no exception should be thrown
+            manager.EnsureGraphType<ObjectWithMethodOverloads>();
+
+            var type = schema.KnownTypes.FindGraphType(typeof(ObjectWithMethodOverloads)) as IObjectGraphType;
+            Assert.IsNotNull(type);
+            Assert.AreEqual(2, type.Fields.Count);
+            Assert.IsTrue(type.Fields.Any(x => string.Compare(x.Name, nameof(ObjectWithMethodOverloads.Method1), true) == 0));
+            Assert.IsTrue(type.Fields.Any(x => x.Name == Constants.ReservedNames.TYPENAME_FIELD));
+        }
+
+        [Test]
+        public void ObjectTypeWithMethodOverloads_WhenBothWillAdd_ThrowsException()
+        {
+            var schema = new GraphSchema() as ISchema;
+            var options = new SchemaOptions<GraphSchema>(new ServiceCollection());
+            options.DeclarationOptions.FieldDeclarationRequirements
+                = TemplateDeclarationRequirements.None;
+
+            schema.Configuration.Merge(options.CreateConfiguration());
+
+            var manager = new GraphSchemaManager(schema);
+
+            // even though this object declares a method overloads
+            // because of the inclusion rules only the explicitly decalred one shouldbe included
+            // and no exception should be thrown
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                manager.EnsureGraphType<ObjectWithMethodOverloads>();
+            });
+
+            Assert.AreEqual(typeof(ObjectWithMethodOverloads), ex.FailedObjectType);
         }
     }
 }

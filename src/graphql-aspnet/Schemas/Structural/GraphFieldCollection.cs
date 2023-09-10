@@ -50,12 +50,17 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             if (_fields.ContainsKey(field.Name))
             {
+                Type ownerType = null;
+                if (_owner is ITypedSchemaItem tsi)
+                    ownerType = tsi.ObjectType;
+
                 throw new GraphTypeDeclarationException(
                     $"Duplicate field name detected. The graph type '{_owner.Name}' already declares a field named '{field.Name}'. " +
                     "This may occur if a type extension is added with the same name as an existing field, " +
                     "when an attempt is made to extend an OBJECT type through a direct field extension and an indirect " +
                     "interface field extension with the same name or when a schema attempts to include multiple overloads " +
-                    "of the same method on a class, interface or struct.");
+                    "of the same method on a class, interface or struct.",
+                    ownerType);
             }
 
             field.AssignParent(_owner);

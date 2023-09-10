@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using System.Linq;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
@@ -130,6 +131,18 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsDeclaredMethodField.MethodFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
             Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsDeclaredMethodField.PropFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
             Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
+        }
+
+        [Test]
+        public void CreateGraphType_WithNoFields_ThrowsError()
+        {
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var result = this.MakeGraphType(
+                    typeof(IInterfaceWithNoFields),
+                    TypeKind.INTERFACE,
+                    TemplateDeclarationRequirements.None);
+            });
         }
     }
 }
