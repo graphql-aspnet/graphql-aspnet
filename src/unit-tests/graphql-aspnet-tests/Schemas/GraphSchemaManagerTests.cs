@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Resolvers;
@@ -23,6 +24,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
+    using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
     [TestFixture]
@@ -375,7 +377,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // input type checks  (TwoPropertyObject, EmptyObject)
             Assert.AreEqual(2, schema.KnownTypes.Count(x => x.Kind == TypeKind.INPUT_OBJECT));
-            Assert.IsTrue(schema.KnownTypes.Contains(typeof(EmptyObject), TypeKind.INPUT_OBJECT));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(SimpleObject), TypeKind.INPUT_OBJECT));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject), TypeKind.INPUT_OBJECT));
 
             // general object types
@@ -800,18 +802,16 @@ namespace GraphQL.AspNet.Tests.Schemas
             schema.SetNoAlterationConfiguration();
 
             var manager = new GraphSchemaManager(schema);
-            try
+
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 manager.EnsureGraphType<ControllerWithInterfaceInput>();
-            }
-            catch (GraphTypeDeclarationException ex)
-            {
-                var name = typeof(IPersonData).FriendlyName();
-                Assert.IsTrue(ex.Message.Contains(name));
-                return;
-            }
+            });
 
-            Assert.Fail("No exception was thrown when one was expected.");
+            Assert.AreEqual(typeof(ControllerWithInterfaceInput), ex.FailedObjectType);
+            Assert.IsNotNull(ex.InnerException);
+            var name = typeof(IPersonData).FriendlyName();
+            Assert.IsTrue(ex.InnerException.Message.Contains(name));
         }
 
         [Test]
@@ -822,18 +822,16 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var manager = new GraphSchemaManager(schema);
 
-            try
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 manager.EnsureGraphType<ControllerWithDirectAndIndirectTypeExtension>();
-            }
-            catch (GraphTypeDeclarationException ex)
-            {
-                var name = typeof(TwoPropertyObject).FriendlyName();
-                Assert.IsTrue(ex.Message.Contains(name));
-                return;
-            }
+            });
 
-            Assert.Fail("No exception was thrown when one was expected.");
+            Assert.AreEqual(typeof(ControllerWithDirectAndIndirectTypeExtension), ex.FailedObjectType);
+            Assert.IsNotNull(ex.InnerException);
+
+            var name = typeof(TwoPropertyObject).FriendlyName();
+            Assert.IsTrue(ex.InnerException.Message.Contains(name));
         }
 
         [Test]
@@ -853,6 +851,102 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(ObjectWithNoStrings))); // the item itself
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));  // for the declared property
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(string))); // for __typename
+        }
+
+        [Test]
+        public void TwoTypesWithSharePublicInvalidInterface_WhenInterfaceIsNotexplicitlyReferenced_InterfaceIsNotAdded()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+
+            // both types reference INoFieldInterface which would be invalid
+            // in the schema
+            // the schema should not see it though
+            manager.EnsureGraphType<Object1ReferencesNoFieldInterface>();
+            manager.EnsureGraphType<Object2ReferencesNoFieldInterface>();
+
+            // query, Object1, Object2, int, string
+            Assert.AreEqual(5, schema.KnownTypes.Count);
+
+            Assert.AreEqual(1, schema.Operations.Values.Count);  // query type
+            Assert.AreEqual(GraphOperationType.Query, schema.Operations.Values.First().OperationType);
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(Object1ReferencesNoFieldInterface)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(Object2ReferencesNoFieldInterface)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string))); // for __typename
+        }
+
+        [Test]
+        public void TwoTypesWithSharedPublicInvalidInterface_WhenInterfaceIsReturnedFromController_FailsToCreate()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+
+            // both types reference INoFieldInterface which would be invalid
+            // in the schema
+            // the schema should not see it though
+            manager.EnsureGraphType<Object1ReferencesNoFieldInterface>();
+            manager.EnsureGraphType<Object2ReferencesNoFieldInterface>();
+
+            // explicitly references INoFieldInterface, causing it to be parsed
+            // and causing a failure
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                manager.EnsureGraphType<ControllerWithNoFieldInterfaceReturned>();
+            });
+
+            Assert.AreEqual(typeof(ControllerWithNoFieldInterfaceReturned), ex.FailedObjectType);
+        }
+
+        [Test]
+        public void ObjectTypeWithMethodOverloads_WhenOnlyOneWillBeAddedToTheSchema_IsAllowed()
+        {
+            var schema = new GraphSchema() as ISchema;
+            var options = new SchemaOptions<GraphSchema>(new ServiceCollection());
+            options.DeclarationOptions.FieldDeclarationRequirements = TemplateDeclarationRequirements.Method;
+
+            schema.Configuration.Merge(options.CreateConfiguration());
+
+            var manager = new GraphSchemaManager(schema);
+
+            // even though this object declares a method overloads
+            // because of the inclusion rules only the explicitly decalred one shouldbe included
+            // and no exception should be thrown
+            manager.EnsureGraphType<ObjectWithMethodOverloads>();
+
+            var type = schema.KnownTypes.FindGraphType(typeof(ObjectWithMethodOverloads)) as IObjectGraphType;
+            Assert.IsNotNull(type);
+            Assert.AreEqual(2, type.Fields.Count);
+            Assert.IsTrue(type.Fields.Any(x => string.Compare(x.Name, nameof(ObjectWithMethodOverloads.Method1), true) == 0));
+            Assert.IsTrue(type.Fields.Any(x => x.Name == Constants.ReservedNames.TYPENAME_FIELD));
+        }
+
+        [Test]
+        public void ObjectTypeWithMethodOverloads_WhenBothWillAdd_ThrowsException()
+        {
+            var schema = new GraphSchema() as ISchema;
+            var options = new SchemaOptions<GraphSchema>(new ServiceCollection());
+            options.DeclarationOptions.FieldDeclarationRequirements
+                = TemplateDeclarationRequirements.None;
+
+            schema.Configuration.Merge(options.CreateConfiguration());
+
+            var manager = new GraphSchemaManager(schema);
+
+            // even though this object declares a method overloads
+            // because of the inclusion rules only the explicitly decalred one shouldbe included
+            // and no exception should be thrown
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                manager.EnsureGraphType<ObjectWithMethodOverloads>();
+            });
+
+            Assert.AreEqual(typeof(ObjectWithMethodOverloads), ex.FailedObjectType);
         }
     }
 }

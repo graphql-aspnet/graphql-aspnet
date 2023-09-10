@@ -78,7 +78,6 @@ namespace GraphQL.AspNet.Engine
 
             template = this.MakeTemplate(objectType, typeKind);
             template.Parse();
-            template.ValidateOrThrow();
 
             if (this.CacheTemplates)
                 _knownObjects.TryAdd(typeKey, template);

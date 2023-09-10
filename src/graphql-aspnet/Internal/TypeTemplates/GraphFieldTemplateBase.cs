@@ -179,9 +179,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
 
             if (_invalidTypeExpression)
             {
@@ -218,6 +218,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                         $"The field '{this.InternalFullName}' declares union type of '{this.UnionProxy.Name}' " +
                         "but that type includes 0 possible types in the union. Unions require 1 or more possible types. Add additional types" +
                         "or remove the union.");
+                }
+            }
+            else
+            {
+                // when not a union proxy the return type of the field matters and must be valid
+                if (!GraphValidation.IsValidGraphType(this.ObjectType))
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The field  '{this.InternalFullName}' defines a a return type of {this.ObjectType.FriendlyName()}, which is cannot a be used as a graph type. " +
+                        $"Change the return type or skip the field and try again.");
                 }
             }
 
@@ -300,9 +310,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 }
             }
 
-            // general validation of any declaraed parameter for this field
-            foreach (var argument in this.Arguments)
-                argument.ValidateOrThrow();
+            if (validateChildren)
+            {
+                // general validation of any declaraed parameter for this field
+                foreach (var argument in this.Arguments)
+                    argument.ValidateOrThrow(validateChildren);
+            }
 
             if (this.Complexity.HasValue && this.Complexity < 0)
             {

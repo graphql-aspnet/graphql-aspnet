@@ -22,6 +22,8 @@ namespace GraphQL.AspNet.Tests.Internal
     [TestFixture]
     public class GraphValidationTests
     {
+        public delegate int MyTestDelegate(int arg1);
+
         public enum ValidationTestEnum
         {
             Value1,
@@ -85,6 +87,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [TestCase(typeof(IDictionary<string, int>), false)]
         [TestCase(typeof(IReadOnlyDictionary<string, int>), false)]
         [TestCase(typeof(object), false)]
+        [TestCase(typeof(Func<int, bool>), false)]
+        [TestCase(typeof(Func<int>), false)]
+        [TestCase(typeof(Action<int, bool>), false)]
+        [TestCase(typeof(Action), false)]
+        [TestCase(typeof(MyTestDelegate), false)]
         public void IsValidGraphType(Type inputType, bool isValidType)
         {
             var result = GraphValidation.IsValidGraphType(inputType);

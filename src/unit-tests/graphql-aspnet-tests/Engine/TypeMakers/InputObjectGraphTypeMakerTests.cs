@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System.Linq;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -195,8 +196,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
         [Test]
         public void InputObject_CreateGraphType_DirectivesAreApplied()
         {
-            // config says properties DO require declaration, override on type says it does not
-            var result = this.MakeGraphType(typeof(InputTypeWithDirective), TypeKind.INPUT_OBJECT, TemplateDeclarationRequirements.Property);
+            var result = this.MakeGraphType(typeof(InputTypeWithDirective), TypeKind.INPUT_OBJECT);
             var inputType = result.GraphType as IInputObjectGraphType;
 
             Assert.IsNotNull(inputType);
@@ -207,6 +207,18 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 44, "input arg" }, appliedDirective.ArgumentValues);
+        }
+
+        [Test]
+        public void InputObject_CreateGraphType_WithNoFields_ThrowsError()
+        {
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var result = this.MakeGraphType(
+                    typeof(ObjectWithNoFields),
+                    TypeKind.INPUT_OBJECT,
+                    TemplateDeclarationRequirements.None);
+            });
         }
     }
 }

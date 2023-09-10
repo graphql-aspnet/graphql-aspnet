@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public virtual void ValidateOrThrow()
+        public virtual void ValidateOrThrow(bool validateChildren = true)
         {
             if (!_isParsed)
             {

@@ -199,7 +199,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public void ValidateOrThrow()
+        public void ValidateOrThrow(bool validateChildren = true)
         {
             GraphValidation.EnsureGraphNameOrThrow(this.InternalFullName, this.Name);
 
@@ -225,11 +225,22 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $".NET parameter. (Declared '{this.TypeExpression}' is incompatiable with '{actualTypeExpression}') ");
             }
 
-            if (!this.ArgumentModifiers.IsInternalParameter() && this.ObjectType.IsInterface)
+            if (!this.ArgumentModifiers.IsInternalParameter())
             {
-                throw new GraphTypeDeclarationException(
-                    $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' of type  '{this.ObjectType.FriendlyName()}' " +
-                    $"which is an interface. Interfaces cannot be used as input arguments to any type.");
+                if (this.ObjectType.IsInterface)
+                {
+                    // special error message for trying to use an interface in an argument
+                    throw new GraphTypeDeclarationException(
+                        $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' of type  '{this.ObjectType.FriendlyName()}' " +
+                        $"which is an interface. Interfaces cannot be used as input arguments to any type.");
+                }
+
+                if (!GraphValidation.IsValidGraphType(this.ObjectType))
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' of type  '{this.ObjectType.FriendlyName()}' " +
+                        $"which is not a valid graph type.");
+                }
             }
 
             foreach (var directive in this.AppliedDirectives)

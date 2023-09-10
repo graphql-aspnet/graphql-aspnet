@@ -50,7 +50,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         protected override IEnumerable<MemberInfo> GatherPossibleTemplateMembers()
         {
             return this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-              .Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
+              .Where(x =>
+                    !x.IsAbstract &&
+                    !x.IsGenericMethod &&
+                    !x.IsSpecialName &&
+                    x.DeclaringType != typeof(object) &&
+                    x.DeclaringType != typeof(ValueType))
+              .Cast<MemberInfo>()
               .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance));
         }
 
@@ -82,7 +88,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
             // cant use type naming on controllers (they arent real types and arent included directly in the object graph)
             if (this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphTypeAttribute>() != null)
@@ -103,7 +109,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     "one or the other.");
             }
 
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
         }
 
         /// <inheritdoc />
@@ -143,7 +149,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The fields.</value>
         public IEnumerable<IGraphFieldTemplate> Actions =>
-            this.FieldTemplates.Values.OfType<ControllerActionGraphFieldTemplate>();
+            this.FieldTemplates.OfType<ControllerActionGraphFieldTemplate>();
 
         /// <summary>
         /// Gets operation types to which this object can declare a field.
@@ -156,9 +162,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The extensions.</value>
         public IEnumerable<IGraphFieldTemplate> Extensions =>
-            this.FieldTemplates.Values.OfType<GraphTypeExtensionFieldTemplate>();
+            this.FieldTemplates.OfType<GraphTypeExtensionFieldTemplate>();
 
         /// <inheritdoc />
-        public override TypeKind Kind => TypeKind.NONE;
+        public override TypeKind Kind => TypeKind.CONTROLLER;
     }
 }

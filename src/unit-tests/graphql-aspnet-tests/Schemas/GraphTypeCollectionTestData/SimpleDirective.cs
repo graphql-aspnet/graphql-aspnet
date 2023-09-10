@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Schemas.GraphTypeCollectionTestData
     public class SimpleDirective : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
-        public Task<IGraphActionResult> Execute(object source)
+        public Task<IGraphActionResult> Execute()
         {
             return null;
         }

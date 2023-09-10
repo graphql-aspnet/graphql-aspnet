@@ -42,10 +42,14 @@ namespace GraphQL.AspNet.Engine.TypeMakers
         /// <returns>GraphTypeCreationResult.</returns>
         public GraphTypeCreationResult CreateGraphType(Type concreteType)
         {
+            Validation.ThrowIfNull(concreteType, nameof(concreteType));
+
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var template = GraphQLProviders.TemplateProvider.ParseType(concreteType) as IGraphDirectiveTemplate;
             if (template == null)
                 return null;
+
+            template.ValidateOrThrow(false);
 
             var securityGroups = new List<AppliedSecurityPolicyGroup>();
 

@@ -39,6 +39,10 @@ namespace GraphQL.AspNet.Engine.TypeMakers
         /// <inheritdoc />
         public virtual GraphFieldCreationResult<IGraphField> CreateField(IGraphFieldTemplate template)
         {
+            Validation.ThrowIfNull(template, nameof(template));
+
+            template.ValidateOrThrow(false);
+
             var formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphFieldCreationResult<IGraphField>();
 

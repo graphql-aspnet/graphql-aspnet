@@ -56,9 +56,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(3, template.FieldTemplates.Count());
             Assert.AreEqual(2, template.Actions.Count());
             Assert.AreEqual(1, template.Extensions.Count());
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[mutation]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[query]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[type]/TwoPropertyObject/Property3"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[mutation]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[query]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/TwoPropertyObject/Property3"));
         }
 
         [Test]

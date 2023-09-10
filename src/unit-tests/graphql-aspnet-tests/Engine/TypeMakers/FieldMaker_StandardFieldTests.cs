@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 
             Assert.AreEqual(1, template.FieldTemplates.Count);
 
-            var field = template.FieldTemplates.FirstOrDefault().Value;
+            var field = template.FieldTemplates.FirstOrDefault();
             Assert.AreEqual(nameof(NullableEnumController.ConvertUnit), field.Name);
             Assert.AreEqual(typeof(int), field.ObjectType);
 

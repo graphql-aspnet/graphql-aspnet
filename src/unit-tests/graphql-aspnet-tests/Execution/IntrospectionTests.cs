@@ -331,9 +331,9 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNotNull(spected.Fields);
             Assert.AreEqual(3, spected.Fields.Count);
 
-            var expected0 = template.FieldTemplates[$"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Method1)}"];
-            var expected1 = template.FieldTemplates[$"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Method2)}"];
-            var expected2 = template.FieldTemplates[$"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Prop1)}"];
+            var expected0 = template.FieldTemplates.First(x => x.Route.Path == $"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Method1)}");
+            var expected1 = template.FieldTemplates.First(x => x.Route.Path == $"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Method2)}");
+            var expected2 = template.FieldTemplates.First(x => x.Route.Path == $"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Prop1)}");
 
             var field0 = spected.Fields.FirstOrDefault(x => x.Name == nameof(IntrospectableObject.Method1));
             var field1 = spected.Fields.FirstOrDefault(x => x.Name == nameof(IntrospectableObject.Method2));

@@ -13,7 +13,9 @@ namespace GraphQL.AspNet.Engine.TypeMakers
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -52,6 +54,8 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             if (template == null)
                 return null;
 
+            template.ValidateOrThrow(false);
+
             var result = new GraphTypeCreationResult();
 
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
@@ -74,11 +78,22 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             result.AddDependentRange(template.RetrieveRequiredTypes());
 
             var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
-            foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
+            var templatesToRender = ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema);
+            foreach (var fieldTemplate in templatesToRender)
             {
                 var fieldResult = fieldMaker.CreateField(fieldTemplate);
                 objectType.Extend(fieldResult.Field);
                 result.MergeDependents(fieldResult);
+            }
+
+            // at least one field should have been rendered
+            // the type is invalid if there are no fields othe than __typename
+            if (objectType.Fields.Count == 1)
+            {
+                throw new GraphTypeDeclarationException(
+                  $"The object graph type '{template.ObjectType.FriendlyName()}' defines 0 fields. " +
+                  $"All object types must define at least one field.",
+                  template.ObjectType);
             }
 
             // add in declared interfaces by name
@@ -101,7 +116,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             // gather the fields to include in the graph type
             var requiredDeclarations = template.DeclarationRequirements ?? schema.Configuration.DeclarationOptions.FieldDeclarationRequirements;
 
-            return template.FieldTemplates.Values.Where(x =>
+            return template.FieldTemplates.Where(x =>
             {
                 if (x.IsExplicitDeclaration)
                     return true;

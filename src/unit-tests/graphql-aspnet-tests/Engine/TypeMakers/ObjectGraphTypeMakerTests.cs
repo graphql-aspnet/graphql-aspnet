@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
     using System.Linq;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
@@ -278,6 +279,49 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(ObjectWithInheritedDeclaredMethodField.FieldOnClass), System.StringComparison.OrdinalIgnoreCase)));
             Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(ObjectWithUndeclaredMethodField.FieldOnBaseObject), System.StringComparison.OrdinalIgnoreCase)));
             Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
+        }
+
+        [Test]
+        public void CreateGraphType_AsObject_WhenOverloadedMethodIncludesOnce_IsCorrectlyCreated()
+        {
+            var result = this.MakeGraphType(
+                typeof(ObjectWithOverloadedMethodFields),
+                TypeKind.OBJECT,
+                TemplateDeclarationRequirements.Default);
+
+            var objectType = result.GraphType as IObjectGraphType;
+
+            // inherited and declared method field should not be counted
+            Assert.IsNotNull(objectType);
+
+            // declared field method + __typename
+            Assert.AreEqual(2, objectType.Fields.Count);
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, nameof(ObjectWithOverloadedMethodFields.Field1), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(objectType.Fields.Any(x => string.Equals(x.Name, Constants.ReservedNames.TYPENAME_FIELD)));
+        }
+
+        [Test]
+        public void CreateGraphType_AsObject_WhenOverloadedMethodIncludesTwice_ThrowsError()
+        {
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var result = this.MakeGraphType(
+                    typeof(ObjectWithOverloadedMethodFields),
+                    TypeKind.OBJECT,
+                    TemplateDeclarationRequirements.None);
+            });
+        }
+
+        [Test]
+        public void CreateGraphType_AsObject_WithNoFields_ThrowsError()
+        {
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var result = this.MakeGraphType(
+                    typeof(ObjectWithNoFields),
+                    TypeKind.OBJECT,
+                    TemplateDeclarationRequirements.None);
+            });
         }
     }
 }
