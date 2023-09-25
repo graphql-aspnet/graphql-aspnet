@@ -45,17 +45,17 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         /// <returns>Task.</returns>
         public async Task InvokeAsync(SchemaItemSecurityChallengeContext context, GraphMiddlewareInvocationDelegate<SchemaItemSecurityChallengeContext> next, CancellationToken cancelToken = default)
         {
-            context.Logger?.SchemaItemAuthorizationChallenge(context);
-
             // a result may have been set by other middleware
             // in this auth pipeline, if a result is already determined just skip this step
             if (context.Result == null)
             {
+                context.Logger?.SchemaItemAuthorizationChallenge(context);
+
                 var result = await this.AuthorizeRequestAsync(context).ConfigureAwait(false);
                 context.Result = result ?? SchemaItemSecurityChallengeResult.Default();
-            }
 
-            context.Logger?.SchemaItemAuthorizationChallengeResult(context);
+                context.Logger?.SchemaItemAuthorizationChallengeResult(context);
+            }
 
             await next(context, cancelToken).ConfigureAwait(false);
         }
