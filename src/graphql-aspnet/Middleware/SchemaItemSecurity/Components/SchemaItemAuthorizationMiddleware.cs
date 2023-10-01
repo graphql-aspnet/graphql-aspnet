@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         {
             Validation.ThrowIfNull(context?.SecurityRequirements, nameof(SchemaItemSecurityChallengeContext.SecurityRequirements));
 
-            var authService = context.ServiceProvider.GetService<IAuthorizationService>();
+            var authService = context.ServiceProvider?.GetService<IAuthorizationService>();
             var claimsUser = context.AuthenticatedUser;
 
             // when there is nothing to enforce, just skip
