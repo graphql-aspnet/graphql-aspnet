@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
     using GraphQL.AspNet.Middleware;
     using GraphQL.AspNet.Security;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A piece of middleware, on the authorization pipeline, that can successfuly authorize a single user
@@ -25,17 +26,6 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
     /// </summary>
     public class SchemaItemAuthorizationMiddleware : ISchemaItemSecurityMiddleware
     {
-        private readonly IAuthorizationService _authService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SchemaItemAuthorizationMiddleware" /> class.
-        /// </summary>
-        /// <param name="authService">The authentication service.</param>
-        public SchemaItemAuthorizationMiddleware(IAuthorizationService authService = null)
-        {
-            _authService = authService;
-        }
-
         /// <summary>
         /// Invokes this middleware component allowing it to perform its work against the supplied context.
         /// </summary>
@@ -69,6 +59,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         {
             Validation.ThrowIfNull(context?.SecurityRequirements, nameof(SchemaItemSecurityChallengeContext.SecurityRequirements));
 
+            var authService = context.ServiceProvider.GetService<IAuthorizationService>();
             var claimsUser = context.AuthenticatedUser;
 
             // when there is nothing to enforce, just skip
@@ -83,7 +74,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             if (context.SecurityRequirements.AllowAnonymous)
                 return SchemaItemSecurityChallengeResult.Success(claimsUser);
 
-            if (anyPoliciesToEnforce && _authService == null)
+            if (anyPoliciesToEnforce && authService == null)
             {
                 return SchemaItemSecurityChallengeResult.Fail(
                     "The field defines authorization policies but " +
@@ -93,7 +84,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             // ensure all policies are met
             foreach (var policy in context.SecurityRequirements.EnforcedPolicies)
             {
-                var authResult = await _authService.AuthorizeAsync(claimsUser, policy.Policy).ConfigureAwait(false);
+                var authResult = await authService.AuthorizeAsync(claimsUser, policy.Policy).ConfigureAwait(false);
                 if (!authResult.Succeeded)
                     return SchemaItemSecurityChallengeResult.Unauthorized($"Access denied via policy '{policy.Name}'.");
             }

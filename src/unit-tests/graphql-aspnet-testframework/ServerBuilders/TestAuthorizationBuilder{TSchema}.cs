@@ -11,10 +11,12 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.DependencyInjection;
+    using NSubstitute;
 
     /// <summary>
     /// Builds an authorization chain for a single user and policy setup.
@@ -27,6 +29,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         private AuthorizationPolicyBuilder _standardDefaultPolicyBuilder;
         private AuthorizationPolicyBuilder _defaultPolicyBuilder;
         private List<KeyValuePair<string, AuthorizationPolicyBuilder>> _policyBuilders;
+        private IAuthorizationService _explicitAuthService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAuthorizationBuilder{TSchema}" /> class.
@@ -56,6 +59,16 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
                     if (defaultPolicyToUse != null)
                         o.DefaultPolicy = defaultPolicyToUse.Build();
                 });
+
+                if (_explicitAuthService != null)
+                {
+                    var allRegisteredServices = serviceCollection.Where(x => x.ServiceType == typeof(IAuthorizationService))
+                        .ToList();
+                    foreach (var item in allRegisteredServices)
+                        serviceCollection.Remove(item);
+
+                    serviceCollection.AddSingleton<IAuthorizationService>(_explicitAuthService);
+                }
             }
         }
 
@@ -63,6 +76,13 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         public virtual ITestAuthorizationBuilder DisableAuthorization()
         {
             _includeAuthProvider = false;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public virtual ITestAuthorizationBuilder ReplaceAuthorizationService(IAuthorizationService newService)
+        {
+            _explicitAuthService = newService;
             return this;
         }
 
