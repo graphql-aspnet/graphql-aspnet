@@ -6,6 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
 {
     using System;
@@ -47,22 +48,25 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
         /// <inheritdoc />
         public async Task InvokeAsync(SchemaItemSecurityChallengeContext context, GraphMiddlewareInvocationDelegate<SchemaItemSecurityChallengeContext> next, CancellationToken cancelToken = default)
         {
-            context.Logger?.SchemaItemAuthenticationChallenge(context);
-
             // only attempt an authentication
             // if no result is already deteremined and if no user has already been authenticated
-            IAuthenticationResult authenticationResult = null;
+            //
+            // if a piece of middleware has already set an authenticated user
+            // just skip this component.
             if (context.Result == null && context.AuthenticatedUser == null)
             {
+                context.Logger?.SchemaItemAuthenticationChallenge(context);
+                IAuthenticationResult authenticationResult = null;
+
                 ClaimsPrincipal user;
                 SchemaItemSecurityChallengeResult challengeResult;
 
                 (user, authenticationResult, challengeResult) = await this.AuthenticateUser(context, cancelToken);
                 context.AuthenticatedUser = user;
                 context.Result = challengeResult;
-            }
 
-            context.Logger?.SchemaItemAuthenticationChallengeResult(context, authenticationResult);
+                context.Logger?.SchemaItemAuthenticationChallengeResult(context, authenticationResult);
+            }
 
             await next.Invoke(context, cancelToken).ConfigureAwait(false);
         }
