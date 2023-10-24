@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>GraphQL.AspNet.SubscriberLoadTest.TestConsole</RootNamespace>
 		<Company>GraphQL ASP.NET</Company>
 		<Title>GraphQL ASP.NET Performance Profiler</Title>
