@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Web.WebSockets
         public async Task GeneralPropertyCheck()
         {
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER, "sub proto");
+            context.Request.Headers.Append(SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER, "sub proto");
 
             var provider = Substitute.For<IServiceProvider>();
             var securityContext = Substitute.For<IUserSecurityContext>();

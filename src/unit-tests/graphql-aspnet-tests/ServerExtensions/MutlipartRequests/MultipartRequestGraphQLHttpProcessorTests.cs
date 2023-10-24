@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
                     formFile.Headers = new HeaderDictionary();
                     if (item.ContentType != null)
-                        formFile.Headers.Add("Content-Type", item.ContentType);
+                        formFile.Headers.Append("Content-Type", item.ContentType);
 
                     fileCollection.Add(formFile);
                 }
