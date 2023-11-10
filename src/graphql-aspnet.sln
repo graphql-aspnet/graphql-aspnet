@@ -36,6 +36,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starwars-api70", "ancillary
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graphql-aspnet-tests-common", "unit-tests\graphql-aspnet-tests-common\graphql-aspnet-tests-common.csproj", "{3CB086E3-5E7B-438B-9A95-AEA264009521}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graphql-aspnet-testframework-tests", "unit-tests\graphql-aspnet-testframework-tests\graphql-aspnet-testframework-tests.csproj", "{E67D4FB2-73FF-4EC1-80F8-5D4DEC57F5AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{3CB086E3-5E7B-438B-9A95-AEA264009521}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CB086E3-5E7B-438B-9A95-AEA264009521}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CB086E3-5E7B-438B-9A95-AEA264009521}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E67D4FB2-73FF-4EC1-80F8-5D4DEC57F5AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E67D4FB2-73FF-4EC1-80F8-5D4DEC57F5AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E67D4FB2-73FF-4EC1-80F8-5D4DEC57F5AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E67D4FB2-73FF-4EC1-80F8-5D4DEC57F5AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
