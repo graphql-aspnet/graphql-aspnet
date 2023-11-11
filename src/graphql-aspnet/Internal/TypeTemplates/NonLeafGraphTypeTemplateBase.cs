@@ -188,6 +188,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (Constants.IgnoredFieldNames.Contains(memberInfo.Name))
                 return false;
 
+            if (memberInfo.DeclaringType?.IsRecord() ?? false)
+            {
+                if (Constants.IgnoredRecordFieldNames.Contains(memberInfo.Name))
+                    return false;
+            }
+
             // when the member declares any known attribute in the library include it
             // and allow it to generate validation failures if its not properly constructed
             if (memberInfo.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>() != null)
