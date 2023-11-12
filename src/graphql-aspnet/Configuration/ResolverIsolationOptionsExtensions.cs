@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Configuration
 {
+    using System;
     using GraphQL.AspNet.Internal.TypeTemplates;
 
     /// <summary>
@@ -25,10 +26,24 @@ namespace GraphQL.AspNet.Configuration
         /// <returns><c>true</c> if the field source should be isolated, <c>false</c> otherwise.</returns>
         public static bool ShouldIsolateFieldSource(this ResolverIsolationOptions options, GraphFieldSource fieldSource)
         {
-            if (fieldSource == GraphFieldSource.Virtual)
-                return false;
+            switch (fieldSource)
+            {
+                case GraphFieldSource.None:
+                case GraphFieldSource.Virtual:
+                    return false;
 
-            return options.HasFlag((ResolverIsolationOptions)fieldSource);
+                case GraphFieldSource.Action:
+                    return (options & ResolverIsolationOptions.ControllerActions) > 0;
+
+                case GraphFieldSource.Method:
+                    return (options & ResolverIsolationOptions.Methods) > 0;
+
+                case GraphFieldSource.Property:
+                    return (options & ResolverIsolationOptions.Properties) > 0;
+
+                default:
+                    throw new InvalidOperationException($"Unsupported field source {fieldSource}");
+            }
         }
     }
 }

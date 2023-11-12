@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Threading;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
