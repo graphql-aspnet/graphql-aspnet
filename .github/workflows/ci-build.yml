@@ -39,7 +39,7 @@ jobs:
           dotnet-version: |
             6.x
             7.x
-            8.0.100-rc.2.23502.2
+            8.x
 
       # ---------------------------------------
       # Configure the build environment
