@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Schemas
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Steps;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -157,18 +158,38 @@ namespace GraphQL.AspNet.Schemas
         /// <returns>GraphFieldOptions.</returns>
         public static GraphTypeExpression FromType(Type typeToCheck, MetaGraphTypes[] typeWrappers = null)
         {
+            return FromType(typeToCheck, TypeKind.OBJECT, typeWrappers);
+        }
+
+        /// <summary>
+        /// Inspects the provided type and generates a type expression to represent it in the object grpah.
+        /// </summary>
+        /// <param name="typeToCheck">The complete type specification to check.</param>
+        /// <param name="typeKind">An explicit typekind to use when determining the name of the <paramref name="typeToCheck"/>
+        /// that will be included in the expression.</param>
+        /// <param name="typeWrappers">An optional set of wrappers to use as a set of overrides on the type provided.</param>
+        /// <returns>GraphFieldOptions.</returns>
+        public static GraphTypeExpression FromType(Type typeToCheck, TypeKind typeKind, MetaGraphTypes[] typeWrappers = null)
+        {
+            var name = GraphTypeNames.ParseName(typeToCheck, typeKind);
+            return FromType(typeToCheck, name, typeWrappers);
+        }
+
+        /// <summary>
+        /// Inspects the provided type and generates a type expression to represent it in the object grpah.
+        /// </summary>
+        /// <param name="typeToCheck">The complete type specification to check.</param>
+        /// <param name="typeName">An explicit typename to use in the type expression. This value
+        /// will override any name gleaned from <paramref name="typeToCheck"/>. </param>
+        /// <param name="typeWrappers">An optional set of wrappers to use as a set of overrides on the type provided.</param>
+        /// <returns>GraphFieldOptions.</returns>
+        public static GraphTypeExpression FromType(Type typeToCheck, string typeName, MetaGraphTypes[] typeWrappers = null)
+        {
             Validation.ThrowIfNull(typeToCheck, nameof(typeToCheck));
+            typeName = Validation.ThrowIfNullWhiteSpaceOrReturn(typeName, nameof(typeName));
 
             if (typeWrappers != null)
-            {
-                typeToCheck = GraphValidation.EliminateWrappersFromCoreType(
-                    typeToCheck,
-                    eliminateEnumerables: true,
-                    eliminateTask: true,
-                    eliminateNullableT: true);
-
-                return new GraphTypeExpression(typeToCheck.FriendlyGraphTypeName(), typeWrappers);
-            }
+                return new GraphTypeExpression(typeName, typeWrappers);
 
             // strip out Task{T} before doin any type inspections
             typeToCheck = GraphValidation.EliminateWrappersFromCoreType(
@@ -207,13 +228,7 @@ namespace GraphQL.AspNet.Schemas
                 wrappers.Add(MetaGraphTypes.IsNotNull);
             }
 
-            typeToCheck = GraphValidation.EliminateWrappersFromCoreType(
-                typeToCheck,
-                eliminateEnumerables: false,
-                eliminateTask: false,
-                eliminateNullableT: true);
-
-            return new GraphTypeExpression(typeToCheck.FriendlyGraphTypeName(), wrappers);
+            return new GraphTypeExpression(typeName, wrappers);
         }
 
         /// <summary>

@@ -67,6 +67,24 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData
             return null;
         }
 
+        [TypeExtension(typeof(TwoPropertyObject), "fieldThree", typeof(CustomNamedObject))]
+        public IGraphActionResult TypeExtension_CustomNamedObjectReturnedTestExtension(CustomNamedObject obj)
+        {
+            return null;
+        }
+
+        [BatchTypeExtension(typeof(TwoPropertyObject), "fieldThree", typeof(CustomNamedObject))]
+        public IGraphActionResult Batch_CustomNamedObjectReturnedTestExtension(IEnumerable<TwoPropertyObject> items)
+        {
+            return null;
+        }
+
+        [BatchTypeExtension(typeof(CustomNamedObject), "fieldThree", typeof(CustomNamedObject))]
+        public IGraphActionResult Batch_ChildIsSameCustomNamedObjectTestExtension(IEnumerable<CustomNamedObject> items)
+        {
+            return null;
+        }
+
         [BatchTypeExtension(typeof(TwoPropertyObject), "Property3")]
         public IDictionary<TwoPropertyObject, List<int>> CustomValidReturnType(IEnumerable<TwoPropertyObject> sourceData, int arg1)
         {
