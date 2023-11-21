@@ -16,7 +16,6 @@
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\styles.ruleset</CodeAnalysisRuleSet>
-    <RunSettingsFilePath>$(MSBuildThisFileDirectory)\graphql-aspnet.runsettings</RunSettingsFilePath>
 </PropertyGroup>
 
   <ItemGroup>

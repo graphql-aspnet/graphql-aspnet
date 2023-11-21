@@ -4,11 +4,11 @@
   <RunConfiguration>
 
     <!-- Use 0 for maximum process-level parallelization. This does not force parallelization within the test DLL (on the thread-level). You can also change it from the Test menu; choose "Run tests in parallel". Unchecked = 1 (only 1), checked = 0 (max). -->
-    <MaxCpuCount>0</MaxCpuCount>
+    <MaxCpuCount>1</MaxCpuCount>
 
     <!-- Any TargetFramework moniker or omit the whole tag for auto-detection. -->
     <!-- net48, [net40], net6.0, net5.0, netcoreapp3.1, uap10.0 etc. -->
-    <TargetFrameworkVersion>net8.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>net8.0;net7.0;net6.0;</TargetFrameworkVersion>
 
     <!-- TestSessionTimeout was introduced in Visual Studio 2017 version 15.5 -->
     <!-- Specify timeout in milliseconds. A valid value should be greater than 0 -->
