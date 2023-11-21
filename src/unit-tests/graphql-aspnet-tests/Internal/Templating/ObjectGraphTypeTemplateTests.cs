@@ -431,5 +431,34 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual("Method3", fieldTemplate0.Name);
             Assert.AreEqual("Field1", fieldTemplate1.Name);
         }
+
+        [Test]
+        public void Parse_Struct_WithGraphTypeNameOverride_ParsesCorrectly()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(SimpleScalarStructWithTypeOverride));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.IsNotNull(template);
+            Assert.AreEqual("SomeTypeName", template.Name);
+        }
+
+        [Test]
+        public void Parse_Record_ParsesCorrectly()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectRecord));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count);
+            var field1 = template.FieldTemplates.SingleOrDefault(x => x.Name == "Property1");
+            var field2 = template.FieldTemplates.SingleOrDefault(x => x.Name == "Property2");
+
+            Assert.IsNotNull(field1);
+            Assert.IsNotNull(field2);
+
+            Assert.AreEqual(typeof(int), field1.ObjectType);
+            Assert.AreEqual(typeof(string), field2.ObjectType);
+        }
     }
 }

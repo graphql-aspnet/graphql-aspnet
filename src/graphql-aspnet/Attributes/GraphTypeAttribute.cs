@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Attributes
     /// item should be treated as a graph type and included in a schema. This attribute is
     /// optional depending on your schema configuration and naming preferences.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Enum)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Enum | AttributeTargets.Struct)]
     public class GraphTypeAttribute : GraphAttributeBase
     {
         private TemplateDeclarationRequirements _templateDeclarationRequirements = TemplateDeclarationRequirements.None;
