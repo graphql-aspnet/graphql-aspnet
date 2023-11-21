@@ -87,7 +87,6 @@ namespace GraphQL.AspNet.Schemas.Structural
                 if (_pathInitialized)
                     return;
 
-                _pathInitialized = true;
                 var workingPath = SchemaItemPath.NormalizeFragment(this.Raw);
 
                 // split the path into its fragments
@@ -137,7 +136,7 @@ namespace GraphQL.AspNet.Schemas.Structural
                 }
 
                 // ensure each fragment matches the naming specification
-                foreach (var fragment in pathFragments.Skip(this.RootCollection == SchemaItemCollections.Unknown ? 0 : 1))
+                foreach (var fragment in pathFragments.Skip(_rootCollection == SchemaItemCollections.Unknown ? 0 : 1))
                 {
                     if (!this.ValidateFragment(fragment))
                         return;
@@ -147,9 +146,10 @@ namespace GraphQL.AspNet.Schemas.Structural
                 if (pathFragments.Count > 1)
                     _parentField = new SchemaItemPath(string.Join(RouteConstants.PATH_SEPERATOR, pathFragments.Take(pathFragments.Count - 1)));
 
-                _isTopLevelField = pathFragments.Count == 1 || (pathFragments.Count == 2 && this.RootCollection > SchemaItemCollections.Unknown); // e.g. "[query]/name"
-                _isValid = this.Name.Length > 0;
+                _isTopLevelField = pathFragments.Count == 1 || (pathFragments.Count == 2 && _rootCollection > SchemaItemCollections.Unknown); // e.g. "[query]/name"
+                _isValid = _name.Length > 0;
                 _path = this.GeneratePathString(pathFragments);
+                _pathInitialized = true;
             }
         }
 
