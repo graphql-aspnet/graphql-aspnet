@@ -9,6 +9,9 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
 {
+    using GraphQL.AspNet.Attributes;
+
+    [GraphType]
     public record InputRecord
     {
         public int Property1 { get; set; }
