@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps;
 
     /// <summary>
     /// Begins executing the top level fields, of the operation on the context, through the field execution pipeline.
@@ -45,7 +46,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
         private readonly ISchemaPipeline<TSchema, GraphFieldExecutionContext> _fieldExecutionPipeline;
         private readonly TSchema _schema;
-        private readonly ResolverIsolationOptions _isolationOptions;
         private readonly bool _debugMode;
         private readonly TimeSpan? _queryTimeout;
 
@@ -57,7 +57,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         public ExecuteQueryOperationMiddleware(TSchema schema, ISchemaPipeline<TSchema, GraphFieldExecutionContext> fieldExecutionPipeline)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _isolationOptions = _schema.Configuration.ExecutionOptions.ResolverIsolation;
             _debugMode = _schema.Configuration.ExecutionOptions.DebugMode;
             _queryTimeout = _schema.Configuration.ExecutionOptions.QueryTimeout;
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
@@ -97,34 +96,20 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
             // Step 0
             // --------------------------
-            // Sort the top level requested fields of this operation such that
-            // those contexts that should be isolated execute first and all others
-            // run in paralell
-            IEnumerable<(IGraphFieldInvocationContext Context, bool ExecuteIsolated)> orderedContextList;
-            if (operation.OperationType == GraphOperationType.Mutation)
-            {
-                // top level mutation operatons must be executed in sequential order
-                // due to potential side effects on the underlying data
-                // https://graphql.github.io/graphql-spec/October2021/#sec-Mutation
-                orderedContextList = operation.FieldContexts
-                    .Select(x => (x, true));
-            }
-            else
-            {
-                // with non-mutation queries, order the contexts such that the isolated ones (as determined by
-                // the configuration for this schema) are on top. All contexts are ran in isolation.
-                // However, when in debug mode all top level queries are run in isolation.
-                orderedContextList = operation
-                   .FieldContexts
-                   .Select(x => (x, _debugMode || _isolationOptions.ShouldIsolateFieldSource(x.Field.FieldSource)))
-                   .OrderByDescending(x => x.Item2);
-            }
+
+            // top level mutation operatons must be executed in sequential order
+            // due to potential side effects on the underlying data
+            // https://graphql.github.io/graphql-spec/October2021/#sec-Mutation
+            //
+            // or if we're in debug mode isolate all type level contexts
+            bool contextsMustBeIsolated = _debugMode || operation.OperationType == GraphOperationType.Mutation;
+            var contextList = operation.FieldContexts.ToList();
 
             // Step 1
             // --------------------------
             // Begin a field execution pipeline for each top level field
             // those fields will then call their child fields in turn
-            foreach (var item in orderedContextList)
+            foreach (var item in contextList)
             {
                 // if at any point the context token signals a cancellation
                 // the monitor will switch out of a running state,
@@ -133,25 +118,25 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     break;
 
                 var path = new SourcePath();
-                path.AddFieldName(item.Context.Name);
+                path.AddFieldName(item.Name);
 
                 object dataSourceValue;
 
                 // fetch the source data value to use for the field invocation
                 // attempt to retrieve from the master context if it was supplied by the pipeline
                 // invoker, otherwise generate a root source
-                if (!context.DefaultFieldSources.TryRetrieveSource(item.Context.Field, out dataSourceValue))
+                if (!context.DefaultFieldSources.TryRetrieveSource(item.Field, out dataSourceValue))
                     dataSourceValue = this.GenerateRootSourceData(operation.OperationType);
 
-                var topLevelDataItem = new FieldDataItem(item.Context, dataSourceValue, path);
+                var topLevelDataItem = new FieldDataItem(item, dataSourceValue, path);
 
                 var sourceData = new FieldDataItemContainer(dataSourceValue, path, topLevelDataItem);
 
                 var fieldRequest = new GraphFieldRequest(
                     context.QueryRequest,
-                    item.Context,
+                    item,
                     sourceData,
-                    new SourceOrigin(item.Context.Origin.Location, path));
+                    new SourceOrigin(item.Origin.Location, path));
 
                 var fieldContext = new GraphFieldExecutionContext(
                     context,
@@ -174,11 +159,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 fieldInvocations.Add(pipelineInvocation);
                 fieldInvocationTasks.Add(pipelineInvocation.Task);
 
-                if (_debugMode)
-                {
-                    await fieldTask.ConfigureAwait(false);
-                }
-                else if (item.ExecuteIsolated)
+                if (contextsMustBeIsolated)
                 {
                     // await the isolated task to prevent any potential paralellization
                     // by the task system but not in such a way that a faulted task would
