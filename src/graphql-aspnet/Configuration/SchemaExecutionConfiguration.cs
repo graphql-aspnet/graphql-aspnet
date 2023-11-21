@@ -72,6 +72,4 @@ namespace GraphQL.AspNet.Configuration
         /// <inheritdoc />
         public bool DebugMode { get; set; }
     }
-
-#pragma warning restore CS0618 // Type or member is obsolete
 }

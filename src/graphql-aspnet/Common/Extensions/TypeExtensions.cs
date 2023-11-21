@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Common.Extensions
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Reflection;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection;
 
     /// <summary>
     /// Extension methods for working with .NET <see cref="Type"/>
@@ -505,6 +506,20 @@ namespace GraphQL.AspNet.Common.Extensions
 
             return type.IsValueType && !type.IsPrimitive && !type.IsEnum && !type.IsArray && !type.IsInterface
                 && !type.IsAbstract;
+        }
+
+        /// <summary>
+        /// Determines whether the specified type represents a record declared in
+        /// source code.
+        /// </summary>
+        /// <param name="type">The type to inspect.</param>
+        /// <returns><c>true</c> if the specified type is record; otherwise, <c>false</c>.</returns>
+        public static bool IsRecord(this Type type)
+        {
+            if (type == null)
+                return false;
+
+            return type.GetMethods().Any(m => m.Name == "<Clone>$");
         }
     }
 }

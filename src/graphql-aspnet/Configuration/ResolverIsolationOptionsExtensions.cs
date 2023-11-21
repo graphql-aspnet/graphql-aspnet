@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Configuration
 {
+    using System;
     using GraphQL.AspNet.Internal.TypeTemplates;
 
     /// <summary>
