@@ -16,6 +16,12 @@ using System.Diagnostics.CodeAnalysis;
     Scope = "module")]
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "StyleCop.CSharp.DocumentationRules",
+    "SA1601:Elements should be documented",
+    Justification = "Documenting test methods is unwarranted at this time.",
+    Scope = "module")]
+
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(
     "StyleCop.CSharp.NamingRules",
     "SA1313:Parameter names should begin with lower-case letter",
     Justification = "Testing of Alternative Naming schemas is required for unit tests",
