@@ -202,6 +202,38 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
+        public void ValidBatchExtension_WithCustomNamedReturnType_PropertyCheck()
+        {
+            var methodInfo = typeof(ExtensionMethodController).GetMethod(nameof(ExtensionMethodController.Batch_CustomNamedObjectReturnedTestExtension));
+            var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.Batch_CustomNamedObjectReturnedTestExtension));
+
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
+            Assert.AreEqual(typeof(TwoPropertyObject), template.SourceObjectType);
+            Assert.AreEqual(methodInfo, template.Method);
+            Assert.AreEqual("Custom_Named_Object", template.TypeExpression.ToString());
+            Assert.AreEqual("[type]/TwoPropertyObject/fieldThree", template.Route.ToString());
+            Assert.AreEqual(typeof(CustomNamedObject), template.ObjectType);
+            Assert.AreEqual(1, template.Arguments.Count);
+            Assert.AreEqual(FieldResolutionMode.Batch, template.Mode);
+        }
+
+        [Test]
+        public void ValidBatchExtension_WithCustomNamedReturnType_OnSameCustomNamedParent_PropertyCheck()
+        {
+            var methodInfo = typeof(ExtensionMethodController).GetMethod(nameof(ExtensionMethodController.Batch_ChildIsSameCustomNamedObjectTestExtension));
+            var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.Batch_ChildIsSameCustomNamedObjectTestExtension));
+
+            Assert.AreEqual(methodInfo.ReflectedType, ((IGraphFieldResolverMethod)template).Parent.ObjectType);
+            Assert.AreEqual(typeof(CustomNamedObject), template.SourceObjectType);
+            Assert.AreEqual(methodInfo, template.Method);
+            Assert.AreEqual("Custom_Named_Object", template.TypeExpression.ToString());
+            Assert.AreEqual("[type]/Custom_Named_Object/fieldThree", template.Route.ToString());
+            Assert.AreEqual(typeof(CustomNamedObject), template.ObjectType);
+            Assert.AreEqual(1, template.Arguments.Count);
+            Assert.AreEqual(FieldResolutionMode.Batch, template.Mode);
+        }
+
+        [Test]
         public void BatchExtension_NoSourceDataEnumerable_ThrowsException()
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>

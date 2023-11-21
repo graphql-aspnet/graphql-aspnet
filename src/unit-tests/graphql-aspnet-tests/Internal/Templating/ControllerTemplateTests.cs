@@ -124,5 +124,19 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.IsNotNull(template.Actions.Single(x => x.Name.EndsWith(nameof(BaseControllerWithAction.BaseControllerAction))));
             Assert.IsNotNull(template.Actions.Single(x => x.Name.EndsWith(nameof(ControllerWithInheritedAction.ChildControllerAction))));
         }
+
+        [Test]
+        public void Parse_BatchExtensionWithCustomNamedObject_HasAppropriateTypeExpression()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithActionAsTypeExtensionForCustomNamedObject));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var field = template.FieldTemplates[0];
+
+            // type expression should be the custom name on the type
+            // not the default name
+            Assert.AreEqual("[Custom_Named_Object]", field.TypeExpression.ToString());
+        }
     }
 }
