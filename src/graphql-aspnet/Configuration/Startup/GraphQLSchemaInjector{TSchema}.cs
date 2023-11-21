@@ -162,6 +162,7 @@ namespace GraphQL.AspNet.Configuration.Startup
             _options.ServiceCollection.TryAddTransient(typeof(IGraphQLHttpProcessor<TSchema>), _options.QueryHandler.HttpProcessorType);
 
             // "per application server" instance
+            _options.ServiceCollection.TryAddScoped<IGraphQLFieldResolverIsolationManager, GraphQLFieldResolverIsolationManager>();
             _options.ServiceCollection.TryAddScoped<IGraphLogger>(sp => sp?.GetService<IGraphEventLogger>());
             _options.ServiceCollection.TryAddScoped<IGraphEventLogger>((sp) =>
             {

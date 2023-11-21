@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     [TestFixture]
     public class MultipartRequestPayloadAssemblerTests
     {
-        private (MultiPartHttpFormPayloadParser<GraphSchema>, HttpContext) CreateTestObject(
+        private (MultiPartHttpFormPayloadParser<GraphSchema> Parser, HttpContext Context) CreateTestObject(
                 string operationsField,
                 string mapField,
                 IMultipartRequestConfiguration<GraphSchema> config = null,

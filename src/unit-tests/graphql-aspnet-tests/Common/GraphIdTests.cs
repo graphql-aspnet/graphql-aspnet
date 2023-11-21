@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void EmptyGraphIdCtor_IsEmptyString()
         {
-            GraphId id = new ();
+            GraphId id = default;
             Assert.IsNull(id.Value);
         }
 
