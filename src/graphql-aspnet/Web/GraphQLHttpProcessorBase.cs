@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Web
 
             if (this.Schema.Configuration.ResponseOptions.AppendServerHeader)
             {
-                this.Response.Headers.Add(Constants.ServerInformation.SERVER_INFORMATION_HEADER, Constants.ServerInformation.ServerData);
+                this.Response.Headers.Append(Constants.ServerInformation.SERVER_INFORMATION_HEADER, Constants.ServerInformation.ServerData);
             }
 
             this.Response.StatusCode = (int)statusCode;
