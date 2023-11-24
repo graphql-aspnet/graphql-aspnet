@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
-    using GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ControllerTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using NUnit.Framework;

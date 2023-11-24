@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ExtensionMethodTestData
 {
     using GraphQL.AspNet.Attributes;
 

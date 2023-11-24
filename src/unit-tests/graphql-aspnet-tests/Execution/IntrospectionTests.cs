@@ -21,6 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData;
     using GraphQL.AspNet.Tests.Execution.TestData.IntrospectionTestData;
+    using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 

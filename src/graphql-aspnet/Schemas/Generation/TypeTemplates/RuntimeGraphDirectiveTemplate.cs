@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;

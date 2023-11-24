@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
-    using GraphQL.AspNet.Tests.Internal.Templating.InterfaceTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.InterfaceTestData;
     using NUnit.Framework;

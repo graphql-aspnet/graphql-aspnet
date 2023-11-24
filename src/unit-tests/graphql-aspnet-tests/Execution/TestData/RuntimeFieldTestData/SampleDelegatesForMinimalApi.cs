@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTest
+namespace GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTestData
 {
     public class SampleDelegatesForMinimalApi
     {

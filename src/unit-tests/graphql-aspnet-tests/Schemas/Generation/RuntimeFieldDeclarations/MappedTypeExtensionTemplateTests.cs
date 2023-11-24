@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
+namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 {
     using System.Linq;
     using GraphQL.AspNet.Attributes;

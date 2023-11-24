@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.InterfaceTestData
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.InterfaceTestData
 {
     using GraphQL.AspNet.Attributes;
 

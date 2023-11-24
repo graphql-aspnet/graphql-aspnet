@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ExtensionMethodT
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Common.Interfaces;
-    using GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData;
 
     public class ExtensionMethodController : GraphController
     {

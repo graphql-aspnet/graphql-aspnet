@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Common.Interfaces;
-    using GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ExtensionMethodTestData;
     using NSubstitute;
     using NUnit.Framework;

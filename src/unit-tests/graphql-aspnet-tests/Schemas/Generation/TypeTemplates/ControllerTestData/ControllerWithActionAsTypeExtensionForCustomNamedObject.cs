@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData
+namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ControllerTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData;
+    using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ExtensionMethodTestData;
 
     public class ControllerWithActionAsTypeExtensionForCustomNamedObject : GraphController
     {

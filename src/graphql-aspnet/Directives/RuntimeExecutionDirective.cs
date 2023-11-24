@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Controllers
+namespace GraphQL.AspNet.Directives
 {
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
