@@ -56,9 +56,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(3, template.FieldTemplates.Count());
             Assert.AreEqual(2, template.Actions.Count());
             Assert.AreEqual(1, template.Extensions.Count());
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[mutation]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[query]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[type]/TwoPropertyObject/Property3"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[mutation]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[query]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/TwoPropertyObject/Property3"));
         }
 
         [Test]
@@ -123,6 +123,20 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             Assert.IsNotNull(template.Actions.Single(x => x.Name.EndsWith(nameof(BaseControllerWithAction.BaseControllerAction))));
             Assert.IsNotNull(template.Actions.Single(x => x.Name.EndsWith(nameof(ControllerWithInheritedAction.ChildControllerAction))));
+        }
+
+        [Test]
+        public void Parse_BatchExtensionWithCustomNamedObject_HasAppropriateTypeExpression()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithActionAsTypeExtensionForCustomNamedObject));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var field = template.FieldTemplates[0];
+
+            // type expression should be the custom name on the type
+            // not the default name
+            Assert.AreEqual("[Custom_Named_Object]", field.TypeExpression.ToString());
         }
     }
 }

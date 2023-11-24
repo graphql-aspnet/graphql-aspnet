@@ -90,9 +90,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
 
             if (this.Locations == DirectiveLocation.NONE)
             {
@@ -108,7 +108,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $"Directives cannot have applied directives.");
             }
 
-            this.Methods.ValidateOrThrow();
+            if (validateChildren)
+                this.Methods.ValidateOrThrow(validateChildren);
         }
 
         /// <inheritdoc />

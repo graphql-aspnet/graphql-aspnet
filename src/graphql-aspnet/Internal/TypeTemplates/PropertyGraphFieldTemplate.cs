@@ -59,9 +59,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
 
             // ensure property has a public getter (kinda useless otherwise)
             if (this.Property.GetGetMethod() == null)

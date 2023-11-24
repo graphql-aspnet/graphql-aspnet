@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Framework
             var template = new SingleMethodGraphControllerTemplate<TController>(methodName);
             template.Parse();
             template.ValidateOrThrow();
-            return template.FieldTemplates.FirstOrDefault(x => x.Value.InternalName.Equals(methodName, StringComparison.OrdinalIgnoreCase)).Value;
+            return template.FieldTemplates.FirstOrDefault(x => x.InternalName.Equals(methodName, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -68,11 +68,11 @@ namespace GraphQL.AspNet.Tests.Framework
             // can occur when setting up a test do to references occuring out of process
             foreach (var kvp in template.FieldTemplates)
             {
-                if (string.Equals(kvp.Value.InternalName, fieldOrMethodName, StringComparison.OrdinalIgnoreCase))
-                    return kvp.Value;
+                if (string.Equals(kvp.InternalName, fieldOrMethodName, StringComparison.OrdinalIgnoreCase))
+                    return kvp;
 
-                if (string.Equals(kvp.Value.Route.Name, fieldOrMethodName, StringComparison.OrdinalIgnoreCase))
-                    return kvp.Value;
+                if (string.Equals(kvp.Route.Name, fieldOrMethodName, StringComparison.OrdinalIgnoreCase))
+                    return kvp;
             }
 
             throw new ArgumentOutOfRangeException(nameof(fieldOrMethodName), $"Test Setup Error. No field,method or property named '{fieldOrMethodName}' was found on the template of type '{typeof(TType).FriendlyName()}'.");

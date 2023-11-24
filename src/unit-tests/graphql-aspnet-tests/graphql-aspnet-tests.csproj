@@ -1,30 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\library-tests.props" />
 
   <PropertyGroup>
-	  <TargetFrameworks>net7.0;net6.0;</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
-    <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;RCS1021;IDE0060;IDE0052;IDE0044;IDE0059;IDE0052;IDE0017;IDE0039;RCS1090;RCS1118;SA1601;RCS1163</NoWarn>
     <RootNamespace>GraphQL.AspNet.Tests</RootNamespace>
     <AssemblyName>graphql-aspnet-tests</AssemblyName>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <IsTestProject>true</IsTestProject>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>..\..\styles.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
-    <PackageReference Include="nunit" Version="3.13.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.3.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\graphql-aspnet\graphql-aspnet.csproj" />

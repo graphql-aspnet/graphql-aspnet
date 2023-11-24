@@ -7,12 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.CommonHelpers
+namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
 {
-    /// <summary>
-    /// A representation of a data object with no properties.
-    /// </summary>
-    public class EmptyObject
+    using GraphQL.AspNet.Attributes;
+
+    [GraphType("SomeTypeName")]
+    public struct SimpleScalarStructWithTypeOverride
     {
+        public int Prop1 { get; set; }
     }
 }

@@ -122,12 +122,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return builder.ToString();
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
-        public virtual void ValidateOrThrow()
+        /// <inheritdoc />
+        public virtual void ValidateOrThrow(bool validateChildren = true)
         {
             // ensure skip isnt set
             if (this.Method.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
@@ -167,8 +163,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $"All directive methods must return a {nameof(IGraphActionResult)} or {typeof(Task<IGraphActionResult>).FriendlyName()}");
             }
 
-            foreach (var argument in _arguments)
-                argument.ValidateOrThrow();
+            if (validateChildren)
+            {
+                foreach (var argument in _arguments)
+                    argument.ValidateOrThrow(validateChildren);
+            }
 
             foreach (var directive in this.AppliedDirectives)
                 directive.ValidateOrThrow();

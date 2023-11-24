@@ -102,8 +102,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly).Count(x => !x.IsSpecialName);
 
             Assert.IsTrue(totalMethods == template.FieldTemplates.Count);
-            Assert.AreEqual(1, template.FieldTemplates.Count(x => x.Value.IsExplicitDeclaration));
-            Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.Value.IsExplicitDeclaration));
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => x.IsExplicitDeclaration));
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.IsExplicitDeclaration));
         }
 
         [Test]
@@ -117,8 +117,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly).Count(x => !x.IsSpecialName);
 
             Assert.IsTrue(totalMethods == template.FieldTemplates.Count);
-            Assert.AreEqual(1, template.FieldTemplates.Count(x => x.Value.IsExplicitDeclaration));
-            Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.Value.IsExplicitDeclaration));
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => x.IsExplicitDeclaration));
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.IsExplicitDeclaration));
         }
 
         [Test]
@@ -131,8 +131,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var totalProps = typeof(OneMarkedProperty).GetProperties().Length;
 
             Assert.IsTrue(totalProps == template.FieldTemplates.Count);
-            Assert.AreEqual(1, template.FieldTemplates.Count(x => x.Value.IsExplicitDeclaration));
-            Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.Value.IsExplicitDeclaration));
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => x.IsExplicitDeclaration));
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.IsExplicitDeclaration));
         }
 
         public void Parse_Struct_PropertiesAreCapturedAsExplictOrImplicitCorrectly()
@@ -144,8 +144,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var totalProps = typeof(StructOneMarkedProperty).GetProperties().Length;
 
             Assert.IsTrue(totalProps == template.FieldTemplates.Count);
-            Assert.AreEqual(1, template.FieldTemplates.Count(x => x.Value.IsExplicitDeclaration));
-            Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.Value.IsExplicitDeclaration));
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => x.IsExplicitDeclaration));
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.IsExplicitDeclaration));
         }
 
         [Test]
@@ -158,8 +158,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.IsNotNull(template);
 
             Assert.AreEqual(2, template.FieldTemplates.Count());
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[type]/{nameof(TwoMethodsWithSameNameWithAttributeDiff)}/{nameof(TwoMethodsWithSameNameWithAttributeDiff.Method1)}"));
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[type]/{nameof(TwoMethodsWithSameNameWithAttributeDiff)}/MethodA"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/{nameof(TwoMethodsWithSameNameWithAttributeDiff)}/{nameof(TwoMethodsWithSameNameWithAttributeDiff.Method1)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/{nameof(TwoMethodsWithSameNameWithAttributeDiff)}/MethodA"));
         }
 
         [Test]
@@ -172,32 +172,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.IsNotNull(template);
 
             Assert.AreEqual(2, template.FieldTemplates.Count());
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[type]/{nameof(StructTwoMethodsWithSameNameWithAttributeDiff)}/{nameof(TwoMethodsWithSameNameWithAttributeDiff.Method1)}"));
-            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[type]/{nameof(StructTwoMethodsWithSameNameWithAttributeDiff)}/MethodA"));
-        }
-
-        [Test]
-        public void Parse_Object_OverloadedMethodsWithNameClash_ThrowsException()
-        {
-            var template = new ObjectGraphTypeTemplate(typeof(TwoMethodsWithSameName));
-            template.Parse();
-
-            Assert.Throws<GraphTypeDeclarationException>(() =>
-            {
-                template.ValidateOrThrow();
-            });
-        }
-
-        [Test]
-        public void Parse_Struct_OverloadedMethodsWithNameClash_ThrowsException()
-        {
-            var template = new ObjectGraphTypeTemplate(typeof(StructTwoMethodsWithSameName));
-            template.Parse();
-
-            Assert.Throws<GraphTypeDeclarationException>(() =>
-            {
-                template.ValidateOrThrow();
-            });
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/{nameof(StructTwoMethodsWithSameNameWithAttributeDiff)}/{nameof(TwoMethodsWithSameNameWithAttributeDiff.Method1)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/{nameof(StructTwoMethodsWithSameNameWithAttributeDiff)}/MethodA"));
         }
 
         [Test]
@@ -300,7 +276,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 MetaGraphTypes.IsList);
 
             Assert.AreEqual(1, template.FieldTemplates.Count());
-            var fieldTemplate = template.FieldTemplates.ElementAt(0).Value;
+            var fieldTemplate = template.FieldTemplates.ElementAt(0);
             Assert.AreEqual(typeof(TwoPropertyObject[]), fieldTemplate.DeclaredReturnType);
             Assert.AreEqual(typeof(TwoPropertyObject), fieldTemplate.ObjectType);
             Assert.AreEqual(expectedTypeExpression, fieldTemplate.TypeExpression);
@@ -315,8 +291,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             // Key, Value
             Assert.AreEqual(2, template.FieldTemplates.Count());
-            var fieldTemplate0 = template.FieldTemplates.ElementAt(0).Value;
-            var fieldTemplate1 = template.FieldTemplates.ElementAt(1).Value;
+            var fieldTemplate0 = template.FieldTemplates.ElementAt(0);
+            var fieldTemplate1 = template.FieldTemplates.ElementAt(1);
 
             Assert.AreEqual(typeof(string), fieldTemplate0.DeclaredReturnType);
             Assert.AreEqual(typeof(string), fieldTemplate0.ObjectType);
@@ -334,9 +310,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(3, template.FieldTemplates.Count());
-            var fieldTemplate0 = template.FieldTemplates.ElementAt(0).Value;
-            var fieldTemplate1 = template.FieldTemplates.ElementAt(1).Value;
-            var fieldTemplate2 = template.FieldTemplates.ElementAt(2).Value;
+            var fieldTemplate0 = template.FieldTemplates.ElementAt(0);
+            var fieldTemplate1 = template.FieldTemplates.ElementAt(1);
+            var fieldTemplate2 = template.FieldTemplates.ElementAt(2);
 
             Assert.AreEqual("Property3", fieldTemplate0.Name);
             Assert.AreEqual("Property1", fieldTemplate1.Name);
@@ -395,7 +371,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(1, template.FieldTemplates.Count);
-            Assert.AreEqual(nameof(ObjectWithDeconstructor.Property1), template.FieldTemplates.First().Value.Name);
+            Assert.AreEqual(nameof(ObjectWithDeconstructor.Property1), template.FieldTemplates.First().Name);
         }
 
         [Test]
@@ -406,8 +382,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(2, template.FieldTemplates.Count);
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectThatInheritsExplicitMethodField.FieldOnObject)));
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectWithExplicitMethodField.FieldOnBaseObject)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.InternalName == nameof(ObjectThatInheritsExplicitMethodField.FieldOnObject)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.InternalName == nameof(ObjectWithExplicitMethodField.FieldOnBaseObject)));
         }
 
         [Test]
@@ -418,8 +394,71 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(2, template.FieldTemplates.Count);
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectThatInheritsNonExplicitMethodField.FieldOnObject)));
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Value.InternalName == nameof(ObjectWithNonExplicitMethodField.FieldOnBaseObject)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.InternalName == nameof(ObjectThatInheritsNonExplicitMethodField.FieldOnObject)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.InternalName == nameof(ObjectWithNonExplicitMethodField.FieldOnBaseObject)));
+        }
+
+        [Test]
+        public void Parse_InternalMembers_AreNotTemplated()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithInternalFields));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count());
+
+            var fieldTemplate0 = template.FieldTemplates.ElementAt(0);
+            var fieldTemplate1 = template.FieldTemplates.ElementAt(1);
+
+            // the only public property and method (regardless of field inclusions)
+            Assert.AreEqual("Method3", fieldTemplate0.Name);
+            Assert.AreEqual("Field1", fieldTemplate1.Name);
+        }
+
+        [Test]
+        public void Parse_InternalInheritedMembers_AreNotTemplated()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithInternalInheritedFields));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count());
+
+            var fieldTemplate0 = template.FieldTemplates.ElementAt(0);
+            var fieldTemplate1 = template.FieldTemplates.ElementAt(1);
+
+            // only public property and methods are shown (regardless of field inclusions)
+            Assert.AreEqual("Method3", fieldTemplate0.Name);
+            Assert.AreEqual("Field1", fieldTemplate1.Name);
+        }
+
+        [Test]
+        public void Parse_Struct_WithGraphTypeNameOverride_ParsesCorrectly()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(SimpleScalarStructWithTypeOverride));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.IsNotNull(template);
+            Assert.AreEqual("SomeTypeName", template.Name);
+        }
+
+        [Test]
+        public void Parse_Record_ParsesCorrectly()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectRecord));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count);
+            var field1 = template.FieldTemplates.SingleOrDefault(x => x.Name == "Property1");
+            var field2 = template.FieldTemplates.SingleOrDefault(x => x.Name == "Property2");
+
+            Assert.IsNotNull(field1);
+            Assert.IsNotNull(field2);
+
+            Assert.AreEqual(typeof(int), field1.ObjectType);
+            Assert.AreEqual(typeof(string), field2.ObjectType);
         }
     }
 }

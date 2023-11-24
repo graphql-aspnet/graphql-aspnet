@@ -331,9 +331,9 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNotNull(spected.Fields);
             Assert.AreEqual(3, spected.Fields.Count);
 
-            var expected0 = template.FieldTemplates[$"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Method1)}"];
-            var expected1 = template.FieldTemplates[$"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Method2)}"];
-            var expected2 = template.FieldTemplates[$"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Prop1)}"];
+            var expected0 = template.FieldTemplates.First(x => x.Route.Path == $"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Method1)}");
+            var expected1 = template.FieldTemplates.First(x => x.Route.Path == $"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Method2)}");
+            var expected2 = template.FieldTemplates.First(x => x.Route.Path == $"[type]/{nameof(IntrospectableObject)}/{nameof(IntrospectableObject.Prop1)}");
 
             var field0 = spected.Fields.FirstOrDefault(x => x.Name == nameof(IntrospectableObject.Method1));
             var field1 = spected.Fields.FirstOrDefault(x => x.Name == nameof(IntrospectableObject.Method2));
@@ -2012,6 +2012,192 @@ namespace GraphQL.AspNet.Tests.Execution
             }";
 
             CommonAssertions.AreEqualJsonStrings(expectedResponse, response);
+        }
+
+        [Test]
+        public async Task TypeExtension_ReturnsChildObject_WithCustomName_RendersWithCorrectCustomName()
+        {
+            var server = new TestServerBuilder()
+                .AddController<TypeWithNoCustomNameTypeExtensionController>()
+                .Build();
+
+            var context = server.CreateQueryContextBuilder()
+                .AddQueryText(@"
+                {
+                    __type(name: ""TypeWithNoCustomName"")
+                                    {
+                                        kind
+                                        name
+                                        fields(includeDeprecated: true) {
+                                            name
+                                        }
+                                    }
+                }");
+
+            var response = await server.RenderResult(context);
+
+            var expectedResult = @"
+            {
+              ""data"": {
+                ""__type"": {
+                  ""kind"": ""OBJECT"",
+                  ""name"": ""TypeWithNoCustomName"",
+                  ""fields"": [
+                    {
+                      ""name"": ""field1""
+                    },
+                    {
+                      ""name"": ""fieldTwo""
+                    }
+                  ]
+                }
+              }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResult, response);
+
+            Assert.IsNotNull(server.Schema.KnownTypes.FindGraphType("TypeWithNoCustomName"));
+            Assert.IsNotNull(server.Schema.KnownTypes.FindGraphType("Type_With_Custom_Name"));
+        }
+
+        [Test]
+        public async Task BatchTypeExntesion_ReturnsChildObject_WithCustomName_RendersWithCorrectCustomName()
+        {
+            var server = new TestServerBuilder()
+                .AddController<TypeWithNoCustomNameBatchExtensionController>()
+                .Build();
+
+            var context = server.CreateQueryContextBuilder()
+                .AddQueryText(@"
+                {
+                    __type(name: ""TypeWithNoCustomName"")
+                                    {
+                                        kind
+                                        name
+                                        fields(includeDeprecated: true) {
+                                            name
+                                        }
+                                    }
+                }");
+
+            var response = await server.RenderResult(context);
+
+            var expectedResult = @"
+            {
+              ""data"": {
+                ""__type"": {
+                  ""kind"": ""OBJECT"",
+                  ""name"": ""TypeWithNoCustomName"",
+                  ""fields"": [
+                    {
+                      ""name"": ""field1""
+                    },
+                    {
+                      ""name"": ""fieldTwo""
+                    }
+                  ]
+                }
+              }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResult, response);
+
+            Assert.IsNotNull(server.Schema.KnownTypes.FindGraphType("TypeWithNoCustomName"));
+            Assert.IsNotNull(server.Schema.KnownTypes.FindGraphType("Type_With_Custom_Name"));
+        }
+
+        [Test]
+        public async Task TypeExtension_Type_ThatHasCustomName_AndChildOfSameType_RendersProperly()
+        {
+            var server = new TestServerBuilder()
+                .AddController<TypeWithCustomNameTypeExtensionController>()
+                .Build();
+
+            var context = server.CreateQueryContextBuilder()
+                .AddQueryText(@"
+                {
+                   #custom named
+                    __type(name: ""Type_With_Custom_Name"")
+                                    {
+                                        kind
+                                        name
+                                        fields(includeDeprecated: true) {
+                                            name
+                                        }
+                                    }
+                }");
+
+            var response = await server.RenderResult(context);
+
+            var expectedResult = @"
+            {
+              ""data"": {
+                ""__type"": {
+                  ""kind"": ""OBJECT"",
+                  ""name"": ""Type_With_Custom_Name"",
+                  ""fields"": [
+                    {
+                      ""name"": ""field1""
+                    },
+                    {
+                      ""name"": ""fieldTwo""
+                    },
+                    {
+                      ""name"": ""fieldThree""
+                    }
+                  ]
+                }
+              }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResult, response);
+        }
+
+        [Test]
+        public async Task BatchTypeExtension_Type_ThatHasCustomName_AndChildrenOfSameType_RendersProperly()
+        {
+            var server = new TestServerBuilder()
+                .AddController<TypeWithCustomNameBatchExtensionController>()
+                .Build();
+
+            var context = server.CreateQueryContextBuilder()
+                .AddQueryText(@"
+                {
+                   #custom named
+                    __type(name: ""Type_With_Custom_Name"")
+                                    {
+                                        kind
+                                        name
+                                        fields(includeDeprecated: true) {
+                                            name
+                                        }
+                                    }
+                }");
+
+            var response = await server.RenderResult(context);
+
+            var expectedResult = @"
+            {
+              ""data"": {
+                ""__type"": {
+                  ""kind"": ""OBJECT"",
+                  ""name"": ""Type_With_Custom_Name"",
+                  ""fields"": [
+                    {
+                      ""name"": ""field1""
+                    },
+                    {
+                      ""name"": ""fieldTwo""
+                    },
+                    {
+                      ""name"": ""fieldThree""
+                    }
+                  ]
+                }
+              }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResult, response);
         }
     }
 }

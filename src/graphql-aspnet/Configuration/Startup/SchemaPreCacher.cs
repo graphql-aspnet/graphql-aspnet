@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Configuration.Startup
 
             if (template is IGraphTypeFieldTemplateContainer fieldContainer)
             {
-                foreach (var dependent in fieldContainer.FieldTemplates.Values.SelectMany(x => x.RetrieveRequiredTypes()))
+                foreach (var dependent in fieldContainer.FieldTemplates.SelectMany(x => x.RetrieveRequiredTypes()))
                 {
                     this.PreParseTypeAndChildren(dependent.Type);
                 }

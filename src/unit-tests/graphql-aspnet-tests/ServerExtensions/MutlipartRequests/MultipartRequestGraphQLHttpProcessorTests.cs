@@ -22,7 +22,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.ServerExtensions.MultipartRequests;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Engine.TypeMakers;
@@ -44,7 +43,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     {
         private DateTime _staticFailDate = new DateTime(202, 3, 4, 13, 14, 15, DateTimeKind.Utc);
 
-        private (HttpContext, MultipartRequestGraphQLHttpProcessor<GraphSchema>) CreateTestObjects(
+        private (HttpContext Context, MultipartRequestGraphQLHttpProcessor<GraphSchema> Processor) CreateTestObjects(
             (string FieldName, string FieldValue)[] fields = null,
             (string FieldName, string FileName, string ContentType, string FileContents)[] files = null,
             string httpMethod = "POST",
@@ -80,7 +79,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
 
                     formFile.Headers = new HeaderDictionary();
                     if (item.ContentType != null)
-                        formFile.Headers.Add("Content-Type", item.ContentType);
+                        formFile.Headers.Append("Content-Type", item.ContentType);
 
                     fileCollection.Add(formFile);
                 }

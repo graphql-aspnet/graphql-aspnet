@@ -10,44 +10,33 @@
 namespace GraphQL.AspNet.StarWarsAPI6X
 {
     using System;
-    using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.WebSockets;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
-    public class Startup
+    public static class Program
     {
         private const string ALL_ORIGINS_POLICY = "_allOrigins";
 
         private static readonly TimeSpan SOCKET_CONNECTION_KEEPALIVE = TimeSpan.FromSeconds(10);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Startup"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration.</param>
-        public Startup(IConfiguration configuration)
+        public static void Main(string[] args)
         {
-            this.Configuration = configuration;
-        }
+            var builder = WebApplication.CreateBuilder(args);
 
-        /// <summary>
-        /// Configures the service collection to be built for this application instance.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<StarWarsDataRepository>();
-            services.AddScoped<IStarWarsDataService, StarWarsDataService>();
+            // Add various required services
+            // ----------------------------------------------
+            builder.Services.AddAuthorization();
+            builder.Services.AddSingleton<StarWarsDataRepository>();
+            builder.Services.AddScoped<IStarWarsDataService, StarWarsDataService>();
 
             // apply an unrestricted cors policy for the demo services
             // to allow use on many of the tools for testing (graphiql, altair etc.)
             // Do not do this in production
-            services.AddCors(options =>
+            builder.Services.AddCors(options =>
             {
                 options.AddPolicy(
                     ALL_ORIGINS_POLICY,
@@ -72,7 +61,7 @@ namespace GraphQL.AspNet.StarWarsAPI6X
             // as a single unit
             //
             // we then add subscription services to the schema builder returned from .AddGraphQL()
-            services.AddGraphQL(options =>
+            builder.Services.AddGraphQL(options =>
             {
                 options.ResponseOptions.ExposeExceptions = true;
                 options.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Information;
@@ -102,11 +91,13 @@ namespace GraphQL.AspNet.StarWarsAPI6X
                  options.ConnectionKeepAliveInterval = SOCKET_CONNECTION_KEEPALIVE;
              });
 
-            services.AddControllers();
-
+            // if you have rest controllers this item be sure they are included.
+            // Graphql and rest can live side by side in the same project without issue
+            // --------------------------------------------------
+            // builder.Services.AddControllers();
 
             // ASP.NET websockets implementation must also be added to the runtime
-            services.AddWebSockets((options) =>
+            builder.Services.AddWebSockets((options) =>
             {
                 // here add some common origins of various tools that may be
                 // used for running this demo
@@ -121,23 +112,14 @@ namespace GraphQL.AspNet.StarWarsAPI6X
                 // do not add these in a production app
                 options.AllowedOrigins.Add("file://");
                 options.AllowedOrigins.Add("ws://");
-
             });
-        }
 
-        /// <summary>
-        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        /// </summary>
-        /// <param name="app">The asp.net application builder.</param>
-        /// <param name="env">The configured host environment.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
             app.AddStarWarsStartedMessageToConsole();
-
             app.UseRouting();
-
             app.UseCors(ALL_ORIGINS_POLICY);
-
             app.UseAuthorization();
 
             // enable web sockets on this server instance
@@ -147,10 +129,11 @@ namespace GraphQL.AspNet.StarWarsAPI6X
 
             // if you have no rest controllers this item can be safely skipped
             // graphql and rest can live side by side in the same project without issue
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            // -----------------------------------------------------------------
+            // app.UseEndpoints(endpoints =>
+            // {
+            //    endpoints.MapControllers();
+            // });
 
             // ************************************************************
             // Finalize the graphql setup by loading the schema, build out the templates for all found graph types
@@ -161,12 +144,7 @@ namespace GraphQL.AspNet.StarWarsAPI6X
             // before your application starts listening for requests.
             // ************************************************************
             app.UseGraphQL();
+            app.Run();
         }
-
-        /// <summary>
-        /// Gets the configuration.
-        /// </summary>
-        /// <value>The configuration.</value>
-        public IConfiguration Configuration { get; }
     }
 }

@@ -375,8 +375,7 @@ namespace GraphQL.AspNet.Tests.Framework
             }
 
             var fieldTemplate = fieldContainer.FieldTemplates
-                .SingleOrDefault(x => string.Compare(x.Value.Name, fieldName, StringComparison.OrdinalIgnoreCase) == 0)
-                .Value;
+                .SingleOrDefault(x => string.Compare(x.Name, fieldName, StringComparison.OrdinalIgnoreCase) == 0);
 
             if (fieldTemplate == null)
             {

@@ -25,6 +25,15 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         ITestAuthorizationBuilder DisableAuthorization();
 
         /// <summary>
+        /// Force updates the <see cref="IAuthorizationService"/> served via DI
+        /// to the provided instance for all requests. This method has no effect if
+        /// <see cref="DisableAuthorization"/> is called.
+        /// </summary>
+        /// <param name="newService">The new authorization service to use.</param>
+        /// <returns>ITestAuthorizationBuilder.</returns>
+        ITestAuthorizationBuilder ReplaceAuthorizationService(IAuthorizationService newService);
+
+        /// <summary>
         /// Adds a simple new policy to the service based on a list of roles. When enforcing this policy
         /// the authorization service will require an authenticated user and
         /// check to see if the user belongs to any role in the list.
