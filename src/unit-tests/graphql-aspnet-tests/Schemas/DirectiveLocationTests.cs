@@ -19,33 +19,33 @@ namespace GraphQL.AspNet.Tests.Schemas
     [TestFixture]
     public class DirectiveLocationTests
     {
-        private static List<object[]> _schemaItemToLocationSource;
+        public static List<object[]> _schemaItemToLocationSource;
 
         static DirectiveLocationTests()
         {
             _schemaItemToLocationSource = new List<object[]>();
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<ISchema>(), DirectiveLocation.SCHEMA });
+                [typeof(ISchema), DirectiveLocation.SCHEMA]);
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<IScalarGraphType>(), DirectiveLocation.SCALAR });
+                [typeof(IScalarGraphType), DirectiveLocation.SCALAR]);
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<IObjectGraphType>(), DirectiveLocation.OBJECT });
+                [typeof(IObjectGraphType), DirectiveLocation.OBJECT]);
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<IGraphField>(), DirectiveLocation.FIELD_DEFINITION });
+                [typeof(IGraphField), DirectiveLocation.FIELD_DEFINITION]);
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<IGraphArgument>(), DirectiveLocation.ARGUMENT_DEFINITION });
+                [typeof(IGraphArgument), DirectiveLocation.ARGUMENT_DEFINITION]);
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<IInterfaceGraphType>(), DirectiveLocation.INTERFACE });
+                [typeof(IInterfaceGraphType), DirectiveLocation.INTERFACE]);
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<IUnionGraphType>(), DirectiveLocation.UNION });
+                [typeof(IUnionGraphType), DirectiveLocation.UNION]);
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<IEnumGraphType>(), DirectiveLocation.ENUM });
+                [typeof(IEnumGraphType), DirectiveLocation.ENUM]);
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<IEnumValue>(), DirectiveLocation.ENUM_VALUE });
+                [typeof(IEnumValue), DirectiveLocation.ENUM_VALUE]);
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<IInputObjectGraphType>(), DirectiveLocation.INPUT_OBJECT });
+                [typeof(IInputObjectGraphType), DirectiveLocation.INPUT_OBJECT]);
             _schemaItemToLocationSource.Add(
-                new object[] { Substitute.For<IInputGraphField>(), DirectiveLocation.INPUT_FIELD_DEFINITION });
+                [typeof(IInputGraphField), DirectiveLocation.INPUT_FIELD_DEFINITION]);
         }
 
         [Test]
@@ -122,8 +122,9 @@ namespace GraphQL.AspNet.Tests.Schemas
         }
 
         [TestCaseSource(nameof(_schemaItemToLocationSource))]
-        public void AsDirectiveLocation(ISchemaItem testItem, DirectiveLocation expectedLocation)
+        public void AsDirectiveLocation(Type schemaItemType, DirectiveLocation expectedLocation)
         {
+            var testItem = Substitute.For([schemaItemType], []) as ISchemaItem;
             var result = testItem.AsDirectiveLocation();
             Assert.AreEqual(expectedLocation, result);
         }
