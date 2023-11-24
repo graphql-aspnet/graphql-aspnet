@@ -119,7 +119,10 @@ namespace GraphQL.AspNet.StarWarsAPI7X
                  options.ConnectionKeepAliveInterval = SOCKET_CONNECTION_KEEPALIVE;
              });
 
-            services.AddControllers();
+            // if you have rest controllers this item be sure they are included.
+            // Graphql and rest can live side by side in the same project without issue
+            // --------------------------------------------------
+            // builder.Services.AddControllers();
         }
 
         /// <summary>
@@ -144,10 +147,10 @@ namespace GraphQL.AspNet.StarWarsAPI7X
 
             // if you have no rest controllers this item can be safely skipped
             // graphql and rest can live side by side in the same project without issue
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            // app.UseEndpoints(endpoints =>
+            // {
+            //    endpoints.MapControllers();
+            // });
 
             // ************************************************************
             // Finalize the graphql setup:
