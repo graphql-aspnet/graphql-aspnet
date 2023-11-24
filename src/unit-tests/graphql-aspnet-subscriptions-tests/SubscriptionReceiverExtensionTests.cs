@@ -40,9 +40,9 @@ namespace GraphQL.AspNet.Tests
     public class SubscriptionReceiverExtensionTests
     {
         private (
-            ISchemaBuilder<GraphSchema>,
-            ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>,
-            ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>)
+            ISchemaBuilder<GraphSchema> SchemaBuilder,
+            ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext> QueryPipelineBuilder,
+            ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext> FieldPipelineBuilder)
             CreateSchemaBuilderMock(SchemaOptions<GraphSchema> options)
         {
             var queryPipeline = Substitute.For<ISchemaPipelineBuilder<GraphSchema, IGraphQLMiddlewareComponent<QueryExecutionContext>, QueryExecutionContext>>();

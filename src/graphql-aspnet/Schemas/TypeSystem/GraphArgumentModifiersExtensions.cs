@@ -77,7 +77,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns><c>true</c> if the modifier indicate the argument is to be resolved from a DI continer; otherwise, <c>false</c>.</returns>
         public static bool IsInjected(this GraphArgumentModifiers modifier)
         {
-            return modifier == GraphArgumentModifiers.ExplicitInjected;
+            return modifier == GraphArgumentModifiers.ExplicitInjected ||
+                modifier == GraphArgumentModifiers.ImplicitInjected;
         }
 
         /// <summary>

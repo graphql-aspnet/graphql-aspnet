@@ -34,7 +34,9 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// on the integrity of itself. An exception should be thrown to stop the template from being
         /// persisted if the object is unusable or otherwise invalid in the manner its been built.
         /// </summary>
-        void ValidateOrThrow();
+        /// <param name="validateChildren">if set to <c>true</c> any child items (e.g. fields on an interface, arguments on a field)
+        /// are also validated.</param>
+        void ValidateOrThrow(bool validateChildren = true);
 
         /// <summary>
         /// Parses the template contents according to the rules of the template.

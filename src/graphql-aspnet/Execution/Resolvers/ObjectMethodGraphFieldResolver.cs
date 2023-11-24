@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A field resolver that will invoke a schema pipeline for whatever schema is beng processed
@@ -71,8 +72,29 @@ namespace GraphQL.AspNet.Execution.Resolvers
                 return;
             }
 
+            var isolationObtained = false;
+            IGraphQLFieldResolverIsolationManager isolationManager = null;
+
             try
             {
+                isolationManager = context
+                    .ServiceProvider?
+                    .GetService<IGraphQLFieldResolverIsolationManager>();
+
+                if (isolationManager == null)
+                {
+                    throw new GraphExecutionException(
+                        $"No {nameof(IGraphQLFieldResolverIsolationManager)} was configured for the request. " +
+                        $"Unable to determine the isolation requirements for the resolver of field '{context.Request.InvocationContext.Field.Route.Path}'");
+                }
+
+                var shouldIsolate = isolationManager.ShouldIsolate(context.Schema, context.Request.Field.FieldSource);
+                if (shouldIsolate)
+                {
+                    await isolationManager.WaitAsync();
+                    isolationObtained = true;
+                }
+
                 object data = null;
 
                 var paramSet = context.ExecutionSuppliedArguments.PrepareArguments(this.MetaData);
@@ -110,6 +132,11 @@ namespace GraphQL.AspNet.Execution.Resolvers
                     Constants.ErrorCodes.UNHANDLED_EXCEPTION,
                     context.Request.Origin,
                     ex);
+            }
+            finally
+            {
+                if (isolationObtained)
+                    isolationManager.Release();
             }
         }
 

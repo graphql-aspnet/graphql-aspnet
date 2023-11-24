@@ -49,22 +49,6 @@ namespace GraphQL.AspNet.SubscriptionServer
         {
             _primaryOptions = options;
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);
-
-            // swap out the master providers for the ones that includes
-            // support for the subscription action type
-
-            // swap out the master templating provider for the schema to one that includes
-            // support for the subscription action type
          }
-
-        /// <summary>
-        /// Invokes this instance to perform any final setup requirements as part of
-        /// its configuration during startup.
-        /// </summary>
-        /// <param name="app">The application builder, no middleware will be registered if not supplied.</param>
-        /// <param name="serviceProvider">The service provider to use.</param>
-        public void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null)
-        {
-        }
     }
 }

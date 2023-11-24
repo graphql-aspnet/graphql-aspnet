@@ -11,8 +11,10 @@ namespace GraphQL.AspNet.Engine
 {
     using System;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -66,7 +68,40 @@ namespace GraphQL.AspNet.Engine
         protected virtual void EnsureGraphType(Type type, TypeKind? typeKind = null)
         {
             Validation.ThrowIfNull(type, nameof(type));
+            try
+            {
+                this.EnsureGraphTypeInternal(type, typeKind);
+            }
+            catch (GraphTypeDeclarationException ex)
+            {
+                if (ex.FailedObjectType == type)
+                    throw;
 
+                // wrap a thrown exception to be nested within this type that was being parsed
+                throw new GraphTypeDeclarationException(
+                    $"An error occured while trying to add a dependent of '{type.FriendlyName()}' " +
+                    $"to the target schema. See inner exception for details.",
+                    type,
+                    ex);
+            }
+        }
+
+        /// <summary>
+        /// A method where <see cref="EnsureGraphType(Type, TypeKind?)"/> performs its actual work.
+        /// Seperated to allow exceptions to be trapped and bubbled correctly.
+        /// </summary>
+        /// <param name="type">The type to ensure exists in the graph.</param>
+        /// <param name="typeKind">The type kind to add the provided <paramref name="type"/>
+        /// as. If the provided type can only be matched to one type kind (such as enums), this
+        /// value is ignored.
+        /// </param>
+        ///
+        /// <remarks>
+        /// <paramref name="typeKind"/> is required to differentiate OBJECT from INPUT_OBJECT registrations
+        /// for explicit type inclusions.
+        /// </remarks>
+        protected virtual void EnsureGraphTypeInternal(Type type, TypeKind? typeKind = null)
+        {
             type = GraphValidation.EliminateWrappersFromCoreType(type);
 
             // if the type is already registered, early exit no point in running it through again

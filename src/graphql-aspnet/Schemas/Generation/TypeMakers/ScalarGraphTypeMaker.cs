@@ -38,10 +38,13 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         /// <inheritdoc />
         public GraphTypeCreationResult CreateGraphType(IGraphTypeTemplate typeTemplate)
         {
-            if (!(typeTemplate is IScalarGraphTypeTemplate scalarTemplate))
+            if (!(typeTemplate is IScalarGraphTypeTemplate template))
                 return null;
 
-            var scalarType = GlobalTypes.CreateScalarInstanceOrThrow(scalarTemplate.ScalarType);
+            template.Parse();
+            template.ValidateOrThrow(false);
+
+            var scalarType = GlobalTypes.CreateScalarInstanceOrThrow(template.ScalarType);
             scalarType = scalarType.Clone(_config.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(scalarType.Name));
 
             var result = new GraphTypeCreationResult()

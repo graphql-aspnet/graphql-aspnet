@@ -41,6 +41,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         private HashSet<GraphArgumentModifiers> _foundModifiers;
         private GraphSkipAttribute _argSkipDeclaration;
         private GraphSkipAttribute _argTypeSkipDeclaration;
+        private bool _isParsed = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphArgumentTemplate" /> class.
@@ -62,6 +63,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <inheritdoc />
         public virtual void Parse()
         {
+            if (_isParsed)
+                return;
+
+            _isParsed = true;
             this.DeclaredArgumentType = this.Parameter.ParameterType;
             this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.Parameter.ParameterType);
             this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();
@@ -81,12 +86,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             if (string.IsNullOrWhiteSpace(name))
                 name = Constants.Routing.PARAMETER_META_NAME;
-
-            // determine if the user has explicitly said this is
-            // to be consumed from a DI container
-            var fromServicesAttrib = this.Parameter.SingleAttributeOfTypeOrDefault<FromServicesAttribute>();
-            if (fromServicesAttrib != null)
-                _foundModifiers.Add(GraphArgumentModifiers.ExplicitInjected);
 
             name = name.Replace(Constants.Routing.PARAMETER_META_NAME, this.Parameter.Name);
             this.Route = new GraphArgumentFieldPath(this.Parent.Route, name);
@@ -134,6 +133,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.TypeExpression = GraphTypeExpression.FromType(this.DeclaredArgumentType, this.DeclaredTypeWrappers);
             this.TypeExpression = this.TypeExpression.CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
+            // perform any inspections and logic to determine
+            // how this argument performs within the application.
+            var fromServicesAttrib = this.Parameter.SingleAttributeOfTypeOrDefault<FromServicesAttribute>();
+            if (fromServicesAttrib != null)
+                _foundModifiers.Add(GraphArgumentModifiers.ExplicitInjected);
+
             if (this.IsSourceDataArgument())
                 _foundModifiers.Add(GraphArgumentModifiers.ParentFieldResult);
 
@@ -146,7 +151,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (this.IsHttpContext())
                 _foundModifiers.Add(GraphArgumentModifiers.HttpContext);
 
-            if (_foundModifiers.Count == 1)
+            if (this.MustBeInjected() && _foundModifiers.Count == 0)
+                _foundModifiers.Add(GraphArgumentModifiers.ImplicitInjected);
+
+            if (_foundModifiers.Count > 0)
                 this.ArgumentModifier = _foundModifiers.First();
 
             _argSkipDeclaration = this.AttributeProvider.FirstAttributeOfTypeOrDefault<GraphSkipAttribute>();
@@ -230,6 +238,25 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <summary>
+        /// Determines if this argument represents a value that MUST
+        /// be injected because it doesn't conform to the specification rules
+        /// for graphql arguments.
+        /// </summary>
+        /// <returns><c>true</c> if this argument must be injected, <c>false</c> otherwise.</returns>
+        protected virtual bool MustBeInjected()
+        {
+            // interfaces are not allowed as arguments to a field
+            // therefore they must be injected
+            if (this.ObjectType.IsInterface)
+                return true;
+
+            if (!GraphValidation.IsValidGraphType(this.ObjectType))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
         /// Retrieves the concrete types that this instance may return or make use of in a graph query.
         /// </summary>
         /// <returns>IEnumerable&lt;Type&gt;.</returns>
@@ -259,7 +286,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public void ValidateOrThrow()
+        public void ValidateOrThrow(bool validateChildren = true)
         {
             if (string.IsNullOrWhiteSpace(this.InternalName))
             {
@@ -292,8 +319,26 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     $".NET parameter. (Declared '{this.TypeExpression}' is incompatiable with '{actualTypeExpression}') ");
             }
 
-            // the most common scenario, throw an exception with explicit text
-            // on how to fix it
+            if (_foundModifiers.Contains(GraphArgumentModifiers.ExplicitSchemaItem))
+            {
+                if (this.ObjectType.IsInterface)
+                {
+                    // special error message for trying to use an interface in an argument
+                    throw new GraphTypeDeclarationException(
+                        $"The item '{this.Parent.InternalName}' declares an explicit argument '{this.Name}' of type  '{this.ObjectType.FriendlyName()}' " +
+                        $"which is an interface. Interfaces cannot be used as input arguments to any graph type or directive.");
+                }
+
+                if (!GraphValidation.IsValidGraphType(this.ObjectType))
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The item '{this.Parent.InternalName}' declares an argument '{this.Name}' of type  '{this.ObjectType.FriendlyName()}' " +
+                        $"which is not a valid graph type.");
+                }
+            }
+
+            // the most common scenario for multiple arg modifiers,
+            // throw an exception with explicit text on how to fix it
             if (_foundModifiers.Contains(GraphArgumentModifiers.ExplicitInjected)
                 && _foundModifiers.Contains(GraphArgumentModifiers.ExplicitSchemaItem))
             {
@@ -302,6 +347,16 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                        $"is defined to be supplied from a graphql query AND from a DI services container. " +
                        $"An argument can not be supplied from a graphql query and from a DI container. If declaring argument attributes, supply " +
                        $"{nameof(FromGraphQLAttribute)} or {nameof(FromServicesAttribute)}, but not both.");
+            }
+
+            if (_foundModifiers.Contains(GraphArgumentModifiers.ImplicitInjected)
+              && _foundModifiers.Contains(GraphArgumentModifiers.ExplicitSchemaItem))
+            {
+                throw new GraphTypeDeclarationException(
+                       $"The item '{this.Parent.InternalName}' declares a parameter '{this.Name}' that " +
+                       $"is defined to be supplied from a graphql query. However, the parameter definition " +
+                       $"inidcates that it could never be part of a schema and must be resolved from a DI services container. " +
+                       $"Remove the explicit {nameof(FromGraphQLAttribute)} declaration or change the parameter type.");
             }
 
             if (_foundModifiers.Count > 1)

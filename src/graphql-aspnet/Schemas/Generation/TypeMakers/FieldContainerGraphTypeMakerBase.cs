@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             // gather the fields to include in the graph type
             var requiredDeclarations = template.DeclarationRequirements ?? _config.DeclarationOptions.FieldDeclarationRequirements;
 
-            return template.FieldTemplates.Values.Where(x =>
+            return template.FieldTemplates.Where(x =>
             {
                 if (x.IsExplicitDeclaration)
                     return true;

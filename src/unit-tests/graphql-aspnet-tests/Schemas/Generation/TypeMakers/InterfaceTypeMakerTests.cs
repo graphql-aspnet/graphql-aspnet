@@ -11,10 +11,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 {
     using System.Linq;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers.TestData;
     using NUnit.Framework;
@@ -149,6 +151,18 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             // inherited and declared method field should not be counted
             Assert.IsNotNull(objectType);
             Assert.AreEqual("Interface_Internal_Name", objectType.InternalName);
+        }
+
+        [Test]
+        public void CreateGraphType_WithNoFields_ThrowsError()
+        {
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var result = this.MakeGraphType(
+                    typeof(IInterfaceWithNoFields),
+                    TypeKind.INTERFACE,
+                    TemplateDeclarationRequirements.None);
+            });
         }
     }
 }

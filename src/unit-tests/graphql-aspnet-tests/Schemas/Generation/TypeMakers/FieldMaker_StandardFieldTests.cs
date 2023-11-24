@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             Assert.AreEqual(1, template.FieldTemplates.Count);
 
-            var field = template.FieldTemplates.FirstOrDefault().Value;
+            var field = template.FieldTemplates.FirstOrDefault();
             Assert.AreEqual(nameof(NullableEnumController.ConvertUnit), field.Name);
             Assert.AreEqual(typeof(int), field.ObjectType);
 
@@ -260,20 +260,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             false)]
         [TestCase(
             SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
-            nameof(ObjectWithAttributedFieldArguments.FieldWithExplicitSchemArg),
-            true)]
-        [TestCase(
-            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
-            nameof(ObjectWithAttributedFieldArguments.FieldWithExplicitSchemArg),
-            true)]
-        [TestCase(
-            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
-            nameof(ObjectWithAttributedFieldArguments.FieldWithExplicitSchemArg),
-            true)]
-        [TestCase(
-            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
             nameof(ObjectWithAttributedFieldArguments.FieldWithImplicitArgThatShouldBeServiceInjected),
-            true)]
+            false)]
         [TestCase(
             SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
             nameof(ObjectWithAttributedFieldArguments.FieldWithImplicitArgThatShouldBeServiceInjected),

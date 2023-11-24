@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             var sourceItemLookup = this.MapExpectedConcreteTypeFromSourceItem(allSourceItems, graphType);
 
             // all the child field contexts that need to execute
-            var executableChildContexts = new SortedFieldExecutionContextList();
+            var executableChildContexts = new List<GraphFieldExecutionContext>();
 
             for (var i = 0; i < context.InvocationContext.ChildContexts.Count; i++)
             {
@@ -168,46 +168,18 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 // Step 3
                 // --------------------
                 // Stage the contexts to be executed
-                foreach (var childToExecute in orderedContexts)
-                {
-                    executableChildContexts.Add(
-                        childToExecute,
-                        _resolversToIsolate.ShouldIsolateFieldSource(childToExecute.Field.FieldSource));
-                }
+                executableChildContexts.AddRange(orderedContexts);
             }
 
             var allChildPipelines = new List<Task>(executableChildContexts.Count);
 
             // Step 4
             // ---------------------------------
-            // Execute all the child contexts. Isolating those that need to be
-            // and executing them first through to completion
-            foreach (var isolatedChildContext in executableChildContexts.IsolatedContexts)
+            // Execute all the child contexts. Order doesn't matter
+            foreach (var isolatedChildContext in executableChildContexts)
             {
                 var task = this.ExecuteChildContextAsync(context, isolatedChildContext, cancelToken);
                 allChildPipelines.Add(task);
-
-                if (_debugMode)
-                {
-                    await task.ConfigureAwait(false);
-                }
-                else
-                {
-                    // await the isolated task to prevent any potential paralellization
-                    // by the task system but not in such a way that a faulted task would
-                    // throw an execution. Allow the results (exceptions included) to be
-                    // captured by CaptureChildFieldExecutionResults
-                    await Task.WhenAll(task);
-                }
-            }
-
-            foreach (var paralellChildContext in executableChildContexts.ParalellContexts)
-            {
-                var task = this.ExecuteChildContextAsync(context, paralellChildContext, cancelToken);
-                allChildPipelines.Add(task);
-
-                if (_debugMode)
-                    await task.ConfigureAwait(false);
             }
 
             await Task.WhenAll(allChildPipelines).ConfigureAwait(false);

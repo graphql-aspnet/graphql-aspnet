@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ObjectTypeTests;
     using NUnit.Framework;
@@ -383,6 +384,24 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.AreEqual("InputObjectWithName_33", template.InternalName);
+        }
+
+        [Test]
+        public void Parse_OnRecord_YieldsTemplate()
+        {
+            var template = new InputObjectGraphTypeTemplate(typeof(InputRecord));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count);
+            var field1 = template.FieldTemplates.SingleOrDefault(x => x.Value.Name == "Property1").Value;
+            var field2 = template.FieldTemplates.SingleOrDefault(x => x.Value.Name == "Property2").Value;
+
+            Assert.IsNotNull(field1);
+            Assert.IsNotNull(field2);
+
+            Assert.AreEqual(typeof(int), field1.ObjectType);
+            Assert.AreEqual(typeof(string), field2.ObjectType);
         }
     }
 }

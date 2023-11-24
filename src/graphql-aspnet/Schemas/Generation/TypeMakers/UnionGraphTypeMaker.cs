@@ -49,6 +49,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             if (!(typeTemplate is IUnionGraphTypeTemplate template))
                 return null;
 
+            template.Parse();
+            template.ValidateOrThrow(false);
+
             var proxy = GlobalTypes.CreateUnionProxyFromType(template.ProxyType);
             return this.CreateUnionFromProxy(proxy);
         }

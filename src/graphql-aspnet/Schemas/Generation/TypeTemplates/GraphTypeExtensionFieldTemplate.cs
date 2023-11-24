@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
             if (_typeAttrib == null)
             {
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                         this.ObjectType);
             }
 
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
         }
 
         /// <inheritdoc />

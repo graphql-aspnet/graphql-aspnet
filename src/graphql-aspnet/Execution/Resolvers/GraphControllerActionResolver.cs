@@ -17,8 +17,10 @@ namespace GraphQL.AspNet.Execution.Resolvers
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A special resolver specifically for actions on a <see cref="GraphController"/>. Provides extra
@@ -40,6 +42,9 @@ namespace GraphQL.AspNet.Execution.Resolvers
         public async Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default)
         {
             IGraphActionResult result;
+            var isolationObtained = false;
+            IGraphQLFieldResolverIsolationManager isolationManager = null;
+
             try
             {
                 // create a scoped controller instance for this invocation
@@ -47,14 +52,31 @@ namespace GraphQL.AspNet.Execution.Resolvers
                     .ServiceProvider?
                     .GetService(this.MetaData.ParentObjectType) as GraphController;
 
+                isolationManager = context
+                    .ServiceProvider?
+                    .GetService<IGraphQLFieldResolverIsolationManager>();
+
                 if (controller == null)
                 {
                     result = new RouteNotFoundGraphActionResult(
                         $"The controller assigned to process the field '{context.Request.InvocationContext.Field.Route.Path}' " +
                         "was not found.");
                 }
+                else if (isolationManager == null)
+                {
+                    throw new GraphExecutionException(
+                        $"No {nameof(IGraphQLFieldResolverIsolationManager)} was configured for the request. " +
+                        $"Unable to determine the isolation requirements for the resolver of field '{context.Request.InvocationContext.Field.Route.Path}'");
+                }
                 else
                 {
+                    var shouldIsolate = isolationManager.ShouldIsolate(context.Schema, context.Request.Field.FieldSource);
+                    if (shouldIsolate)
+                    {
+                        await isolationManager.WaitAsync();
+                        isolationObtained = true;
+                    }
+
                     // invoke the right action method and set a result.
                     var task = controller.InvokeActionAsync(this.MetaData, context);
                     var returnedItem = await task.ConfigureAwait(false);
@@ -65,6 +87,11 @@ namespace GraphQL.AspNet.Execution.Resolvers
             {
                 // :(
                 result = new InternalServerErrorGraphActionResult("Operation failed.", ex);
+            }
+            finally
+            {
+                if (isolationObtained)
+                    isolationManager.Release();
             }
 
             // resolve the final graph action output using the provided field context

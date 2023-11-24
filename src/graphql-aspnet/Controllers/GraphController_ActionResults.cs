@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Controllers
         /// </summary>
         /// <param name="message">The message indicating what was not found.</param>
         /// <returns>IGraphActionResult.</returns>
-        protected virtual IGraphActionResult NotFound(string message)
+        protected virtual IGraphActionResult NotFound(string message = null)
         {
             return GraphActionResult.NotFound(message);
         }

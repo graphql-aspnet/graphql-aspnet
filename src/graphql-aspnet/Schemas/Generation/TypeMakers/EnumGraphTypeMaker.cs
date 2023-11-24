@@ -43,6 +43,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             if (!(typeTemplate is IEnumGraphTypeTemplate template))
                 return null;
 
+            template.Parse();
+            template.ValidateOrThrow(false);
+
             var requirements = template.DeclarationRequirements ?? _config.DeclarationOptions.FieldDeclarationRequirements;
 
             // enum level directives
@@ -72,6 +75,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             var enumValuesToInclude = template.Values.Where(value => requirements.AllowImplicitEnumValues() || value.IsExplicitDeclaration);
             foreach (var value in enumValuesToInclude)
             {
+                value.Parse();
+                value.ValidateOrThrow(false);
+
                 // enum option directives
                 var valueDirectives = value.CreateAppliedDirectives();
 

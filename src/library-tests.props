@@ -1,0 +1,27 @@
+<!-- Common property settings for 1st-party production libraries -->
+<Project>
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net7.0;net6.0;</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;IDE0019;IDE0017;RCS1146;RCS1194;</NoWarn>
+    <RootNamespace>GraphQL.AspNet.Tests</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)\stylecop.json" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\styles.ruleset</CodeAnalysisRuleSet>
+</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507" PrivateAssets="All" />
+    <PackageReference Include="nunit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.3.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+  </ItemGroup>
+</Project>

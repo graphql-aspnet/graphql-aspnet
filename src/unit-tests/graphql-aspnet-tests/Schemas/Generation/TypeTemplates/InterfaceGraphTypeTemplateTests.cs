@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
+    using GraphQL.AspNet.Tests.Internal.Templating.InterfaceTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.InterfaceTestData;
     using NUnit.Framework;
@@ -33,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual("[type]/ISimpleInterface", template.Route.Path);
             Assert.AreEqual(null, template.Description);
             Assert.AreEqual(typeof(ISimpleInterface), template.ObjectType);
-            Assert.AreEqual(2, Enumerable.Count<KeyValuePair<string, IGraphFieldTemplate>>(template.FieldTemplates));
+            Assert.AreEqual(2, Enumerable.Count<IGraphFieldTemplate>(template.FieldTemplates));
         }
 
         [Test]
@@ -88,8 +89,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             // PropFieldOnInterface, MethodFieldOnInterface
             // base items are ignored
             Assert.AreEqual(2, template.FieldTemplates.Count);
-            Assert.IsTrue(Enumerable.Any<KeyValuePair<string, IGraphFieldTemplate>>(template.FieldTemplates, x => string.Equals(x.Value.Name, nameof(InterfaceThatInheritsUndeclaredMethodField.PropFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
-            Assert.IsTrue(Enumerable.Any<KeyValuePair<string, IGraphFieldTemplate>>(template.FieldTemplates, x => string.Equals(x.Value.Name, nameof(InterfaceThatInheritsUndeclaredMethodField.MethodFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsUndeclaredMethodField.PropFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsUndeclaredMethodField.MethodFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
             Assert.AreEqual(1, Enumerable.Count<Type>(template.DeclaredInterfaces));
             Assert.IsTrue(Enumerable.Contains(template.DeclaredInterfaces, typeof(InterfaceWithUndeclaredInterfaceField)));
         }
@@ -102,8 +103,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.AreEqual(2, template.FieldTemplates.Count);
-            Assert.IsTrue(Enumerable.Any<KeyValuePair<string, IGraphFieldTemplate>>(template.FieldTemplates, x => string.Equals(x.Value.Name, nameof(InterfaceThatInheritsDeclaredMethodField.PropFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
-            Assert.IsTrue(Enumerable.Any<KeyValuePair<string, IGraphFieldTemplate>>(template.FieldTemplates, x => string.Equals(x.Value.Name, nameof(InterfaceThatInheritsDeclaredMethodField.MethodFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsDeclaredMethodField.PropFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
+            Assert.IsTrue(template.FieldTemplates.Any(x => string.Equals(x.Name, nameof(InterfaceThatInheritsDeclaredMethodField.MethodFieldOnInterface), System.StringComparison.OrdinalIgnoreCase)));
 
             Assert.AreEqual(1, Enumerable.Count<Type>(template.DeclaredInterfaces));
             Assert.IsTrue(Enumerable.Contains(template.DeclaredInterfaces, typeof(InterfaceWithDeclaredInterfaceField)));
@@ -117,6 +118,17 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.AreEqual("MyInterface_32", template.InternalName);
+        }
+
+        [Test]
+        public void Parse_InterfaceWithMethodOverloads_ShouldParseBothAndNotFail()
+        {
+            var template = new InterfaceGraphTypeTemplate(typeof(IInterfaceWithOverloads));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.FieldTemplates.Count);
+            Assert.IsTrue(template.FieldTemplates.All(x => x.Name == nameof(IInterfaceWithOverloads.Method1)));
         }
     }
 }

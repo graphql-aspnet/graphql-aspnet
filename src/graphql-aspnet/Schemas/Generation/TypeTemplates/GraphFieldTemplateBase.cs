@@ -182,9 +182,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
 
             if (_invalidTypeExpression)
             {
@@ -248,6 +248,16 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     "declared return type for the field. GraphQL requires the type information be known " +
                     $"to setup the schema and client tooling properly. If this field returns a '{nameof(IGraphActionResult)}' you must " +
                     "provide a graph field declaration attribute and add at least one type; be that a concrete type, an interface or a union.");
+            }
+            else
+            {
+                // when not a union proxy the return type of the field matters and must be valid
+                if (!GraphValidation.IsValidGraphType(this.ObjectType))
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The field  '{this.InternalName}' defines a a return type of {this.ObjectType.FriendlyName()}, which is cannot a be used as a graph type. " +
+                        $"Change the return type and try again.");
+                }
             }
 
             // regardless of being a union or not there must always at least one possible return type
@@ -316,9 +326,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 }
             }
 
-            // general validation of any declaraed parameter for this field
-            foreach (var argument in this.Arguments)
-                argument.ValidateOrThrow();
+            if (validateChildren)
+            {
+                // general validation of any declaraed parameter for this field
+                foreach (var argument in this.Arguments)
+                    argument.ValidateOrThrow(validateChildren);
+            }
 
             if (this.Complexity.HasValue && this.Complexity < 0)
             {

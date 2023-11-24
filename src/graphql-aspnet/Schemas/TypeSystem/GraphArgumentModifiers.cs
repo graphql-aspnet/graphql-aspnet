@@ -38,11 +38,20 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         CancellationToken,
 
         /// <summary>
-        /// This parameter is declared to be resolved via dependency injection. It will NEVER be exposed
+        /// This parameter is declared, in developer source code, to be resolved via dependency injection. It will NEVER be exposed
         /// on the object graph. If the type represented by this parameter is not servable via a scoped <see cref="IServiceProvider"/>
         /// instance, an exception will occur and the target query will not be resolved.
         /// </summary>
         ExplicitInjected,
+
+        /// <summary>
+        /// This parameter does not conform to the requirements of a graphql
+        /// argument (e.g. interfaces) and therefore must be resolved via dependency injection even
+        /// though it was not explicitly declared as such. It will NEVER be exposed
+        /// on the object graph. If the type represented by this parameter is not servable via a scoped <see cref="IServiceProvider"/>
+        /// instance, an exception will occur and the target query will not be resolved.
+        /// </summary>
+        ImplicitInjected,
 
         /// <summary>
         /// This parameter is declared to be resolved as an argument to a graph field. It will ALWAYS be

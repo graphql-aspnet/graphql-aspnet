@@ -71,14 +71,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             return new SchemaItemPath(SchemaItemPath.Join(fieldType, parentRouteFragment, routeFragment));
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
-        public override void ValidateOrThrow()
+        /// <inheritdoc />
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
 
             // as a matter of convention enforcement
             // for action methods on controllers

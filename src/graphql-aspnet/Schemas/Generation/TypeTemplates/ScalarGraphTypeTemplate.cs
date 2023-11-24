@@ -58,10 +58,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
             GlobalTypes.ValidateScalarTypeOrThrow(this.ScalarType);
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
         }
 
         /// <inheritdoc />

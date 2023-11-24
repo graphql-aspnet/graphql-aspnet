@@ -109,10 +109,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             true)]
         [TestCase(
             SchemaArgumentBindingRules.ParametersPreferQueryResolution,
-            typeof(ArgCheckExplicitInvalidSchemaItemDirective),
-            true)]
-        [TestCase(
-            SchemaArgumentBindingRules.ParametersPreferQueryResolution,
             typeof(ArgCheckExplicitInjectedItemDirective),
             false)]
 
@@ -122,15 +118,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             true)]
         [TestCase(
             SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
-            typeof(ArgCheckImplicitInjectedItemDirective),
-            true)]
-        [TestCase(
-            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
             typeof(ArgCheckExplicitValidSchemaItemDirective),
-            true)]
-        [TestCase(
-            SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
-            typeof(ArgCheckExplicitInvalidSchemaItemDirective),
             true)]
         [TestCase(
             SchemaArgumentBindingRules.ParametersRequireFromServicesDeclaration,
@@ -148,10 +136,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         [TestCase(
             SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
             typeof(ArgCheckExplicitValidSchemaItemDirective),
-            true)]
-        [TestCase(
-            SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,
-            typeof(ArgCheckExplicitInvalidSchemaItemDirective),
             true)]
         [TestCase(
             SchemaArgumentBindingRules.ParametersRequireFromGraphQLDeclaration,

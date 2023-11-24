@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
+    using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// A "maker" capable of producing a qualified <see cref="IDirective"/> from its related <see cref="IGraphDirectiveTemplate"/>.
@@ -42,6 +43,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         {
             if (!(typeTemplate is IGraphDirectiveTemplate template))
                 return null;
+
+            template.Parse();
+            template.ValidateOrThrow(false);
 
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
 
@@ -86,7 +90,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 result.ConcreteType = template.ObjectType;
 
             // account for any potential type dependencies (input objects etc)
-            result.AddDependentRange(template.RetrieveRequiredTypes());
+            var requiredTypes = template.RetrieveRequiredTypes();
+            result.AddDependentRange(requiredTypes);
 
             return result;
         }

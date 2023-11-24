@@ -22,9 +22,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// non-concrete nature of virtual graph fields and the need for all resolvers to return usable data for downstream resolvers.
     /// </summary>
     [DebuggerDisplay("Virtual Object (GraphTypeName = {GraphTypeName})")]
-    [GraphType(
-        Publish = false,
-        FieldDeclarationRequirements = TemplateDeclarationRequirements.RequireMethodAndProperties)]
+    [GraphType(Publish = false)]
     public sealed class VirtualResolvedObject
     {
         /// <summary>

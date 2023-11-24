@@ -91,9 +91,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
 
             if (Validation.IsCastable<Task>(this.DeclaredReturnType))
             {

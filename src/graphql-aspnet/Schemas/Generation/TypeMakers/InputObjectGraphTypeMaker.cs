@@ -12,7 +12,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     using System;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
@@ -45,6 +47,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         {
             if (!(typeTemplate is IInputObjectGraphTypeTemplate template))
                 return null;
+
+            template.Parse();
+            template.ValidateOrThrow(false);
 
             var formatter = _config.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphTypeCreationResult();
@@ -79,6 +84,15 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 inputObjectType.AddField(fieldResult.Field);
 
                 result.MergeDependents(fieldResult);
+            }
+
+            // at least one field should have been rendered
+            if (inputObjectType.Fields.Count == 0)
+            {
+                throw new GraphTypeDeclarationException(
+                  $"The input object graph type '{template.ObjectType.FriendlyName()}' defines 0 fields. " +
+                  $"All input object types must define at least one field.",
+                  template.ObjectType);
             }
 
             result.GraphType = inputObjectType;

@@ -48,7 +48,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             var factory = testServer.CreateMakerFactory();
 
             var template = GraphQLTemplateHelper.CreateGraphTypeTemplate(type, kind);
-            return factory.CreateTypeMaker(type, kind).CreateGraphType(template).GraphType;
+            var typeMaker = factory.CreateTypeMaker(type, kind);
+            var graphType = typeMaker.CreateGraphType(template).GraphType;
+
+            return graphType;
         }
 
         private IGraphField MakeGraphField(IGraphFieldTemplate fieldTemplate)

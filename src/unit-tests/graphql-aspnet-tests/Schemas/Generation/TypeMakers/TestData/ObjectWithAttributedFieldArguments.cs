@@ -23,12 +23,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers.TestData
         }
 
         [GraphField]
-        public int FieldWithExplicitSchemArg([FromGraphQL] ISinglePropertyObject arg1)
-        {
-            return 0;
-        }
-
-        [GraphField]
         public int FieldWithImplicitArgThatShouldBeServiceInjected(ISinglePropertyObject arg1)
         {
             return 0;

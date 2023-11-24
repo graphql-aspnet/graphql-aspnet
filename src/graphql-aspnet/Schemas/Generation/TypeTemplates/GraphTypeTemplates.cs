@@ -27,14 +27,15 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// A default implementation that will create an appropriate <see cref="IGraphTypeTemplate" />
         /// for the given <paramref name="objectType" /> and <paramref name="kind" />.
         /// </summary>
+        /// <remarks>
+        /// WARNING: This method does not parse or validate the template, it just instantiates an appropriate template instance
+        /// for the given <paramref name="objectType"/>.
+        /// </remarks>
         /// <param name="objectType">The type info representing the object.</param>
         /// <param name="kind">The kind of template to make. Only used to differentiate INPUT_OBJECT from
         /// OBJECT. Ignored otherwise.</param>
-        /// <param name="parseTemplate">if set to <c>true</c> the template will be parsed and validated.
-        /// When false, the template will just be instantiated and returned, unparsed. Many data fields will not be
-        /// populated.</param>
         /// <returns>IGraphTypeTemplate.</returns>
-        public static IGraphTypeTemplate CreateTemplate(Type objectType, TypeKind? kind = null, bool parseTemplate = true)
+        public static IGraphTypeTemplate CreateTemplate(Type objectType, TypeKind? kind = null)
         {
             if (objectType == null)
                 return null;
@@ -59,12 +60,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 template = new InputObjectGraphTypeTemplate(objectType);
             else
                 template = new ObjectGraphTypeTemplate(objectType);
-
-            if (parseTemplate)
-            {
-                template.Parse();
-                template.ValidateOrThrow();
-            }
 
             return template;
         }

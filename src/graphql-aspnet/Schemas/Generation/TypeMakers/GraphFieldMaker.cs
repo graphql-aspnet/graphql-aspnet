@@ -49,6 +49,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         {
             Validation.ThrowIfNull(template, nameof(template));
 
+            template.Parse();
+            template.ValidateOrThrow(false);
+
             var formatter = _config.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphFieldCreationResult<IGraphField>();
 

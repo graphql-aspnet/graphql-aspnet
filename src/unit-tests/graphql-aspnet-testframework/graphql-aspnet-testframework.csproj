@@ -2,7 +2,7 @@
   <Import Project="..\..\library-common.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net6.0;</TargetFrameworks>
+    <TargetFrameworks>net8.0;net7.0;net6.0;</TargetFrameworks>
     <RootNamespace>GraphQL.AspNet.Tests.Framework</RootNamespace>
     <AssemblyName>GraphQL.AspNet.TestFramework</AssemblyName>
     <Title>GraphQL ASP.NET Test Framework</Title>

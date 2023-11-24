@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
             if (_fieldDefinition?.Resolver?.Method == null)
             {
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     $"is not properly configured.");
             }
 
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
         }
 
         /// <inheritdoc />

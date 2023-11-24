@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\library-tests.props" />
+
+  <PropertyGroup>
+    <RootNamespace>GraphQL.AspNet.TestFramework.Tests</RootNamespace>
+    <AssemblyName>graphql-aspnet-testframework-tests</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\graphql-aspnet\graphql-aspnet.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\graphql-aspnet-testframework\graphql-aspnet-testframework.csproj" />
+  </ItemGroup>
+
+</Project>

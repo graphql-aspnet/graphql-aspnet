@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
     [TestFixture]
     public partial class GqltwsClientProxyTests
     {
-        private (MockClientConnection, GqltwsClientProxy<GraphSchema>, ISubscriptionEventRouter) CreateConnection()
+        private (MockClientConnection ClientConnection, GqltwsClientProxy<GraphSchema> ClientProxy, ISubscriptionEventRouter Router) CreateConnection()
         {
             var server = new TestServerBuilder()
                 .AddGraphController<GqltwsSubscriptionController>()

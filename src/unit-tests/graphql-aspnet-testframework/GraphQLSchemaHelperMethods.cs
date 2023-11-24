@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Framework
 {
+    using System;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Interfaces.Schema;

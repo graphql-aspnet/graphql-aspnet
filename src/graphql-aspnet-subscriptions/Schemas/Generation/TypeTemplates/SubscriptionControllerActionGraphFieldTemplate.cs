@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc/>
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
             // ensure the custom event name is valid if it was supplied
             if (string.IsNullOrWhiteSpace(this.EventName))
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                         $"{typeof(SubscriptionSourceAttribute).FriendlyName()} to explicitly assign a source data parameter.");
             }
 
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
         }
 
         /// <inheritdoc/>

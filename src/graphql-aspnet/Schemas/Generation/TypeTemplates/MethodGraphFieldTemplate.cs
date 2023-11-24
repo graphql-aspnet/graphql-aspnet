@@ -62,9 +62,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
 
             // as a matter of convention enforcement
             // for methods delcared as fields on POCOs (not controller actions)

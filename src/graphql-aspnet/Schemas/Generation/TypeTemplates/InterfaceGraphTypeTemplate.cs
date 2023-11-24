@@ -44,7 +44,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         protected override IEnumerable<IMemberInfoProvider> GatherPossibleFieldTemplates()
         {
             return this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-              .Where(x => !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
+                .Where(x =>
+                        !x.IsGenericMethod &&
+                        !x.IsSpecialName &&
+                        x.DeclaringType != typeof(object) &&
+                        x.DeclaringType != typeof(ValueType))
+                .Cast<MemberInfo>()
               .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
               .Select(x => new MemberInfoProvider(x));
         }

@@ -34,6 +34,9 @@ namespace GraphQL.AspNet.Engine
         {
             Validation.ThrowIfNull(template, nameof(template));
 
+            template.Parse();
+            template.ValidateOrThrow();
+
             foreach (var action in template.Actions)
                 this.AddAction(action);
 

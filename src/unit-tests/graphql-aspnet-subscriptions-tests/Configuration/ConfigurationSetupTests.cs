@@ -161,14 +161,6 @@ namespace GraphQL.AspNet.Tests.Configuration
 
         private void EnsureSubscriptionPublishingRegistrations(ServiceProvider sp)
         {
-            var controller = sp.GetService(typeof(FanController));
-            Assert.IsNotNull(controller);
-
-            // ensure schema operation type is/was allowed to be injected to the schema
-            var schema = sp.GetService(typeof(GraphSchema)) as ISchema;
-            Assert.IsNotNull(schema);
-            Assert.IsTrue(schema.Operations.ContainsKey(GraphOperationType.Subscription));
-
             // ensure registered services for subscription server
             Assert.IsNotNull(sp.GetService(typeof(ISubscriptionEventPublisher)));
             Assert.IsNotNull(sp.GetService(typeof(SubscriptionEventPublishingQueue)));

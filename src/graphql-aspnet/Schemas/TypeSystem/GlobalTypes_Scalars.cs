@@ -327,7 +327,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <summary>
         /// Creates a new instance of the scalar. If the supplied type cannot be created
-        /// a valid <see cref="IScalarGraphType"/> an exception is thrown.
+        /// as a valid <see cref="IScalarGraphType"/> an exception is thrown.
         /// </summary>
         /// <param name="scalarType">The scalar type to create.</param>
         /// <returns>IScalarGraphType.</returns>

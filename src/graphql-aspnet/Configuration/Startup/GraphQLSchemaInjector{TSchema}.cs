@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Configuration.Startup
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
@@ -173,6 +174,7 @@ namespace GraphQL.AspNet.Configuration.Startup
             _options.ServiceCollection.TryAddTransient<IGraphQLSchemaFactory<TSchema>, DefaultGraphQLSchemaFactory<TSchema>>();
 
             // "per application server" instance
+            _options.ServiceCollection.TryAddScoped<IGraphQLFieldResolverIsolationManager, GraphQLFieldResolverIsolationManager>();
             _options.ServiceCollection.TryAddScoped<IGraphLogger>(sp => sp?.GetService<IGraphEventLogger>());
             _options.ServiceCollection.TryAddScoped<IGraphEventLogger>((sp) =>
             {

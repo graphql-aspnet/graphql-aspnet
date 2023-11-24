@@ -21,6 +21,8 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
     using NSubstitute;
     using NUnit.Framework;
 
@@ -68,6 +70,14 @@ namespace GraphQL.AspNet.Tests.Middleware
             }
 
             var builder = new TestServerBuilder();
+
+            // remove all auth service instances to limit to just
+            // those cases being tested
+            if (_authService == null)
+                builder.Authorization.DisableAuthorization();
+            else
+                builder.Authorization.ReplaceAuthorizationService(_authService);
+
             var buildUser = !string.IsNullOrWhiteSpace(_userName);
 
             // when null, do not authenticate the user
@@ -95,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             fieldSecurityContext.AuthenticatedUser = _user;
             fieldSecurityContext.SecurityRequirements = secRequirements;
 
-            var middleware = new SchemaItemAuthorizationMiddleware(_authService);
+            var middleware = new SchemaItemAuthorizationMiddleware();
             await middleware.InvokeAsync(fieldSecurityContext, this.EmptyNextDelegate);
 
             return fieldSecurityContext;

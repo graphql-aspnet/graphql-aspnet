@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ExtensionMethodT
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Common.Interfaces;
+    using GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData;
 
     public class ExtensionMethodController : GraphController
     {
@@ -63,6 +64,24 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ExtensionMethodT
         [Description("InterfaceBatchExtensionDescription")]
         [BatchTypeExtension(typeof(ISinglePropertyObject), "Property3", typeof(List<int>))]
         public IGraphActionResult InterfaceBatchTestExtension(IEnumerable<ISinglePropertyObject> sourceData, int arg1)
+        {
+            return null;
+        }
+
+        [TypeExtension(typeof(TwoPropertyObject), "fieldThree", typeof(CustomNamedObject))]
+        public IGraphActionResult TypeExtension_CustomNamedObjectReturnedTestExtension(CustomNamedObject obj)
+        {
+            return null;
+        }
+
+        [BatchTypeExtension(typeof(TwoPropertyObject), "fieldThree", typeof(CustomNamedObject))]
+        public IGraphActionResult Batch_CustomNamedObjectReturnedTestExtension(IEnumerable<TwoPropertyObject> items)
+        {
+            return null;
+        }
+
+        [BatchTypeExtension(typeof(CustomNamedObject), "fieldThree", typeof(CustomNamedObject))]
+        public IGraphActionResult Batch_ChildIsSameCustomNamedObjectTestExtension(IEnumerable<CustomNamedObject> items)
         {
             return null;
         }

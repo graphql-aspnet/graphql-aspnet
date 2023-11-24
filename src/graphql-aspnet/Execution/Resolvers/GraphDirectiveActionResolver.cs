@@ -19,9 +19,12 @@ namespace GraphQL.AspNet.Execution.Resolvers
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A special resolver specifically for invoking controller actions
@@ -50,12 +53,19 @@ namespace GraphQL.AspNet.Execution.Resolvers
             var action = this.MetaData[context.Request.InvocationContext.Location];
 
             IGraphActionResult result;
+            var isolationObtained = false;
+            IGraphQLFieldResolverIsolationManager isolationManager = null;
+
             try
             {
                 // create a directive instance for this invocation
                 var directive = context
                     .ServiceProvider?
                     .GetService(action.ParentObjectType) as GraphDirective;
+
+                isolationManager = context
+                    .ServiceProvider?
+                    .GetService<IGraphQLFieldResolverIsolationManager>();
 
                 if (directive == null)
                 {
@@ -78,8 +88,23 @@ namespace GraphQL.AspNet.Execution.Resolvers
                         $"must also be registered to the service provider; Try using '{nameof(SchemaOptions.AddGraphType)}' " +
                         $"with the type of your directive at startup.");
                 }
+                else if (isolationManager == null)
+                {
+                    throw new GraphExecutionException(
+                        $"No {nameof(IGraphQLFieldResolverIsolationManager)} was configured for the request. " +
+                        $"Unable to determine the isolation requirements for the directive '{context.Request.Directive.InternalName}'.");
+                }
                 else
                 {
+                    var shouldIsolate = isolationManager
+                        .ShouldIsolate(context.Schema, GraphFieldSource.Action);
+
+                    if (shouldIsolate)
+                    {
+                        await isolationManager.WaitAsync();
+                        isolationObtained = true;
+                    }
+
                     // invoke the right action method and set a result.
                     var task = directive.InvokeActionAsync(action, context);
 
@@ -91,6 +116,11 @@ namespace GraphQL.AspNet.Execution.Resolvers
             {
                 // :(
                 result = new InternalServerErrorGraphActionResult("Operation failed.", ex);
+            }
+            finally
+            {
+                if (isolationObtained)
+                    isolationManager.Release();
             }
 
             // resolve the final graph action output using the provided field context

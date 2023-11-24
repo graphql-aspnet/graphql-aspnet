@@ -173,9 +173,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
 
             if (_duplicateNames != null && _duplicateNames.Any())
             {
@@ -197,8 +197,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     this.ObjectType);
             }
 
-            foreach (var field in this.FieldTemplates.Values)
-                field.ValidateOrThrow();
+            if (validateChildren)
+            {
+                foreach (var field in this.FieldTemplates.Values)
+                    field.ValidateOrThrow(validateChildren);
+            }
         }
 
         /// <inheritdoc />

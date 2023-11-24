@@ -121,12 +121,23 @@ namespace GraphQL.AspNet
         /// <value>The known ignored field names.</value>
         public static ISet<string> IgnoredFieldNames { get; } = new HashSet<string>()
         {
-            // object declared methods that might be exposed
-            // also methods internally declared by structs that might be exposed
+            // object methods that might be exposed
+            // also methods internally declared by structs or records that might be exposed
             "Deconstruct",
             nameof(object.ToString),
             nameof(object.GetHashCode),
             nameof(object.GetType),
+        };
+
+        /// <summary>
+        /// Gets a set of field names (property or method) that are never parsed by the templating engine
+        /// for any reason when parsing a record.
+        /// </summary>
+        /// <value>The known ignored field names.</value>
+        public static ISet<string> IgnoredRecordFieldNames { get; } = new HashSet<string>()
+        {
+            "Equals",
+            "<Clone>$",
         };
 
         /// <summary>

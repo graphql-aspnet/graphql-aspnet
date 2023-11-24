@@ -117,11 +117,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
+        /// Validates that this template is item and correct according to its own rules
+        /// or throws an exception.
         /// </summary>
-        public void ValidateOrThrow()
+        /// <param name="validateChildren">if set to <c>true</c>
+        /// any child objects this instance manages will also be checked for validity.</param>
+        public virtual void ValidateOrThrow(bool validateChildren = true)
         {
             if (_duplicateDirectiveLocations != null && _duplicateDirectiveLocations.Count > 0)
             {
@@ -144,7 +145,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             GraphDirectiveMethodTemplate baseExecutionMethod = null;
             foreach (var kvp in _templateMap)
             {
-                kvp.Value.ValidateOrThrow();
+                kvp.Value.ValidateOrThrow(validateChildren);
 
                 if (baseExecutionMethod == null)
                 {

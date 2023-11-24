@@ -40,6 +40,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         public GraphArgumentCreationResult CreateArgument(ISchemaItem owner, IGraphArgumentTemplate template)
         {
             Validation.ThrowIfNull(owner, nameof(owner));
+            Validation.ThrowIfNull(template, nameof(template));
+
+            template.Parse();
+            template.ValidateOrThrow(false);
+
             var formatter = _config.DeclarationOptions.GraphNamingFormatter;
 
             var directives = template.CreateAppliedDirectives();

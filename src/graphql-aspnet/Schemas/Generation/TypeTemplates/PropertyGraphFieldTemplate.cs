@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
             // ensure property has a public getter (kinda useless otherwise)
             if (this.Property.GetGetMethod() == null)
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     "return type must be assigned from the declared return type.");
             }
 
-            base.ValidateOrThrow();
+            base.ValidateOrThrow(validateChildren);
         }
 
         /// <inheritdoc />

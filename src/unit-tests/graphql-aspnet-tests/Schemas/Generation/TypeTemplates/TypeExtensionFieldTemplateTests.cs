@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Common.Interfaces;
+    using GraphQL.AspNet.Tests.Internal.Templating.ExtensionMethodTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ExtensionMethodTestData;
     using NSubstitute;
     using NUnit.Framework;
@@ -192,6 +193,38 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             CollectionAssert.AreEqual(new[] { MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull }, template.TypeExpression.Wrappers);
             Assert.AreEqual(typeof(int), template.ObjectType);
             Assert.AreEqual(2, template.Arguments.Count);
+            Assert.AreEqual(FieldResolutionMode.Batch, template.Mode);
+        }
+
+        [Test]
+        public void ValidBatchExtension_WithCustomNamedReturnType_PropertyCheck()
+        {
+            var methodInfo = typeof(ExtensionMethodController).GetMethod(nameof(ExtensionMethodController.Batch_CustomNamedObjectReturnedTestExtension));
+            var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.Batch_CustomNamedObjectReturnedTestExtension));
+
+            Assert.AreEqual(methodInfo.ReflectedType, template.CreateResolver().MetaData.ParentObjectType);
+            Assert.AreEqual(typeof(TwoPropertyObject), template.SourceObjectType);
+            Assert.AreEqual(methodInfo, template.Method);
+            Assert.AreEqual("Type", template.TypeExpression.ToString());
+            Assert.AreEqual("[type]/TwoPropertyObject/fieldThree", template.Route.ToString());
+            Assert.AreEqual(typeof(CustomNamedObject), template.ObjectType);
+            Assert.AreEqual(1, template.Arguments.Count);
+            Assert.AreEqual(FieldResolutionMode.Batch, template.Mode);
+        }
+
+        [Test]
+        public void ValidBatchExtension_WithCustomNamedReturnType_OnSameCustomNamedParent_PropertyCheck()
+        {
+            var methodInfo = typeof(ExtensionMethodController).GetMethod(nameof(ExtensionMethodController.Batch_ChildIsSameCustomNamedObjectTestExtension));
+            var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.Batch_ChildIsSameCustomNamedObjectTestExtension));
+
+            Assert.AreEqual(methodInfo.ReflectedType, template.CreateResolver().MetaData.ParentObjectType);
+            Assert.AreEqual(typeof(CustomNamedObject), template.SourceObjectType);
+            Assert.AreEqual(methodInfo, template.Method);
+            Assert.AreEqual("Type", template.TypeExpression.ToString());
+            Assert.AreEqual("[type]/Custom_Named_Object/fieldThree", template.Route.ToString());
+            Assert.AreEqual(typeof(CustomNamedObject), template.ObjectType);
+            Assert.AreEqual(1, template.Arguments.Count);
             Assert.AreEqual(FieldResolutionMode.Batch, template.Mode);
         }
 

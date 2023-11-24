@@ -34,9 +34,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     [DebuggerDisplay("{Name} (Type: {FriendlyObjectTypeName})")]
     public abstract class NonLeafGraphTypeTemplateBase : GraphTypeTemplateBase
     {
-        private readonly GraphFieldCollection _fields;
+        private readonly List<IGraphFieldTemplate> _fields;
         private readonly HashSet<Type> _interfaces;
-        private IEnumerable<string> _duplicateNames;
         private List<IGraphFieldTemplate> _invalidFields;
         private AppliedSecurityPolicyGroup _securityPolicies;
 
@@ -49,7 +48,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
             Validation.ThrowIfNull(objectType, nameof(objectType));
 
-            _fields = new GraphFieldCollection();
+            _fields = new List<IGraphFieldTemplate>();
             _interfaces = new HashSet<Type>();
             _securityPolicies = AppliedSecurityPolicyGroup.Empty;
 
@@ -104,7 +103,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // ------------------------------------
             // Parse the methods on this type for fields to include in the graph
             // ------------------------------------
-            var parsedItems = new List<IGraphFieldTemplate>();
+            _fields.Clear();
 
             var templateMembers = this.GatherPossibleFieldTemplates();
 
@@ -130,21 +129,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     }
                     else
                     {
-                        parsedItems.Add(parsedTemplate);
+                        _fields.Add(parsedTemplate);
                     }
                 }
-            }
-
-            // ensure no overloaded methods that are to be mapped onto the graph cause naming collisions
-            // on the object graph with other methods or properties.
-            _duplicateNames = parsedItems.Select(x => x.Route.Path)
-                .GroupBy(x => x)
-                .Where(x => x.Count() > 1)
-                .Select(x => x.Key);
-
-            foreach (var field in parsedItems.Where(x => !_duplicateNames.Contains(x.Route.Path)))
-            {
-                _fields.Add(field.Route.Path, field);
             }
 
             // ------------------------------------
@@ -203,11 +190,19 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (Constants.IgnoredFieldNames.Contains(fieldProvider.MemberInfo.Name))
                 return false;
 
+            if (fieldProvider.MemberInfo.DeclaringType?.IsRecord() ?? false)
+            {
+                if (Constants.IgnoredRecordFieldNames.Contains(fieldProvider.MemberInfo.Name))
+                    return false;
+            }
+
             // when the member declares any known attribute in the library include it
             // and allow it to generate validation failures if its not properly constructed
             if (fieldProvider.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>() != null)
                 return true;
 
+            // do some preliminary validation and skip those items that could never be valid
+            // this is different in v2+
             switch (fieldProvider.MemberInfo)
             {
                 case MethodInfo mi:
@@ -249,32 +244,26 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow()
+        public override void ValidateOrThrow(bool validateChildren = true)
         {
-            base.ValidateOrThrow();
-
-            if (_duplicateNames != null && _duplicateNames.Any())
-            {
-                throw new GraphTypeDeclarationException(
-                    $"The type '{this.ObjectType.FriendlyName()}' defines multiple children with the same " +
-                    $"global path key ({string.Join(",", _duplicateNames.Select(x => $"'{x}'"))}). All method and property paths must be unique in the " +
-                    "object graph.",
-                    this.ObjectType);
-            }
+            base.ValidateOrThrow(validateChildren);
 
             if (_invalidFields != null && _invalidFields.Count > 0)
             {
                 var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalName} ({x.Route.RootCollection.ToString()})'"));
                 throw new GraphTypeDeclarationException(
                     $"Invalid field declarations.  The type '{this.InternalName}' declares fields belonging to a graph collection not allowed given its context. This type can " +
-                    $"only declare the following graph collections: '{string.Join(", ", this.AllowedSchemaItemCollections.Select(x => x.ToString()))}'. " +
+                    $"only be declared the following graph collections: '{string.Join(", ", this.AllowedSchemaItemCollections.Select(x => x.ToString()))}'. " +
                     $"If this field is declared on an object (not a controller) be sure to use '{nameof(GraphFieldAttribute)}' instead " +
                     $"of '{nameof(QueryAttribute)}' or '{nameof(MutationAttribute)}'.\n---------\n " + fieldNames,
                     this.ObjectType);
             }
 
-            foreach (var field in this.FieldTemplates.Values)
-                field.ValidateOrThrow();
+            if (validateChildren)
+            {
+                foreach (var field in this.FieldTemplates)
+                    field.ValidateOrThrow(validateChildren);
+            }
         }
 
         /// <inheritdoc />
@@ -284,7 +273,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// Gets the explicitly and implicitly decalred fields found on this instance.
         /// </summary>
         /// <value>The methods.</value>
-        public IReadOnlyDictionary<string, IGraphFieldTemplate> FieldTemplates => _fields;
+        public IReadOnlyList<IGraphFieldTemplate> FieldTemplates => _fields;
 
         /// <summary>
         /// Gets a set of item collections to which this object template can be declared.

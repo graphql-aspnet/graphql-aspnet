@@ -69,6 +69,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// </summary>
         public virtual void Parse()
         {
+            if (_isParsed)
+                return;
+
+            _isParsed = true;
             this.DeclaredType = this.Method.ReturnType;
             this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredType);
             this.TypeExpression = new GraphTypeExpression(this.ObjectType.FriendlyName());
@@ -138,12 +142,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             return builder.ToString();
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
-        public virtual void ValidateOrThrow()
+        /// <inheritdoc />
+        public virtual void ValidateOrThrow(bool validateChildren = true)
         {
             // ensure skip isnt set
             if (this.Method.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
@@ -189,8 +189,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     $"The directive resolver template identified by `{this.Method.Name}` does not declare a valid internal name.");
             }
 
-            foreach (var argument in _arguments)
-                argument.ValidateOrThrow();
+            if (validateChildren)
+            {
+                foreach (var argument in _arguments)
+                    argument.ValidateOrThrow(validateChildren);
+            }
 
             foreach (var directive in this.AppliedDirectives)
                 directive.ValidateOrThrow();
@@ -200,6 +203,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public IEnumerable<DependentType> RetrieveRequiredTypes()
         {
             var list = new List<DependentType>();
+
             foreach (var argument in this.Arguments)
                 list.AddRange(argument.RetrieveRequiredTypes());
 
@@ -241,6 +245,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public MetaGraphTypes[] DeclaredTypeWrappers => null; // not used by directives
+
+        private bool _isParsed;
 
         /// <summary>
         /// Gets declared return type of the method minus any asyncronous wrappers (i.e. the T in Task{T}).
