@@ -52,9 +52,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             _interfaces = new HashSet<Type>();
             _securityPolicies = AppliedSecurityPolicyGroup.Empty;
 
-            this.AllowedSchemaItemCollections = new HashSet<SchemaItemCollections>()
+            this.AllowedSchemaItemCollections = new HashSet<SchemaItemPathCollections>()
             {
-                SchemaItemCollections.Types,
+                SchemaItemPathCollections.Types,
             };
 
             // customize the error message on the thrown exception for some helpful hints.
@@ -240,7 +240,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // a standard graph object cannot contain any route pathing or nesting like controllers can
             // before creating hte route, ensure that the declared name, by itself, is valid for graphql
             var graphName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.OBJECT);
-            return new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, graphName));
+            return new SchemaItemPath(SchemaItemPath.Join(SchemaItemPathCollections.Types, graphName));
         }
 
         /// <inheritdoc />
@@ -279,7 +279,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// Gets a set of item collections to which this object template can be declared.
         /// </summary>
         /// <value>The allowed schema item collections.</value>
-        protected virtual HashSet<SchemaItemCollections> AllowedSchemaItemCollections { get; }
+        protected virtual HashSet<SchemaItemPathCollections> AllowedSchemaItemCollections { get; }
 
         /// <summary>
         /// Gets the declared interfaces on this item.

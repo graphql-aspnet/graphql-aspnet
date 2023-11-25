@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.IsRepeatable = this.AttributeProvider.SingleAttributeOrDefault<RepeatableAttribute>() != null;
 
             var routeName = this.DetermineDirectiveName();
-            this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Directives, routeName));
+            this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemPathCollections.Directives, routeName));
             var potentialMethods = this.GatherPossibleDirectiveExecutionMethods();
             foreach (var methodData in potentialMethods)
             {

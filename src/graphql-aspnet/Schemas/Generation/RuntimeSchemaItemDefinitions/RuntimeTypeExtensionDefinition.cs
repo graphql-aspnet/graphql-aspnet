@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
             FieldResolutionMode resolutionMode)
             : base(
                   schemaOptions,
-                  SchemaItemCollections.Types,
+                  SchemaItemPathCollections.Types,
                   SchemaItemPath.Join(
                         GraphTypeNames.ParseName(typeToExtend, TypeKind.OBJECT),
                         fieldName))

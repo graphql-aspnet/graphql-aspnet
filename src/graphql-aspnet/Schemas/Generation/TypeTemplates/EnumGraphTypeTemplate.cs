@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             _name = GraphTypeNames.ParseName(this.ObjectType, TypeKind.ENUM);
             this.Description = this.ObjectType.SingleAttributeOrDefault<DescriptionAttribute>()?.Description?.Trim();
-            this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Enums, _name));
+            this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemPathCollections.Enums, _name));
 
             // parse the enum values for later injection
             var labels = Enum.GetNames(this.ObjectType);

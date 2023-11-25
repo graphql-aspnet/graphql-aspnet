@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         public RuntimeDirectiveActionDefinition(
             SchemaOptions schemaOptions,
             string directiveName)
-            : base(schemaOptions, SchemaItemCollections.Directives, directiveName)
+            : base(schemaOptions, SchemaItemPathCollections.Directives, directiveName)
         {
         }
 

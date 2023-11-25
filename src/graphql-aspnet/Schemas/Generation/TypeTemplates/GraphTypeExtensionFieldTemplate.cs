@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             var graphName = _typeAttrib.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();
 
-            return new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, parentName, graphName));
+            return new SchemaItemPath(SchemaItemPath.Join(SchemaItemPathCollections.Types, parentName, graphName));
         }
 
         /// <inheritdoc />

@@ -180,7 +180,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new ObjectGraphTypeTemplate(typeof(SchemaItemCollections));
+                var template = new ObjectGraphTypeTemplate(typeof(SchemaItemPathCollections));
             });
         }
 

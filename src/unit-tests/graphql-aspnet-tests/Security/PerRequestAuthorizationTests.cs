@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Security
             {
               ""errors"": [
                 {
-                  ""message"": ""Access Denied to [type]/Query/secured"",
+                  ""message"": ""Access Denied to [query]/secured"",
                   ""locations"": [
                     {
                       ""line"": 7,
@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Tests.Security
                   }
                 },
                 {
-                  ""message"": ""Access Denied to [type]/Query/policySecured"",
+                  ""message"": ""Access Denied to [query]/policySecured"",
                   ""locations"": [
                     {
                       ""line"": 11,
@@ -172,7 +172,7 @@ namespace GraphQL.AspNet.Tests.Security
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
             Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("access denied"));
-            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("[type]/query/secured"));
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("[query]/secured"));
             Assert.AreEqual(0, PerRequestCounterController.NumberOfInvocations);
             PerRequestCounterController.NumberOfInvocations = 0;
         }

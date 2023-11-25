@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="fieldType">Type of the field to prepend a root key to the path.</param>
         /// <param name="routeSegments">The route segments to join.</param>
         /// <returns>System.String.</returns>
-        public static string Join(SchemaItemCollections fieldType, params string[] routeSegments)
+        public static string Join(SchemaItemPathCollections fieldType, params string[] routeSegments)
         {
             return SchemaItemPath.Join(fieldType.ToRouteRoot().AsEnumerable().Concat(routeSegments).ToArray());
         }

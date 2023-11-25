@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="collection">The collection the route belongs to.</param>
         /// <param name="pathSegments">The individual path segments of the route.</param>
-        public IntrospectedRoutePath(Execution.SchemaItemCollections collection, params string[] pathSegments)
+        public IntrospectedRoutePath(Execution.SchemaItemPathCollections collection, params string[] pathSegments)
             : base(collection, pathSegments)
         {
         }

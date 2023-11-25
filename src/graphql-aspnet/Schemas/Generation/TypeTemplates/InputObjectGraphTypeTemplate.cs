@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // Common Metadata
             // ------------------------------------
             this.Route = new SchemaItemPath(SchemaItemPath.Join(
-                SchemaItemCollections.Types,
+                SchemaItemPathCollections.Types,
                 GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT)));
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
                 var parsedTemplate = new InputGraphFieldTemplate(this, propInfo);
                 parsedTemplate?.Parse();
-                if (parsedTemplate?.Route == null || parsedTemplate.Route.RootCollection != SchemaItemCollections.Types)
+                if (parsedTemplate?.Route == null || parsedTemplate.Route.RootCollection != SchemaItemPathCollections.Types)
                 {
                     _invalidFields = _invalidFields ?? new List<IInputGraphFieldTemplate>();
                     _invalidFields.Add(parsedTemplate);
@@ -213,6 +213,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <inheritdoc />
         public override AppliedSecurityPolicyGroup SecurityPolicies => AppliedSecurityPolicyGroup.Empty;
 
-        private IEnumerable<SchemaItemCollections> AllowedGraphCollectionTypes => SchemaItemCollections.Types.AsEnumerable();
+        private IEnumerable<SchemaItemPathCollections> AllowedGraphCollectionTypes => SchemaItemPathCollections.Types.AsEnumerable();
     }
 }

@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.ClassTypeExtension));
 
             Assert.AreEqual("ClassTypeExtensionDescription", template.Description);
-            Assert.AreEqual(SchemaItemCollections.Types, template.Route.RootCollection);
+            Assert.AreEqual(SchemaItemPathCollections.Types, template.Route.RootCollection);
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyObject), template.SourceObjectType);
             Assert.AreEqual($"[type]/{nameof(TwoPropertyObject)}/Property3", template.Route.Path);
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.StructTypeExtension));
 
             Assert.AreEqual("StructTypeExtensionDescription", template.Description);
-            Assert.AreEqual(SchemaItemCollections.Types, template.Route.RootCollection);
+            Assert.AreEqual(SchemaItemPathCollections.Types, template.Route.RootCollection);
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyStruct), template.SourceObjectType);
             Assert.AreEqual($"[type]/{nameof(TwoPropertyStruct)}/Property3", template.Route.Path);
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.InterfaceTypeExtension));
 
             Assert.AreEqual("InterfaceTypeExtensionDescription", template.Description);
-            Assert.AreEqual(SchemaItemCollections.Types, template.Route.RootCollection);
+            Assert.AreEqual(SchemaItemPathCollections.Types, template.Route.RootCollection);
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(ISinglePropertyObject), template.SourceObjectType);
             Assert.AreEqual($"[type]/TwoPropertyInterface/Property3", template.Route.Path);

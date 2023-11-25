@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         protected override Attribute CreatePrimaryAttribute()
         {
             var (collection, path) = this.Route;
-            if (collection == SchemaItemCollections.Subscription)
+            if (collection == SchemaItemPathCollections.Subscription)
             {
                 return new SubscriptionRootAttribute(path, this.ReturnType)
                 {

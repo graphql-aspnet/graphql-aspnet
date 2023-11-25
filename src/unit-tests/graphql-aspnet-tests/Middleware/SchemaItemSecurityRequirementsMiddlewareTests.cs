@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Tests.Middleware
                 policyGroups = new AppliedSecurityPolicyGroups(securityGroups);
 
             field.SecurityGroups.Returns(policyGroups);
-            field.Route.Returns(new SchemaItemPath(AspNet.Execution.SchemaItemCollections.Query, "some", "path"));
+            field.Route.Returns(new SchemaItemPath(AspNet.Execution.SchemaItemPathCollections.Query, "some", "path"));
             _field = field;
         }
 

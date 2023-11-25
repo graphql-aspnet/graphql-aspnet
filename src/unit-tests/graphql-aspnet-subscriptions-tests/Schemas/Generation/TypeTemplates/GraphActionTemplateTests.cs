@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual("SubDescription", action.Description);
             Assert.AreEqual(typeof(TwoPropertyObject), action.SourceObjectType);
             Assert.AreEqual(typeof(OneMethodSubscriptionController), action.Parent.ObjectType);
-            Assert.AreEqual(SchemaItemCollections.Subscription, action.Route.RootCollection);
+            Assert.AreEqual(SchemaItemPathCollections.Subscription, action.Route.RootCollection);
             Assert.AreEqual("[subscription]/path0/path1", action.Route.Path);
             Assert.AreEqual($"{action.Parent.InternalName}.{nameof(OneMethodSubscriptionController.SingleMethod)}", action.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, metaData.ParentObjectType);

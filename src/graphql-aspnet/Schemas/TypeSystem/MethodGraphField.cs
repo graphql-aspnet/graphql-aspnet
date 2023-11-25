@@ -84,7 +84,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             var clonedItem = this.CreateNewInstance();
 
-            var route = parent?.Route.CreateChild(this.Route.Name) ?? this.Route.Clone();
+            // only developer declared types can be reroute to other types
+            // when reparenting. Anything on mutation, query, or subscription
+            // is fixed
+            var route = this.Route.Clone();
+            if (this.Route.RootCollection.IsInternalCollection())
+                route = parent?.Route.CreateChild(this.Route.Name) ?? route;
 
             // assign all publically alterable fields
             clonedItem.Name = fieldName;

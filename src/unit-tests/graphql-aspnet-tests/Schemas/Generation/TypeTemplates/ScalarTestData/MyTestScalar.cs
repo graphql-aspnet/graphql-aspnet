@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ScalarTestData
             this.ValueType = ScalarValueType.Boolean;
             this.Name = "myScalar";
             this.Description = "myScalar Desc";
-            this.Route = new SchemaItemPath(SchemaItemCollections.Scalars, this.Name);
+            this.Route = new SchemaItemPath(SchemaItemPathCollections.Scalars, this.Name);
             this.InternalName = "My.Test.Scalar";
             this.ObjectType = typeof(MyTestObject);
             this.SourceResolver = Substitute.For<ILeafValueResolver>();

@@ -16,12 +16,12 @@ namespace GraphQL.AspNet.Tests.Controllers
     [TestFixture]
     public class SchemaItemPathTests
     {
-        [TestCase(SchemaItemCollections.Query, "path1", "path2", "[query]/path1/path2")]
-        [TestCase(SchemaItemCollections.Types, "path1", "path2", "[type]/path1/path2")]
-        [TestCase(SchemaItemCollections.Mutation, "path1", "path2", "[mutation]/path1/path2")]
-        [TestCase(SchemaItemCollections.Subscription, "path1", "path2", "[subscription]/path1/path2")]
-        [TestCase(SchemaItemCollections.Unknown, "path1", "path2", "[noop]/path1/path2")]
-        public void Join_WithRoot_JoinsAsExpected(SchemaItemCollections root, string leftSide, string rightSide, string expectedOutput)
+        [TestCase(SchemaItemPathCollections.Query, "path1", "path2", "[query]/path1/path2")]
+        [TestCase(SchemaItemPathCollections.Types, "path1", "path2", "[type]/path1/path2")]
+        [TestCase(SchemaItemPathCollections.Mutation, "path1", "path2", "[mutation]/path1/path2")]
+        [TestCase(SchemaItemPathCollections.Subscription, "path1", "path2", "[subscription]/path1/path2")]
+        [TestCase(SchemaItemPathCollections.Unknown, "path1", "path2", "[noop]/path1/path2")]
+        public void Join_WithRoot_JoinsAsExpected(SchemaItemPathCollections root, string leftSide, string rightSide, string expectedOutput)
         {
             // standard join
             var fragment = SchemaItemPath.Join(root, leftSide, rightSide);
@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             Assert.AreEqual(fragment, route.Raw);
             Assert.AreEqual(fragment, route.Path);
             Assert.IsNotNull(route.Parent);
-            Assert.AreEqual(SchemaItemCollections.Query, route.RootCollection);
+            Assert.AreEqual(SchemaItemPathCollections.Query, route.RootCollection);
             Assert.AreEqual("path2", route.Name);
             Assert.AreEqual("path1", route.Parent.Name);
             Assert.AreEqual("[query]/path1", route.Parent.Path);
@@ -120,15 +120,15 @@ namespace GraphQL.AspNet.Tests.Controllers
             Assert.AreEqual(0, parents.Count);
         }
 
-        [TestCase("[mutation]/path1/path2", "[mutation]/path1/path2", true, SchemaItemCollections.Mutation, "path2", true, "[mutation]/path1")]
-        [TestCase("[mutation]/path1///\\path2", "[mutation]/path1/path2", true, SchemaItemCollections.Mutation, "path2", true, "[mutation]/path1")]
-        [TestCase("[query]/pat$!h1/path2", "", false, SchemaItemCollections.Query, "", false, "")]
-        [TestCase("/path1/path2", "path1/path2", true, SchemaItemCollections.Unknown, "path2", true, "path1")]
+        [TestCase("[mutation]/path1/path2", "[mutation]/path1/path2", true, SchemaItemPathCollections.Mutation, "path2", true, "[mutation]/path1")]
+        [TestCase("[mutation]/path1///\\path2", "[mutation]/path1/path2", true, SchemaItemPathCollections.Mutation, "path2", true, "[mutation]/path1")]
+        [TestCase("[query]/pat$!h1/path2", "", false, SchemaItemPathCollections.Query, "", false, "")]
+        [TestCase("/path1/path2", "path1/path2", true, SchemaItemPathCollections.Unknown, "path2", true, "path1")]
         public void Destructuring(
             string rawPath,
             string expectedPath,
             bool expectedValidState,
-            SchemaItemCollections expectedRoot,
+            SchemaItemPathCollections expectedRoot,
             string expectedName,
             bool shouldHaveParent,
             string expectedParentPath)
@@ -191,7 +191,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         [Test]
         public void FromConstructorParts_YieldsCombinedPaths()
         {
-            var route = new SchemaItemPath(SchemaItemCollections.Types, "typeName", "fieldName");
+            var route = new SchemaItemPath(SchemaItemPathCollections.Types, "typeName", "fieldName");
             Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName", route.Path);
         }
 
@@ -203,18 +203,18 @@ namespace GraphQL.AspNet.Tests.Controllers
             Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName[arg1]", route.Path);
         }
 
-        [TestCase("[query]/path1/path2", SchemaItemCollections.Query, "/path1/path2")]
-        [TestCase("[query]", SchemaItemCollections.Query, "/")]
-        [TestCase("[mutation]/path1/path2", SchemaItemCollections.Mutation, "/path1/path2")]
-        [TestCase("[subscription]/path1/path2", SchemaItemCollections.Subscription, "/path1/path2")]
-        [TestCase("[wrong]/path1/path2", SchemaItemCollections.Unknown, "")]
-        [TestCase("[query]/path1", SchemaItemCollections.Query, "/path1")]
-        [TestCase("[mutation]/path1", SchemaItemCollections.Mutation, "/path1")]
-        [TestCase("[subscription]/path1", SchemaItemCollections.Subscription, "/path1")]
-        [TestCase("[wrong]/path1", SchemaItemCollections.Unknown, "")]
+        [TestCase("[query]/path1/path2", SchemaItemPathCollections.Query, "/path1/path2")]
+        [TestCase("[query]", SchemaItemPathCollections.Query, "/")]
+        [TestCase("[mutation]/path1/path2", SchemaItemPathCollections.Mutation, "/path1/path2")]
+        [TestCase("[subscription]/path1/path2", SchemaItemPathCollections.Subscription, "/path1/path2")]
+        [TestCase("[wrong]/path1/path2", SchemaItemPathCollections.Unknown, "")]
+        [TestCase("[query]/path1", SchemaItemPathCollections.Query, "/path1")]
+        [TestCase("[mutation]/path1", SchemaItemPathCollections.Mutation, "/path1")]
+        [TestCase("[subscription]/path1", SchemaItemPathCollections.Subscription, "/path1")]
+        [TestCase("[wrong]/path1", SchemaItemPathCollections.Unknown, "")]
         public void Destructuring_ToCollectionAndPath(
             string input,
-            SchemaItemCollections expectedCollection,
+            SchemaItemPathCollections expectedCollection,
             string expectedPath)
         {
             var route = new SchemaItemPath(input);

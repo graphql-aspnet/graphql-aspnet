@@ -37,12 +37,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public GraphControllerTemplate(Type controllerType)
             : base(controllerType)
         {
-            this.AllowedSchemaItemCollections = new HashSet<SchemaItemCollections>
+            this.AllowedSchemaItemCollections = new HashSet<SchemaItemPathCollections>
             {
-                SchemaItemCollections.Query,
-                SchemaItemCollections.Mutation,
-                SchemaItemCollections.Subscription,
-                SchemaItemCollections.Types,
+                SchemaItemPathCollections.Query,
+                SchemaItemPathCollections.Mutation,
+                SchemaItemPathCollections.Subscription,
+                SchemaItemPathCollections.Types,
             };
         }
 
@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// Gets operation types to which this object can declare a field.
         /// </summary>
         /// <value>The allowed operation types.</value>
-        protected override HashSet<SchemaItemCollections> AllowedSchemaItemCollections { get; }
+        protected override HashSet<SchemaItemPathCollections> AllowedSchemaItemCollections { get; }
 
         /// <summary>
         /// Gets an enumeration of the extension methods this controller defines.

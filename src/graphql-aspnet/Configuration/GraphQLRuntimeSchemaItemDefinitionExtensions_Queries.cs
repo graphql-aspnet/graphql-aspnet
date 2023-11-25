@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLRuntimeFieldDefinition.</returns>
         public static IGraphQLRuntimeFieldGroupDefinition MapQueryGroup(this SchemaOptions schemaOptions, string template)
         {
-            return new RuntimeFieldGroupTemplate(schemaOptions, SchemaItemCollections.Query, template);
+            return new RuntimeFieldGroupTemplate(schemaOptions, SchemaItemPathCollections.Query, template);
         }
 
         /// <summary>

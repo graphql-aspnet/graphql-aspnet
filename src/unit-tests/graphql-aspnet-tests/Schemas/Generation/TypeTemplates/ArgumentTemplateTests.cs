@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             mockMethod.Arguments.Returns(new List<IGraphArgumentTemplate>());
 
             var route = new SchemaItemPath(SchemaItemPath.Join(
-                SchemaItemCollections.Query,
+                SchemaItemPathCollections.Query,
                 nameof(ParameterTestClass),
                 nameof(ParameterTestClass.TestMethod)));
             mockMethod.Route.Returns(route);

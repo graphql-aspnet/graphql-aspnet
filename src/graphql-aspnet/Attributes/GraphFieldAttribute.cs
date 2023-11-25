@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Attributes
         /// Initializes a new instance of the <see cref="GraphFieldAttribute"/> class.
         /// </summary>
         public GraphFieldAttribute()
-            : this(false, SchemaItemCollections.Types, Constants.Routing.ACTION_METHOD_META_NAME)
+            : this(false, SchemaItemPathCollections.Types, Constants.Routing.ACTION_METHOD_META_NAME)
         {
         }
 
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Attributes
         /// <param name="template">The template naming scheme to use to generate a graph field from this method or property. The exact name may be altered on a per schema
         /// basis depending on field name formatting rules etc.</param>
         public GraphFieldAttribute(string template)
-         : this(false, SchemaItemCollections.Types, template)
+         : this(false, SchemaItemPathCollections.Types, template)
         {
         }
 
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Attributes
         /// or just setup the field.</param>
         protected GraphFieldAttribute(
             bool isRootFragment,
-            SchemaItemCollections fieldType,
+            SchemaItemPathCollections fieldType,
             string template,
             string unionTypeName,
             params Type[] typeSet)
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Attributes
         /// or just setup the field.</param>
         protected GraphFieldAttribute(
             bool isRootFragment,
-            SchemaItemCollections fieldType,
+            SchemaItemPathCollections fieldType,
             string template,
             params Type[] typeSet)
         {
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Attributes
         /// field is a part of.
         /// </summary>
         /// <value>The type of the field.</value>
-        public SchemaItemCollections FieldType { get; }
+        public SchemaItemPathCollections FieldType { get; }
 
         /// <summary>
         /// Gets the template for the route fragment for the field, if provided.

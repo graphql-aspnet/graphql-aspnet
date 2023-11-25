@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "kind",
                 $"{this.InternalName}.{nameof(IntrospectedType.Kind)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_KIND_ENUM, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "kind"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "kind"),
                 (gt) => Task.FromResult(gt?.Kind ?? TypeKind.NONE),
                 $"The specific {Constants.ReservedNames.TYPE_KIND_ENUM} of this graph type.");
 
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "name",
                 $"{this.InternalName}.{nameof(IntrospectedType.Name)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "name"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "name"),
                 (gt) => Task.FromResult(gt?.Name),
                 "The case-sensitive name of this graph type as it appears in the object graph");
 
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "description",
                 $"{this.InternalName}.{nameof(IntrospectedType.Description)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "description"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "description"),
                 (gt) => Task.FromResult(gt?.Description),
                 "a human-readable phrase describing what this type represents.");
 
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "fields",
                 $"{this.InternalName}.{nameof(IntrospectedType.Fields)}",
                 new GraphTypeExpression(Constants.ReservedNames.FIELD_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "fields"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "fields"),
                 declaredReturnType: typeof(IEnumerable<IntrospectedField>),
                 objectType: typeof(IEnumerable<IntrospectedField>),
                 mode: FieldResolutionMode.PerSourceItem,
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "interfaces",
                 $"{this.InternalName}.{nameof(IntrospectedType.Interfaces)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "interfaces"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "interfaces"),
                 (gt) => Task.FromResult(gt?.Interfaces),
                 $"For {TypeKind.OBJECT.ToString()} types, contains a list of interface this type implements; otherwise null.");
 
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "possibleTypes",
                 $"{this.InternalName}.{nameof(IntrospectedType.PossibleTypes)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "possibleTypes"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "possibleTypes"),
                 (gt) => Task.FromResult(gt?.PossibleTypes),
                 $"For {TypeKind.INTERFACE.ToString()} and {TypeKind.UNION.ToString()} types, declares the possible types that implement the interface or are included " +
                 "in the union; otherwise, null.");
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "enumValues",
                 $"{this.InternalName}.{nameof(IntrospectedType.EnumValues)}",
                 new GraphTypeExpression(Constants.ReservedNames.ENUM_VALUE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, Constants.ReservedNames.ENUM_VALUE_TYPE),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, Constants.ReservedNames.ENUM_VALUE_TYPE),
                 declaredReturnType: typeof(IEnumerable<IntrospectedEnumValue>),
                 objectType: typeof(IEnumerable<IntrospectedEnumValue>),
                 mode: FieldResolutionMode.PerSourceItem,
@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "inputFields",
                 $"{this.InternalName}.{nameof(IntrospectedType.InputFields)}",
                 new GraphTypeExpression(Constants.ReservedNames.INPUT_VALUE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "inputFields"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "inputFields"),
                 (gt) => Task.FromResult(gt?.InputFields),
                 $"For {TypeKind.INPUT_OBJECT.ToString()} types, declares the fields that need to be supplied when submitting an object on a query; otherwise null.");
 
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "ofType",
                 $"{this.InternalName}.{nameof(IntrospectedType.OfType)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "ofType"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "ofType"),
                 (gt) => Task.FromResult(gt?.OfType),
                 $"For {TypeKind.NON_NULL.ToString()} and {TypeKind.LIST.ToString()} meta types, declares the underlying type that is " +
                 "wrapped by this type; otherwise null.");
@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "specifiedByURL",
                 $"{this.InternalName}.{nameof(IntrospectedType.SpecifiedByUrl)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "specifiedByURL"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "specifiedByURL"),
                 (gt) => Task.FromResult(gt?.SpecifiedByUrl),
                 "A string, in the form of a URL, pointing to a specification " +
                 "if the graph type is a scalar, otherwise null.");

@@ -174,7 +174,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new InputObjectGraphTypeTemplate(typeof(SchemaItemCollections));
+                var template = new InputObjectGraphTypeTemplate(typeof(SchemaItemPathCollections));
             });
         }
 

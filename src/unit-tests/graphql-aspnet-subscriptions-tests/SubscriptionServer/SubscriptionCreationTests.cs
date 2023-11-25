@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
 
             var createdSub = context.Subscription;
             Assert.IsTrue(createdSub.IsValid);
-            Assert.AreEqual("[type]/Subscription_SubscriptionData/RetrieveObject", createdSub.Field.Route.Path);
+            Assert.AreEqual("[subscription]/subscriptionData/RetrieveObject", createdSub.Field.Route.Path);
             Assert.AreEqual(id, createdSub.Id);
             Assert.AreEqual(0, createdSub.Messages.Count);
             Assert.AreEqual(result.Client, createdSub.Client);

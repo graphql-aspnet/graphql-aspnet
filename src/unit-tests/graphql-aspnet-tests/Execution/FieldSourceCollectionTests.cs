@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void AllowedFieldIsAdded_CanBeRetrieved()
         {
-            var path = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path2");
+            var path = new SchemaItemPath(SchemaItemPathCollections.Subscription, "path1/path2");
             var mock = Substitute.For<IGraphField>();
             mock.Route.Returns(path);
             mock.FieldSource.Returns(GraphFieldSource.Action);
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void UpdatedFieldIsAdded_CanBeRetrieved()
         {
-            var path = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path2");
+            var path = new SchemaItemPath(SchemaItemPathCollections.Subscription, "path1/path2");
             var mock = Substitute.For<IGraphField>();
             mock.Route.Returns(path);
             mock.FieldSource.Returns(GraphFieldSource.Action);
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void DisallowedFieldIsNotAdded_CanNotBeRetrieved()
         {
-            var path = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path2");
+            var path = new SchemaItemPath(SchemaItemPathCollections.Subscription, "path1/path2");
             var mock = Substitute.For<IGraphField>();
             mock.Route.Returns(path);
             mock.FieldSource.Returns(GraphFieldSource.Method);
@@ -94,12 +94,12 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void UnFoundField_IsNotReturned()
         {
-            var path = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path2");
+            var path = new SchemaItemPath(SchemaItemPathCollections.Subscription, "path1/path2");
             var mock = Substitute.For<IGraphField>();
             mock.Route.Returns(path);
             mock.FieldSource.Returns(GraphFieldSource.Action);
 
-            var path1 = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path3");
+            var path1 = new SchemaItemPath(SchemaItemPathCollections.Subscription, "path1/path3");
             var mock1 = Substitute.For<IGraphField>();
             mock1.Route.Returns(path1);
             mock1.FieldSource.Returns(GraphFieldSource.Action);
@@ -119,12 +119,12 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void WhenMultipleAllowedSources_AllCanBeRetrieved()
         {
-            var path = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path2");
+            var path = new SchemaItemPath(SchemaItemPathCollections.Subscription, "path1/path2");
             var mock = Substitute.For<IGraphField>();
             mock.Route.Returns(path);
             mock.FieldSource.Returns(GraphFieldSource.Method);
 
-            var path1 = new SchemaItemPath(SchemaItemCollections.Subscription, "path1/path3");
+            var path1 = new SchemaItemPath(SchemaItemPathCollections.Subscription, "path1/path3");
             var mock1 = Substitute.For<IGraphField>();
             mock1.Route.Returns(path1);
             mock1.FieldSource.Returns(GraphFieldSource.Action);

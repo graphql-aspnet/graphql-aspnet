@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
     [DebuggerDisplay("Meta Field: " + Constants.ReservedNames.TYPENAME_FIELD)]
     public class Introspection_TypeNameMetaField : MethodGraphField
     {
-        private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(SchemaItemCollections.Query, Constants.ReservedNames.TYPENAME_FIELD);
+        private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(SchemaItemPathCollections.Query, Constants.ReservedNames.TYPENAME_FIELD);
         private readonly string _graphTypeName;
 
         /// <summary>

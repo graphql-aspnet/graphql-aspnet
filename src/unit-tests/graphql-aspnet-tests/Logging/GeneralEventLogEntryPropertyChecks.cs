@@ -512,7 +512,7 @@ namespace GraphQL.AspNet.Tests.Logging
             directive.InternalName.Returns("The Directive Internal");
 
             var item = Substitute.For<ISchemaItem>();
-            item.Route.Returns(new AspNet.Schemas.Structural.SchemaItemPath(SchemaItemCollections.Types, "path1"));
+            item.Route.Returns(new AspNet.Schemas.Structural.SchemaItemPath(SchemaItemPathCollections.Types, "path1"));
 
             var entry = new TypeSystemDirectiveAppliedLogEntry<GraphSchema>(directive, item);
 
@@ -536,7 +536,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 GraphOperationType.Query,
                 new SourceLocation(999, 33, 5));
 
-            var path = new SchemaItemPath(SchemaItemCollections.Types, "type1");
+            var path = new SchemaItemPath(SchemaItemPathCollections.Types, "type1");
 
             var entry = new ExecutionDirectiveAppliedLogEntry<GraphSchema>(directive, docPart);
 

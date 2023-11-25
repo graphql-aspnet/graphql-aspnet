@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual("MethodDescription", action.Description);
             Assert.AreEqual(typeof(OneMethodController), action.SourceObjectType);
             Assert.AreEqual(typeof(OneMethodController), action.Parent.ObjectType);
-            Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
+            Assert.AreEqual(SchemaItemPathCollections.Query, action.Route.RootCollection);
             Assert.AreEqual("[query]/path0/path1", action.Route.Path);
             Assert.AreEqual($"{nameof(OneMethodController)}.{nameof(OneMethodController.MethodWithBasicAttribtributes)}", action.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, action.Parent.ObjectType);
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var action = this.CreateActionTemplate<ContainerController>(nameof(ContainerController.RootMethod));
             action.ValidateOrThrow();
 
-            Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
+            Assert.AreEqual(SchemaItemPathCollections.Query, action.Route.RootCollection);
             Assert.AreEqual(0, action.Arguments.Count);
             Assert.IsFalse(action.IsAsyncField);
             Assert.AreEqual("[query]/path22", action.Route.Path);
@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var action = this.CreateActionTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
             action.ValidateOrThrow();
 
-            Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
+            Assert.AreEqual(SchemaItemPathCollections.Query, action.Route.RootCollection);
             Assert.IsNotNull(action.UnionProxy);
             Assert.AreEqual(2, action.UnionProxy.Types.Count);
             Assert.AreEqual(action.ObjectType, typeof(object));
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var action = this.CreateActionTemplate<UnionTestController>(nameof(UnionTestController.UnionViaProxy));
             action.ValidateOrThrow();
 
-            Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
+            Assert.AreEqual(SchemaItemPathCollections.Query, action.Route.RootCollection);
             Assert.IsNotNull(action.UnionProxy);
             Assert.AreEqual(typeof(UnionTestProxy), action.UnionProxy.GetType());
         }

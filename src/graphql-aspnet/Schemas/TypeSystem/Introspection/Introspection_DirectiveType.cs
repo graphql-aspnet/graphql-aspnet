@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(
                     Constants.ScalarNames.STRING,
                     GraphTypeExpression.RequiredSingleItem),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "name"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "name"),
                 (directive) => directive.Name.AsCompletedTask(),
                 "The case-sensitive name of this directive as it should appear in a query.");
 
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "description",
                 $"{this.InternalName}.{nameof(Directive.Description)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "description"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "description"),
                 (directive) => directive.Description.AsCompletedTask(),
                 "A human-friendly description of the directive and how it functions.");
 
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(
                     Constants.ReservedNames.DIRECTIVE_LOCATION_ENUM,
                     GraphTypeExpression.RequiredListRequiredItem),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "locations"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "locations"),
                 (directive) => directive.Locations.AsCompletedTask(),
                 "A collection of locations where this directive can be used.");
 
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(
                     Constants.ReservedNames.INPUT_VALUE_TYPE,
                     GraphTypeExpression.RequiredListRequiredItem),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "args"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "args"),
                 (directive) => directive.Arguments.AsCompletedTask(),
                 "A collection of input values provided to the directive in order to properly invoke it.");
 
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(
                     Constants.ScalarNames.BOOLEAN,
                     GraphTypeExpression.RequiredSingleItem),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "isRepeatable"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "isRepeatable"),
                 (directive) => directive.IsRepeatable.AsCompletedTask(),
                 "A value indicating if the directive is repeatable on its target entity.");
         }

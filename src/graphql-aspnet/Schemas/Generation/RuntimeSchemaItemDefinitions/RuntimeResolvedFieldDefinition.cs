@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// <param name="pathTemplate">The path template identifying this item.</param>
         public RuntimeResolvedFieldDefinition(
             SchemaOptions schemaOptions,
-            SchemaItemCollections collection,
+            SchemaItemPathCollections collection,
             string pathTemplate)
             : base(schemaOptions, collection, pathTemplate)
         {
@@ -89,13 +89,13 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
             var (collection, path) = this.Route;
             switch (collection)
             {
-                case SchemaItemCollections.Query:
+                case SchemaItemPathCollections.Query:
                     return new QueryRootAttribute(path, this.ReturnType)
                     {
                         InternalName = this.InternalName,
                     };
 
-                case SchemaItemCollections.Mutation:
+                case SchemaItemPathCollections.Mutation:
                     return new MutationRootAttribute(path, this.ReturnType)
                     {
                         InternalName = this.InternalName,

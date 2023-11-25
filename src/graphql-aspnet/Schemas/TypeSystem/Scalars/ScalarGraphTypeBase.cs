@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             string specifiedByUrl = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
-            this.Route = new SchemaItemPath(SchemaItemCollections.Scalars, this.Name);
+            this.Route = new SchemaItemPath(SchemaItemPathCollections.Scalars, this.Name);
             this.ObjectType = Validation.ThrowIfNullOrReturn(primaryType, nameof(primaryType));
             this.InternalName = this.ObjectType.FriendlyName();
             this.Publish = true;

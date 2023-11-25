@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "name",
                 $"{this.InternalName}.{nameof(IntrospectedInputValueType.Name)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "name"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "name"),
                 (inputField) => inputField.Name.AsCompletedTask(),
                 "The case-sensitive name of this argument as it should be declared in a queryt.");
 
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "description",
                 $"{this.InternalName}.{nameof(IntrospectedInputValueType.Description)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "description"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "description"),
                 (inputField) => inputField.Description.AsCompletedTask(),
                 "A human-friendly description of this argument and what it means to the item it is declared on.");
 
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "type",
                 $"{this.InternalName}.{nameof(IntrospectedInputValueType.IntrospectedGraphType)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "type"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "type"),
                 (inputField) => inputField.IntrospectedGraphType.AsCompletedTask(),
                 "The graph type of this argument.");
 
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "defaultValue",
                 $"{this.InternalName}.{nameof(IntrospectedInputValueType.DefaultValue)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "defaultValue"),
+                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "defaultValue"),
                 (inputField) => inputField.DefaultValue.AsCompletedTask(),
                 "(optional) A default value that will be used if this input field is not provided in a query.");
         }

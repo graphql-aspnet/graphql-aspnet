@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
     using System.Linq;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.Generation.TypeMakers;
@@ -119,14 +120,12 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var graphArg = graphField.Arguments.FirstOrDefault();
             Assert.IsNotNull(graphArg);
             Assert.IsEmpty(graphArg.TypeExpression.Wrappers);
-            Assert.AreEqual(field, graphArg.Parent);
+            Assert.AreEqual(graphField, graphArg.Parent);
         }
 
         [Test]
         public void PropertyGraphField_DefaultValuesCheck()
         {
-            var server = new TestServerBuilder().Build();
-
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
             obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
@@ -139,8 +138,15 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             template.ValidateOrThrow();
 
             var field = this.MakeGraphField(template);
+
+            var graphType = Substitute.For<IObjectGraphType>();
+            graphType.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            graphType.InternalName.Returns("Item0");
+            graphType.ObjectType.Returns(typeof(SimplePropertyObject));
+
+            field = field.Clone(graphType);
             Assert.IsNotNull(field);
-            Assert.AreEqual(obj, field.Parent);
+            Assert.AreEqual(graphType, field.Parent);
             Assert.AreEqual(Constants.ScalarNames.STRING, field.TypeExpression.TypeName);
             Assert.AreEqual(0, field.TypeExpression.Wrappers.Length);
         }
@@ -163,9 +169,16 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             Assert.AreEqual(typeof(int), template.ObjectType);
 
             var field = this.MakeGraphField(template);
+
+            var graphType = Substitute.For<IObjectGraphType>();
+            graphType.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            graphType.InternalName.Returns("Item0");
+            graphType.ObjectType.Returns(typeof(SimplePropertyObject));
+
+            field = field.Clone(graphType);
             Assert.IsNotNull(field);
             Assert.AreEqual(Constants.ScalarNames.INT, field.TypeExpression.TypeName);
-            Assert.AreEqual(obj, field.Parent);
+            Assert.AreEqual(graphType, field.Parent);
             CollectionAssert.AreEqual(new MetaGraphTypes[] { MetaGraphTypes.IsNotNull }, field.TypeExpression.Wrappers);
         }
 
