@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
                 .Schema;
 
             var map = SubscriptionEventSchemaMap.CreateEventMap(schema);
-            var pathName = "[subscription]/OneFieldMap/TestActionMethod";
+            var pathName = "[type]/Subscription_OneFieldMap/TestActionMethod";
             var eventName = new SubscriptionEventName(typeof(EventMapSchema), "TestActionMethod");
 
             Assert.AreEqual(1, map.Count);
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
                 .Schema;
 
             var map = SubscriptionEventSchemaMap.CreateEventMap(schema);
-            var pathName = "[subscription]/OneFieldMap/TestActionMethod";
+            var pathName = "[type]/Subscription_OneFieldMap/TestActionMethod";
             var eventName = new SubscriptionEventName(
                 typeof(EventMapSchema),
                 nameof(OneFieldMapController.TestActionMethod));

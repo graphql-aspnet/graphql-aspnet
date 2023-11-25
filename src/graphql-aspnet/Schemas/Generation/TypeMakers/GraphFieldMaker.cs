@@ -52,7 +52,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             template.Parse();
             template.ValidateOrThrow(false);
 
-            var formatter = _config.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphFieldCreationResult<IGraphField>();
 
             // if the owner of this field declared top level objects append them to the
@@ -65,7 +64,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             if (template.SecurityPolicies?.Count > 0)
                 securityGroups.Add(template.SecurityPolicies);
 
-            MethodGraphField field = this.CreateFieldInstance(formatter, template, securityGroups);
+            MethodGraphField field = this.InstantiateField(template, securityGroups);
+
+            field = _config
+                .DeclarationOptions
+                .SchemaFormatStrategy?
+                .ApplyFormatting(_config, field) ?? field;
 
             field.Description = template.Description;
             field.Complexity = template.Complexity;
@@ -78,7 +82,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                     if (GraphArgumentMaker.IsArgumentPartOfSchema(argTemplate, _schema))
                     {
                         var argumentResult = _argMaker.CreateArgument(field, argTemplate);
-                        field.Arguments.AddArgument(argumentResult.Argument);
+
+                        var argument = argumentResult.Argument.Clone(field);
+                        field.Arguments.AddArgument(argument);
 
                         result.MergeDependents(argumentResult);
                     }
@@ -101,8 +107,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         {
             Validation.ThrowIfNull(template, nameof(template));
 
-            var formatter = _config.DeclarationOptions.GraphNamingFormatter;
-
             var defaultInputObject = InstanceFactory.CreateInstance(template.Parent.ObjectType);
             var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(template.Parent.ObjectType);
 
@@ -119,9 +123,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             var schemaTypeName = this.PrepareTypeName(template);
 
             var field = new InputGraphField(
-                    formatter.FormatFieldName(template.Name),
+                    template.Name,
                     template.InternalName,
-                    template.TypeExpression.CloneTo(schemaTypeName),
+                    template.TypeExpression.Clone(schemaTypeName),
                     template.Route,
                     template.ObjectType,
                     template.DeclaredName,
@@ -131,6 +135,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                     directives);
 
             field.Description = template.Description;
+
+            field = _config
+                .DeclarationOptions
+                .SchemaFormatStrategy?
+                .ApplyFormatting(_config, field) ?? field;
 
             result.AddDependentRange(template.RetrieveRequiredTypes());
 
@@ -174,14 +183,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             else
             {
                 // guess on what the name of the schema item will be
-                // this is guaranteed correct for all but scalars
+                // this is guaranteed correct (minus casing) for all but scalars
                 schemaTypeName = GraphTypeNames.ParseName(template.ObjectType, template.OwnerTypeKind);
             }
-
-            // enforce non-renaming standards in the maker since the
-            // directly controls the formatter
-            if (GlobalTypes.CanBeRenamed(schemaTypeName))
-                schemaTypeName = _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(schemaTypeName);
 
             return schemaTypeName;
         }
@@ -193,7 +197,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
         /// <returns>System.String.</returns>
         protected virtual string PrepareTypeName(IInputGraphFieldTemplate template)
         {
-            // all input fields return either an object, scalar or enum (never a union)
+            // all input fields return either an object, scalar or enum (never a union or interface)
             string schemaTypeName;
             var existingGraphType = _schema.KnownTypes.FindGraphType(template.ObjectType, template.OwnerTypeKind);
 
@@ -213,30 +217,24 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 schemaTypeName = GraphTypeNames.ParseName(template.ObjectType, template.OwnerTypeKind);
             }
 
-            // enforce non-renaming standards in the maker since the
-            // directly controls the formatter
-            if (GlobalTypes.CanBeRenamed(schemaTypeName))
-                schemaTypeName = _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(schemaTypeName);
-
             return schemaTypeName;
         }
 
         /// <summary>
         /// Instantiates the graph field according to the data provided.
         /// </summary>
-        /// <param name="formatter">The formatter.</param>
-        /// <param name="template">The template.</param>
-        /// <param name="securityGroups">The security groups.</param>
+        /// <param name="template">The template to create a field from.</param>
+        /// <param name="securityGroups">The complete set of
+        /// security groups to apply to the field.</param>
         /// <returns>MethodGraphField.</returns>
-        protected virtual MethodGraphField CreateFieldInstance(
-            GraphNameFormatter formatter,
+        protected virtual MethodGraphField InstantiateField(
             IGraphFieldTemplate template,
             List<AppliedSecurityPolicyGroup> securityGroups)
         {
             var directives = template.CreateAppliedDirectives();
 
             var schemaTypeName = this.PrepareTypeName(template);
-            var typeExpression = template.TypeExpression.CloneTo(schemaTypeName);
+            var typeExpression = template.TypeExpression.Clone(schemaTypeName);
 
             switch (template.FieldSource)
             {
@@ -244,7 +242,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 case GraphFieldSource.Property:
                 case GraphFieldSource.Action:
                     return new MethodGraphField(
-                        formatter.FormatFieldName(template.Name),
+                        template.Name,
                         template.InternalName,
                         typeExpression,
                         template.Route,

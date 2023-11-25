@@ -223,5 +223,23 @@ namespace GraphQL.AspNet.Tests.Controllers
             Assert.AreEqual(expectedCollection, col);
             Assert.AreEqual(expectedPath, path);
         }
+
+        [Test]
+        public void TakingParent_OfType_AndMakingRoute_IsValid()
+        {
+            var item = new SchemaItemPath($"{Constants.Routing.TYPE_ROOT}/typeName");
+            var newItem = item.Parent.CreateChild("otherType");
+
+            Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/otherType", newItem.ToString());
+        }
+
+        [Test]
+        public void TakingParent_OfQuery_AndMakingRoute_IsValid()
+        {
+            var item = new SchemaItemPath($"{Constants.Routing.QUERY_ROOT}/fieldName");
+            var newItem = item.Parent.CreateChild("otherField");
+
+            Assert.AreEqual($"{Constants.Routing.QUERY_ROOT}/otherField", newItem.ToString());
+        }
     }
 }

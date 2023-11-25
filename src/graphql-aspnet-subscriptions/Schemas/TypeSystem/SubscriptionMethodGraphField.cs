@@ -29,8 +29,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="route">The formal route to this field in the object graph.</param>
         /// <param name="internalFullName">The fully qualified name of the method this field respresents, as it was declared
         /// in C# code.</param>
-        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
+        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="mode">The execution mode of this field.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="securityPolicies">The security policies applied to this field.</param>
@@ -41,8 +41,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
             string internalFullName,
-            Type objectType = null,
             Type declaredReturnType = null,
+            Type objectType = null,
             Execution.FieldResolutionMode mode = Execution.FieldResolutionMode.PerSourceItem,
             Interfaces.Execution.IGraphFieldResolver resolver = null,
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
@@ -54,15 +54,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        protected override MethodGraphField CreateNewInstance(IGraphType parent)
+        protected override MethodGraphField CreateNewInstance()
         {
             return new SubscriptionMethodGraphField(
                 this.Name,
                 this.TypeExpression.Clone(),
-                parent.Route.CreateChild(this.Name),
+                this.Route.Clone(),
                 this.InternalName,
-                this.ObjectType,
                 this.DeclaredReturnType,
+                this.ObjectType,
                 this.Mode,
                 this.Resolver,
                 this.SecurityGroups,

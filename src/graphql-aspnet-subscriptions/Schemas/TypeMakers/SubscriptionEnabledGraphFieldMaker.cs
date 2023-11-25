@@ -37,10 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeMakers
         }
 
         /// <inheritdoc />
-        protected override MethodGraphField CreateFieldInstance(
-            GraphNameFormatter formatter,
-            IGraphFieldTemplate template,
-            List<AppliedSecurityPolicyGroup> securityGroups)
+        protected override MethodGraphField InstantiateField(IGraphFieldTemplate template, List<AppliedSecurityPolicyGroup> securityGroups)
         {
             var subTemplate = template as SubscriptionControllerActionGraphFieldTemplate;
             if (subTemplate != null
@@ -50,15 +47,15 @@ namespace GraphQL.AspNet.Schemas.TypeMakers
                 var directives = template.CreateAppliedDirectives();
 
                 var schemaTypeName = this.PrepareTypeName(template);
-                var typeExpression = template.TypeExpression.CloneTo(schemaTypeName);
+                var typeExpression = template.TypeExpression.Clone(schemaTypeName);
 
                 return new SubscriptionMethodGraphField(
-                    formatter.FormatFieldName(template.Name),
+                    template.Name,
                     typeExpression,
                     template.Route,
                     template.InternalName,
-                    template.ObjectType,
                     template.DeclaredReturnType,
+                    template.ObjectType,
                     template.Mode,
                     template.CreateResolver(),
                     securityGroups,
@@ -66,7 +63,7 @@ namespace GraphQL.AspNet.Schemas.TypeMakers
                     directives);
             }
 
-            return base.CreateFieldInstance(formatter, template, securityGroups);
+            return base.InstantiateField(template, securityGroups);
         }
     }
 }

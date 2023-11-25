@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
@@ -52,7 +53,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             var enumDirectives = template.CreateAppliedDirectives();
 
             var graphType = new EnumGraphType(
-                _config.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(template.Name),
+                template.Name,
                 template.InternalName,
                 template.ObjectType,
                 template.Route,
@@ -61,6 +62,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 Description = template.Description,
                 Publish = template.Publish,
             };
+
+            graphType = _config
+                .DeclarationOptions?
+                .SchemaFormatStrategy?
+                .ApplyFormatting(_config, graphType) ?? graphType;
 
             var result = new GraphTypeCreationResult()
             {
@@ -83,13 +89,24 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
                 var valueOption = new EnumValue(
                     graphType,
-                    _config.DeclarationOptions.GraphNamingFormatter.FormatEnumValueName(value.Name),
+                    value.Name,
                     value.InternalName,
                     value.Description,
                     value.Route,
                     value.Value,
                     value.DeclaredLabel,
                     valueDirectives);
+
+                valueOption = _config
+                    .DeclarationOptions?
+                    .SchemaFormatStrategy?
+                    .ApplyFormatting(_config, valueOption) ?? valueOption;
+
+                if (Constants.QueryLanguage.IsReservedKeyword(valueOption.Name))
+                {
+                    throw new GraphTypeDeclarationException($"The enum value '{value.Name}' is invalid for " +
+                        $"graph type '{graphType.Name}' on the target schema. {value.Name} is a reserved keyword.");
+                }
 
                 graphType.AddOption(valueOption);
 

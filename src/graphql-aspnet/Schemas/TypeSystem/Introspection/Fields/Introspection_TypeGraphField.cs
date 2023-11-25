@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
 {
     using System;
     using System.Diagnostics;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Resolvers.Introspeection;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -27,6 +28,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
     internal class Introspection_TypeGraphField : MethodGraphField
     {
         private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(SchemaItemCollections.Query, Constants.ReservedNames.TYPE_FIELD);
+        private readonly IntrospectedSchema _schema;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_TypeGraphField"/> class.
@@ -43,6 +45,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
                 mode: FieldResolutionMode.PerSourceItem,
                 resolver: new Schema_TypeGraphFieldResolver(schema))
         {
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             this.Arguments.AddArgument(
                 "name",
                 "name",
@@ -51,9 +54,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
         }
 
         /// <inheritdoc />
-        public override IGraphField Clone(IGraphType parent)
+        public override IGraphField Clone(ISchemaItem parent = null, string fieldName = null, GraphTypeExpression typeExpression = null)
         {
-            throw new NotImplementedException("Introspection related fields cannot be cloned.");
+            if (fieldName != null)
+                throw new NotSupportedException($"{nameof(Introspection_TypeGraphField)} does not support field name changes.");
+            if (typeExpression != null)
+                throw new NotSupportedException($"{nameof(Introspection_TypeGraphField)} does not support type expression changes.");
+
+            var item = new Introspection_TypeGraphField(_schema);
+            item.Parent = parent ?? this.Parent;
+            item.Description = this.Description;
+
+            return item;
         }
 
         /// <summary>

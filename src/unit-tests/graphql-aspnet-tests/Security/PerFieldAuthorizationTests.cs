@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Security
             {
               ""errors"": [
                 {
-                  ""message"": ""Access Denied to field [query]/secured"",
+                  ""message"": ""Access Denied to field [type]/Query/secured"",
                   ""locations"": [
                     {
                       ""line"": 7,
@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Tests.Security
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
             Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("access denied"));
-            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("[query]/secured"));
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("[type]/query/secured"));
             Assert.AreEqual(1, PerFieldCounterController.NumberOfInvocations);
             PerFieldCounterController.NumberOfInvocations = 0;
         }

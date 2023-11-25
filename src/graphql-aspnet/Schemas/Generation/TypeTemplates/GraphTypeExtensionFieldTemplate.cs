@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(returnType);
                 this.TypeExpression = GraphTypeExpression
                     .FromType(returnType, this.DeclaredTypeWrappers ?? wrappers)
-                    .CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
+                    .Clone(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
                 this.PossibleObjectTypes.Insert(0, this.ObjectType);
             }

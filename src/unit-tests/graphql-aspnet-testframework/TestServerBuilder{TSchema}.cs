@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
             if (_initialSetup.HasFlag(TestOptions.UseCodeDeclaredNames))
             {
-                options.DeclarationOptions.GraphNamingFormatter = new GraphNameFormatter(GraphNameFormatStrategy.NoChanges);
+                options.DeclarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(GraphNameFormatStrategy.NoChanges);
             }
 
             if (_initialSetup.HasFlag(TestOptions.IncludeExceptions))

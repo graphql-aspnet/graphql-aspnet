@@ -72,6 +72,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
+            _declaredIsRequired = isRequired;
             this.HasDefaultValue = !isRequired;
             this.IsRequired = isRequired && this.TypeExpression.IsNonNullable;
             this.DefaultValue = defaultValue;
@@ -79,10 +80,33 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public void AssignParent(IGraphType parent)
+        public virtual IInputGraphField Clone(
+            ISchemaItem parent = null,
+            string fieldName = null,
+            GraphTypeExpression typeExpression = null)
         {
-            Validation.ThrowIfNull(parent, nameof(parent));
-            this.Parent = parent;
+            parent = parent ?? this.Parent;
+            var route = parent?.Route.CreateChild(this.Route.Name) ?? this.Route.Clone();
+
+            fieldName = fieldName?.Trim() ?? this.Name;
+
+            var clonedItem = new InputGraphField(
+                fieldName,
+                this.InternalName,
+                typeExpression ?? this.TypeExpression,
+                route,
+                this.ObjectType,
+                this.DeclaredName,
+                this.DeclaredReturnType,
+                _declaredIsRequired,
+                this.DefaultValue,
+                this.AppliedDirectives);
+
+            clonedItem.Parent = parent;
+            clonedItem.Description = this.Description;
+            clonedItem.Publish = this.Publish;
+
+            return clonedItem;
         }
 
         /// <inheritdoc />
@@ -102,6 +126,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        private readonly bool _declaredIsRequired;
 
         /// <inheritdoc />
         public string Name { get; }

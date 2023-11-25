@@ -48,19 +48,11 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         SchemaArgumentBindingRules ArgumentBindingRule { get; }
 
         /// <summary>
-        /// <para>Gets an object used to format the declared names in your C# code as various items in the type system
-        /// for this <see cref="ISchema" />.
-        /// </para>
-        ///
-        /// <para>
-        /// Defaults:
-        /// Graph Type Names : ProperCase.
-        /// Field Names: camelCase.
-        /// Enum Values: UPPERCASE.
-        /// </para>
+        /// Gets an instance of a format strategy object that will apply custom
+        /// formats and other updates to a newly created schema item just before its added to a schema.
         /// </summary>
-        /// <value>The graph naming formatter.</value>
-        GraphNameFormatter GraphNamingFormatter { get; }
+        /// <value>The schema item formatter.</value>
+        GraphSchemaFormatStrategy SchemaFormatStrategy { get; }
 
         /// <summary>
         /// Gets the set of operation types that can be registered to this schema.

@@ -44,6 +44,14 @@ namespace GraphQL.AspNet.Interfaces.Internal
         GraphTypeExpression TypeExpression { get; }
 
         /// <summary>
+        /// Gets a value indicating whether the <see cref="TypeExpression"/>
+        /// of this instance is custom or otherwise supplied by the devloper and not inferred
+        /// by the code written.
+        /// </summary>
+        /// <value><c>true</c> if this instance is custom type expression; otherwise, <c>false</c>.</value>
+        bool IsCustomTypeExpression { get; }
+
+        /// <summary>
         /// Gets a value indicating what role this argument plays in a resolver, whether it be part of the schema,
         /// a parent resolved data value, an injected value from a service provider etc.
         /// </summary>

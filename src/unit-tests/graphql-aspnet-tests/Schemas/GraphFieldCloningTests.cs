@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 polices,
                 appliedDirectives);
 
-            field.AssignParent(originalParent);
+            field = field.Clone(originalParent) as MethodGraphField;
 
             field.Arguments.AddArgument(new GraphFieldArgument(
                 field,

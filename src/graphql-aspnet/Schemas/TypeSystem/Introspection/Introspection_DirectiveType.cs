@@ -32,8 +32,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
             // "__Directive" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
             // -------------------------------------------------------------------------
-            this.GraphFieldCollection.AddField<IntrospectedDirective, string>(
+            this.AddField<IntrospectedDirective, string>(
                 "name",
+                $"{this.InternalName}.{nameof(Directive.Name)}",
                 new GraphTypeExpression(
                     Constants.ScalarNames.STRING,
                     GraphTypeExpression.RequiredSingleItem),
@@ -41,15 +42,17 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 (directive) => directive.Name.AsCompletedTask(),
                 "The case-sensitive name of this directive as it should appear in a query.");
 
-            this.GraphFieldCollection.AddField<IntrospectedDirective, string>(
+            this.AddField<IntrospectedDirective, string>(
                 "description",
+                $"{this.InternalName}.{nameof(Directive.Description)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "description"),
                 (directive) => directive.Description.AsCompletedTask(),
                 "A human-friendly description of the directive and how it functions.");
 
-            this.GraphFieldCollection.AddField<IntrospectedDirective, IReadOnlyList<DirectiveLocation>>(
+            this.AddField<IntrospectedDirective, IReadOnlyList<DirectiveLocation>>(
                 "locations",
+                $"{this.InternalName}.{nameof(Directive.Locations)}",
                 new GraphTypeExpression(
                     Constants.ReservedNames.DIRECTIVE_LOCATION_ENUM,
                     GraphTypeExpression.RequiredListRequiredItem),
@@ -57,8 +60,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 (directive) => directive.Locations.AsCompletedTask(),
                 "A collection of locations where this directive can be used.");
 
-            this.GraphFieldCollection.AddField<IntrospectedDirective, IReadOnlyList<IntrospectedInputValueType>>(
+            this.AddField<IntrospectedDirective, IReadOnlyList<IntrospectedInputValueType>>(
                 "args",
+                $"{this.InternalName}.{nameof(Directive.Arguments)}",
                 new GraphTypeExpression(
                     Constants.ReservedNames.INPUT_VALUE_TYPE,
                     GraphTypeExpression.RequiredListRequiredItem),
@@ -66,8 +70,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 (directive) => directive.Arguments.AsCompletedTask(),
                 "A collection of input values provided to the directive in order to properly invoke it.");
 
-            this.GraphFieldCollection.AddField<IntrospectedDirective, bool>(
+            this.AddField<IntrospectedDirective, bool>(
                 "isRepeatable",
+                $"{this.InternalName}.{nameof(Directive.IsRepeatable)}",
                 new GraphTypeExpression(
                     Constants.ScalarNames.BOOLEAN,
                     GraphTypeExpression.RequiredSingleItem),

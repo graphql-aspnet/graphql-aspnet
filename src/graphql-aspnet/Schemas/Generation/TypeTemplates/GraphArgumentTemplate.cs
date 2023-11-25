@@ -95,6 +95,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_argDeclaration?.TypeExpression == null)
             {
                 this.DeclaredTypeWrappers = null;
+                this.IsCustomTypeExpression = false;
             }
             else
             {
@@ -106,6 +107,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 else
                 {
                     this.DeclaredTypeWrappers = expression.Wrappers;
+                    this.IsCustomTypeExpression = true;
                 }
             }
 
@@ -131,7 +133,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             // set appropriate meta data about this parameter for inclusion in the type system
             this.TypeExpression = GraphTypeExpression.FromType(this.DeclaredArgumentType, this.DeclaredTypeWrappers);
-            this.TypeExpression = this.TypeExpression.CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
+            this.TypeExpression = this.TypeExpression.Clone(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
             // perform any inspections and logic to determine
             // how this argument performs within the application.
@@ -309,7 +311,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // actual expected type expression of the C# code provided
             var actualTypeExpression = GraphTypeExpression
                 .FromType(this.DeclaredArgumentType)
-                .CloneTo(GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT));
+                .Clone(GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT));
 
             if (!GraphTypeExpression.AreTypesCompatiable(actualTypeExpression, this.TypeExpression, false))
             {
@@ -441,6 +443,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; private set; }
+
+        /// <inheritdoc />
+        public bool IsCustomTypeExpression { get; protected set; }
 
         /// <inheritdoc />
         public Type ObjectType { get; private set; }

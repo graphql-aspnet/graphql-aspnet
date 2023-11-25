@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="route">The path segment that represents this virtual field.</param>
         /// <param name="parentTypeName">The type name to use for the virtual type that owns this field.</param>
         public VirtualGraphField(
-            IGraphType parent,
+            ISchemaItem parent,
             string fieldName,
             SchemaItemPath route,
             string parentTypeName)
@@ -87,15 +87,33 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public void AssignParent(IGraphType parent)
+        public IGraphField Clone(
+            ISchemaItem parent = null,
+            string fieldName = null,
+            GraphTypeExpression typeExpression = null)
         {
-            this.Parent = this.Parent;
-        }
+            parent = parent ?? this.Parent;
+            fieldName = fieldName?.Trim() ?? this.Name;
+            typeExpression = typeExpression ?? this.TypeExpression;
 
-        /// <inheritdoc />
-        public IGraphField Clone(IGraphType parent)
-        {
-            throw new NotImplementedException("Virtual Fields cannot be cloned.");
+            var clonedItem = new VirtualGraphField(
+                parent,
+                fieldName,
+                parent.Route.CreateChild(fieldName),
+                typeExpression.TypeName);
+
+            clonedItem.Description = this.Description;
+            clonedItem.TypeExpression = typeExpression.Clone();
+            clonedItem.Publish = this.Publish;
+            clonedItem.DeprecationReason = this.DeprecationReason;
+            clonedItem.IsDeprecated = this.IsDeprecated;
+            clonedItem.Complexity = this.Complexity;
+
+            // clone over the arguments
+            foreach (var argument in this.Arguments)
+                clonedItem.Arguments.AddArgument(argument.Clone(clonedItem));
+
+            return clonedItem;
         }
 
         /// <inheritdoc />

@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
             var typeExpression = GraphTypeExpression.FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers);
-            typeExpression = typeExpression.CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
+            typeExpression = typeExpression.Clone(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
             this.IsRequired = this.AttributeProvider.SingleAttributeOrDefault<RequiredAttribute>() != null;
             this.TypeExpression = typeExpression;
@@ -144,6 +144,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; private set; }
+
+        /// <inheritdoc />
+        public bool IsCustomTypeExpression => this.DeclaredTypeWrappers != null;
 
         /// <inheritdoc />
         public TypeKind OwnerTypeKind => TypeKind.INPUT_OBJECT;

@@ -32,45 +32,51 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
             // "__Field" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
             // -------------------------------------------------------------------------
-            this.GraphFieldCollection.AddField<IntrospectedField, string>(
+            this.AddField<IntrospectedField, string>(
                 "name",
+                $"{this.InternalName}.{nameof(IntrospectedField.Name)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "name"),
                 (field) => field.Name.AsCompletedTask(),
                 "The case-sensitive name of this field as it should be used in a query.");
 
-            this.GraphFieldCollection.AddField<IntrospectedField, string>(
+            this.AddField<IntrospectedField, string>(
                 "description",
+                $"{this.InternalName}.{nameof(IntrospectedField.Description)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "description"),
                 (field) => field.Description.AsCompletedTask(),
                 "Indiates if this field is deprecated. Any deprecated field should not be used and " +
                 "may be removed at a future date.");
 
-            this.GraphFieldCollection.AddField<IntrospectedField, IReadOnlyList<IntrospectedInputValueType>>(
+            this.AddField<IntrospectedField, IReadOnlyList<IntrospectedInputValueType>>(
                 "args",
+                $"{this.InternalName}.{nameof(IntrospectedField.Arguments)}",
                 new GraphTypeExpression(Constants.ReservedNames.INPUT_VALUE_TYPE, GraphTypeExpression.RequiredListRequiredItem),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "args"),
                 (field) => field.Arguments.AsCompletedTask(),
                 "A collection of input values that can be passed to this field to alter its behavior when used in a query.");
 
-            this.GraphFieldCollection.AddField<IntrospectedField, IntrospectedType>(
+            this.AddField<IntrospectedField, IntrospectedType>(
                 "type",
+                $"{this.InternalName}.{nameof(IntrospectedField.IntrospectedGraphType)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "type"),
                 (field) => field.IntrospectedGraphType.AsCompletedTask(),
                 "The graph type returned by this field.");
 
-            this.GraphFieldCollection.AddField<IntrospectedField, bool>(
+            this.AddField<IntrospectedField, bool>(
                 "isDeprecated",
+                $"{this.InternalName}.{nameof(IntrospectedField.IsDeprecated)}",
                 new GraphTypeExpression(Constants.ScalarNames.BOOLEAN, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "isDeprecated"),
                 (field) => field.IsDeprecated.AsCompletedTask(),
                 "Indiates if this field is deprecated. Any deprecated field should not be used and " +
                 "may be removed at a future date.");
 
-            this.GraphFieldCollection.AddField<IntrospectedField, string>(
+            this.AddField<IntrospectedField, string>(
                 "deprecationReason",
+                $"{this.InternalName}.{nameof(IntrospectedField.DeprecationReason)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "deprecationReason"),
                 (field) => field.DeprecationReason.AsCompletedTask(),

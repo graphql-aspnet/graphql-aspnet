@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.Diagnostics;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -42,13 +43,32 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             : base(name, internalName, route, directives)
         {
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
-            this.GraphFieldCollection.AddField(new Introspection_TypeNameMetaField(name));
+            this.Extend(new Introspection_TypeNameMetaField(name));
         }
 
         /// <inheritdoc />
-        public IGraphField Extend(IGraphField newField)
+        public override IGraphType Clone(string typeName = null)
         {
-            return this.GraphFieldCollection.AddField(newField);
+            typeName = typeName?.Trim() ?? this.Name;
+            var route = this.Route.Clone().Parent.CreateChild(typeName);
+
+            var clonedItem = new ObjectGraphType(
+                typeName,
+                this.InternalName,
+                this.ObjectType,
+                route,
+                this.AppliedDirectives);
+
+            clonedItem.Description = this.Description;
+            clonedItem.Publish = this.Publish;
+
+            foreach (var item in this.InterfaceNames)
+                clonedItem.InterfaceNames.Add(item);
+
+            foreach (var field in this.Fields.Where(x => !(x is Introspection_TypeNameMetaField)))
+                clonedItem.Extend(field.Clone(clonedItem));
+
+            return clonedItem;
         }
 
         /// <inheritdoc />

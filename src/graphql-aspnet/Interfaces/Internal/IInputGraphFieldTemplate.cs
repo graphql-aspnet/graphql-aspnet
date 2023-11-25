@@ -64,5 +64,13 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// </summary>
         /// <value>The custom wrappers.</value>
         MetaGraphTypes[] DeclaredTypeWrappers { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="TypeExpression"/>
+        /// of this instance is custom or otherwise supplied by the devloper and not inferred
+        /// by the code written.
+        /// </summary>
+        /// <value><c>true</c> if this instance is custom type expression; otherwise, <c>false</c>.</value>
+        bool IsCustomTypeExpression { get; }
     }
 }

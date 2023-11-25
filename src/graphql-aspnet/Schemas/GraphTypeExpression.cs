@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Schemas
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -139,13 +140,51 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
-        /// Clones this expression but with a new, core graph type name.
+        /// <para>
+        /// Inspects the supplied type expression and determines that if the structure of the
+        /// type expression is compatiable with this instance.
+        /// </para>
+        /// <para>
+        /// Two type expressions are considered structurally compatiable if their type names are the same
+        /// and their list modifiers are the same. Whether a list or type is nullable is not
+        /// considered.
+        /// </para>
+        /// <para>
+        /// Example:   <br />
+        /// [[Type]] and [[Type!]!] ARE structurally compatiable.<br/>
+        /// [[Type]] and [Type] ARE NOT structurally compatiable.<br/>
+        /// </para>
         /// </summary>
-        /// <param name="graphTypeName">The new graph type name.</param>
-        /// <returns>GraphTypeExpression.</returns>
-        public GraphTypeExpression CloneTo(string graphTypeName)
+        /// <param name="typeExpression">The updated type expression.</param>
+        /// <returns><c>true</c> if [is structrual match] [the specified updated type expression]; otherwise, <c>false</c>.</returns>
+        public bool IsStructruallyCompatiable(GraphTypeExpression typeExpression)
         {
-            return new GraphTypeExpression(graphTypeName, this.Wrappers);
+            Validation.ThrowIfNull(typeExpression, nameof(typeExpression));
+
+            if (typeExpression.TypeName != this.TypeName)
+                return false;
+
+            var left = this;
+            var right = typeExpression;
+
+            while (left.IsNonNullable)
+                left = left.UnWrapExpression();
+
+            while (right.IsNonNullable)
+                right = right.UnWrapExpression();
+
+            if (left.IsListOfItems && right.IsListOfItems)
+            {
+                left = left.UnWrapExpression();
+                right = right.UnWrapExpression();
+
+                return left.IsStructruallyCompatiable(right);
+            }
+
+            if (left.IsListOfItems || right.IsListOfItems)
+                return false;
+
+            return true;
         }
 
         /// <summary>
@@ -155,6 +194,71 @@ namespace GraphQL.AspNet.Schemas
         public GraphTypeExpression Clone()
         {
             return new GraphTypeExpression(this.TypeName, this.Wrappers);
+        }
+
+        /// <summary>
+        /// Clones this instance into a new copy of itself.
+        /// </summary>
+        /// <param name="nullabilityStrategy">The nullability strategy to apply to the
+        /// cloned instance.</param>
+        /// <returns>GraphTypeExpression.</returns>
+        public GraphTypeExpression Clone(GraphTypeExpressionNullabilityStrategies nullabilityStrategy)
+        {
+            return this.Clone(this.TypeName, nullabilityStrategy);
+        }
+
+        /// <summary>
+        /// Clones this expression but with a new, core graph type name.
+        /// </summary>
+        /// <param name="graphTypeName">A new graph type name to apply to the cloned instance.</param>
+        /// <param name="nullabilityStrategy">The nullability strategy to apply to the
+        /// cloned instance.</param>
+        /// <returns>GraphTypeExpression.</returns>
+        public GraphTypeExpression Clone(string graphTypeName, GraphTypeExpressionNullabilityStrategies nullabilityStrategy = GraphTypeExpressionNullabilityStrategies.None)
+        {
+            graphTypeName = Validation.ThrowIfNullWhiteSpaceOrReturn(graphTypeName, nameof(graphTypeName));
+
+            var wrappers = this.Wrappers.ToList();
+
+            if (nullabilityStrategy.HasFlag(GraphTypeExpressionNullabilityStrategies.NonNullLists))
+            {
+                if (wrappers.Count > 0)
+                {
+                    var wrappersNew = new List<MetaGraphTypes>();
+                    if (wrappers[0] == MetaGraphTypes.IsList)
+                        wrappersNew.Add(MetaGraphTypes.IsNotNull);
+
+                    wrappersNew.Add(wrappers[0]);
+
+                    for (var i = 1; i < wrappers.Count; i++)
+                    {
+                        var prevWrapper = wrappers[i - 1];
+                        var thisWrapper = wrappers[i];
+
+                        // ensure every list is prefixed with a not-null
+                        if (thisWrapper == MetaGraphTypes.IsList
+                            && prevWrapper != MetaGraphTypes.IsNotNull)
+                        {
+                            wrappersNew.Add(MetaGraphTypes.IsNotNull);
+                        }
+
+                        wrappersNew.Add(thisWrapper);
+                    }
+
+                    wrappers = wrappersNew;
+                }
+            }
+
+            if (nullabilityStrategy.HasFlag(GraphTypeExpressionNullabilityStrategies.NonNullType))
+            {
+                if (wrappers.Count == 0
+                  || wrappers[wrappers.Count - 1] != MetaGraphTypes.IsNotNull)
+                {
+                    wrappers.Add(MetaGraphTypes.IsNotNull);
+                }
+            }
+
+            return new GraphTypeExpression(graphTypeName, wrappers);
         }
 
         /// <summary>

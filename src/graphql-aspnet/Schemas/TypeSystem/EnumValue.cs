@@ -52,12 +52,25 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.DeclaredValue = Validation.ThrowIfNullOrReturn(internalValue, nameof(internalValue));
             this.DeclaredLabel = Validation.ThrowIfNullWhiteSpaceOrReturn(declaredLabel, nameof(declaredLabel));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
+        }
 
-            if (Constants.QueryLanguage.IsReservedKeyword(this.Name))
-            {
-                throw new GraphTypeDeclarationException($"The enum value '{this.Name}' is invalid for " +
-                    $"graph type '{this.Parent.Name}'. {this.Name} is a reserved keyword.");
-            }
+        /// <inheritdoc />
+        public virtual IEnumValue Clone(IEnumGraphType parent = null, string valueName = null)
+        {
+            parent = parent ?? this.Parent;
+            valueName = valueName?.Trim() ?? this.Name;
+
+            var clonedItem = new EnumValue(
+                parent,
+                valueName,
+                this.InternalName,
+                this.Description,
+                parent.Route.CreateChild(valueName),
+                this.DeclaredValue,
+                this.DeclaredLabel,
+                this.AppliedDirectives);
+
+            return clonedItem;
         }
 
         /// <inheritdoc />

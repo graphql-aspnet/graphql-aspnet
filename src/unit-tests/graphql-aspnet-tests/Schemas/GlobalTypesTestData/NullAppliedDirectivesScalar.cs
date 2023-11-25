@@ -53,11 +53,6 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
 
         public string Description { get; set; }
 
-        public IScalarGraphType Clone(string newName)
-        {
-            throw new NotImplementedException();
-        }
-
         public object Resolve(ReadOnlySpan<char> data)
         {
             throw new NotImplementedException();
@@ -74,6 +69,11 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
         }
 
         public bool ValidateObject(object item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IGraphType Clone(string typeName)
         {
             throw new NotImplementedException();
         }

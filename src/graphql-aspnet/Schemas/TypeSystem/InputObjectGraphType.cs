@@ -48,7 +48,29 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
             this.Publish = true;
 
-            _graphFields = new InputGraphFieldCollection(this);
+            _graphFields = new InputGraphFieldCollection();
+        }
+
+        /// <inheritdoc />
+        public virtual IGraphType Clone(string typeName = null)
+        {
+            typeName = typeName?.Trim() ?? this.Name;
+            var route = this.Route.Clone().Parent.CreateChild(typeName);
+
+            var clonedItem = new InputObjectGraphType(
+                typeName,
+                this.InternalName,
+                this.ObjectType,
+                route,
+                this.AppliedDirectives);
+
+            clonedItem.Description = this.Description;
+            clonedItem.Publish = this.Publish;
+
+            foreach (var field in this.Fields)
+                this.AddField(field.Clone(clonedItem));
+
+            return clonedItem;
         }
 
         /// <inheritdoc />

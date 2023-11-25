@@ -31,30 +31,34 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
             // "__EnumValue" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
             // -------------------------------------------------------------------------
-            this.GraphFieldCollection.AddField<IntrospectedEnumValue, string>(
+            this.AddField<IntrospectedEnumValue, string>(
                 "name",
+                $"{this.InternalName}.{nameof(EnumValue.Name)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "name"),
                 (ev) => ev.Name.AsCompletedTask(),
                 "The case-sensitive name of this value as it should be used in a query.");
 
-            this.GraphFieldCollection.AddField<IntrospectedEnumValue, string>(
+            this.AddField<IntrospectedEnumValue, string>(
                 "description",
+                $"{this.InternalName}.{nameof(EnumValue.Description)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "description"),
                 (ev) => ev.Description.AsCompletedTask(),
                 "A human-friendly description of the value and what it means.");
 
-            this.GraphFieldCollection.AddField<IntrospectedEnumValue, bool>(
+            this.AddField<IntrospectedEnumValue, bool>(
                 "isDeprecated",
+                $"{this.InternalName}.{nameof(EnumValue.IsDeprecated)}",
                 new GraphTypeExpression(Constants.ScalarNames.BOOLEAN, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "isDeprecatedame"),
                 (ev) => ev.IsDeprecated.AsCompletedTask(),
                 "Indiates if this value is deprecated. Any deprecated value should not be used and " +
                 "may be removed at a future date.");
 
-            this.GraphFieldCollection.AddField<IntrospectedEnumValue, string>(
+            this.AddField<IntrospectedEnumValue, string>(
                 "deprecationReason",
+                $"{this.InternalName}.{nameof(EnumValue.DeprecationReason)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "deprecationReason"),
                 (ev) => ev.DeprecationReason.AsCompletedTask(),

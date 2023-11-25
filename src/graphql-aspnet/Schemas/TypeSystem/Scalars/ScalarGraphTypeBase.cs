@@ -100,15 +100,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         }
 
         /// <inheritdoc />
-        public virtual IScalarGraphType Clone(string newName)
+        public virtual IGraphType Clone(string typeName = null)
         {
-            newName = Validation.ThrowIfNullWhiteSpaceOrReturn(newName, nameof(newName));
+            typeName = Validation.ThrowIfNullWhiteSpaceOrReturn(typeName, nameof(typeName));
             var newInstance = GlobalTypes.CreateScalarInstanceOrThrow(this.GetType()) as ScalarGraphTypeBase;
 
             // some built in scalars (defined against this class)
             // should never be renameable (string, int, float, id, boolean)
             if (GlobalTypes.CanBeRenamed(this.Name))
-                newInstance.Name = newName;
+                newInstance.Name = typeName;
 
             return newInstance;
         }

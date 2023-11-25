@@ -27,8 +27,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("Field: {Route.Path}")]
     public class MethodGraphField : IGraphField
     {
-        private IGraphType _parent = null;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodGraphField" /> class.
         /// </summary>
@@ -79,34 +77,34 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc/>
-        public void AssignParent(IGraphType parent)
+        public virtual IGraphField Clone(ISchemaItem parent = null, string fieldName = null, GraphTypeExpression typeExpression = null)
         {
-            Validation.ThrowIfNull(parent, nameof(parent));
-            _parent = parent;
-        }
+            parent = parent ?? this.Parent;
+            fieldName = fieldName?.Trim() ?? this.Name;
 
-        /// <inheritdoc/>
-        public virtual IGraphField Clone(IGraphType parent)
-        {
-            Validation.ThrowIfNull(parent, nameof(parent));
+            var clonedItem = this.CreateNewInstance();
 
-            var newField = this.CreateNewInstance(parent);
+            var route = parent?.Route.CreateChild(this.Route.Name) ?? this.Route.Clone();
 
             // assign all publically alterable fields
-            newField.Description = this.Description;
-            newField.Publish = this.Publish;
-            newField.Complexity = this.Complexity;
-            newField.IsDeprecated = this.IsDeprecated;
-            newField.DeprecationReason = this.DeprecationReason;
-            newField.FieldSource = this.FieldSource;
-
-            newField.AssignParent(parent);
+            clonedItem.Name = fieldName;
+            clonedItem.Route = route;
+            clonedItem.TypeExpression = typeExpression ?? this.TypeExpression.Clone();
+            clonedItem.Description = this.Description;
+            clonedItem.Publish = this.Publish;
+            clonedItem.Complexity = this.Complexity;
+            clonedItem.IsDeprecated = this.IsDeprecated;
+            clonedItem.DeprecationReason = this.DeprecationReason;
+            clonedItem.FieldSource = this.FieldSource;
+            clonedItem.Parent = parent;
 
             // clone over the arguments
             foreach (var argument in this.Arguments)
-                newField.Arguments.AddArgument(argument.Clone(newField));
+                clonedItem.Arguments.AddArgument(argument.Clone(clonedItem));
 
-            return newField;
+            this.UpdateResolver(this.Resolver, this.Mode);
+
+            return clonedItem;
         }
 
         /// <inheritdoc/>
@@ -140,15 +138,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <remarks>
         /// This method is used as the basis for new object creation during cloning.
         /// </remarks>
-        /// <param name="parent">The item to assign as the parent of the new field.</param>
         /// <returns>IGraphField.</returns>
-        protected virtual MethodGraphField CreateNewInstance(IGraphType parent)
+        protected virtual MethodGraphField CreateNewInstance()
         {
             return new MethodGraphField(
                 this.Name,
                 this.InternalName,
                 this.TypeExpression.Clone(),
-                parent.Route.CreateChild(this.Name),
+                this.Route,
                 this.DeclaredReturnType,
                 this.ObjectType,
                 this.Mode,
@@ -182,7 +179,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual bool Publish { get; set; }
 
         /// <inheritdoc/>
-        public SchemaItemPath Route { get; }
+        public SchemaItemPath Route { get; protected set; }
 
         /// <inheritdoc/>
         public IGraphFieldResolver Resolver { get; protected set; }
@@ -206,7 +203,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public bool IsVirtual => false;
 
         /// <inheritdoc/>
-        public ISchemaItem Parent => _parent;
+        public ISchemaItem Parent { get; protected set; }
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }

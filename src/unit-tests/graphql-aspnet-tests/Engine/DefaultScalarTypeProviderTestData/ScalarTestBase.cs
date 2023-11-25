@@ -37,11 +37,11 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
             this.SourceResolver = Substitute.For<ILeafValueResolver>();
         }
 
-        public virtual IScalarGraphType Clone(string newName)
+        public IGraphType Clone(string typeName = null)
         {
-            newName = Validation.ThrowIfNullWhiteSpaceOrReturn(newName, nameof(newName));
+            typeName = typeName ?? this.Name;
             var newInstance = GlobalTypes.CreateScalarInstanceOrThrow(this.GetType()) as ScalarTestBase;
-            newInstance.Name = newName;
+            newInstance.Name = typeName;
             return newInstance;
         }
 

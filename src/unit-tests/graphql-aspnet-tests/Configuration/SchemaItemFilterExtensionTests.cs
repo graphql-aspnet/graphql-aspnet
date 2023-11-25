@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             var foundItems = new List<ISchemaItem>();
 
-            foreach (var item in server.Schema.AllSchemaItems())
+            foreach (var item in server.Schema.AllSchemaItems().OfType<IInputGraphField>())
             {
                 if (item.IsField("Input_TwoPropertyObject", "property1"))
                     foundItems.Add(item);

@@ -17,6 +17,14 @@ namespace GraphQL.AspNet.Interfaces.Schema
     public interface IGraphType : ISchemaItem
     {
         /// <summary>
+        /// Creates a shallow clone of this instance, replacing the type name with the
+        /// provided value if provided.
+        /// </summary>
+        /// <param name="typeName">When provided, represents the new graph type name to use for the cloned value.</param>
+        /// <returns>IGraphType.</returns>
+        IGraphType Clone(string typeName = null);
+
+        /// <summary>
         /// Determines whether the provided item is of a concrete type represented by this graph type.
         /// </summary>
         /// <param name="item">The item to check.</param>

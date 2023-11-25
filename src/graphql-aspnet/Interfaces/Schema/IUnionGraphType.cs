@@ -19,6 +19,16 @@ namespace GraphQL.AspNet.Interfaces.Schema
     public interface IUnionGraphType : IGraphType
     {
         /// <summary>
+        /// Creates a shallow clone of this instance, replacing the type name with the
+        /// provided value if provided.
+        /// </summary>
+        /// <param name="typeName">When provided, represents the new graph type name to use for the cloned value.</param>
+        /// <param name="possibleGraphTypeNameFormatter">A format function that, if supplied, will update all the
+        /// possible graph type names on the clone to match the provided format.</param>
+        /// <returns>IGraphType.</returns>
+        IGraphType Clone(string typeName = null, Func<string, string> possibleGraphTypeNameFormatter = null);
+
+        /// <summary>
         /// Gets the complete list of possible concrete types contained in this union.
         /// </summary>
         /// <value>The possible graph type names.</value>

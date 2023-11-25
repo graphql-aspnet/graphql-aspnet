@@ -69,6 +69,30 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
+        public virtual IGraphType Clone(string typeName = null)
+        {
+            typeName = typeName?.Trim() ?? this.Name;
+
+            var clonedItem = new Directive(
+                typeName,
+                this.InternalName,
+                this.Locations,
+                this.ObjectType,
+                this.Route.Parent.CreateChild(typeName),
+                this.IsRepeatable,
+                this.Resolver,
+                this.SecurityGroups);
+
+            clonedItem.Publish = this.Publish;
+            clonedItem.Description = this.Description;
+
+            foreach (var argument in this.Arguments)
+                clonedItem.Arguments.AddArgument(argument.Clone(clonedItem));
+
+            return clonedItem;
+        }
+
+        /// <inheritdoc />
         public string Name { get; set; }
 
         /// <inheritdoc />

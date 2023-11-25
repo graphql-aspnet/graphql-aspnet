@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Engine
             for (var i = 0; i < pathSegments.Count; i++)
             {
                 var segment = pathSegments[i];
-                var formattedName = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatFieldName(segment.Name);
+                var formattedName = this.Schema.Configuration.DeclarationOptions.SchemaFormatStrategy.FormatFieldName(segment.Name);
                 if (parentType.Fields.ContainsKey(formattedName))
                 {
                     var field = parentType[formattedName];
@@ -203,7 +203,7 @@ namespace GraphQL.AspNet.Engine
                         break;
 
                     default:
-                        segments.Add(this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(pathSegmentName));
+                        segments.Add(this.Schema.Configuration.DeclarationOptions.SchemaFormatStrategy.FormatGraphTypeName(pathSegmentName));
                         break;
                 }
             }

@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
 
         public string Description { get; set; }
 
-        public IScalarGraphType Clone(string newName)
+        public IGraphType Clone(string typeName = null)
         {
             throw new NotImplementedException();
         }

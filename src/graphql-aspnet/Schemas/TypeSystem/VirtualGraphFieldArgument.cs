@@ -61,9 +61,28 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public IGraphArgument Clone(ISchemaItem parent)
+        public IGraphArgument Clone(ISchemaItem parent = null, string argumentName = null, GraphTypeExpression typeExpression = null)
         {
-            throw new NotImplementedException("Virtual graph arguments cannot be cloned");
+            parent = parent ?? this.Parent;
+
+            argumentName = argumentName?.Trim() ?? this.Name;
+
+            var parentRoute = parent?.Route ?? this.Route.Parent;
+            var route = parentRoute.CreateChild(argumentName);
+
+            var clonedItem = new VirtualGraphFieldArgument(
+                parent,
+                argumentName,
+                this.InternalName,
+                typeExpression ?? this.TypeExpression.Clone(),
+                route,
+                this.ObjectType,
+                this.HasDefaultValue,
+                this.DefaultValue);
+
+            clonedItem.Description = this.Description;
+
+            return clonedItem;
         }
 
         /// <inheritdoc />

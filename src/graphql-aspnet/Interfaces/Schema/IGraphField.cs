@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
 {
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
@@ -19,6 +20,16 @@ namespace GraphQL.AspNet.Interfaces.Schema
     /// </summary>
     public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISecurableSchemaItem, IGraphFieldBase
     {
+        /// <summary>
+        /// Creates a shallow clone of this instance, replacing specific field values if supplied.
+        /// </summary>
+        /// <param name="parent">When not null, represents the new parent item that will own this new field.</param>
+        /// <param name="fieldName">When not null, represents the new field name to use for the cloned value.</param>
+        /// <param name="typeExpression">When not null, represents the new type expression to use
+        /// for this field.</param>
+        /// <returns>IGraphField.</returns>
+        IGraphField Clone(ISchemaItem parent = null, string fieldName = null, GraphTypeExpression typeExpression = null);
+
         /// <summary>
         /// Updates the field resolver used by this graph field.
         /// </summary>
@@ -34,13 +45,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// <param name="graphType">The graph type to test.</param>
         /// <returns><c>true</c> if this field can be returned by specified graph type; otherwise, <c>false</c>.</returns>
         bool CanResolveForGraphType(IGraphType graphType);
-
-        /// <summary>
-        /// Clones this instance to a new field.
-        /// </summary>
-        /// <param name="parent">The new parent item that will own this new field.</param>
-        /// <returns>IGraphField.</returns>
-        IGraphField Clone(IGraphType parent);
 
         /// <summary>
         /// <para>Gets an object that will perform some operation against an execution

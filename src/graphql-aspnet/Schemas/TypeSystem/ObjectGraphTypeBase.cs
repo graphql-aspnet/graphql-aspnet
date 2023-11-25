@@ -41,15 +41,28 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
-            _graphFields = new GraphFieldCollection(this);
+            _graphFields = new GraphFieldCollection();
             this.InterfaceNames = new HashSet<string>();
             this.Publish = true;
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
         }
 
+        /// <inheritdoc cref="IExtendableGraphType.Extend" />
+        public virtual IGraphField Extend(IGraphField newField)
+        {
+            Validation.ThrowIfNull(newField, nameof(newField));
+            if (newField.Parent != this)
+                newField = newField.Clone(this);
+
+            return this.GraphFieldCollection.AddField(newField);
+        }
+
         /// <inheritdoc />
         public abstract bool ValidateObject(object item);
+
+        /// <inheritdoc />
+        public abstract IGraphType Clone(string typeName = null);
 
         /// <summary>
         /// Gets the mutatable collection of graph fields.

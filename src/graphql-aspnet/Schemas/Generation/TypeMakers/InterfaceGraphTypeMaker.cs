@@ -52,12 +52,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             template.ValidateOrThrow(false);
 
             var result = new GraphTypeCreationResult();
-            var formatter = _config.DeclarationOptions.GraphNamingFormatter;
 
             var directives = template.CreateAppliedDirectives();
 
             var interfaceType = new InterfaceGraphType(
-                formatter.FormatGraphTypeName(template.Name),
+                template.Name,
                 template.InternalName,
                 template.ObjectType,
                 template.Route,
@@ -66,6 +65,15 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 Description = template.Description,
                 Publish = template.Publish,
             };
+
+            // add in declared interfaces by name
+            foreach (var iface in template.DeclaredInterfaces)
+                interfaceType.InterfaceNames.Add(GraphTypeNames.ParseName(iface, TypeKind.INTERFACE));
+
+            interfaceType = _config
+                .DeclarationOptions?
+                .SchemaFormatStrategy?
+                .ApplyFormatting(_config, interfaceType) ?? interfaceType;
 
             // account for any potential type system directives
             result.AddDependentRange(template.RetrieveRequiredTypes());
@@ -86,12 +94,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                   $"The interface graph type '{template.ObjectType.FriendlyName()}' defines 0 fields. " +
                   $"All interface types must define at least one field.",
                   template.ObjectType);
-            }
-
-            // add in declared interfaces by name
-            foreach (var iface in template.DeclaredInterfaces)
-            {
-                interfaceType.InterfaceNames.Add(formatter.FormatGraphTypeName(GraphTypeNames.ParseName(iface, TypeKind.INTERFACE)));
             }
 
             result.GraphType = interfaceType;

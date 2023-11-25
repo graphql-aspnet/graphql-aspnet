@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Diagnostics;
     using System.Linq;
@@ -80,6 +81,47 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             _types = _types.Add(concreteType);
             _names = _names.Add(graphTypeName);
+        }
+
+        /// <inheritdoc />
+        public IGraphType Clone(string typeName = null)
+        {
+            return this.Clone(typeName, null);
+        }
+
+        /// <inheritdoc />
+        public virtual IGraphType Clone(string typeName = null, Func<string, string> possibleGraphTypeNameFormatter = null)
+        {
+            typeName = typeName?.Trim() ?? this.Name;
+            var route = this.Route.Clone().Parent.CreateChild(typeName);
+
+            var clonedItem = new UnionGraphType(
+                typeName,
+                this.InternalName,
+                this.TypeMapper,
+                route,
+                this.AppliedDirectives);
+
+            clonedItem.Publish = this.Publish;
+            clonedItem.Description = this.Description;
+            clonedItem.Publish = this.Publish;
+
+            clonedItem._types = _types.ToImmutableHashSet();
+
+            if (possibleGraphTypeNameFormatter == null)
+            {
+                clonedItem._names = _names.ToImmutableHashSet();
+            }
+            else
+            {
+                var list = new List<string>();
+                foreach (var str in _names)
+                    list.Add(possibleGraphTypeNameFormatter(str));
+
+                clonedItem._names = ImmutableHashSet.Create(list.ToArray());
+            }
+
+            return clonedItem;
         }
 
         /// <inheritdoc />

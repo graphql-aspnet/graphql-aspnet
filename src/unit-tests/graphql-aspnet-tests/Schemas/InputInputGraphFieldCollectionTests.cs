@@ -23,9 +23,6 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void AddField_DuplicateFIeldNameThrowsException()
         {
-            var owner = Substitute.For<IInputObjectGraphType>();
-            owner.Name.Returns("graphType");
-
             var field1 = Substitute.For<IInputGraphField>();
             field1.Name.Returns("field1");
             field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
@@ -34,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             field2.Name.Returns("field1");
             field2.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new InputGraphFieldCollection(owner);
+            var collection = new InputGraphFieldCollection();
             collection.AddField(field1);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -50,14 +47,11 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase("FIELD1", false)] // wrong case
         public void FindField(string fieldName, bool shouldBeFound)
         {
-            var owner = Substitute.For<IInputObjectGraphType>();
-            owner.Name.Returns("graphType");
-
             var field1 = Substitute.For<IInputGraphField>();
             field1.Name.Returns("field1");
             field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new InputGraphFieldCollection(owner);
+            var collection = new InputGraphFieldCollection();
             collection.AddField(field1);
 
             var result = collection.FindField(fieldName);
@@ -75,14 +69,11 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase("FIELD1", false)] // wrong case
         public void ContainsKey(string fieldName, bool shouldBeFound)
         {
-            var owner = Substitute.For<IInputObjectGraphType>();
-            owner.Name.Returns("graphType");
-
             var field1 = Substitute.For<IInputGraphField>();
             field1.Name.Returns("field1");
             field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new InputGraphFieldCollection(owner);
+            var collection = new InputGraphFieldCollection();
             collection.AddField(field1);
 
             var result = collection.ContainsKey(fieldName);
@@ -97,14 +88,11 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase("FIELD1", false)] // wrong case
         public void ThisByName(string fieldName, bool shouldBeFound)
         {
-            var owner = Substitute.For<IInputObjectGraphType>();
-            owner.Name.Returns("graphType");
-
             var field1 = Substitute.For<IInputGraphField>();
             field1.Name.Returns("field1");
             field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new InputGraphFieldCollection(owner);
+            var collection = new InputGraphFieldCollection();
             collection.AddField(field1);
 
             if (shouldBeFound)
@@ -126,14 +114,11 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void Contains_ForReferencedField_IsFound()
         {
-            var owner = Substitute.For<IInputObjectGraphType>();
-            owner.Name.Returns("graphType");
-
             var field1 = Substitute.For<IInputGraphField>();
             field1.Name.Returns("field1");
             field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new InputGraphFieldCollection(owner);
+            var collection = new InputGraphFieldCollection();
             collection.AddField(field1);
 
             var result = collection.Contains(field1);
@@ -143,9 +128,6 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void Contains_ForUnReferencedField_IsNotFound()
         {
-            var owner = Substitute.For<IInputObjectGraphType>();
-            owner.Name.Returns("graphType");
-
             var field1 = Substitute.For<IInputGraphField>();
             field1.Name.Returns("field1");
             field1.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
@@ -154,7 +136,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             field1Other.Name.Returns("field1");
             field1Other.TypeExpression.Returns(GraphTypeExpression.FromDeclaration("Bob!"));
 
-            var collection = new InputGraphFieldCollection(owner);
+            var collection = new InputGraphFieldCollection();
             collection.AddField(field1);
 
             var result = collection.Contains(field1Other);

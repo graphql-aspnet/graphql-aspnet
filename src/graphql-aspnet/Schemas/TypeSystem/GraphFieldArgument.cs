@@ -73,21 +73,29 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public IGraphArgument Clone(ISchemaItem parent)
+        public IGraphArgument Clone(ISchemaItem parent = null, string argumentName = null, GraphTypeExpression typeExpression = null)
         {
-            Validation.ThrowIfNull(parent, nameof(parent));
-            return new GraphFieldArgument(
+            parent = parent ?? this.Parent;
+
+            argumentName = argumentName?.Trim() ?? this.Name;
+
+            var parentRoute = parent?.Route ?? this.Route.Parent;
+            var route = parentRoute.CreateChild(argumentName);
+
+            var clonedItem = new GraphFieldArgument(
                 parent,
-                this.Name,
+                argumentName,
                 this.InternalName,
                 this.ParameterName,
-                this.TypeExpression.Clone(),
-                parent.Route.CreateChild(this.Name),
+                typeExpression ?? this.TypeExpression.Clone(),
+                route,
                 this.ObjectType,
                 this.HasDefaultValue,
                 this.DefaultValue,
                 this.Description,
                 this.AppliedDirectives);
+
+            return clonedItem;
         }
 
         /// <inheritdoc />

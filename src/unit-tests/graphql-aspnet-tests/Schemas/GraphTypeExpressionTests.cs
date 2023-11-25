@@ -224,5 +224,57 @@ namespace GraphQL.AspNet.Tests.Schemas
             var typeExpression = GraphTypeExpression.FromType(type, wrappers);
             Assert.AreEqual(expectedExpression, typeExpression.ToString());
         }
+
+        [TestCase("Type", "Type", true)]
+        [TestCase("[Type]", "[Type]", true)]
+        [TestCase("[[Type]]", "[[Type]]", true)]
+        [TestCase("Type!", "Type", true)]
+        [TestCase("[Type!]!", "[Type]", true)]
+        [TestCase("[[Type!]]!", "[[Type!]!]!", true)]
+        [TestCase("[[Type!]!]!", "[[Type]]!", true)]
+        [TestCase("[[Type!]!]!", "[[Type]]", true)]
+        [TestCase("[[[[[[[[[[Type]]]]]]]]]]", "[[[[[[[[[[Type]]]]]]]]]]", true)]
+        [TestCase("[[[[[[[[[[Type!]]!]]!]]!]]!]]!", "[[[[[[[[[[Type]]]]]]]]]]", true)]
+        [TestCase("[[[[[[[[[[Type!]!]!]!]!]!]!]!]!]!]!", "[[[[[[[[[[Type]]!]]]]]]]]!", true)]
+        [TestCase("[[[[[[[[[[Type]]]]]]]]]]", "[[[[[[[[[Type]]]]]]]]]", false)]
+        [TestCase("Type", "[[Type]]", false)]
+        [TestCase("[[[[[[[[[[Type!]]!]]]]]]!]]", "[[[[[[[[[Type!]!]!]!]!]!]!]!]!]!", false)]
+        [TestCase("Type!", "[[Type]!]!", false)]
+        public void IsStructuralMatch(string left, string right, bool isMatch)
+        {
+            var leftExpression = GraphTypeExpression.FromDeclaration(left);
+            var rightExpression = GraphTypeExpression.FromDeclaration(right);
+
+            var result = leftExpression.IsStructruallyCompatiable(rightExpression);
+            Assert.AreEqual(isMatch, result);
+
+            result = rightExpression.IsStructruallyCompatiable(leftExpression);
+            Assert.AreEqual(isMatch, result);
+        }
+
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullType, "String", "String!")]
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullType, "String!", "String!")]
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullType, "[String]", "[String!]")]
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullType, "[String!]", "[String!]")]
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullType, "[[[String]]]", "[[[String!]]]")]
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullType, "[[[String!]]]", "[[[String!]]]")]
+
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullLists, "String", "String")]
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullLists, "[String]", "[String]!")]
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullLists, "[[[String]]]", "[[[String]!]!]!")]
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullLists, "[[[String!]]]", "[[[String!]!]!]!")]
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullLists | GraphTypeExpressionNullabilityStrategies.NonNullType, "[[[String]]]", "[[[String!]!]!]!")]
+        [TestCase(GraphTypeExpressionNullabilityStrategies.NonNullLists | GraphTypeExpressionNullabilityStrategies.NonNullType, "[[[String!]!]!]!", "[[[String!]!]!]!")]
+        public void CloneTo_NullabilityTests(
+            GraphTypeExpressionNullabilityStrategies strategy,
+            string typeExpression,
+            string expectedOutput)
+        {
+            var expression = GraphTypeExpression.FromDeclaration(typeExpression);
+
+            var result = expression.Clone(strategy);
+
+            Assert.AreEqual(expectedOutput, result.ToString());
+        }
     }
 }

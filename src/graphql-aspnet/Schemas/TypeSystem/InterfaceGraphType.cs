@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -48,7 +49,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.InterfaceNames = new HashSet<string>();
 
-            _fieldSet = new GraphFieldCollection(this);
+            _fieldSet = new GraphFieldCollection();
 
             this.Publish = true;
 
@@ -58,8 +59,37 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
+        public virtual IGraphType Clone(string typeName = null)
+        {
+            typeName = typeName?.Trim() ?? this.Name;
+            var route = this.Route.Clone().Parent.CreateChild(typeName);
+
+            var clonedItem = new InterfaceGraphType(
+                typeName,
+                this.InternalName,
+                this.ObjectType,
+                route,
+                this.AppliedDirectives);
+
+            clonedItem.Description = this.Description;
+            clonedItem.Publish = this.Publish;
+
+            foreach (var item in this.InterfaceNames)
+                clonedItem.InterfaceNames.Add(item);
+
+            foreach (var field in this.Fields.Where(x => !(x is Introspection_TypeNameMetaField)))
+                clonedItem.Extend(field);
+
+            return clonedItem;
+        }
+
+        /// <inheritdoc />
         public IGraphField Extend(IGraphField newField)
         {
+            Validation.ThrowIfNull(newField, nameof(newField));
+            if (newField.Parent != this)
+                newField = newField.Clone(parent: this);
+
             return _fieldSet.AddField(newField);
         }
 

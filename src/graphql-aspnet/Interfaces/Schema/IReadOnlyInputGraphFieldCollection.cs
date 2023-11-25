@@ -17,12 +17,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
     public interface IReadOnlyInputGraphFieldCollection : IEnumerable<IInputGraphField>
     {
         /// <summary>
-        /// Gets the <see cref="IInputObjectGraphType"/> that owns this field collection.
-        /// </summary>
-        /// <value>The owner.</value>
-        IInputObjectGraphType Owner { get; }
-
-        /// <summary>
         /// Attempts to find a field of the given name. Returns null if the field is not found.
         /// </summary>
         /// <param name="fieldName">The name of the field to find.</param>

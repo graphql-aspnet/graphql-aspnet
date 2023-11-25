@@ -99,14 +99,20 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_fieldDeclaration?.TypeExpression == null)
             {
                 this.DeclaredTypeWrappers = null;
+                this.IsCustomTypeExpression = false;
             }
             else
             {
                 var expression = GraphTypeExpression.FromDeclaration(_fieldDeclaration.TypeExpression);
                 if (!expression.IsValid)
+                {
                     _invalidTypeExpression = true;
+                }
                 else
+                {
+                    this.IsCustomTypeExpression = true;
                     this.DeclaredTypeWrappers = expression.Wrappers;
+                }
             }
 
             // ------------------------------------
@@ -123,7 +129,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             var objectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
             var typeExpression = GraphTypeExpression
                                     .FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers)
-                                    .CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
+                                    .Clone(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
             // adjust the object type and type expression
             // if this field returns an action result
@@ -150,7 +156,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     objectType = potentialReturnTypes[0];
                     typeExpression = GraphTypeExpression
                         .FromType(objectType, this.DeclaredTypeWrappers)
-                        .CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
+                        .Clone(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
                     objectType = GraphValidation.EliminateWrappersFromCoreType(objectType);
                 }
@@ -570,6 +576,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; protected set; }
+
+        /// <inheritdoc />
+        public bool IsCustomTypeExpression { get; protected set; }
 
         /// <inheritdoc />
         public virtual IGraphUnionProxy UnionProxy { get; protected set; }

@@ -313,5 +313,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; private set; }
+
+        /// <inheritdoc />
+        public bool IsCustomTypeExpression => false;
     }
 }

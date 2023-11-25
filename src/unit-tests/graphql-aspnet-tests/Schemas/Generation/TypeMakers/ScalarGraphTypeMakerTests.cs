@@ -70,8 +70,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var server = new TestServerBuilder()
                 .AddGraphQL(o =>
                 {
-                    o.DeclarationOptions.GraphNamingFormatter
-                        = new GraphNameFormatter(strategy);
+                    o.DeclarationOptions.SchemaFormatStrategy
+                        = new GraphSchemaFormatStrategy(strategy);
                 })
                 .Build();
 

@@ -102,6 +102,27 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
+        public virtual IGraphType Clone(string typeName = null)
+        {
+            typeName = typeName?.Trim() ?? this.Name;
+
+            var clonedItem = new EnumGraphType(
+                typeName,
+                this.InternalName,
+                this.ObjectType,
+                this.Route.Parent.CreateChild(typeName),
+                this.AppliedDirectives);
+
+            clonedItem.Description = this.Description;
+            clonedItem.Publish = this.Publish;
+
+            foreach (var enumValue in this.Values)
+                clonedItem.AddOption(enumValue.Value.Clone(clonedItem));
+
+            return clonedItem;
+        }
+
+        /// <inheritdoc />
         public virtual IEnumValueCollection Values => _options;
 
         /// <inheritdoc />
