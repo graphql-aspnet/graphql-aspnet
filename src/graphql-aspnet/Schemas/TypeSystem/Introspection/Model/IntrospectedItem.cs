@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             this.Name = _item.Name;
             this.InternalName = _item.InternalName;
             this.Description = _item.Description;
-            this.Route = _item.Route.ReParent(Constants.Routing.INTROSPECTION_ROOT);
+            this.ItemPath = _item.ItemPath.ReParent(Constants.Routing.INTROSPECTION_ROOT);
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
 
         /// <inheritdoc />
         [GraphSkip]
-        public virtual SchemaItemPath Route { get; }
+        public virtual ItemPath ItemPath { get; }
 
         /// <inheritdoc />
         [GraphSkip]

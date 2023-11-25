@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             if (this.IsListField)
             {
                 throw new GraphExecutionException(
-                    $"The field {this.FieldContext.Field.Route.Path} represents " +
+                    $"The field {this.FieldContext.Field.ItemPath.Path} represents " +
                     "a list of items, a child field context cannot be directly added to it.");
             }
 
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             if (!this.IsListField)
             {
                 throw new GraphExecutionException(
-                    $"The field {this.FieldContext.Field.Route.Path} represents " +
+                    $"The field {this.FieldContext.Field.ItemPath.Path} represents " +
                     "a collection of fields, a child list item cannot be directly added to it.");
             }
 

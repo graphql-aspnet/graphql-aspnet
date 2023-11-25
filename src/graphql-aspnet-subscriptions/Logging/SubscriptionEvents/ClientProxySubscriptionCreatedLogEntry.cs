@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         {
             this.ClientId = client?.Id.ToString();
             this.SubscriptionId = subscription?.Id;
-            this.SubscriptionPath = subscription?.Route?.Path;
+            this.SubscriptionPath = subscription?.ItemPath?.Path;
         }
 
         /// <summary>

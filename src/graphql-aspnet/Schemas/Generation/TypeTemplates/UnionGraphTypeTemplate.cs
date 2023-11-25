@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     _instance = GlobalTypes.CreateUnionProxyFromType(_proxyType);
                     if (_instance != null)
                     {
-                        this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemPathCollections.Types, _instance.Name));
+                        this.ItemPath = new ItemPath(ItemPath.Join(ItemPathRoots.Types, _instance.Name));
                         this.InternalName = _instance.InternalName;
                     }
 

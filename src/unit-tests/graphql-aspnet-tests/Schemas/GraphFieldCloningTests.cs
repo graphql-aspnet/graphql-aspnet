@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         public void MethodField_PropertyCheck()
         {
             var originalParent = Substitute.For<IGraphType>();
-            originalParent.Route.Returns(new SchemaItemPath("[type]/JohnType"));
+            originalParent.ItemPath.Returns(new ItemPath("[type]/JohnType"));
             originalParent.Name.Returns("JohnType");
 
             var resolver = Substitute.For<IGraphFieldResolver>();
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 "field1",
                 "internalFieldName",
                 GraphTypeExpression.FromDeclaration("[Int]"),
-                new SchemaItemPath("[type]/JohnType/field1"),
+                new ItemPath("[type]/JohnType/field1"),
                 typeof(List<TwoPropertyObject>),
                 typeof(TwoPropertyObject),
                 AspNet.Execution.FieldResolutionMode.PerSourceItem,
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 "arg1",
                 "arg1",
                 GraphTypeExpression.FromDeclaration("String"),
-                field.Route.CreateChild("arg1"),
+                field.ItemPath.CreateChild("arg1"),
                 typeof(string),
                 false));
 
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             field.FieldSource = GraphFieldSource.Method;
 
             var clonedParent = Substitute.For<IGraphType>();
-            clonedParent.Route.Returns(new SchemaItemPath("[type]/BobType"));
+            clonedParent.ItemPath.Returns(new ItemPath("[type]/BobType"));
             clonedParent.Name.Returns("BobType");
             var clonedField = field.Clone(clonedParent);
 
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(clonedField.TypeExpression.ToString(), clonedField.TypeExpression.ToString());
             Assert.AreEqual(field.Description, clonedField.Description);
             Assert.AreEqual(field.Publish, clonedField.Publish);
-            Assert.AreEqual("[type]/BobType/field1", clonedField.Route.Path);
+            Assert.AreEqual("[type]/BobType/field1", clonedField.ItemPath.Path);
             Assert.AreEqual(field.Mode, clonedField.Mode);
             Assert.AreEqual(field.IsDeprecated, clonedField.IsDeprecated);
             Assert.AreEqual(field.DeprecationReason, clonedField.DeprecationReason);

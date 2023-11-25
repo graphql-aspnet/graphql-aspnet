@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
          : base(
                name,
                $"{nameof(VirtualObjectGraphType)}_{name}",
-               new SchemaItemPath(SchemaItemPathCollections.Types, name))
+               new ItemPath(ItemPathRoots.Types, name))
         {
             // add the __typename as a field for this virtual object
             this.Extend(new Introspection_TypeNameMetaField(name));

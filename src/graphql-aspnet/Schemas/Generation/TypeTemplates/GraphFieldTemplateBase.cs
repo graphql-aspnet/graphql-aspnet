@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // ------------------------------------
             // Extract Common Metadata
             // ------------------------------------
-            this.Route = this.GenerateFieldPath();
+            this.ItemPath = this.GenerateFieldPath();
             this.Mode = _fieldDeclaration?.ExecutionMode ?? FieldResolutionMode.PerSourceItem;
             this.Complexity = _fieldDeclaration?.Complexity;
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
@@ -353,8 +353,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// When overridden in a child class, this method builds the unique field path that will be assigned to this instance
         /// using the implementation rules of the concrete type.
         /// </summary>
-        /// <returns>GraphRoutePath.</returns>
-        protected abstract SchemaItemPath GenerateFieldPath();
+        /// <returns>ItemPath.</returns>
+        protected abstract ItemPath GenerateFieldPath();
 
         /// <summary>
         /// Type extensions used as batch methods required a speceial input and output signature for the runtime

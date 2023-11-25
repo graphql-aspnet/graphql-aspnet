@@ -107,8 +107,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // ------------------------------------
             // Common Metadata
             // ------------------------------------
-            this.Route = new SchemaItemPath(SchemaItemPath.Join(
-                SchemaItemPathCollections.Types,
+            this.ItemPath = new ItemPath(ItemPath.Join(
+                ItemPathRoots.Types,
                 GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT)));
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
                 var parsedTemplate = new InputGraphFieldTemplate(this, propInfo);
                 parsedTemplate?.Parse();
-                if (parsedTemplate?.Route == null || parsedTemplate.Route.RootCollection != SchemaItemPathCollections.Types)
+                if (parsedTemplate?.ItemPath == null || parsedTemplate.ItemPath.Root != ItemPathRoots.Types)
                 {
                     _invalidFields = _invalidFields ?? new List<IInputGraphFieldTemplate>();
                     _invalidFields.Add(parsedTemplate);
@@ -139,14 +139,14 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             }
 
             // ensure no duplicates are possible
-            _duplicateNames = parsedItems.Select(x => x.Route.Path)
+            _duplicateNames = parsedItems.Select(x => x.ItemPath.Path)
                 .GroupBy(x => x)
                 .Where(x => x.Count() > 1)
                 .Select(x => x.Key);
 
-            foreach (var field in parsedItems.Where(x => !_duplicateNames.Contains(x.Route.Path)))
+            foreach (var field in parsedItems.Where(x => !_duplicateNames.Contains(x.ItemPath.Path)))
             {
-                _fields.Add(field.Route.Path, field);
+                _fields.Add(field.ItemPath.Path, field);
             }
         }
 
@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             if (_invalidFields != null && _invalidFields.Count > 0)
             {
-                var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalName} ({x.Route.RootCollection.ToString()})'"));
+                var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalName} ({x.ItemPath.Root.ToString()})'"));
                 throw new GraphTypeDeclarationException(
                     $"Invalid input field declaration.  The type '{this.InternalName}' declares fields belonging to a graph collection not allowed given its context. This type can " +
                     $"only declare the following graph collections: '{string.Join(", ", this.AllowedGraphCollectionTypes.Select(x => x.ToString()))}'. " +
@@ -213,6 +213,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <inheritdoc />
         public override AppliedSecurityPolicyGroup SecurityPolicies => AppliedSecurityPolicyGroup.Empty;
 
-        private IEnumerable<SchemaItemPathCollections> AllowedGraphCollectionTypes => SchemaItemPathCollections.Types.AsEnumerable();
+        private IEnumerable<ItemPathRoots> AllowedGraphCollectionTypes => ItemPathRoots.Types.AsEnumerable();
     }
 }

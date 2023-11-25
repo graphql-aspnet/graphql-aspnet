@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// <param name="pathTemplate">The path template identifying this item.</param>
         protected RuntimeFieldGroupTemplateBase(
             SchemaOptions options,
-            SchemaItemPathCollections collection,
+            ItemPathRoots collection,
             string pathTemplate)
             : base(options, collection, pathTemplate)
         {

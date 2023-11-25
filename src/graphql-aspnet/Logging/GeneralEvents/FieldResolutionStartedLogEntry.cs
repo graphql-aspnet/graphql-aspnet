@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         {
             this.PipelineRequestId = context?.Request?.Id.ToString();
             this.FieldExecutionMode = context?.Request?.Field?.Mode.ToString();
-            this.FieldPath = context?.Request?.Field?.Route?.Path;
+            this.FieldPath = context?.Request?.Field?.ItemPath?.Path;
         }
 
         /// <summary>

@@ -16,15 +16,15 @@ namespace GraphQL.AspNet.Tests.Controllers
     [TestFixture]
     public class SchemaItemPathTests
     {
-        [TestCase(SchemaItemPathCollections.Query, "path1", "path2", "[query]/path1/path2")]
-        [TestCase(SchemaItemPathCollections.Types, "path1", "path2", "[type]/path1/path2")]
-        [TestCase(SchemaItemPathCollections.Mutation, "path1", "path2", "[mutation]/path1/path2")]
-        [TestCase(SchemaItemPathCollections.Subscription, "path1", "path2", "[subscription]/path1/path2")]
-        [TestCase(SchemaItemPathCollections.Unknown, "path1", "path2", "[noop]/path1/path2")]
-        public void Join_WithRoot_JoinsAsExpected(SchemaItemPathCollections root, string leftSide, string rightSide, string expectedOutput)
+        [TestCase(ItemPathRoots.Query, "path1", "path2", "[query]/path1/path2")]
+        [TestCase(ItemPathRoots.Types, "path1", "path2", "[type]/path1/path2")]
+        [TestCase(ItemPathRoots.Mutation, "path1", "path2", "[mutation]/path1/path2")]
+        [TestCase(ItemPathRoots.Subscription, "path1", "path2", "[subscription]/path1/path2")]
+        [TestCase(ItemPathRoots.Unknown, "path1", "path2", "[noop]/path1/path2")]
+        public void Join_WithRoot_JoinsAsExpected(ItemPathRoots root, string leftSide, string rightSide, string expectedOutput)
         {
             // standard join
-            var fragment = SchemaItemPath.Join(root, leftSide, rightSide);
+            var fragment = ItemPath.Join(root, leftSide, rightSide);
             Assert.AreEqual(expectedOutput, fragment);
         }
 
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase("path1", "path2/path3", "path1/path2/path3")]
         public void Join_WithNoRoot_JoinsAsExpected(string leftSide, string rightSide, string expectedOutput)
         {
-            var fragment = SchemaItemPath.Join(leftSide, rightSide);
+            var fragment = ItemPath.Join(leftSide, rightSide);
             Assert.AreEqual(expectedOutput, fragment);
         }
 
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase(null, "")]
         public void NormalizeFragment_CleansUpAsExpected(string input, string expectedOutput)
         {
-            var fragment = SchemaItemPath.NormalizeFragment(input);
+            var fragment = ItemPath.NormalizeFragment(input);
             Assert.AreEqual(expectedOutput, fragment);
         }
 
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase("path1/path2", false)]
         public void IsTopLevelField(string input, bool isTopField)
         {
-            var fragment = new SchemaItemPath(input);
+            var fragment = new ItemPath(input);
             Assert.AreEqual(isTopField, fragment.IsTopLevelField);
         }
 
@@ -68,26 +68,26 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void Query_TwoFragmentPathHasADefinedParent()
         {
             var fragment = "[query]/path1/path2";
-            var route = new SchemaItemPath(fragment);
+            var itemPath = new ItemPath(fragment);
 
             // valid path should be untouched
-            Assert.IsTrue(route.IsValid);
-            Assert.AreEqual(fragment, route.Raw);
-            Assert.AreEqual(fragment, route.Path);
-            Assert.IsNotNull(route.Parent);
-            Assert.AreEqual(SchemaItemPathCollections.Query, route.RootCollection);
-            Assert.AreEqual("path2", route.Name);
-            Assert.AreEqual("path1", route.Parent.Name);
-            Assert.AreEqual("[query]/path1", route.Parent.Path);
+            Assert.IsTrue(itemPath.IsValid);
+            Assert.AreEqual(fragment, itemPath.Raw);
+            Assert.AreEqual(fragment, itemPath.Path);
+            Assert.IsNotNull(itemPath.Parent);
+            Assert.AreEqual(ItemPathRoots.Query, itemPath.Root);
+            Assert.AreEqual("path2", itemPath.Name);
+            Assert.AreEqual("path1", itemPath.Parent.Name);
+            Assert.AreEqual("[query]/path1", itemPath.Parent.Path);
         }
 
         [Test]
         public void GenerateParentPathSegments_LeafPathReturnsParentList()
         {
             var fragment = "[query]/path1/path2/path3/path4";
-            var route = new SchemaItemPath(fragment);
+            var itemPath = new ItemPath(fragment);
 
-            var parents = route.GenerateParentPathSegments();
+            var parents = itemPath.GenerateParentPathSegments();
             Assert.IsNotNull(parents);
             Assert.AreEqual(3, parents.Count);
 
@@ -100,10 +100,10 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void GenerateParentPathSegments_TopLevelFieldReturnsEmptyList()
         {
             var fragment = "[query]/path1";
-            var route = new SchemaItemPath(fragment);
-            Assert.IsTrue(route.IsTopLevelField);
+            var itemPath = new ItemPath(fragment);
+            Assert.IsTrue(itemPath.IsTopLevelField);
 
-            var parents = route.GenerateParentPathSegments();
+            var parents = itemPath.GenerateParentPathSegments();
             Assert.IsNotNull(parents);
             Assert.AreEqual(0, parents.Count);
         }
@@ -112,44 +112,44 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void GenerateParentPathSegments_InvalidPathSegmentReturnsEmptyList()
         {
             var fragment = "pat!$#@%h1";
-            var route = new SchemaItemPath(fragment);
-            Assert.IsFalse(route.IsValid);
+            var itemPath = new ItemPath(fragment);
+            Assert.IsFalse(itemPath.IsValid);
 
-            var parents = route.GenerateParentPathSegments();
+            var parents = itemPath.GenerateParentPathSegments();
             Assert.IsNotNull(parents);
             Assert.AreEqual(0, parents.Count);
         }
 
-        [TestCase("[mutation]/path1/path2", "[mutation]/path1/path2", true, SchemaItemPathCollections.Mutation, "path2", true, "[mutation]/path1")]
-        [TestCase("[mutation]/path1///\\path2", "[mutation]/path1/path2", true, SchemaItemPathCollections.Mutation, "path2", true, "[mutation]/path1")]
-        [TestCase("[query]/pat$!h1/path2", "", false, SchemaItemPathCollections.Query, "", false, "")]
-        [TestCase("/path1/path2", "path1/path2", true, SchemaItemPathCollections.Unknown, "path2", true, "path1")]
+        [TestCase("[mutation]/path1/path2", "[mutation]/path1/path2", true, ItemPathRoots.Mutation, "path2", true, "[mutation]/path1")]
+        [TestCase("[mutation]/path1///\\path2", "[mutation]/path1/path2", true, ItemPathRoots.Mutation, "path2", true, "[mutation]/path1")]
+        [TestCase("[query]/pat$!h1/path2", "", false, ItemPathRoots.Query, "", false, "")]
+        [TestCase("/path1/path2", "path1/path2", true, ItemPathRoots.Unknown, "path2", true, "path1")]
         public void Destructuring(
             string rawPath,
             string expectedPath,
             bool expectedValidState,
-            SchemaItemPathCollections expectedRoot,
+            ItemPathRoots expectedRoot,
             string expectedName,
             bool shouldHaveParent,
             string expectedParentPath)
         {
-            var route = new SchemaItemPath(rawPath);
+            var itemPath = new ItemPath(rawPath);
 
             // valid path should be untouched
-            Assert.AreEqual(expectedValidState, route.IsValid);
-            Assert.AreEqual(rawPath, route.Raw);
-            Assert.AreEqual(expectedPath, route.Path);
-            Assert.AreEqual(expectedRoot, route.RootCollection);
-            Assert.AreEqual(expectedName, route.Name);
+            Assert.AreEqual(expectedValidState, itemPath.IsValid);
+            Assert.AreEqual(rawPath, itemPath.Raw);
+            Assert.AreEqual(expectedPath, itemPath.Path);
+            Assert.AreEqual(expectedRoot, itemPath.Root);
+            Assert.AreEqual(expectedName, itemPath.Name);
 
             if (!shouldHaveParent)
             {
-                Assert.IsNull(route.Parent);
+                Assert.IsNull(itemPath.Parent);
             }
             else
             {
-                Assert.IsNotNull(route.Parent);
-                Assert.AreEqual(expectedParentPath, route.Parent.Path);
+                Assert.IsNotNull(itemPath.Parent);
+                Assert.AreEqual(expectedParentPath, itemPath.Parent.Path);
             }
         }
 
@@ -163,13 +163,13 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase("[mutation]/path1/path2", "[query]/path1/path2", false)]
         [TestCase("[query]/path1/path2", "[query]/path1/path2/path3", false)]
         [TestCase("[query]/path1/path2", "path1/path2", false)]
-        public void IsSameRoute(string fragment1, string fragment2, bool areTheSame)
+        public void IsSameitemPath(string fragment1, string fragment2, bool areTheSame)
         {
-            var route1 = new SchemaItemPath(fragment1);
-            var route2 = new SchemaItemPath(fragment2);
+            var itemPath1 = new ItemPath(fragment1);
+            var itemPath2 = new ItemPath(fragment2);
 
             // valid path should be untouched
-            Assert.AreEqual(areTheSame, route1.IsSameRoute(route2));
+            Assert.AreEqual(areTheSame, itemPath1.IsSamePath(itemPath2));
         }
 
         [TestCase("[query]/path1/path2", "[query]/path1/path2/path3", true)]
@@ -179,64 +179,64 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase("path1/path2", "path1/path2/path3", true)]
         [TestCase("", "", false)]
         [TestCase("[query]/path1/path2", "[query]/path1/pathQ/path3", false)]
-        public void HasChildRoute(string fragment1, string fragment2, bool frag2IsChildof1)
+        public void HasChilditemPath(string fragment1, string fragment2, bool frag2IsChildof1)
         {
-            var route = new SchemaItemPath(fragment1);
-            var route2 = new SchemaItemPath(fragment2);
+            var itemPath = new ItemPath(fragment1);
+            var itemPath2 = new ItemPath(fragment2);
 
-            // route2 is a child of route 1, but not the other way around
-            Assert.AreEqual(frag2IsChildof1, route.HasChildRoute(route2));
+            // itemPath2 is a child of itemPath 1, but not the other way around
+            Assert.AreEqual(frag2IsChildof1, itemPath.HasChildPath(itemPath2));
         }
 
         [Test]
         public void FromConstructorParts_YieldsCombinedPaths()
         {
-            var route = new SchemaItemPath(SchemaItemPathCollections.Types, "typeName", "fieldName");
-            Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName", route.Path);
+            var itemPath = new ItemPath(ItemPathRoots.Types, "typeName", "fieldName");
+            Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName", itemPath.Path);
         }
 
         [Test]
-        public void GraphRouteArgumentPath_YieldsAlternatePathString()
+        public void GraphitemPathArgumentPath_YieldsAlternatePathString()
         {
-            var parent = new SchemaItemPath($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName");
-            var route = new GraphArgumentFieldPath(parent, "arg1");
-            Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName[arg1]", route.Path);
+            var parent = new ItemPath($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName");
+            var itemPath = new GraphArgumentFieldPath(parent, "arg1");
+            Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName[arg1]", itemPath.Path);
         }
 
-        [TestCase("[query]/path1/path2", SchemaItemPathCollections.Query, "/path1/path2")]
-        [TestCase("[query]", SchemaItemPathCollections.Query, "/")]
-        [TestCase("[mutation]/path1/path2", SchemaItemPathCollections.Mutation, "/path1/path2")]
-        [TestCase("[subscription]/path1/path2", SchemaItemPathCollections.Subscription, "/path1/path2")]
-        [TestCase("[wrong]/path1/path2", SchemaItemPathCollections.Unknown, "")]
-        [TestCase("[query]/path1", SchemaItemPathCollections.Query, "/path1")]
-        [TestCase("[mutation]/path1", SchemaItemPathCollections.Mutation, "/path1")]
-        [TestCase("[subscription]/path1", SchemaItemPathCollections.Subscription, "/path1")]
-        [TestCase("[wrong]/path1", SchemaItemPathCollections.Unknown, "")]
+        [TestCase("[query]/path1/path2", ItemPathRoots.Query, "/path1/path2")]
+        [TestCase("[query]", ItemPathRoots.Query, "/")]
+        [TestCase("[mutation]/path1/path2", ItemPathRoots.Mutation, "/path1/path2")]
+        [TestCase("[subscription]/path1/path2", ItemPathRoots.Subscription, "/path1/path2")]
+        [TestCase("[wrong]/path1/path2", ItemPathRoots.Unknown, "")]
+        [TestCase("[query]/path1", ItemPathRoots.Query, "/path1")]
+        [TestCase("[mutation]/path1", ItemPathRoots.Mutation, "/path1")]
+        [TestCase("[subscription]/path1", ItemPathRoots.Subscription, "/path1")]
+        [TestCase("[wrong]/path1", ItemPathRoots.Unknown, "")]
         public void Destructuring_ToCollectionAndPath(
             string input,
-            SchemaItemPathCollections expectedCollection,
+            ItemPathRoots expectedCollection,
             string expectedPath)
         {
-            var route = new SchemaItemPath(input);
-            var (col, path) = route;
+            var itemPath = new ItemPath(input);
+            var (col, path) = itemPath;
 
             Assert.AreEqual(expectedCollection, col);
             Assert.AreEqual(expectedPath, path);
         }
 
         [Test]
-        public void TakingParent_OfType_AndMakingRoute_IsValid()
+        public void TakingParent_OfType_AndMakingitemPath_IsValid()
         {
-            var item = new SchemaItemPath($"{Constants.Routing.TYPE_ROOT}/typeName");
+            var item = new ItemPath($"{Constants.Routing.TYPE_ROOT}/typeName");
             var newItem = item.Parent.CreateChild("otherType");
 
             Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/otherType", newItem.ToString());
         }
 
         [Test]
-        public void TakingParent_OfQuery_AndMakingRoute_IsValid()
+        public void TakingParent_OfQuery_AndMakingitemPath_IsValid()
         {
-            var item = new SchemaItemPath($"{Constants.Routing.QUERY_ROOT}/fieldName");
+            var item = new ItemPath($"{Constants.Routing.QUERY_ROOT}/fieldName");
             var newItem = item.Parent.CreateChild("otherField");
 
             Assert.AreEqual($"{Constants.Routing.QUERY_ROOT}/otherField", newItem.ToString());

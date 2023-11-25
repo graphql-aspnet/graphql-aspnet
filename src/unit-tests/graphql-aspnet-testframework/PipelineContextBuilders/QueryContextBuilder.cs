@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IQueryExecutionRequest _mockRequest;
-        private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
+        private readonly List<KeyValuePair<ItemPath, object>> _sourceData;
 
         private IUserSecurityContext _userSecurityContext;
         private IQueryExecutionMetrics _metrics;
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _items = new MetaDataCollection();
             _mockRequest = Substitute.For<IQueryExecutionRequest>();
             _mockRequest.Items.Returns(_items);
-            _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
+            _sourceData = new List<KeyValuePair<ItemPath, object>>();
         }
 
         /// <summary>
@@ -130,9 +130,9 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <param name="path">The field path representing the action to accept the parameter.</param>
         /// <param name="sourceData">The source data.</param>
         /// <returns>QueryContextBuilder.</returns>
-        public QueryContextBuilder AddDefaultValue(SchemaItemPath path, object sourceData)
+        public QueryContextBuilder AddDefaultValue(ItemPath path, object sourceData)
         {
-            _sourceData.Add(new KeyValuePair<SchemaItemPath, object>(path, sourceData));
+            _sourceData.Add(new KeyValuePair<ItemPath, object>(path, sourceData));
             return this;
         }
 
@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             {
                 var mockField = Substitute.For<IGraphField>();
                 mockField.FieldSource.Returns(GraphFieldSource.Action);
-                mockField.Route.Returns(kvp.Key);
+                mockField.ItemPath.Returns(kvp.Key);
                 context.DefaultFieldSources.AddSource(mockField, kvp.Value);
             }
 

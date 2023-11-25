@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     /// An internal implementation of the <see cref="IGraphQLRuntimeFieldGroupDefinition"/>
     /// used to generate new graphql fields via a minimal api style of coding.
     /// </summary>
-    [DebuggerDisplay("{Route.Path}")]
+    [DebuggerDisplay("{ItemPath.Path}")]
     public sealed class RuntimeFieldGroupTemplate : RuntimeFieldGroupTemplateBase, IGraphQLRuntimeFieldGroupDefinition
     {
         /// <summary>
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// <param name="pathTemplate">The path template identifying this item.</param>
         public RuntimeFieldGroupTemplate(
             SchemaOptions options,
-            SchemaItemPathCollections collection,
+            ItemPathRoots collection,
             string pathTemplate)
             : base(options, collection, pathTemplate)
         {

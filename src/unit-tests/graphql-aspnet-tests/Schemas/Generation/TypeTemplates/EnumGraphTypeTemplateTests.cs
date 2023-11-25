@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual($"{Constants.Routing.ENUM_ROOT}/{nameof(SimpleEnum)}", template.Route.Path);
+            Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/{nameof(SimpleEnum)}", template.ItemPath.Path);
             Assert.AreEqual(nameof(SimpleEnum), template.Name);
             Assert.AreEqual(null, template.Description);
             Assert.AreEqual(1, template.Values.Count());

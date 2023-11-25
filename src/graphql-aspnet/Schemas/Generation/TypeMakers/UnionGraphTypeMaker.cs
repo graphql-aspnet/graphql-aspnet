@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 proxy.Name,
                 proxy.InternalName,
                 (IUnionGraphTypeMapper)proxy,
-                new SchemaItemPath(SchemaItemPathCollections.Types, proxy.Name),
+                new ItemPath(ItemPathRoots.Types, proxy.Name),
                 directives)
             {
                 Description = proxy.Description,

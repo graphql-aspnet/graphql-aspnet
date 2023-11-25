@@ -32,10 +32,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         ISubscriptionGraphField Field { get; }
 
         /// <summary>
-        /// Gets the unique route within a schema this subscription is pointed at.
+        /// Gets the unique path within a schema this subscription is pointed at.
         /// </summary>
         /// <value>The route.</value>
-        SchemaItemPath Route { get; }
+        ItemPath ItemPath { get; }
 
         /// <summary>
         /// Gets the original query data object that generated this subscription.

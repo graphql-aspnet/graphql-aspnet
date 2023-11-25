@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             : base(LogEventIds.FieldResolutionCompleted)
         {
             this.PipelineRequestId = context?.Request?.Id.ToString();
-            this.FieldPath = context?.Request?.InvocationContext?.Field?.Route?.Path;
+            this.FieldPath = context?.Request?.InvocationContext?.Field?.ItemPath?.Path;
             this.TypeExpression = context?.Request?.InvocationContext?.Field?.TypeExpression?.ToString();
             this.HasData = context == null ? null : context.Result != null;
             this.ResultIsValid = context?.Messages?.IsSucessful;

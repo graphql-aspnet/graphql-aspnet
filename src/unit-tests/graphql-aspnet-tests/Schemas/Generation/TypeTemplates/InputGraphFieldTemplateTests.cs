@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_GeneralPropertyCheck()
         {
             var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.AreEqual("Name", template.Name);
-            Assert.AreEqual("[type]/Item0/Name", template.Route.ToString());
+            Assert.AreEqual("[type]/Item0/Name", template.ItemPath.ToString());
             Assert.AreEqual("name desc", template.Description);
             Assert.AreEqual(typeof(string), template.ObjectType);
             Assert.IsFalse(template.IsRequired);
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_IsRequired_IsNotSet()
         {
             var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_IsRequired_IsSet()
         {
             var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_NotRequired_NullableType_ButWithExplicitNonNullTypeExpression_IsFlaggedNonNullable()
         {
             var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_InterfaceAsPropertyType_ThrowsException()
         {
             var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_TaskAsPropertyType_ThrowsException()
         {
             var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_UnionAsPropertyType_ThrowsException()
         {
             var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 
@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_ActionResultAsPropertyType_ThrowsException()
         {
             var obj = Substitute.For<IInputObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.Kind.Returns(TypeKind.INPUT_OBJECT);
 

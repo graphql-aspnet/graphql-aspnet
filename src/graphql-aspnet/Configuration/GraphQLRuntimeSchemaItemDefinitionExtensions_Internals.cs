@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Configuration
 
             var fieldTemplate = new RuntimeFieldGroupTemplate(
                 schemaOptions,
-                (SchemaItemPathCollections)operationType,
+                (ItemPathRoots)operationType,
                 pathTemplate);
 
             return fieldTemplate;

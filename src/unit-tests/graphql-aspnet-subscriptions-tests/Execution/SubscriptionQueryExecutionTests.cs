@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { subscriptionData {  retrieveObject { property1 } } }")
-                .AddDefaultValue(field.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var result = await server.RenderResult(builder);
             var expectedOutput =
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { subscriptionData {  skipEventMethod { property1 } } }")
-                .AddDefaultValue(field.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var context = builder.Build();
             await server.ExecuteQuery(context);
@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { subscriptionData {  skipEventAndCompleteMethod { property1 } } }")
-                .AddDefaultValue(field.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var context = builder.Build();
             await server.ExecuteQuery(context);
@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { subscriptionData {  completeMethod { property1 } } }")
-                .AddDefaultValue(field.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var expectedResult = @"
             {
@@ -234,7 +234,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { retrieveObject { property1 } }")
-                .AddDefaultValue(field.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var result = await server.RenderResult(builder);
             var expectedOutput =
@@ -277,7 +277,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { retrieveObject { property1 } }")
-                .AddDefaultValue(field.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var result = await server.RenderResult(builder);
             var expectedOutput =

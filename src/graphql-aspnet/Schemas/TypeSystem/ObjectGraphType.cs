@@ -31,16 +31,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="name">The name of the graph type.</param>
         /// <param name="internalName">The defined internal name for this graph type.</param>
         /// <param name="objectType">The concrete type that this graphtype is made from.</param>
-        /// <param name="route">The route path that identifies this object in the schema..</param>
+        /// <param name="itemPath">The item path that identifies this object in the schema..</param>
         /// <param name="directives">The directives applied to this object
         /// when its added to a schema.</param>
         public ObjectGraphType(
             string name,
             string internalName,
             Type objectType,
-            SchemaItemPath route,
+            ItemPath itemPath,
             IAppliedDirectiveCollection directives = null)
-            : base(name, internalName, route, directives)
+            : base(name, internalName, itemPath, directives)
         {
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.Extend(new Introspection_TypeNameMetaField(name));
@@ -50,13 +50,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public override IGraphType Clone(string typeName = null)
         {
             typeName = typeName?.Trim() ?? this.Name;
-            var route = this.Route.Clone().Parent.CreateChild(typeName);
+            var itemPath = this.ItemPath.Clone().Parent.CreateChild(typeName);
 
             var clonedItem = new ObjectGraphType(
                 typeName,
                 this.InternalName,
                 this.ObjectType,
-                route,
+                itemPath,
                 this.AppliedDirectives);
 
             clonedItem.Description = this.Description;

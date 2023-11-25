@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets the schema path for the field being evaluated.
         /// </summary>
         /// <value>The path.</value>
-        public string FieldPath => this.Field?.Route.Path;
+        public string FieldPath => this.Field?.ItemPath.Path;
 
         /// <summary>
         /// Gets the collection of messages tracked by this context.

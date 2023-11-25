@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void GraphFieldAttribute_EmptyConstructor_PropertyCheck()
         {
             var attrib = new GraphFieldAttribute();
-            Assert.AreEqual(SchemaItemPathCollections.Types, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Types, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void GraphFieldAttribute_FieldNameConstructor_PropertyCheck()
         {
             var attrib = new GraphFieldAttribute("myFieldName");
-            Assert.AreEqual(SchemaItemPathCollections.Types, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Types, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myFieldName", attrib.Template);
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryAttribute_EmptyConstructor_PropertyCheck()
         {
             var attrib = new QueryAttribute();
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryAttribute_TemplateConstructor_PropertyCheck()
         {
             var attrib = new QueryAttribute("myQueryRoute");
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myQueryRoute", attrib.Template);
@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryAttribute_ReturnTypeConstructor_PropertyCheck()
         {
             var attrib = new QueryAttribute(typeof(AttributeDataIntegrityTests));
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryAttribute_MultiTypeConstructor_PropertyCheck()
         {
             var attrib = new QueryAttribute(typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryAttribute_TemplateMultiTypeConstructor_PropertyCheck()
         {
             var attrib = new QueryAttribute("myField", typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryAttribute_UnionConstructor_PropertyCheck()
         {
             var attrib = new QueryAttribute("myField", "myUnionType", typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryAttribute_UnionConstructor_1Type_PropertyCheck()
         {
             var attrib = new QueryAttribute("myField", "myUnionType", typeof(AttributeDataIntegrityTests));
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -153,7 +153,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryAttribute_UnionConstructor_NoTypes_PropertyCheck()
         {
             var attrib = new QueryAttribute("myField", "myUnionType");
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -166,7 +166,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryAttribute_UnionConstructor_NullTypes_PropertyCheck()
         {
             var attrib = new QueryAttribute("myField", "myUnionType", null, null, null);
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -179,7 +179,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationAttribute_EmptyConstructor_PropertyCheck()
         {
             var attrib = new MutationAttribute();
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -192,7 +192,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationAttribute_TemplateConstructor_PropertyCheck()
         {
             var attrib = new MutationAttribute("myMutationRoute");
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myMutationRoute", attrib.Template);
@@ -205,7 +205,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationAttribute_ReturnTypeConstructor_PropertyCheck()
         {
             var attrib = new MutationAttribute(typeof(AttributeDataIntegrityTests));
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -219,7 +219,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationAttribute_MultiTypeConstructor_PropertyCheck()
         {
             var attrib = new MutationAttribute(typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -234,7 +234,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationAttribute_TemplateMultiTypeConstructor_PropertyCheck()
         {
             var attrib = new MutationAttribute("myField", typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -249,7 +249,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationAttribute_UnionConstructor_PropertyCheck()
         {
             var attrib = new MutationAttribute("myField", "myUnionType", typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -264,7 +264,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationAttribute_UnionConstructor_1Type_PropertyCheck()
         {
             var attrib = new MutationAttribute("myField", "myUnionType", typeof(AttributeDataIntegrityTests));
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -278,7 +278,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationAttribute_UnionConstructor_NoTypes_PropertyCheck()
         {
             var attrib = new MutationAttribute("myField", "myUnionType");
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -291,7 +291,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationAttribute_UnionConstructor_NullTypes_PropertyCheck()
         {
             var attrib = new MutationAttribute("myField", "myUnionType", null, null, null);
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -304,7 +304,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryRootAttribute_EmptyConstructor_PropertyCheck()
         {
             var attrib = new QueryRootAttribute();
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -317,7 +317,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryRootAttribute_TemplateConstructor_PropertyCheck()
         {
             var attrib = new QueryRootAttribute("myQueryRootRoute");
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myQueryRootRoute", attrib.Template);
@@ -330,7 +330,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryRootAttribute_ReturnTypeConstructor_PropertyCheck()
         {
             var attrib = new QueryRootAttribute(typeof(AttributeDataIntegrityTests));
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -344,7 +344,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryRootAttribute_MultiTypeConstructor_PropertyCheck()
         {
             var attrib = new QueryRootAttribute(typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -359,7 +359,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryRootAttribute_TemplateMultiTypeConstructor_PropertyCheck()
         {
             var attrib = new QueryRootAttribute("myField", typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -373,7 +373,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void QueryRootAttribute_UnionConstructor_PropertyCheck()
         {
             var attrib = new QueryRootAttribute("myField", "myUnionType", typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Query, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Query, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -387,7 +387,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationRootAttribute_EmptyConstructor_PropertyCheck()
         {
             var attrib = new MutationRootAttribute();
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -400,7 +400,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationRootAttribute_TemplateConstructor_PropertyCheck()
         {
             var attrib = new MutationRootAttribute("myMutationRootRoute");
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myMutationRootRoute", attrib.Template);
@@ -413,7 +413,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationRootAttribute_ReturnTypeConstructor_PropertyCheck()
         {
             var attrib = new MutationRootAttribute(typeof(AttributeDataIntegrityTests));
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -427,7 +427,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationRootAttribute_MultiTypeConstructor_PropertyCheck()
         {
             var attrib = new MutationRootAttribute(typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -442,7 +442,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationRootAttribute_TemplateMultiTypeConstructor_PropertyCheck()
         {
             var attrib = new MutationRootAttribute("myField", typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -457,7 +457,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void MutationRootAttribute_UnionConstructor_PropertyCheck()
         {
             var attrib = new MutationRootAttribute("myField", "myUnionType", typeof(AttributeDataIntegrityTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemPathCollections.Mutation, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Mutation, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -671,7 +671,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         {
             var attrib = new TypeExtensionAttribute(typeof(AttributeDataIntegrityTests), "myField", "myUnionType",  typeof(GraphFieldAttribute), typeof(string));
 
-            Assert.AreEqual(SchemaItemPathCollections.Types, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Types, attrib.FieldType);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.TypeToExtend);
             Assert.AreEqual("myField", attrib.Template);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
@@ -707,7 +707,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         {
             var attrib = new BatchTypeExtensionAttribute(typeof(AttributeDataIntegrityTests), "myField", "myUnionType", typeof(GraphFieldAttribute), typeof(string));
 
-            Assert.AreEqual(SchemaItemPathCollections.Types, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Types, attrib.FieldType);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.TypeToExtend);
             Assert.AreEqual("myField", attrib.Template);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);

@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "name",
                 $"{this.InternalName}.{nameof(IntrospectedField.Name)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "name"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "name"),
                 (field) => field.Name.AsCompletedTask(),
                 "The case-sensitive name of this field as it should be used in a query.");
 
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "description",
                 $"{this.InternalName}.{nameof(IntrospectedField.Description)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "description"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "description"),
                 (field) => field.Description.AsCompletedTask(),
                 "Indiates if this field is deprecated. Any deprecated field should not be used and " +
                 "may be removed at a future date.");
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "args",
                 $"{this.InternalName}.{nameof(IntrospectedField.Arguments)}",
                 new GraphTypeExpression(Constants.ReservedNames.INPUT_VALUE_TYPE, GraphTypeExpression.RequiredListRequiredItem),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "args"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "args"),
                 (field) => field.Arguments.AsCompletedTask(),
                 "A collection of input values that can be passed to this field to alter its behavior when used in a query.");
 
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "type",
                 $"{this.InternalName}.{nameof(IntrospectedField.IntrospectedGraphType)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "type"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "type"),
                 (field) => field.IntrospectedGraphType.AsCompletedTask(),
                 "The graph type returned by this field.");
 
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "isDeprecated",
                 $"{this.InternalName}.{nameof(IntrospectedField.IsDeprecated)}",
                 new GraphTypeExpression(Constants.ScalarNames.BOOLEAN, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "isDeprecated"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "isDeprecated"),
                 (field) => field.IsDeprecated.AsCompletedTask(),
                 "Indiates if this field is deprecated. Any deprecated field should not be used and " +
                 "may be removed at a future date.");
@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "deprecationReason",
                 $"{this.InternalName}.{nameof(IntrospectedField.DeprecationReason)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "deprecationReason"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "deprecationReason"),
                 (field) => field.DeprecationReason.AsCompletedTask(),
                 "A human-friendly reason as to why this field has been deprecated.");
         }

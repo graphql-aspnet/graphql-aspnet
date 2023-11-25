@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="fieldName">Name of the field in the type declaration..</param>
         /// <param name="typeExpression">The meta data about how this type field is implemented.</param>
-        /// <param name="route">The formal route to this field in the object graph.</param>
+        /// <param name="itemPath">The formal path to this field in the object graph.</param>
         /// <param name="internalFullName">The fully qualified name of the method this field respresents, as it was declared
         /// in C# code.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public SubscriptionMethodGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,
-            SchemaItemPath route,
+            ItemPath itemPath,
             string internalFullName,
             Type declaredReturnType = null,
             Type objectType = null,
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
             string eventName = null,
             IAppliedDirectiveCollection directives = null)
-            : base(fieldName, internalFullName, typeExpression, route, declaredReturnType, objectType, mode, resolver, securityPolicies, directives)
+            : base(fieldName, internalFullName, typeExpression, itemPath, declaredReturnType, objectType, mode, resolver, securityPolicies, directives)
         {
             this.EventName = eventName;
         }
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             return new SubscriptionMethodGraphField(
                 this.Name,
                 this.TypeExpression.Clone(),
-                this.Route.Clone(),
+                this.ItemPath.Clone(),
                 this.InternalName,
                 this.DeclaredReturnType,
                 this.ObjectType,

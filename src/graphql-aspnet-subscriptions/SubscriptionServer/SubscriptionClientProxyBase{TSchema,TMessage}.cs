@@ -296,7 +296,7 @@ namespace GraphQL.AspNet.SubscriptionServer
             // find the subscriptions that are registered for the received data
             // its possible a client discontinued after the data was dispatched
             // but before the client processed...just stop if this is the case
-            var targetSubscriptions = _subscriptions.RetreiveByRoute(field);
+            var targetSubscriptions = _subscriptions.RetreiveByItemPath(field);
             if (targetSubscriptions.Count == 0)
                 return;
 

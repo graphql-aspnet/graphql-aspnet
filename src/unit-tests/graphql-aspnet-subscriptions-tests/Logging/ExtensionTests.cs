@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Tests.Logging
                     recordedlogEntry = ((Func<IGraphLogEntry>)x[1])();
                 });
 
-            mock.SchemaSubscriptionRouteRegistered<GraphSchema>("testPath");
+            mock.SchemaSubscriptionUrlRouteRegistered<GraphSchema>("testPath");
 
             var entry = recordedlogEntry as SchemaSubscriptionRouteRegisteredLogEntry<GraphSchema>;
             Assert.IsNotNull(entry);

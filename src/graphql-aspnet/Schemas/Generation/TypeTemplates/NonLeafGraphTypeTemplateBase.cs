@@ -52,9 +52,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             _interfaces = new HashSet<Type>();
             _securityPolicies = AppliedSecurityPolicyGroup.Empty;
 
-            this.AllowedSchemaItemCollections = new HashSet<SchemaItemPathCollections>()
+            this.AllowedSchemaItemCollections = new HashSet<ItemPathRoots>()
             {
-                SchemaItemPathCollections.Types,
+                ItemPathRoots.Types,
             };
 
             // customize the error message on the thrown exception for some helpful hints.
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // ------------------------------------
             // Common Metadata
             // ------------------------------------
-            this.Route = this.GenerateFieldPath();
+            this.ItemPath = this.GenerateFieldPath();
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
             // ------------------------------------
@@ -121,8 +121,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     // but controllers are allowed to attach to the operation root collections
                     //
                     // this is used as a check against POCOs declaring [Query] fields for example
-                    if (parsedTemplate?.Route == null
-                        || !this.AllowedSchemaItemCollections.Contains(parsedTemplate.Route.RootCollection))
+                    if (parsedTemplate?.ItemPath == null
+                        || !this.AllowedSchemaItemCollections.Contains(parsedTemplate.ItemPath.Root))
                     {
                         _invalidFields = _invalidFields ?? new List<IGraphFieldTemplate>();
                         _invalidFields.Add(parsedTemplate);
@@ -231,16 +231,16 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <summary>
-        /// When overridden in a child class, this method builds the route that will be assigned to this method
+        /// When overridden in a child class, this method builds the path that will be assigned to this item
         /// using the implementation rules of the concrete type.
         /// </summary>
-        /// <returns>GraphRoutePath.</returns>
-        protected virtual SchemaItemPath GenerateFieldPath()
+        /// <returns>ItemPath.</returns>
+        protected virtual ItemPath GenerateFieldPath()
         {
-            // a standard graph object cannot contain any route pathing or nesting like controllers can
-            // before creating hte route, ensure that the declared name, by itself, is valid for graphql
+            // a standard graph object cannot contain any pathing or nesting like controllers can
+            // before creating the path, ensure that the declared name, by itself, is valid for graphql
             var graphName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.OBJECT);
-            return new SchemaItemPath(SchemaItemPath.Join(SchemaItemPathCollections.Types, graphName));
+            return new ItemPath(ItemPath.Join(ItemPathRoots.Types, graphName));
         }
 
         /// <inheritdoc />
@@ -250,7 +250,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             if (_invalidFields != null && _invalidFields.Count > 0)
             {
-                var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalName} ({x.Route.RootCollection.ToString()})'"));
+                var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalName} ({x.ItemPath.Root.ToString()})'"));
                 throw new GraphTypeDeclarationException(
                     $"Invalid field declarations.  The type '{this.InternalName}' declares fields belonging to a graph collection not allowed given its context. This type can " +
                     $"only be declared the following graph collections: '{string.Join(", ", this.AllowedSchemaItemCollections.Select(x => x.ToString()))}'. " +
@@ -279,7 +279,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// Gets a set of item collections to which this object template can be declared.
         /// </summary>
         /// <value>The allowed schema item collections.</value>
-        protected virtual HashSet<SchemaItemPathCollections> AllowedSchemaItemCollections { get; }
+        protected virtual HashSet<ItemPathRoots> AllowedSchemaItemCollections { get; }
 
         /// <summary>
         /// Gets the declared interfaces on this item.

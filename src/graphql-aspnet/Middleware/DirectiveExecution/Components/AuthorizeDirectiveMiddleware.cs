@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
                 else
                 {
                     context.Messages.Critical(
-                        $"Access Denied to directive {context.Directive.Route.Path}",
+                        $"Access Denied to directive {context.Directive.ItemPath.Path}",
                         Constants.ErrorCodes.ACCESS_DENIED,
                         context.Request.Origin,
                         new UnauthorizedAccessException(result.LogMessage));

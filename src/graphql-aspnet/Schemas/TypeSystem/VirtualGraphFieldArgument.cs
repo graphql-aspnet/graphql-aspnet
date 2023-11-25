@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="name">The name of this field in the object graph.</param>
         /// <param name="internalFullName">The fully qualified name of this field as it exists in the .NET code.</param>
         /// <param name="typeExpression">The graph type expression representing this field.</param>
-        /// <param name="route">The route path for this argument.</param>
+        /// <param name="itemPath">The item path for this argument.</param>
         /// <param name="concreteType">The concrete graph type in the server code that this argument is mapped to.</param>
         /// <param name="hasDefaultValue">if set to <c>true</c> indicates that this
         /// argument has a default value, even if its null.</param>
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string name,
             string internalFullName,
             GraphTypeExpression typeExpression,
-            SchemaItemPath route,
+            ItemPath itemPath,
             Type concreteType,
             bool hasDefaultValue,
             object defaultValue = null)
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
             this.ParameterName = this.Name;
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
 
@@ -67,15 +67,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             argumentName = argumentName?.Trim() ?? this.Name;
 
-            var parentRoute = parent?.Route ?? this.Route.Parent;
-            var route = parentRoute.CreateChild(argumentName);
+            var parentPath = parent?.ItemPath ?? this.ItemPath.Parent;
+            var itemPath = parentPath.CreateChild(argumentName);
 
             var clonedItem = new VirtualGraphFieldArgument(
                 parent,
                 argumentName,
                 this.InternalName,
                 typeExpression ?? this.TypeExpression.Clone(),
-                route,
+                itemPath,
                 this.ObjectType,
                 this.HasDefaultValue,
                 this.DefaultValue);
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public bool HasDefaultValue { get; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         /// <inheritdoc />
         public ISchemaItem Parent { get; }

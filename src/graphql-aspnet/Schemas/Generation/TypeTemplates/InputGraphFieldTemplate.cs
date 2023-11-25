@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             _fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
 
-            this.Route = this.GenerateFieldPath();
+            this.ItemPath = this.GenerateFieldPath();
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
             var typeExpression = GraphTypeExpression.FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers);
@@ -82,12 +82,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             return list;
         }
 
-        private SchemaItemPath GenerateFieldPath()
+        private ItemPath GenerateFieldPath()
         {
             var graphName = _fieldDeclaration?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Property.Name).Trim();
 
-            return new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, graphName));
+            return new ItemPath(ItemPath.Join(this.Parent.ItemPath.Path, graphName));
         }
 
         /// <inheritdoc />

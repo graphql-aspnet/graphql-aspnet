@@ -33,15 +33,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="name">The name to assign to this enumeration in the graph.</param>
         /// <param name="internalName">The internal name of this graph type as its assigned in source code.</param>
         /// <param name="enumType">Type of the enum.</param>
-        /// <param name="route">The route path that identifies this enum type.</param>
+        /// <param name="itemPath">The item path that identifies this enum type.</param>
         /// <param name="directives">The directives to apply to this enum type.</param>
         public EnumGraphType(
             string name,
             string internalName,
             Type enumType,
-            SchemaItemPath route,
+            ItemPath itemPath,
             IAppliedDirectiveCollection directives = null)
-            : this(name, internalName, enumType, route, new EnumLeafValueResolver(enumType), directives)
+            : this(name, internalName, enumType, itemPath, new EnumLeafValueResolver(enumType), directives)
         {
         }
 
@@ -51,14 +51,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="name">The name to assign to this enumeration in the graph.</param>
         /// <param name="internalName">The internal name of this graph type as its assigned in source code.</param>
         /// <param name="enumType">Type of the enum.</param>
-        /// <param name="route">The route path that identifies this enum type.</param>
+        /// <param name="itemPath">The item path that identifies this enum type.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="directives">The directives to apply to this enum type.</param>
         public EnumGraphType(
             string name,
             string internalName,
             Type enumType,
-            SchemaItemPath route,
+            ItemPath itemPath,
             ILeafValueResolver resolver,
             IAppliedDirectiveCollection directives = null)
         {
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
 
             this.ObjectType = Validation.ThrowIfNullOrReturn(enumType, nameof(enumType));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
             this.SourceResolver = Validation.ThrowIfNullOrReturn(resolver, nameof(resolver));
 
             this.Publish = true;
@@ -110,7 +110,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 typeName,
                 this.InternalName,
                 this.ObjectType,
-                this.Route.Parent.CreateChild(typeName),
+                this.ItemPath.Parent.CreateChild(typeName),
                 this.AppliedDirectives);
 
             clonedItem.Description = this.Description;
@@ -153,6 +153,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
     }
 }

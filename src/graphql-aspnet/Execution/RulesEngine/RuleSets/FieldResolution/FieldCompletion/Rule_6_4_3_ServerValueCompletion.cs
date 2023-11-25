@@ -110,7 +110,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
 
                 this.ValidationError(
                     context,
-                    $"A field resolver for '{context.Field.Route.Path}' generated a result " +
+                    $"A field resolver for '{context.Field.ItemPath.Path}' generated a result " +
                     "not compatible with the field's allowed graph types. See exception for details.",
                     new GraphExecutionException(exceptionText));
 

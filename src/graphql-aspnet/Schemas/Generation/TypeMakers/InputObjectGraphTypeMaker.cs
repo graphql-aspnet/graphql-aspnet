@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 template.Name,
                 template.InternalName,
                 template.ObjectType,
-                template.Route,
+                template.ItemPath,
                 directives)
             {
                 Description = template.Description,

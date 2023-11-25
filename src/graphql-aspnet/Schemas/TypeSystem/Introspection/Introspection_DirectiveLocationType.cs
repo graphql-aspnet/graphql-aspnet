@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                   Constants.ReservedNames.DIRECTIVE_LOCATION_ENUM,
                   nameof(Introspection_DirectiveLocationType),
                   typeof(DirectiveLocation),
-                  new GraphIntrospectionFieldPath(Constants.ReservedNames.DIRECTIVE_LOCATION_ENUM))
+                  new IntrospectedFieldPath(Constants.ReservedNames.DIRECTIVE_LOCATION_ENUM))
         {
             foreach (var value in Enum.GetValues(this.ObjectType))
             {
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                     name,
                     name,
                     description,
-                    this.Route.CreateChild(name),
+                    this.ItemPath.CreateChild(name),
                     value,
                     fi.Name);
 

@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Engine
         /// <param name="action">The action to add to the schema.</param>
         protected virtual void AddAction(IGraphFieldTemplate action)
         {
-            var operation = action.Route.RootCollection.ToGraphOperationType();
+            var operation = action.ItemPath.Root.ToGraphOperationType();
             if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(operation))
             {
                 this.EnsureGraphOperationType(operation);
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Engine
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(action),
-                    $"The '{action.InternalName}' action's operation root ({action.Route.RootCollection}) is not " +
+                    $"The '{action.InternalName}' action's operation root ({action.ItemPath.Root}) is not " +
                     $"allowed by the target schema (Name: {this.Schema.Name}).");
             }
         }
@@ -93,11 +93,11 @@ namespace GraphQL.AspNet.Engine
         /// <returns>IGraphField.</returns>
         protected virtual IObjectGraphType AddOrRetrieveVirtualTypeOwner(IGraphFieldTemplate action)
         {
-            var pathSegments = action.Route.GenerateParentPathSegments();
+            var pathSegments = action.ItemPath.GenerateParentPathSegments();
 
             // loop through all parent path parts of this action
             // creating virtual fields as necessary or using existing ones and adding on to them
-            IObjectGraphType parentType = this.Schema.Operations[action.Route.RootCollection.ToGraphOperationType()];
+            IObjectGraphType parentType = this.Schema.Operations[action.ItemPath.Root.ToGraphOperationType()];
 
             for (var i = 0; i < pathSegments.Count; i++)
             {
@@ -118,20 +118,20 @@ namespace GraphQL.AspNet.Engine
                         }
 
                         throw new GraphTypeDeclarationException(
-                            $"The action '{action.Route}' attempted to nest itself under the {foundType.Kind} graph type '{foundType.Name}', which is returned by " +
-                            $"the route '{field.Route}'.  Actions can only be added to virtual graph types created by their parent controller.");
+                            $"The action '{action.ItemPath}' attempted to nest itself under the {foundType.Kind} graph type '{foundType.Name}', which is returned by " +
+                            $"the path '{field.ItemPath}'.  Actions can only be added to virtual graph types created by their parent controller.");
                     }
 
                     if (foundType != null)
                     {
                         throw new GraphTypeDeclarationException(
-                            $"The action '{action.Route.Path}' attempted to nest itself under the graph type '{foundType.Name}'. {foundType.Kind} graph types cannot " +
+                            $"The action '{action.ItemPath.Path}' attempted to nest itself under the graph type '{foundType.Name}'. {foundType.Kind} graph types cannot " +
                             "accept fields.");
                     }
                     else
                     {
                         throw new GraphTypeDeclarationException(
-                            $"The action '{action.Route.Path}' attempted to nest itself under the field '{field.Route}' but no graph type was found " +
+                            $"The action '{action.ItemPath.Path}' attempted to nest itself under the field '{field.ItemPath}' but no graph type was found " +
                             "that matches its type.");
                     }
                 }
@@ -157,14 +157,14 @@ namespace GraphQL.AspNet.Engine
         protected virtual IObjectGraphType CreateVirtualFieldOnParent(
             IObjectGraphType parentType,
             string fieldName,
-            SchemaItemPath path,
+            ItemPath path,
             ISchemaItemTemplate definition = null)
         {
             var childField = new VirtualGraphField(
                 parentType,
                 fieldName,
                 path,
-                this.MakeSafeTypeNameFromRoutePath(path))
+                this.MakeSafeTypeNameFromItemPath(path))
             {
                 IsDepreciated = false,
                 DepreciationReason = string.Empty,
@@ -184,7 +184,7 @@ namespace GraphQL.AspNet.Engine
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>System.String.</returns>
-        protected virtual string MakeSafeTypeNameFromRoutePath(SchemaItemPath path)
+        protected virtual string MakeSafeTypeNameFromItemPath(ItemPath path)
         {
             var segments = new List<string>();
             foreach (var pathSegmentName in path)

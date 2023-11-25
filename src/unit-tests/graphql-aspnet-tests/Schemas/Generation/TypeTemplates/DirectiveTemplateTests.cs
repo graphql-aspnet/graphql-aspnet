@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(1, template.Methods.Count);
             Assert.IsTrue(template.Locations.HasFlag(DirectiveLocation.FIELD));
             Assert.AreEqual(typeof(SimpleExecutableDirective), template.ObjectType);
-            Assert.AreEqual("[directive]/SimpleExecutable", template.Route.Path);
+            Assert.AreEqual("[directive]/SimpleExecutable", template.ItemPath.Path);
             Assert.AreEqual(DirectiveLocation.FIELD, template.Locations);
             Assert.IsNotNull(template.Methods.FindMetaData(DirectiveLocation.FIELD));
             Assert.IsFalse(template.IsRepeatable);

@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Tests.Execution
                                 }
                             }
                         }")
-                .AddDefaultValue(field.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var result1 = await server.ExecuteQuery(builder);
             var result = await server.RenderResult(builder);

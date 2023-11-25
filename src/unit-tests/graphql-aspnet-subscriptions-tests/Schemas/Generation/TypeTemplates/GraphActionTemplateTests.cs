@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var mockController = Substitute.For<IGraphControllerTemplate>();
             mockController.InternalName.Returns(typeof(TControllerType).Name);
-            mockController.Route.Returns(new SchemaItemPath("path0"));
+            mockController.ItemPath.Returns(new ItemPath("path0"));
             mockController.Name.Returns("path0");
             mockController.ObjectType.Returns(typeof(TControllerType));
 
@@ -52,14 +52,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual("SubDescription", action.Description);
             Assert.AreEqual(typeof(TwoPropertyObject), action.SourceObjectType);
             Assert.AreEqual(typeof(OneMethodSubscriptionController), action.Parent.ObjectType);
-            Assert.AreEqual(SchemaItemPathCollections.Subscription, action.Route.RootCollection);
-            Assert.AreEqual("[subscription]/path0/path1", action.Route.Path);
+            Assert.AreEqual(ItemPathRoots.Subscription, action.ItemPath.Root);
+            Assert.AreEqual("[subscription]/path0/path1", action.ItemPath.Path);
             Assert.AreEqual($"{action.Parent.InternalName}.{nameof(OneMethodSubscriptionController.SingleMethod)}", action.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, metaData.ParentObjectType);
             Assert.AreEqual("path0", action.Parent.Name);
             Assert.AreEqual(methodInfo, action.Method);
             Assert.AreEqual(1, action.Arguments.Count);
-            Assert.IsFalse(action.Route.IsTopLevelField);
+            Assert.IsFalse(action.ItemPath.IsTopLevelField);
             Assert.IsFalse(action.IsAsyncField);
 
             Assert.AreEqual("SingleMethod", action.EventName);

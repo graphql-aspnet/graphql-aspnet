@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 name = Constants.Routing.PARAMETER_META_NAME;
 
             name = name.Replace(Constants.Routing.PARAMETER_META_NAME, this.Parameter.Name);
-            this.Route = new GraphArgumentFieldPath(this.Parent.Route, name);
+            this.ItemPath = new GraphArgumentFieldPath(this.Parent.ItemPath, name);
 
             this.Description = this.AttributeProvider.SingleAttributeOrDefault<DescriptionAttribute>()?.Description?.Trim();
 
@@ -412,7 +412,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        public string Name => this.Route.Name;
+        public string Name => this.ItemPath.Name;
 
         /// <summary>
         /// Gets the reflected parameter data that defines this template.
@@ -436,7 +436,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public string Description { get; private set; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; private set; }
+        public ItemPath ItemPath { get; private set; }
 
         /// <inheritdoc />
         public object DefaultValue { get; private set; }

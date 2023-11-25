@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "name",
                 $"{this.InternalName}.{nameof(EnumValue.Name)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "name"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "name"),
                 (ev) => ev.Name.AsCompletedTask(),
                 "The case-sensitive name of this value as it should be used in a query.");
 
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "description",
                 $"{this.InternalName}.{nameof(EnumValue.Description)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "description"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "description"),
                 (ev) => ev.Description.AsCompletedTask(),
                 "A human-friendly description of the value and what it means.");
 
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "isDeprecated",
                 $"{this.InternalName}.{nameof(EnumValue.IsDeprecated)}",
                 new GraphTypeExpression(Constants.ScalarNames.BOOLEAN, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "isDeprecatedame"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "isDeprecatedame"),
                 (ev) => ev.IsDeprecated.AsCompletedTask(),
                 "Indiates if this value is deprecated. Any deprecated value should not be used and " +
                 "may be removed at a future date.");
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "deprecationReason",
                 $"{this.InternalName}.{nameof(EnumValue.DeprecationReason)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "deprecationReason"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "deprecationReason"),
                 (ev) => ev.DeprecationReason.AsCompletedTask(),
                 "A human-friendly reason as to why this value has been deprecated.");
         }

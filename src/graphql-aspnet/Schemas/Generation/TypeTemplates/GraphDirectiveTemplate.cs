@@ -70,8 +70,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.Description = this.AttributeProvider.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.IsRepeatable = this.AttributeProvider.SingleAttributeOrDefault<RepeatableAttribute>() != null;
 
-            var routeName = this.DetermineDirectiveName();
-            this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemPathCollections.Directives, routeName));
+            var pathName = this.DetermineDirectiveName();
+            this.ItemPath = new ItemPath(ItemPath.Join(ItemPathRoots.Directives, pathName));
             var potentialMethods = this.GatherPossibleDirectiveExecutionMethods();
             foreach (var methodData in potentialMethods)
             {

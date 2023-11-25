@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 template.Name,
                 template.InternalName,
                 template.ObjectType,
-                template.Route,
+                template.ItemPath,
                 enumDirectives)
             {
                 Description = template.Description,
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                     value.Name,
                     value.InternalName,
                     value.Description,
-                    value.Route,
+                    value.ItemPath,
                     value.Value,
                     value.DeclaredLabel,
                     valueDirectives);

@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 template.InternalName,
                 template.ParameterName,
                 typeExpression,
-                template.Route,
+                template.ItemPath,
                 template.ObjectType,
                 template.HasDefaultValue,
                 template.DefaultValue,

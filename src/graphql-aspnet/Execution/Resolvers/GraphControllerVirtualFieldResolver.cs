@@ -21,16 +21,16 @@ namespace GraphQL.AspNet.Execution.Resolvers
     /// path templates.
     /// </summary>
     /// <seealso cref="IGraphFieldResolver" />
-    internal class GraphControllerRouteFieldResolver : IGraphFieldResolver
+    internal class GraphControllerVirtualFieldResolver : IGraphFieldResolver
     {
         private readonly VirtualResolvedObject _dataObject;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphControllerRouteFieldResolver" /> class.
+        /// Initializes a new instance of the <see cref="GraphControllerVirtualFieldResolver" /> class.
         /// </summary>
         /// <param name="dataObject">The data object instance to return as the "result" of resolving this field. If not supplied a
         /// new instance of <see cref="object"/> will be returned.</param>
-        public GraphControllerRouteFieldResolver(VirtualResolvedObject dataObject)
+        public GraphControllerVirtualFieldResolver(VirtualResolvedObject dataObject)
         {
             Validation.ThrowIfNull(dataObject, nameof(dataObject));
             _dataObject = dataObject;

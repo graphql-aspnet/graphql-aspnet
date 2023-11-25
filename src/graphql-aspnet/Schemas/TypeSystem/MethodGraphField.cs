@@ -22,9 +22,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
     /// <summary>
     /// A representation of a field as it would be defined in an object graph that originated
-    /// from a .NET method invocation.
+    /// from a .NET method or property invocation.
     /// </summary>
-    [DebuggerDisplay("Field: {Route.Path}")]
+    [DebuggerDisplay("Field: {ItemPath.Path}")]
     public class MethodGraphField : IGraphField
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="fieldName">Name of the field in the graph.</param>
         /// <param name="internalName">The internal name that represents the method this field respresents.</param>
         /// <param name="typeExpression">The meta data describing the type of data this field returns.</param>
-        /// <param name="route">The formal route to this field in the object graph.</param>
+        /// <param name="itemPath">The formal path to this field in the object graph.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
         /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="mode">The mode in which the runtime will process this field.</param>
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string fieldName,
             string internalName,
             GraphTypeExpression typeExpression,
-            SchemaItemPath route,
+            ItemPath itemPath,
             Type declaredReturnType,
             Type objectType,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
             this.Arguments = new GraphFieldArgumentCollection(this);
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.DeclaredReturnType = Validation.ThrowIfNullOrReturn(declaredReturnType, nameof(declaredReturnType));
@@ -84,16 +84,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             var clonedItem = this.CreateNewInstance();
 
-            // only developer declared types can be reroute to other types
-            // when reparenting. Anything on mutation, query, or subscription
-            // is fixed
-            var route = this.Route.Clone();
-            if (this.Route.RootCollection.IsInternalCollection())
-                route = parent?.Route.CreateChild(this.Route.Name) ?? route;
+            // paths defined on operations cannot be repathed
+            // as they represent declared locations on the schema
+            var path = this.ItemPath.Clone();
+            if (!this.ItemPath.IsOperationRoot)
+                path = parent?.ItemPath.CreateChild(this.ItemPath.Name) ?? path;
 
             // assign all publically alterable fields
             clonedItem.Name = fieldName;
-            clonedItem.Route = route;
+            clonedItem.ItemPath = path;
             clonedItem.TypeExpression = typeExpression ?? this.TypeExpression.Clone();
             clonedItem.Description = this.Description;
             clonedItem.Publish = this.Publish;
@@ -150,7 +149,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.Name,
                 this.InternalName,
                 this.TypeExpression.Clone(),
-                this.Route,
+                this.ItemPath,
                 this.DeclaredReturnType,
                 this.ObjectType,
                 this.Mode,
@@ -184,7 +183,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual bool Publish { get; set; }
 
         /// <inheritdoc/>
-        public SchemaItemPath Route { get; protected set; }
+        public ItemPath ItemPath { get; protected set; }
 
         /// <inheritdoc/>
         public IGraphFieldResolver Resolver { get; protected set; }

@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
 
         public string InternalName { get; }
 
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 

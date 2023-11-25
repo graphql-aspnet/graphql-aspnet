@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "description",
                 $"{this.InternalName}.{nameof(IntrospectedSchema.Description)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING, GraphTypeExpression.SingleItem),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "description"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "description"),
                 (its) => its.Description.AsCompletedTask(),
                 "A human-readable string describing this schema.");
 
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "types",
                 $"{this.InternalName}.{nameof(IntrospectedSchema.KnownTypes)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, GraphTypeExpression.RequiredListRequiredItem),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "types"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "types"),
                 (its) => (its?.KnownTypes).Where(x => x.Publish).AsCompletedTask(),
                 "A complete collection of graph types declared by this schema.");
 
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "queryType",
                 $"{this.InternalName}.{nameof(IntrospectedSchema.QueryType)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "queryType"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "queryType"),
                 (its) => its.QueryType.AsCompletedTask(),
                 "The root query type of this schema.");
 
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "mutationType",
                 $"{this.InternalName}.{nameof(IntrospectedSchema.MutationType)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "mutationType"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "mutationType"),
                 (its) => its.MutationType.AsCompletedTask(),
                 "The root mutation type of this schema.");
 
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "subscriptionType",
                 $"{this.InternalName}.{nameof(IntrospectedSchema.SubscriptionType)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "subscriptionType"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "subscriptionType"),
                 (its) => its.SubscriptionType.AsCompletedTask(),
                 "The root subscription type of this schema. Will be null if this server does not support subscriptions.");
 
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "directives",
                 $"{this.InternalName}.{nameof(IntrospectedSchema.DeclaredDirectives)}",
                 new GraphTypeExpression(Constants.ReservedNames.DIRECTIVE_TYPE, GraphTypeExpression.RequiredListRequiredItem),
-                new IntrospectedRoutePath(SchemaItemPathCollections.Types, this.Name, "directives"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "directives"),
                 (its) => its.DeclaredDirectives.Where(x => x.Publish).AsCompletedTask(),
                 "A complete collection of the directives supported by this schema.");
         }

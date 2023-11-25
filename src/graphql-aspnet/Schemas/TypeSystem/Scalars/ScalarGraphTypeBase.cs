@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             string specifiedByUrl = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
-            this.Route = new SchemaItemPath(SchemaItemPathCollections.Scalars, this.Name);
+            this.ItemPath = new ItemPath(ItemPathRoots.Types, this.Name);
             this.ObjectType = Validation.ThrowIfNullOrReturn(primaryType, nameof(primaryType));
             this.InternalName = this.ObjectType.FriendlyName();
             this.Publish = true;
@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         /// <inheritdoc />
         public string SpecifiedByUrl { get; set; }

@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Schemas.TypeMakers
             var subTemplate = template as SubscriptionControllerActionGraphFieldTemplate;
             if (subTemplate != null
                 && subTemplate.FieldSource == GraphFieldSource.Action
-                && subTemplate.Route.RootCollection == SchemaItemPathCollections.Subscription)
+                && subTemplate.ItemPath.Root == ItemPathRoots.Subscription)
             {
                 var directives = template.CreateAppliedDirectives();
 
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Schemas.TypeMakers
                 return new SubscriptionMethodGraphField(
                     template.Name,
                     typeExpression,
-                    template.Route,
+                    template.ItemPath,
                     template.InternalName,
                     template.DeclaredReturnType,
                     template.ObjectType,

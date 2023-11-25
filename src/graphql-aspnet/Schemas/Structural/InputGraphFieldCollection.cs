@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             {
                 throw new GraphTypeDeclarationException(
                     $"Duplicate field name detected. The collection already " +
-                    $"declares a field named '{field.Name}' (Route: {field.Route}).");
+                    $"declares a field named '{field.Name}' (Path: {field.ItemPath}).");
             }
 
             _fields.Add(field.Name, field);

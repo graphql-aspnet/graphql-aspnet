@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Directives.Global
             if (url == null)
             {
                 throw new GraphTypeDeclarationException(
-                    $"A non-null url must be provided with @{Constants.ReservedNames.SPECIFIED_BY_DIRECTIVE}. (Target: {scalarItem.Route.Path})");
+                    $"A non-null url must be provided with @{Constants.ReservedNames.SPECIFIED_BY_DIRECTIVE}. (Target: {scalarItem.ItemPath.Path})");
             }
 
             scalarItem.SpecifiedByUrl = url;

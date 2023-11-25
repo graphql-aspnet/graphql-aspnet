@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="internalName">The internal name assigned to this enum value. Typically the same as <paramref name="declaredLabel"/>
         /// but can be customized by the developer for reporting purposes.</param>
         /// <param name="description">The description.</param>
-        /// <param name="route">The route path that uniquely identifies this enum option.</param>
+        /// <param name="itemPath">The item path that uniquely identifies this enum option.</param>
         /// <param name="internalValue">The value of the enum as its declared in .NET.</param>
         /// <param name="declaredLabel">A string representation of label declared on the enum value in .NET.</param>
         /// <param name="directives">The set of directives to execute
@@ -39,14 +39,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string name,
             string internalName,
             string description,
-            SchemaItemPath route,
+            ItemPath itemPath,
             object internalValue,
             string declaredLabel,
             IAppliedDirectiveCollection directives = null)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullEmptyOrReturn(name, nameof(name));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
             this.Description = description?.Trim();
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
             this.DeclaredValue = Validation.ThrowIfNullOrReturn(internalValue, nameof(internalValue));
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 valueName,
                 this.InternalName,
                 this.Description,
-                parent.Route.CreateChild(valueName),
+                parent.ItemPath.CreateChild(valueName),
                 this.DeclaredValue,
                 this.DeclaredLabel,
                 this.AppliedDirectives);
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         /// <inheritdoc />
         public IEnumGraphType Parent { get; }

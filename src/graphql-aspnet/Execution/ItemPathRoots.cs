@@ -14,16 +14,13 @@ namespace GraphQL.AspNet.Execution
     /// <summary>
     /// An enumeration depicting the various collections of items tracked by graphql.
     /// </summary>
-    public enum SchemaItemPathCollections : int
+    public enum ItemPathRoots : int
     {
-        // negative numbers represent internally defined collections
-        // (not pathed on one of the primary graph types)
-        Document = -70,
+        // negative numbers represent internally defined roots
+        // no mappable by developer code
         Introspection = -60,
         Schemas = -50,
         Directives = -40,
-        Scalars = -30,
-        Enums = -20,
         Types = -10,
         Unknown = GraphOperationType.Unknown,
         Query = GraphOperationType.Query,

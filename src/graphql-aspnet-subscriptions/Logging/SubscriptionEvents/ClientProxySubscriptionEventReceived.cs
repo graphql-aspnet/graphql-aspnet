@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         /// that will receive the event.</param>
         public ClientProxySubscriptionEventReceived(
             ISubscriptionClientProxy client,
-            SchemaItemPath fieldPath,
+            ItemPath fieldPath,
             IReadOnlyList<ISubscription> subscriptionsToReceive)
             : base(SubscriptionLogEventIds.ClientSubscriptionEventRecieved)
         {

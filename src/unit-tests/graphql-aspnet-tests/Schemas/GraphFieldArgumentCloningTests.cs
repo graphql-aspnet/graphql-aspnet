@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             directives.Add(new AppliedDirective("directive1", 3));
 
             var parentField = Substitute.For<ISchemaItem>();
-            parentField.Route.Returns(new SchemaItemPath("[type]/GraphType1/Field1"));
+            parentField.ItemPath.Returns(new ItemPath("[type]/GraphType1/Field1"));
             parentField.Name.Returns("Field1");
 
             var arg = new GraphFieldArgument(
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 "internalName",
                 "paramName",
                 GraphTypeExpression.FromDeclaration("String"),
-                new SchemaItemPath("[type]/GraphType1/Field1/Arg1"),
+                new ItemPath("[type]/GraphType1/Field1/Arg1"),
                 typeof(string),
                 true,
                 "default value",
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 directives);
 
             var newParentField = Substitute.For<ISchemaItem>();
-            newParentField.Route.Returns(new SchemaItemPath("[type]/GraphType2/Field1"));
+            newParentField.ItemPath.Returns(new ItemPath("[type]/GraphType2/Field1"));
             newParentField.Name.Returns("Field1");
 
             var clonedArg = arg.Clone(newParentField) as GraphFieldArgument;

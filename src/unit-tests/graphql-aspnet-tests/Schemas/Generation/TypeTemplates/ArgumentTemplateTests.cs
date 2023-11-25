@@ -42,11 +42,11 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             mockMethod.ObjectType.Returns(typeof(ParameterTestClass));
             mockMethod.Arguments.Returns(new List<IGraphArgumentTemplate>());
 
-            var route = new SchemaItemPath(SchemaItemPath.Join(
-                SchemaItemPathCollections.Query,
+            var route = new ItemPath(ItemPath.Join(
+                ItemPathRoots.Query,
                 nameof(ParameterTestClass),
                 nameof(ParameterTestClass.TestMethod)));
-            mockMethod.Route.Returns(route);
+            mockMethod.ItemPath.Returns(route);
 
             var argTemplate = new GraphArgumentTemplate(mockMethod, paramInfo);
             argTemplate.Parse();

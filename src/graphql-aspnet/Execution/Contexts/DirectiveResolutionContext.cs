@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         }
 
         /// <inheritdoc />
-        public override SchemaItemPath Route => _directiveRequest?.Directive.Route;
+        public override ItemPath ItemPath => _directiveRequest?.Directive.ItemPath;
 
         /// <inheritdoc />
         public override IGraphArgumentCollection SchemaDefinedArguments => _directiveRequest?.Directive.Arguments;

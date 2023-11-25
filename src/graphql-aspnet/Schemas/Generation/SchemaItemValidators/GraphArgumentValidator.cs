@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Schemas.Generation.SchemaItemValidators
             if (argument.ObjectType == null || argument.ObjectType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The argument '{argument.Name}' on  '{argument.Parent?.Route.Path ?? "~unknown~"}' is of type  '{argument.ObjectType?.FriendlyName() ?? "~null~"}', " +
+                    $"The argument '{argument.Name}' on  '{argument.Parent?.ItemPath.Path ?? "~unknown~"}' is of type  '{argument.ObjectType?.FriendlyName() ?? "~null~"}', " +
                     $"which is an interface. Interfaces cannot be used as input arguments to any graph type.");
             }
 
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Schemas.Generation.SchemaItemValidators
             if (foundItem == null)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The argument '{argument.Name}' on  '{argument.Parent?.Route.Path ?? "~unknown~"}' is declared as a {argument.ObjectType.FriendlyName()}, " +
+                    $"The argument '{argument.Name}' on  '{argument.Parent?.ItemPath.Path ?? "~unknown~"}' is declared as a {argument.ObjectType.FriendlyName()}, " +
                     $"which is not included in the schema as an acceptable input type (e.g. Scalar, Enum or Input Object). Ensure your type is included in the schema.");
             }
         }

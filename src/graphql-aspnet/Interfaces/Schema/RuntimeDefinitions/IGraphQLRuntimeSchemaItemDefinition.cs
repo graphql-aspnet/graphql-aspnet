@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions
 
     /// <summary>
     /// A marker templtae for any runtime-built schema item (field, directive etc.)
-    /// being added to the schema.
+    /// being added to the schema. (e.g. minimal api defined fields and directives).
     /// </summary>
     public interface IGraphQLRuntimeSchemaItemDefinition
     {
@@ -33,11 +33,11 @@ namespace GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions
         void RemoveAttribute(Attribute attrib);
 
         /// <summary>
-        /// Gets the templated name that will be given to the item on the target schema.
+        /// Gets the path name that will be given to the item on the target schema.
         /// </summary>
-        /// <value>The fully qualified template for this item.</value>
+        /// <value>The fully qualified path name for this item.</value>
         /// <remarks>(e.g. '[directive]/@myDirective', '[query]/path1/path2').</remarks>
-        SchemaItemPath Route { get; }
+        ItemPath ItemPath { get; }
 
         /// <summary>
         /// Gets the set of schema options under which this directive is being defined.

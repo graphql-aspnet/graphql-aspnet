@@ -237,7 +237,7 @@ namespace GraphQL.AspNet.Configuration.Startup
                     _handler.Execute);
 
                 appBuilder?.ApplicationServices.WriteLogEntry(
-                      (l) => l.SchemaRouteRegistered<TSchema>(
+                      (l) => l.SchemaUrlRouteRegistered<TSchema>(
                       _options.QueryHandler.Route));
             }
         }

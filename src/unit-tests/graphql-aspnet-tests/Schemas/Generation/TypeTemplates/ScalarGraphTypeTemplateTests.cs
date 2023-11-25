@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             Assert.AreEqual(TypeKind.SCALAR, template.Kind);
             Assert.AreEqual("myScalar", template.Name);
-            Assert.AreEqual("[type]/myScalar", template.Route.Path);
+            Assert.AreEqual("[type]/myScalar", template.ItemPath.Path);
             Assert.AreEqual("myScalar Desc", template.Description);
             Assert.IsTrue(template.Publish);
             Assert.AreEqual("My.Test.Scalar", template.InternalName);

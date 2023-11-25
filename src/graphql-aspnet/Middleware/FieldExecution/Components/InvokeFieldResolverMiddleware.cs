@@ -183,10 +183,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 }
 
                 throw new GraphExecutionException(
-                    $"When attempting to resolve the field '{executionContext.Field.Route.Path}' an unexpected error occured and the request was teriminated.",
+                    $"When attempting to resolve the field '{executionContext.Field.ItemPath.Path}' an unexpected error occured and the request was teriminated.",
                     executionContext.Request.Origin,
                     new InvalidOperationException(
-                        $"The field '{executionContext.Field.Route.Parent}' has a resolution mode of '{nameof(FieldResolutionMode.PerSourceItem)}' " +
+                        $"The field '{executionContext.Field.ItemPath.Parent}' has a resolution mode of '{nameof(FieldResolutionMode.PerSourceItem)}' " +
                         $"but the execution context contains {executionContext.Request.Data.Items.Count} source items. The runtime is unable to determine which " +
                         "item to assign the resultant value to."));
             }
@@ -205,7 +205,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
             throw new ArgumentOutOfRangeException(
                 nameof(executionContext.Field.Mode),
-                $"The execution mode for field '{executionContext.Field.Route.Path}' cannot be resolved " +
+                $"The execution mode for field '{executionContext.Field.ItemPath.Path}' cannot be resolved " +
                 $"by {nameof(InvokeFieldResolverMiddleware<TSchema>)}. (Mode: {executionContext.Field.Mode.ToString()})");
         }
     }

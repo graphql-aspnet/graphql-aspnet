@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation
 
             var childField = field.MapChildGroup("/path3/path4");
 
-            Assert.AreEqual("[subscription]/path1/path2/path3/path4", childField.Route.Path);
+            Assert.AreEqual("[subscription]/path1/path2/path3/path4", childField.ItemPath.Path);
         }
 
         [Test]
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation
 
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
-            Assert.AreEqual("[subscription]/path1/path2/path3/path4", childField.Route.Path);
+            Assert.AreEqual("[subscription]/path1/path2/path3/path4", childField.ItemPath.Path);
             Assert.AreEqual(1, childField.Attributes.Count(x => x is SubscriptionRootAttribute));
         }
 
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation
             var childField = field.MapChildGroup("/path3/path4");
             var resolvedField = childField.MapField("/path5/path6", (string a) => 1);
 
-            Assert.AreEqual("[subscription]/path1/path2/path3/path4/path5/path6", resolvedField.Route.Path);
+            Assert.AreEqual("[subscription]/path1/path2/path3/path4/path5/path6", resolvedField.ItemPath.Path);
             Assert.AreEqual(1, resolvedField.Attributes.Count(x => x is SubscriptionRootAttribute));
             Assert.IsNotNull(resolvedField.Resolver);
         }
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation
 
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
-            Assert.AreEqual("[subscription]/path1/path2/path3/path4", childField.Route.Path);
+            Assert.AreEqual("[subscription]/path1/path2/path3/path4", childField.ItemPath.Path);
             Assert.AreEqual(1, childField.Attributes.Count(x => x is SubscriptionRootAttribute));
         }
 

@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
     {
         public class SomeItem : ISchemaItem
         {
-            public SchemaItemPath Route { get; }
+            public ItemPath ItemPath { get; }
 
             public IAppliedDirectiveCollection AppliedDirectives { get; }
 

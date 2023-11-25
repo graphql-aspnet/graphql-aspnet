@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Gets the template assigned to this instance.
         /// </summary>
-        /// <value>The route fragment.</value>
+        /// <value>The path fragment template.</value>
         public string Template { get; }
 
         /// <summary>

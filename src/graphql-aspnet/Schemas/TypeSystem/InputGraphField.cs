@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// A standard field on any INPUT_OBJECT field.
     /// </summary>
     /// <seealso cref="IInputGraphField" />
-    [DebuggerDisplay("Field: {Route.Path}")]
+    [DebuggerDisplay("Field: {ItemPath.Path}")]
     public class InputGraphField : IInputGraphField
     {
         // *******************************************
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="internalName">The internal name of this input field. Usually this is the property name, but it
         /// can be changed by the developer.</param>
         /// <param name="typeExpression">The meta data describing the type of data this field returns.</param>
-        /// <param name="route">The formal route to this field in the object graph.</param>
+        /// <param name="itemPath">The formal path to this field in the schema.</param>
         /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredPropertyName">The name of the property as it was declared on a <see cref="Type" /> (its internal name).</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string fieldName,
             string internalName,
             GraphTypeExpression typeExpression,
-            SchemaItemPath route,
+            ItemPath itemPath,
             Type objectType,
             string declaredPropertyName,
             Type declaredReturnType,
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.DeclaredName = Validation.ThrowIfNullWhiteSpaceOrReturn(declaredPropertyName, nameof(declaredPropertyName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
 
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.DeclaredReturnType = Validation.ThrowIfNullOrReturn(declaredReturnType, nameof(declaredReturnType));
 
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             GraphTypeExpression typeExpression = null)
         {
             parent = parent ?? this.Parent;
-            var route = parent?.Route.CreateChild(this.Route.Name) ?? this.Route.Clone();
+            var itemPath = parent?.ItemPath.CreateChild(this.ItemPath.Name) ?? this.ItemPath.Clone();
 
             fieldName = fieldName?.Trim() ?? this.Name;
 
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 fieldName,
                 this.InternalName,
                 typeExpression ?? this.TypeExpression,
-                route,
+                itemPath,
                 this.ObjectType,
                 this.DeclaredName,
                 this.DeclaredReturnType,
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public ISchemaItem Parent { get; private set; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }

@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Logging
         /// <typeparam name="TSchema">The type of the schema the route was registered for.</typeparam>
         /// <param name="logger">The logger.</param>
         /// <param name="routePath">The relative route path (e.g. '/graphql').</param>
-        public static void SchemaSubscriptionRouteRegistered<TSchema>(
+        public static void SchemaSubscriptionUrlRouteRegistered<TSchema>(
             this IGraphEventLogger logger,
             string routePath)
             where TSchema : class, ISchema
@@ -215,7 +215,7 @@ namespace GraphQL.AspNet.Logging
         /// <param name="clientProxy">The client proxy recording the event.</param>
         /// <param name="fieldPath">The field path of the event that was received.</param>
         /// <param name="subscriptionsToReceive">The subscriptions set to receive the event.</param>
-        public static void ClientProxySubscriptionEventReceived<TSchema>(this IGraphEventLogger eventLogger, ISubscriptionClientProxy clientProxy, SchemaItemPath fieldPath, IReadOnlyList<ISubscription> subscriptionsToReceive)
+        public static void ClientProxySubscriptionEventReceived<TSchema>(this IGraphEventLogger eventLogger, ISubscriptionClientProxy clientProxy, ItemPath fieldPath, IReadOnlyList<ISubscription> subscriptionsToReceive)
             where TSchema : class, ISchema
         {
             eventLogger?.Log(

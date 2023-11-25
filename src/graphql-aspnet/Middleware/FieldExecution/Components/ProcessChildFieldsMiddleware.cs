@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // theoretically it can't not be found, but you never know
             if (graphType == null)
             {
-                var msg = $"Internal Server Error. When processing the results of '{context.Field.Route.Path}' no graph type on the target schema " +
+                var msg = $"Internal Server Error. When processing the results of '{context.Field.ItemPath.Path}' no graph type on the target schema " +
                     $"could be found for the type name '{context.Field.TypeExpression.TypeName}'. " +
                     $"Unable to process the {allSourceItems.Count} item(s) generated.";
 
@@ -224,7 +224,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     "provide a reason for the failure.");
 
                 parentContext.Messages.Critical(
-                    $"Processing field '{childContext.Field.Name}' of '{parentContext.Field.Route}' resulted in a critical failure. See exception for details.",
+                    $"Processing field '{childContext.Field.Name}' of '{parentContext.Field.ItemPath}' resulted in a critical failure. See exception for details.",
                     Constants.ErrorCodes.EXECUTION_ERROR,
                     childContext.InvocationContext.Origin,
                     exception);
@@ -376,7 +376,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(childInvocationContext.Field.Mode),
-                    $"The execution mode for field '{childInvocationContext.Field.Route.Path}' cannot be processed " +
+                    $"The execution mode for field '{childInvocationContext.Field.ItemPath.Path}' cannot be processed " +
                     $"by {nameof(ProcessChildFieldsMiddleware<TSchema>)}. (Mode: {childInvocationContext.Field.Mode.ToString()})");
             }
         }

@@ -38,19 +38,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="internalName">The defined internal name for this graph type.</param>
         /// <param name="typeResolver">The type resolver used to match field resolve values with
         /// expected graph types in this union.</param>
-        /// <param name="route">The unique route of this item.</param>
+        /// <param name="itemPath">The unique path of this union in the schema.</param>
         /// <param name="directives">The collection of directives
         /// to execute against this union when it is added to a schema.</param>
         public UnionGraphType(
             string name,
             string internalName,
             IUnionGraphTypeMapper typeResolver,
-            SchemaItemPath route,
+            ItemPath itemPath,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
             this.TypeMapper = typeResolver;
             this.Publish = true;
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
@@ -93,13 +93,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual IGraphType Clone(string typeName = null, Func<string, string> possibleGraphTypeNameFormatter = null)
         {
             typeName = typeName?.Trim() ?? this.Name;
-            var route = this.Route.Clone().Parent.CreateChild(typeName);
+            var itemPath = this.ItemPath.Clone().Parent.CreateChild(typeName);
 
             var clonedItem = new UnionGraphType(
                 typeName,
                 this.InternalName,
                 this.TypeMapper,
-                route,
+                itemPath,
                 this.AppliedDirectives);
 
             clonedItem.Publish = this.Publish;
@@ -155,6 +155,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
     }
 }

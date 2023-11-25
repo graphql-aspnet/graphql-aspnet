@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var mockController = Substitute.For<IGraphControllerTemplate>();
             mockController.InternalName.Returns(typeof(TControllerType).Name);
-            mockController.Route.Returns(new SchemaItemPath("path0"));
+            mockController.ItemPath.Returns(new ItemPath("path0"));
             mockController.Name.Returns("path0");
             mockController.ObjectType.Returns(typeof(TControllerType));
 
@@ -49,10 +49,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.ClassTypeExtension));
 
             Assert.AreEqual("ClassTypeExtensionDescription", template.Description);
-            Assert.AreEqual(SchemaItemPathCollections.Types, template.Route.RootCollection);
+            Assert.AreEqual(ItemPathRoots.Types, template.ItemPath.Root);
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyObject), template.SourceObjectType);
-            Assert.AreEqual($"[type]/{nameof(TwoPropertyObject)}/Property3", template.Route.Path);
+            Assert.AreEqual($"[type]/{nameof(TwoPropertyObject)}/Property3", template.ItemPath.Path);
             Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.ClassTypeExtension)}", template.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, template.Parent.ObjectType);
             Assert.AreEqual("path0", template.Parent.Name);
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(typeof(TwoPropertyObjectV2), template.ObjectType);
             Assert.AreEqual(2, template.Arguments.Count);
             Assert.AreEqual(0, template.TypeExpression.Wrappers.Length);
-            Assert.IsFalse(template.Route.IsTopLevelField);
+            Assert.IsFalse(template.ItemPath.IsTopLevelField);
             Assert.IsFalse(template.IsAsyncField);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, template.Mode);
 
@@ -95,10 +95,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.StructTypeExtension));
 
             Assert.AreEqual("StructTypeExtensionDescription", template.Description);
-            Assert.AreEqual(SchemaItemPathCollections.Types, template.Route.RootCollection);
+            Assert.AreEqual(ItemPathRoots.Types, template.ItemPath.Root);
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(TwoPropertyStruct), template.SourceObjectType);
-            Assert.AreEqual($"[type]/{nameof(TwoPropertyStruct)}/Property3", template.Route.Path);
+            Assert.AreEqual($"[type]/{nameof(TwoPropertyStruct)}/Property3", template.ItemPath.Path);
             Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.StructTypeExtension)}", template.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, template.Parent.ObjectType);
             Assert.AreEqual("path0", template.Parent.Name);
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(typeof(TwoPropertyObjectV2), template.ObjectType);
             Assert.AreEqual(2, template.Arguments.Count);
             Assert.AreEqual(0, template.TypeExpression.Wrappers.Length);
-            Assert.IsFalse(template.Route.IsTopLevelField);
+            Assert.IsFalse(template.ItemPath.IsTopLevelField);
             Assert.IsFalse(template.IsAsyncField);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, template.Mode);
 
@@ -141,10 +141,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var template = this.CreateExtensionTemplate<ExtensionMethodController>(nameof(ExtensionMethodController.InterfaceTypeExtension));
 
             Assert.AreEqual("InterfaceTypeExtensionDescription", template.Description);
-            Assert.AreEqual(SchemaItemPathCollections.Types, template.Route.RootCollection);
+            Assert.AreEqual(ItemPathRoots.Types, template.ItemPath.Root);
             Assert.AreEqual(typeof(ExtensionMethodController), template.Parent.ObjectType);
             Assert.AreEqual(typeof(ISinglePropertyObject), template.SourceObjectType);
-            Assert.AreEqual($"[type]/TwoPropertyInterface/Property3", template.Route.Path);
+            Assert.AreEqual($"[type]/TwoPropertyInterface/Property3", template.ItemPath.Path);
             Assert.AreEqual($"{nameof(ExtensionMethodController)}.{nameof(ExtensionMethodController.InterfaceTypeExtension)}", template.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, template.Parent.ObjectType);
             Assert.AreEqual("path0", template.Parent.Name);
@@ -152,7 +152,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(typeof(TwoPropertyObjectV2), template.ObjectType);
             Assert.AreEqual(2, template.Arguments.Count);
             Assert.AreEqual(0, template.TypeExpression.Wrappers.Length);
-            Assert.IsFalse(template.Route.IsTopLevelField);
+            Assert.IsFalse(template.ItemPath.IsTopLevelField);
             Assert.IsFalse(template.IsAsyncField);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, template.Mode);
 
@@ -205,7 +205,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(typeof(TwoPropertyObject), template.SourceObjectType);
             Assert.AreEqual(methodInfo, template.Method);
             Assert.AreEqual("Type", template.TypeExpression.ToString());
-            Assert.AreEqual("[type]/TwoPropertyObject/fieldThree", template.Route.ToString());
+            Assert.AreEqual("[type]/TwoPropertyObject/fieldThree", template.ItemPath.ToString());
             Assert.AreEqual(typeof(CustomNamedObject), template.ObjectType);
             Assert.AreEqual(1, template.Arguments.Count);
             Assert.AreEqual(FieldResolutionMode.Batch, template.Mode);
@@ -221,7 +221,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(typeof(CustomNamedObject), template.SourceObjectType);
             Assert.AreEqual(methodInfo, template.Method);
             Assert.AreEqual("Type", template.TypeExpression.ToString());
-            Assert.AreEqual("[type]/Custom_Named_Object/fieldThree", template.Route.ToString());
+            Assert.AreEqual("[type]/Custom_Named_Object/fieldThree", template.ItemPath.ToString());
             Assert.AreEqual(typeof(CustomNamedObject), template.ObjectType);
             Assert.AreEqual(1, template.Arguments.Count);
             Assert.AreEqual(FieldResolutionMode.Batch, template.Mode);

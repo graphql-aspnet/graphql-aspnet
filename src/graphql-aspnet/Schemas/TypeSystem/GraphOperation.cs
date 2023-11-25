@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             : base(
                   Constants.ReservedNames.FindOperationTypeNameByType(operationType),
                   $"{nameof(GraphOperation)}.{Constants.ReservedNames.FindOperationTypeNameByType(operationType)}",
-                  new SchemaItemPath(SchemaItemPathCollections.Types, Constants.ReservedNames.FindOperationTypeNameByType(operationType)),
+                  new ItemPath(ItemPathRoots.Types, Constants.ReservedNames.FindOperationTypeNameByType(operationType)),
                   directives)
         {
             this.OperationType = operationType;

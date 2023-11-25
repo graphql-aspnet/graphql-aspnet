@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         public void PropertyGraphField_DefaultValuesCheck()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.ObjectType.Returns(typeof(SimplePropertyObject));
 
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var field = this.MakeGraphField(template);
 
             var graphType = Substitute.For<IObjectGraphType>();
-            graphType.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            graphType.ItemPath.Returns(new ItemPath("[type]/Item0"));
             graphType.InternalName.Returns("Item0");
             graphType.ObjectType.Returns(typeof(SimplePropertyObject));
 
@@ -155,7 +155,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         public void PropertyGraphField_GraphName_OverridesDefaultName()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.ObjectType.Returns(typeof(SimplePropertyObject));
 
@@ -171,7 +171,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var field = this.MakeGraphField(template);
 
             var graphType = Substitute.For<IObjectGraphType>();
-            graphType.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            graphType.ItemPath.Returns(new ItemPath("[type]/Item0"));
             graphType.InternalName.Returns("Item0");
             graphType.ObjectType.Returns(typeof(SimplePropertyObject));
 
@@ -187,7 +187,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.ObjectType.Returns(typeof(SimplePropertyObject));
 
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.ObjectType.Returns(typeof(ObjectDirectiveTestItem));
 
@@ -237,7 +237,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.ObjectType.Returns(typeof(ObjectDirectiveTestItem));
 
@@ -308,7 +308,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .Build();
 
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.ObjectType.Returns(typeof(ObjectWithAttributedFieldArguments));
 
@@ -336,7 +336,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var server = new TestServerBuilder().Build();
 
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
             obj.ObjectType.Returns(typeof(ObjectWithInternalName));
 
@@ -350,7 +350,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var field = maker.CreateField(template).Field;
 
             Assert.AreEqual("PropInternalName", field.InternalName);
-            Assert.AreEqual("[type]/Item0/Prop1", field.Route.Path);
+            Assert.AreEqual("[type]/Item0/Prop1", field.ItemPath.Path);
         }
 
         [Test]
@@ -359,7 +359,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var server = new TestServerBuilder().Build();
 
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("LongItem0");
             obj.InternalName.Returns("Item0");
             obj.ObjectType.Returns(typeof(ObjectWithInternalName));
@@ -374,7 +374,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var field = maker.CreateField(template).Field;
 
             Assert.AreEqual("MethodInternalName", field.InternalName);
-            Assert.AreEqual("[type]/Item0/Method1", field.Route.Path);
+            Assert.AreEqual("[type]/Item0/Method1", field.ItemPath.Path);
         }
     }
 }

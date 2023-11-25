@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             var childField = field.MapChildGroup("/path3/path4");
 
-            Assert.AreEqual("[query]/path1/path2/path3/path4", childField.Route.Path);
+            Assert.AreEqual("[query]/path1/path2/path3/path4", childField.ItemPath.Path);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
-            Assert.AreEqual("[query]/path1/path2/path3/path4", childField.Route.Path);
+            Assert.AreEqual("[query]/path1/path2/path3/path4", childField.ItemPath.Path);
             Assert.AreEqual(1, childField.Attributes.Count(x => x is QueryRootAttribute));
         }
 
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var childField = field.MapChildGroup("/path3/path4");
             var resolvedField = childField.MapField("/path5/path6", (string a) => 1);
 
-            Assert.AreEqual("[query]/path1/path2/path3/path4/path5/path6", resolvedField.Route.Path);
+            Assert.AreEqual("[query]/path1/path2/path3/path4/path5/path6", resolvedField.ItemPath.Path);
             Assert.IsNotNull(resolvedField.Resolver);
             Assert.AreEqual(1, resolvedField.Attributes.Count(x => x is QueryRootAttribute));
         }
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             var childField = field.MapField("/path3/path4", (string a) => 1);
 
-            Assert.AreEqual("[query]/path1/path2/path3/path4", childField.Route.Path);
+            Assert.AreEqual("[query]/path1/path2/path3/path4", childField.ItemPath.Path);
             Assert.AreEqual(1, childField.Attributes.Count(x => x is QueryRootAttribute));
         }
 

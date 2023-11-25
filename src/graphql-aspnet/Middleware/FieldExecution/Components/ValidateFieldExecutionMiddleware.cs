@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     "at least 1";
 
                 throw new GraphExecutionException(
-                        $"Operation failed. The field execution context for '{field.Route.Path}' was passed " +
+                        $"Operation failed. The field execution context for '{field.ItemPath.Path}' was passed " +
                         $"0 items but expected {expected}.  (Field Mode: {field.Mode.ToString()})");
             }
 
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 && dataSource.Items.Count != 1)
             {
                 throw new GraphExecutionException(
-                        $"Operation failed. The field execution context for '{field.Route.Path}' was passed " +
+                        $"Operation failed. The field execution context for '{field.ItemPath.Path}' was passed " +
                         $"{dataSource.Items.Count} items to resolve but expected 1. (Field Mode: {field.Mode.ToString()})");
             }
 
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 if (!analysis.ExactMatchFound)
                 {
                     throw new GraphExecutionException(
-                        $"Operation failed. The field execution context for '{field.Route.Path}' was passed " +
+                        $"Operation failed. The field execution context for '{field.ItemPath.Path}' was passed " +
                         $"a source item of type '{value.GetType().FriendlyName()}' which could not be coerced " +
                         $"to '{expectedSourceType}' as requested by the target graph type '{fieldType.Name}'.");
                 }
@@ -115,7 +115,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 if (field.Mode == FieldResolutionMode.Batch && !(value.GetType() is IEnumerable))
                 {
                     throw new GraphExecutionException(
-                        $"Operation failed. The field execution context for '{field.Route.Path}' was executed in batch mode " +
+                        $"Operation failed. The field execution context for '{field.ItemPath.Path}' was executed in batch mode " +
                         $"but was not passed an {nameof(IEnumerable)} for its source data.");
                 }
             }

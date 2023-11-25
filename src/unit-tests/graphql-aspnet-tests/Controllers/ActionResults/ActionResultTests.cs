@@ -171,17 +171,17 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var resolverMetadata = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)).CreateResolverMetaData();
 
             var exception = new Exception("fail");
-            var actionResult = new RouteNotFoundGraphActionResult(resolverMetadata, exception);
+            var actionResult = new PathNotFoundGraphActionResult(resolverMetadata, exception);
 
             var context = this.CreateResolutionContext();
             await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_ROUTE, context.Messages[0].Code);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_PATH, context.Messages[0].Code);
 
             // exception message should have the resolver name in it
-            Assert.IsTrue(context.Messages[0].Message.Contains(context.Route.Name));
+            Assert.IsTrue(context.Messages[0].Message.Contains(context.ItemPath.Name));
             Assert.IsTrue(context.Messages[0].Exception.Message.Contains(resolverMetadata.InternalName));
             Assert.AreEqual(context.Messages[0].Exception.InnerException, exception);
         }
@@ -189,28 +189,28 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         [Test]
         public async Task RouteNotFound_ViaMessage_YieldsMessageInResult()
         {
-            var actionResult = new RouteNotFoundGraphActionResult("The route was not found");
+            var actionResult = new PathNotFoundGraphActionResult("The route was not found");
 
             var context = this.CreateResolutionContext();
             await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_ROUTE, context.Messages[0].Code);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_PATH, context.Messages[0].Code);
             Assert.AreEqual("The route was not found", context.Messages[0].Message);
         }
 
         [Test]
         public async Task RouteNotFound_ViaNoParameters_YieldsDefaultResult()
         {
-            var actionResult = new RouteNotFoundGraphActionResult();
+            var actionResult = new PathNotFoundGraphActionResult();
 
             var context = this.CreateResolutionContext();
             await actionResult.CompleteAsync(context);
 
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_ROUTE, context.Messages[0].Code);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_PATH, context.Messages[0].Code);
         }
 
         [Test]

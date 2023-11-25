@@ -31,8 +31,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             var mock = Substitute.For<IGraphTypeTemplate>();
             mock.InternalName.Returns("Simple");
-            var route = new SchemaItemPath(SchemaItemPathCollections.Directives, "Simple");
-            mock.Route.Returns(route);
+            var route = new ItemPath(ItemPathRoots.Directives, "Simple");
+            mock.ItemPath.Returns(route);
             var template = new GraphDirectiveMethodTemplate(mock, method);
             template.Parse();
             template.ValidateOrThrow();
@@ -68,8 +68,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             var mock = Substitute.For<IGraphTypeTemplate>();
             mock.InternalName.Returns("Simple");
-            var route = new SchemaItemPath(SchemaItemPathCollections.Directives, "Simple");
-            mock.Route.Returns(route);
+            var route = new ItemPath(ItemPathRoots.Directives, "Simple");
+            mock.ItemPath.Returns(route);
             var template = new GraphDirectiveMethodTemplate(mock, method);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -87,8 +87,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             var mock = Substitute.For<IGraphTypeTemplate>();
             mock.InternalName.Returns("Simple");
-            var route = new SchemaItemPath(SchemaItemPathCollections.Directives, "Simple");
-            mock.Route.Returns(route);
+            var route = new ItemPath(ItemPathRoots.Directives, "Simple");
+            mock.ItemPath.Returns(route);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -106,8 +106,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             var mock = Substitute.For<IGraphTypeTemplate>();
             mock.InternalName.Returns("Simple");
-            var route = new SchemaItemPath(SchemaItemPathCollections.Directives, "Simple");
-            mock.Route.Returns(route);
+            var route = new ItemPath(ItemPathRoots.Directives, "Simple");
+            mock.ItemPath.Returns(route);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {

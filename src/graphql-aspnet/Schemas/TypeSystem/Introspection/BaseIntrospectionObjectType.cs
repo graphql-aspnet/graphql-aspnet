@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
         /// <param name="name">The name of the graph type as it is displayed in the __type information.</param>
         /// <param name="internalName">The internal name of the introspected graph type as its defined for the target graph type.</param>
         protected BaseIntrospectionObjectType(string name, string internalName)
-            : base(name, internalName, new GraphIntrospectionFieldPath(name))
+            : base(name, internalName, new IntrospectedFieldPath(name))
         {
         }
 
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
         /// <param name="fieldName">The formatted name of the field as it will appear in the object graph.</param>
         /// <param name="internalName">The internal name of the field as its represented in source code.</param>
         /// <param name="typeExpression">The item representing how this field returns a graph type.</param>
-        /// <param name="route">The formal route that uniquely identifies this field in the object graph.</param>
+        /// <param name="itemPath">The formal path that uniquely identifies this field in the object graph.</param>
         /// <param name="resolver">The resolver used to fulfil requests to this field.</param>
         /// <param name="description">The description to assign to the field.</param>
         /// <returns>IGraphTypeField.</returns>
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
             string fieldName,
             string internalName,
             GraphTypeExpression typeExpression,
-            SchemaItemPath route,
+            ItemPath itemPath,
             Func<TSource, Task<TReturn>> resolver,
             string description = null)
             where TSource : class
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 fieldName,
                 internalName,
                 typeExpression,
-                route,
+                itemPath,
                 GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 typeof(TReturn),
                 FieldResolutionMode.PerSourceItem,

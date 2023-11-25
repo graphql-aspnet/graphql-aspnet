@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             if (_fields.ContainsKey(field.Name))
             {
                 throw new GraphTypeDeclarationException(
-                    $"Duplicate field name detected. The collection already declares a field named '{field.Name}' (Route: {field.Route}). " +
+                    $"Duplicate field name detected. The collection already declares a field named '{field.Name}' (Path: {field.ItemPath}). " +
                     "This may occur if a type extension is added with the same name as an existing field, " +
                     "when an attempt is made to extend an OBJECT type through a direct field extension and an indirect " +
                     "interface field extension with the same name or when a schema attempts to include multiple overloads " +

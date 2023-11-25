@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// <inheritdoc/>
         protected override GraphArgumentTemplate CreateArgument(ParameterInfo paramInfo)
         {
-            if (this.Route.RootCollection == Execution.SchemaItemPathCollections.Subscription)
+            if (this.ItemPath.Root == Execution.ItemPathRoots.Subscription)
             {
                 return new SubscriptionGraphArgumentTemplate(
                     this,

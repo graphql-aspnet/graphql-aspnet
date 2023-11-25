@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using RouteConstants = GraphQL.AspNet.Constants.Routing;
+    using PathConstants = GraphQL.AspNet.Constants.Routing;
 
     /// <summary>
     /// Helper methods useful during document execution.
@@ -27,30 +27,27 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>System.String.</returns>
-        internal static string ToRouteRoot(this SchemaItemPathCollections value)
+        internal static string ToPathRootString(this ItemPathRoots value)
         {
             switch (value)
             {
-                case SchemaItemPathCollections.Query:
-                    return RouteConstants.QUERY_ROOT;
+                case ItemPathRoots.Query:
+                    return PathConstants.QUERY_ROOT;
 
-                case SchemaItemPathCollections.Mutation:
-                    return RouteConstants.MUTATION_ROOT;
+                case ItemPathRoots.Mutation:
+                    return PathConstants.MUTATION_ROOT;
 
-                case SchemaItemPathCollections.Subscription:
-                    return RouteConstants.SUBSCRIPTION_ROOT;
+                case ItemPathRoots.Subscription:
+                    return PathConstants.SUBSCRIPTION_ROOT;
 
-                case SchemaItemPathCollections.Types:
-                    return RouteConstants.TYPE_ROOT;
+                case ItemPathRoots.Types:
+                    return PathConstants.TYPE_ROOT;
 
-                case SchemaItemPathCollections.Enums:
-                    return RouteConstants.ENUM_ROOT;
-
-                case SchemaItemPathCollections.Directives:
-                    return RouteConstants.DIRECTIVE_ROOT;
+                case ItemPathRoots.Directives:
+                    return PathConstants.DIRECTIVE_ROOT;
 
                 default:
-                    return RouteConstants.NOOP_ROOT;
+                    return PathConstants.NOOP_ROOT;
             }
         }
 

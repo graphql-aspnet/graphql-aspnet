@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     /// An internal implementation of the <see cref="IGraphQLRuntimeResolvedFieldDefinition"/>
     /// used to generate new graphql fields via a minimal api style of coding.
     /// </summary>
-    [DebuggerDisplay("{Route.Path}")]
+    [DebuggerDisplay("{ItemPath.Path}")]
     public class RuntimeResolvedFieldDefinition : RuntimeControllerActionDefinitionBase, IGraphQLRuntimeResolvedFieldDefinition
     {
         /// <summary>
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
             Validation.ThrowIfNull(fieldTemplate, nameof(fieldTemplate));
             var field = new RuntimeResolvedFieldDefinition(
                 fieldTemplate.Options,
-                fieldTemplate.Route);
+                fieldTemplate.ItemPath);
 
             foreach (var attrib in fieldTemplate.Attributes)
                 field.AddAttribute(attrib);
@@ -48,11 +48,11 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// Initializes a new instance of the <see cref="RuntimeResolvedFieldDefinition" /> class.
         /// </summary>
         /// <param name="schemaOptions">The schema options to which this field is being added.</param>
-        /// <param name="route">The full route to use for this item.</param>
+        /// <param name="itemPath">The full path to use for this item.</param>
         protected RuntimeResolvedFieldDefinition(
             SchemaOptions schemaOptions,
-            SchemaItemPath route)
-            : base(schemaOptions, route)
+            ItemPath itemPath)
+            : base(schemaOptions, itemPath)
         {
         }
 
@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// <param name="pathTemplate">The path template identifying this item.</param>
         public RuntimeResolvedFieldDefinition(
             SchemaOptions schemaOptions,
-            SchemaItemPathCollections collection,
+            ItemPathRoots collection,
             string pathTemplate)
             : base(schemaOptions, collection, pathTemplate)
         {
@@ -86,16 +86,16 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// <inheritdoc />
         protected override Attribute CreatePrimaryAttribute()
         {
-            var (collection, path) = this.Route;
+            var (collection, path) = this.ItemPath;
             switch (collection)
             {
-                case SchemaItemPathCollections.Query:
+                case ItemPathRoots.Query:
                     return new QueryRootAttribute(path, this.ReturnType)
                     {
                         InternalName = this.InternalName,
                     };
 
-                case SchemaItemPathCollections.Mutation:
+                case ItemPathRoots.Mutation:
                     return new MutationRootAttribute(path, this.ReturnType)
                     {
                         InternalName = this.InternalName,

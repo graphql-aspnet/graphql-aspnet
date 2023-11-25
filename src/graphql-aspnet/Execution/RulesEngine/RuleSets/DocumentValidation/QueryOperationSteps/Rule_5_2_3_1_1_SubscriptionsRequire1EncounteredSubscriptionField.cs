@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// An extension on 5.2.3.1 to ensure that the virtual fields registered by controllers and routes
+    /// An extension on 5.2.3.1 to ensure that the virtual fields registered by controllers
     /// can exist along side the first "top-level" encountered subscription field.
     /// </summary>
     internal class Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField
@@ -44,8 +44,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
                 -----------------------------------------------------
                 subscription {
                     ctrlPath {
-                        routePath1 {
-                            routePath2 {
+                        itemPath1 {
+                            itemPath2 {
                                 subscriptionAction { }
                             }
                         }
@@ -61,8 +61,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
                 -----------------------------------------------------
                 subscription {
                     ctrlPath {
-                        routePath1 {
-                            routePath2 {
+                        itemPath1 {
+                            itemPath2 {
                                 subscriptionAction1 { }
                                 subscriptionAction2 { }  // two subscription actions encountered (must be 1)
                             }
@@ -72,8 +72,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
 
                 subscription {
                     ctrlPath {
-                        routePath1 {
-                            routePath2 {
+                        itemPath1 {
+                            itemPath2 {
                                 queryActionField { }   // not a subscription field
                             }
                         }
@@ -82,8 +82,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
 
                 subscription {
                     controller {
-                        routePath1 {
-                            routePath2 {
+                        itemPath1 {
+                            itemPath2 {
                                 subscriptionActionField2 { }
                             }
                         }

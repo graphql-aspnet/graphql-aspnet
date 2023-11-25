@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
             Validation.ThrowIfNull(fieldTemplate, nameof(fieldTemplate));
             var field = new RuntimeSubscriptionEnabledResolvedFieldDefinition(
                 fieldTemplate.Options,
-                fieldTemplate.Route,
+                fieldTemplate.ItemPath,
                 null);
 
             foreach (var attrib in fieldTemplate.Attributes)
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// field.</param>
         private RuntimeSubscriptionEnabledResolvedFieldDefinition(
             SchemaOptions schemaOptions,
-            SchemaItemPath route,
+            ItemPath route,
             string eventName)
             : base(schemaOptions, route)
         {
@@ -81,8 +81,8 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// <inheritdoc />
         protected override Attribute CreatePrimaryAttribute()
         {
-            var (collection, path) = this.Route;
-            if (collection == SchemaItemPathCollections.Subscription)
+            var (collection, path) = this.ItemPath;
+            if (collection == ItemPathRoots.Subscription)
             {
                 return new SubscriptionRootAttribute(path, this.ReturnType)
                 {
@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
                 if (!string.IsNullOrWhiteSpace(_customEventName))
                     return;
 
-                var (_, path) = this.Route;
+                var (_, path) = this.ItemPath;
 
                 // turns path1/path2/path3 =>  path1_path2_path3
                 _customEventName = string.Join(

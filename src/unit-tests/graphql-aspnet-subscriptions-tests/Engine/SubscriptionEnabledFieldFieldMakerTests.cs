@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Engine
         {
             var mockController = Substitute.For<IGraphControllerTemplate>();
             mockController.InternalName.Returns(typeof(SubscriptionTestController).Name);
-            mockController.Route.Returns(new SchemaItemPath("path0"));
+            mockController.ItemPath.Returns(new ItemPath("path0"));
             mockController.Name.Returns("path0");
             mockController.ObjectType.Returns(typeof(SubscriptionTestController));
 

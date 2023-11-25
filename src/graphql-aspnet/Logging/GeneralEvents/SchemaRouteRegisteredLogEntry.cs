@@ -28,11 +28,11 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// </summary>
         /// <param name="routePath">The route string (e.g. '/graphql').</param>
         public SchemaRouteRegisteredLogEntry(string routePath)
-            : base(LogEventIds.SchemaRouteRegistered)
+            : base(LogEventIds.SchemaUrlRouteRegistered)
         {
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.SchemaRoutePath = routePath;
+            this.SchemaItemPath = routePath;
         }
 
         /// <summary>
@@ -49,10 +49,10 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// Gets the relative url registered for this schema type to listen on.
         /// </summary>
         /// <value>The name of the schema route.</value>
-        public string SchemaRoutePath
+        public string SchemaItemPath
         {
-            get => this.GetProperty<string>(LogPropertyNames.SCHEMA_ROUTE_PATH);
-            private set => this.SetProperty(LogPropertyNames.SCHEMA_ROUTE_PATH, value);
+            get => this.GetProperty<string>(LogPropertyNames.SCHEMA_URL_ROUTE_PATH);
+            private set => this.SetProperty(LogPropertyNames.SCHEMA_URL_ROUTE_PATH, value);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return $"Schema Route Registered | Schema Type: '{_schemaTypeShortName}', Route: '{this.SchemaRoutePath}' ";
+            return $"Schema Route Registered | Schema Type: '{_schemaTypeShortName}', Route: '{this.SchemaItemPath}' ";
         }
     }
 }

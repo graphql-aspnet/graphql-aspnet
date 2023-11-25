@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             : base(LogEventIds.TypeSystemDirectiveApplied)
         {
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.SchemaItemPath = appliedTo?.Route?.Path;
+            this.SchemaItemPath = appliedTo?.ItemPath?.Path;
             this.DirectiveName = directiveApplied?.Name;
             this.DirectiveInternalName = directiveApplied?.InternalName;
             this.DirectiveLocation = appliedTo?.AsDirectiveLocation().ToString() ?? "-unknown-";

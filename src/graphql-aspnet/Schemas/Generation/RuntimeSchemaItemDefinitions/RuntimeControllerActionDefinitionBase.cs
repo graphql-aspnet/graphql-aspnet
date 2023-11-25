@@ -39,14 +39,14 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// </summary>
         /// <param name="options">The schema options where this field item
         /// is being defined.</param>
-        /// <param name="route">The full route to use for this schema item.</param>
+        /// <param name="path">The full item path to use for this schema item.</param>
         protected RuntimeControllerActionDefinitionBase(
             SchemaOptions options,
-            SchemaItemPath route)
+            ItemPath path)
             : this()
         {
             this.Options = Validation.ThrowIfNullOrReturn(options, nameof(options));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(path, nameof(path));
         }
 
         /// <summary>
@@ -58,14 +58,14 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// <param name="pathTemplate">The path template identifying this item.</param>
         protected RuntimeControllerActionDefinitionBase(
             SchemaOptions options,
-            SchemaItemPathCollections collection,
+            ItemPathRoots collection,
             string pathTemplate)
             : this()
         {
             this.Options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             pathTemplate = pathTemplate?.Trim() ?? string.Empty;
 
-            this.Route = new SchemaItemPath(collection, pathTemplate);
+            this.ItemPath = new ItemPath(collection, pathTemplate);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
 
             partialPathTemplate = Validation.ThrowIfNullWhiteSpaceOrReturn(partialPathTemplate, nameof(partialPathTemplate));
 
-            this.Route = _parentField.Route.CreateChild(partialPathTemplate);
+            this.ItemPath = _parentField.ItemPath.CreateChild(partialPathTemplate);
         }
 
         /// <inheritdoc />
@@ -163,6 +163,6 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         public virtual SchemaOptions Options { get; protected set; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; protected set; }
+        public ItemPath ItemPath { get; protected set; }
     }
 }

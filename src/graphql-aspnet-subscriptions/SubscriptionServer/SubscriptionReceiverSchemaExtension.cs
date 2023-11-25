@@ -191,7 +191,7 @@ namespace GraphQL.AspNet.SubscriptionServer
                 app.UseMiddleware(middlewareType);
 
                 var logger = serviceProvider.CreateScope().ServiceProvider.GetService<IGraphEventLogger>();
-                logger?.SchemaSubscriptionRouteRegistered<TSchema>(this.SubscriptionOptions.Route);
+                logger?.SchemaSubscriptionUrlRouteRegistered<TSchema>(this.SubscriptionOptions.Route);
             }
         }
 
