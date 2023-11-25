@@ -102,6 +102,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             Assert.IsTrue(graphType is EnumGraphType);
             Assert.AreEqual(4, ((EnumGraphType)graphType).Values.Count);
+
+            foreach (var enumValue in graphType.Values)
+                Assert.AreEqual(graphType, enumValue.Value.Parent);
         }
 
         [Test]

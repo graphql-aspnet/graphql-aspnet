@@ -42,6 +42,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             // Property1, Property2, __typename
             Assert.AreEqual(3, graphType.Fields.Count());
+
+            foreach (var field in graphType.Fields)
+                Assert.AreEqual(graphType, field.Parent);
         }
 
         [Test]

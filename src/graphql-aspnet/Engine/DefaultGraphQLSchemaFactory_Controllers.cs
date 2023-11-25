@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Engine
             if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(operation))
             {
                 this.EnsureGraphOperationType(operation);
-                var parentField = this.AddOrRetrieveControllerRoutePath(action);
+                var parentField = this.AddOrRetrieveVirtualTypeOwner(action);
                 this.AddActionAsField(parentField, action);
             }
             else
@@ -85,12 +85,13 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <summary>
-        /// Inspects the root and ensures that any intermediate, virtual fields
-        /// are accounted for and returns a reference to the immediate parent this action should be added to.
+        /// Inspects the field template and ensures that any intermediate, virtual types (and fields)
+        /// are accounted for. This method  then returns a reference to the intermediate graph type
+        /// this action should be added to as a field reference.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <returns>IGraphField.</returns>
-        protected virtual IObjectGraphType AddOrRetrieveControllerRoutePath(IGraphFieldTemplate action)
+        protected virtual IObjectGraphType AddOrRetrieveVirtualTypeOwner(IGraphFieldTemplate action)
         {
             var pathSegments = action.Route.GenerateParentPathSegments();
 
