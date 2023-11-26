@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ControllerTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [GraphRoute("invoke")]
     public class InvokableController : GraphController

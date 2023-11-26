@@ -12,18 +12,24 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.GraphTypeCollectionTestData;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
     using NUnit.Framework;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
+    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
+    using Microsoft.AspNetCore.Hosting.Server;
+    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.Interfaces;
+    using GraphQL.AspNet.Tests.CommonHelpers;
 
     [TestFixture]
     public class SchemaTypeCollectionTests
@@ -39,23 +45,20 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             var testServer = new TestServerBuilder().Build();
 
-            switch (kind)
-            {
-                case TypeKind.UNION:
-                    var proxy = GraphQLProviders.GraphTypeMakerProvider.CreateUnionProxyFromType(type);
-                    var unionMaker = GraphQLProviders.GraphTypeMakerProvider.CreateUnionMaker(testServer.Schema);
-                    return unionMaker.CreateUnionFromProxy(proxy).GraphType;
+            var factory = testServer.CreateMakerFactory();
 
-                default:
-                    var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(testServer.Schema, kind);
-                    return maker.CreateGraphType(type).GraphType;
-            }
+            var template = GraphQLTemplateHelper.CreateGraphTypeTemplate(type, kind);
+            var typeMaker = factory.CreateTypeMaker(type, kind);
+            var graphType = typeMaker.CreateGraphType(template).GraphType;
+
+            return graphType;
         }
 
         private IGraphField MakeGraphField(IGraphFieldTemplate fieldTemplate)
         {
             var testServer = new TestServerBuilder().Build();
-            var maker = new GraphFieldMaker(testServer.Schema);
+
+            var maker = new GraphFieldMaker(testServer.Schema, new GraphArgumentMaker(testServer.Schema));
             return maker.CreateField(fieldTemplate).Field;
         }
 
@@ -220,7 +223,10 @@ namespace GraphQL.AspNet.Tests.Schemas
         public void QueueExtension_WhenAddedBeforeType_IsAssignedAfterTypeIsAdded()
         {
             var collection = new SchemaTypeCollection();
-            var template = GraphQLProviders.TemplateProvider.ParseType(typeof(TypeExtensionController)) as IGraphControllerTemplate;
+
+            var template = new GraphControllerTemplate(typeof(TypeExtensionController));
+            template.Parse();
+            template.ValidateOrThrow();
 
             var graphType = this.MakeGraphType(typeof(TwoPropertyObject), TypeKind.OBJECT) as IObjectGraphType;
 
@@ -247,7 +253,10 @@ namespace GraphQL.AspNet.Tests.Schemas
         public void QueueExtension_WhenAddedAfterType_IsAddedToTheTypeAndNotQueued()
         {
             var collection = new SchemaTypeCollection();
-            var template = GraphQLProviders.TemplateProvider.ParseType(typeof(TypeExtensionController)) as IGraphControllerTemplate;
+
+            var template = new GraphControllerTemplate(typeof(TypeExtensionController));
+            template.Parse();
+            template.ValidateOrThrow();
 
             var twoObjectGraphType = this.MakeGraphType(typeof(TwoPropertyObject), TypeKind.OBJECT) as IObjectGraphType;
 

@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
         /// Initializes a new instance of the <see cref="Introspection_FieldType"/> class.
         /// </summary>
         public Introspection_FieldType()
-            : base(Constants.ReservedNames.FIELD_TYPE)
+            : base(Constants.ReservedNames.FIELD_TYPE, nameof(Introspection_FieldType))
         {
             // "__Field" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection

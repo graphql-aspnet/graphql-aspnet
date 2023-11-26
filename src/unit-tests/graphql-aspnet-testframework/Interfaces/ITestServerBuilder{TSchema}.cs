@@ -31,6 +31,12 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
         ITestServerBuilder<TSchema> AddTestComponent(IGraphQLTestFrameworkComponent component);
 
+        /// <inheritdoc cref="SchemaOptions.AddGraphType{TType}(TypeKind?)" />
+        ITestServerBuilder<TSchema> AddGraphType<TType>(TypeKind? typeKind = null);
+
+        /// <inheritdoc cref="SchemaOptions.AddGraphType(Type, TypeKind?)" />
+        ITestServerBuilder<TSchema> AddGraphType(Type type, TypeKind? typeKind = null);
+
         /// <inheritdoc cref="SchemaOptions.AddType{TType}(TypeKind?)" />
         ITestServerBuilder<TSchema> AddType<TType>(TypeKind? typeKind = null);
 

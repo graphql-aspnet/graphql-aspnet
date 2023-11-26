@@ -21,8 +21,8 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs.Messaging.Messages;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Tests.Mocks;
     using GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs.GraphqlTransportWsData;
@@ -745,6 +745,84 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
             // server closes with an error status
             connection.AssertServerClosedConnection((ConnectionCloseStatus)GqltwsConstants.CustomCloseEventIds.InvalidMessageType);
             graphqlWsClient.Dispose();
+        }
+
+        [Test]
+        public async Task ReceiveEvent_OnStartedSubscription_AgainstMinimalApiSubscription_YieldsNEXTMessage()
+        {
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
+
+            var server = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.MapSubscription("watchForPropObject")
+                    .WithEventName("watchForPropObject")
+                    .AddResolver(async (TwoPropertyObject obj) =>
+                    {
+                        await Task.Yield();
+                        return obj;
+                    });
+                })
+                .AddSubscriptionServer((options) =>
+                {
+                    options.ConnectionKeepAliveInterval = TimeSpan.FromMinutes(15);
+                    options.AuthenticatedRequestsOnly = false;
+                })
+                .Build();
+
+            var router = Substitute.For<ISubscriptionEventRouter>();
+
+            var connection = server.CreateClientConnection(GqltwsConstants.PROTOCOL_NAME);
+            var serverOptions = server.ServiceProvider.GetRequiredService<SubscriptionServerOptions<GraphSchema>>();
+
+            var subClient = new GqltwsClientProxy<GraphSchema>(
+                connection,
+                server.Schema,
+                router,
+                server.ServiceProvider.GetService<IQueryResponseWriter<GraphSchema>>());
+
+            var startMessage = new GqltwsClientSubscribeMessage()
+            {
+                Id = "abc",
+                Payload = new GraphQueryData()
+                {
+                    Query = "subscription {  watchForPropObject { property1 } } ",
+                },
+            };
+
+            await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
+            await subClient.ProcessMessageAsync(startMessage);
+
+            // mimic new data for the registered subscription being processed by some
+            // other mutation
+            var evt = new SubscriptionEvent()
+            {
+                Id = Guid.NewGuid().ToString(),
+                DataTypeName = typeof(TwoPropertyObject).Name,
+                Data = new TwoPropertyObject()
+                {
+                    Property1 = "value1",
+                    Property2 = 33,
+                },
+                EventName = "watchForPropObject",
+                SchemaTypeName = new GraphSchema().FullyQualifiedSchemaTypeName(),
+            };
+
+            await subClient.ReceiveEventAsync(evt);
+
+            // the connection should receive a data package
+            connection.AssertGqltwsResponse(
+                GqltwsMessageType.NEXT,
+                "abc",
+                @"{
+                    ""data"" : {
+                        ""watchForPropObject"" : {
+                            ""property1"" : ""value1"",
+                        }
+                    }
+                }");
+
+            subClient.Dispose();
         }
     }
 }

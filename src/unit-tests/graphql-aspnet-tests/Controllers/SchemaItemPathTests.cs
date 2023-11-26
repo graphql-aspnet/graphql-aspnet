@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         }
 
         [Test]
-        public void Destructuring_Query_TwoFragmentPathHasADefinedParent()
+        public void Query_TwoFragmentPathHasADefinedParent()
         {
             var fragment = "[query]/path1/path2";
             var route = new SchemaItemPath(fragment);
@@ -201,6 +201,27 @@ namespace GraphQL.AspNet.Tests.Controllers
             var parent = new SchemaItemPath($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName");
             var route = new GraphArgumentFieldPath(parent, "arg1");
             Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName[arg1]", route.Path);
+        }
+
+        [TestCase("[query]/path1/path2", SchemaItemCollections.Query, "/path1/path2")]
+        [TestCase("[query]", SchemaItemCollections.Query, "/")]
+        [TestCase("[mutation]/path1/path2", SchemaItemCollections.Mutation, "/path1/path2")]
+        [TestCase("[subscription]/path1/path2", SchemaItemCollections.Subscription, "/path1/path2")]
+        [TestCase("[wrong]/path1/path2", SchemaItemCollections.Unknown, "")]
+        [TestCase("[query]/path1", SchemaItemCollections.Query, "/path1")]
+        [TestCase("[mutation]/path1", SchemaItemCollections.Mutation, "/path1")]
+        [TestCase("[subscription]/path1", SchemaItemCollections.Subscription, "/path1")]
+        [TestCase("[wrong]/path1", SchemaItemCollections.Unknown, "")]
+        public void Destructuring_ToCollectionAndPath(
+            string input,
+            SchemaItemCollections expectedCollection,
+            string expectedPath)
+        {
+            var route = new SchemaItemPath(input);
+            var (col, path) = route;
+
+            Assert.AreEqual(expectedCollection, col);
+            Assert.AreEqual(expectedPath, path);
         }
     }
 }

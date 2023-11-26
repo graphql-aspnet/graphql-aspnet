@@ -32,11 +32,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             var arg = new GraphFieldArgument(
                 parentField,
                 "argName",
+                "internalName",
+                "paramName",
                 GraphTypeExpression.FromDeclaration("String"),
                 new SchemaItemPath("[type]/GraphType1/Field1/Arg1"),
-                GraphArgumentModifiers.Internal,
-                "paramName",
-                "internalName",
                 typeof(string),
                 true,
                 "default value",
@@ -54,7 +53,6 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(arg.DefaultValue, clonedArg.DefaultValue);
             Assert.AreEqual(arg.ObjectType, clonedArg.ObjectType);
             Assert.AreEqual(arg.InternalName, clonedArg.InternalName);
-            Assert.AreEqual(arg.ArgumentModifiers, clonedArg.ArgumentModifiers);
             Assert.AreEqual(arg.TypeExpression, clonedArg.TypeExpression);
             Assert.AreEqual(arg.ParameterName, clonedArg.ParameterName);
             Assert.AreEqual(arg.AppliedDirectives.Count, arg.AppliedDirectives.Count);

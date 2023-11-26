@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Configuration.Startup
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -85,6 +86,13 @@ namespace GraphQL.AspNet.Configuration.Startup
         /// <inheritdoc />
         public void ConfigureServices()
         {
+            if (_options.ServiceCollection.Any(x => x.ServiceType == typeof(TSchema)))
+            {
+                throw new InvalidOperationException(
+                    $"The schema type {typeof(TSchema).FriendlyName()} has already been registered. " +
+                    "Each schema type may only be registered once with GraphQL.");
+            }
+
             // create the builder to guide the rest of the setup operations
             _configureOptions?.Invoke(_options);
 
@@ -139,6 +147,9 @@ namespace GraphQL.AspNet.Configuration.Startup
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.QueryExecutionPipeline));
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.DirectiveExecutionPipeline));
 
+            // register self for final "using" extraction
+            _options.ServiceCollection.AddSingleton<ISchemaInjector>(this);
+
             this.RegisterEngineComponents();
 
             _options.FinalizeServiceRegistration();
@@ -160,6 +171,7 @@ namespace GraphQL.AspNet.Configuration.Startup
 
             // "per request per schema" components
             _options.ServiceCollection.TryAddTransient(typeof(IGraphQLHttpProcessor<TSchema>), _options.QueryHandler.HttpProcessorType);
+            _options.ServiceCollection.TryAddTransient<IGraphQLSchemaFactory<TSchema>, DefaultGraphQLSchemaFactory<TSchema>>();
 
             // "per application server" instance
             _options.ServiceCollection.TryAddScoped<IGraphQLFieldResolverIsolationManager, GraphQLFieldResolverIsolationManager>();
@@ -181,9 +193,17 @@ namespace GraphQL.AspNet.Configuration.Startup
         /// <returns>TSchema.</returns>
         private TSchema BuildNewSchemaInstance(IServiceProvider serviceProvider)
         {
-            var schemaInstance = GraphSchemaBuilder.BuildSchema<TSchema>(serviceProvider);
-            var initializer = new GraphSchemaInitializer<TSchema>(_options, serviceProvider);
-            initializer.Initialize(schemaInstance);
+            var scope = serviceProvider.CreateScope();
+
+            var schemaConfig = _options.CreateConfiguration();
+
+            var factory = scope.ServiceProvider.GetRequiredService<IGraphQLSchemaFactory<TSchema>>();
+            var schemaInstance = factory.CreateInstance(
+                scope,
+                schemaConfig,
+                _options.SchemaTypesToRegister,
+                _options.RuntimeTemplates,
+                _options.ServerExtensions);
 
             serviceProvider.WriteLogEntry(
                   (l) => l.SchemaInstanceCreated(schemaInstance));
@@ -204,7 +224,7 @@ namespace GraphQL.AspNet.Configuration.Startup
             if (_options.ServerExtensions != null)
             {
                 foreach (var additionalOptions in _options.ServerExtensions)
-                    additionalOptions.Value.UseExtension(appBuilder, appBuilder.ApplicationServices);
+                    additionalOptions.UseExtension(appBuilder, appBuilder.ApplicationServices);
             }
 
             if (!_options.QueryHandler.DisableDefaultRoute)
@@ -240,17 +260,13 @@ namespace GraphQL.AspNet.Configuration.Startup
         /// server options on this instance are invoked with just the service provider.</param>
         private void UseSchema(IServiceProvider serviceProvider, bool invokeServerExtensions)
         {
-            // pre-parse any types known to this schema
-            var preCacher = new SchemaPreCacher();
-            preCacher.PreCacheTemplates(_options.SchemaTypesToRegister.Select(x => x.Type));
-
             // only when the service provider is used for final configuration do we
             // invoke extensions with just the service provider
             // (mostly just for test harnessing, but may be used by developers as well)
             if (invokeServerExtensions)
             {
                 foreach (var additionalOptions in _options.ServerExtensions)
-                    additionalOptions.Value.UseExtension(serviceProvider: serviceProvider);
+                    additionalOptions.UseExtension(serviceProvider: serviceProvider);
             }
 
             // try and build the schema

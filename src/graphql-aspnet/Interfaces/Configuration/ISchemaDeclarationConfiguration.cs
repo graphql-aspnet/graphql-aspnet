@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -41,6 +40,12 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// </summary>
         /// <value>The declaration requirements for this schema.</value>
         TemplateDeclarationRequirements FieldDeclarationRequirements { get; }
+
+        /// <summary>
+        /// Gets the tie-breaker selection rule this schema should use when determining how to handle unattributed method parameters.
+        /// </summary>
+        /// <value>The tie breaker rule to use when evaluating method parameters as potential field arguments.</value>
+        SchemaArgumentBindingRules ArgumentBindingRule { get; }
 
         /// <summary>
         /// <para>Gets an object used to format the declared names in your C# code as various items in the type system

@@ -10,10 +10,13 @@
 namespace GraphQL.AspNet.SubscriptionServer
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -89,16 +92,27 @@ namespace GraphQL.AspNet.SubscriptionServer
                     $"authorization method. (Current authorization method is \"{_schemaBuilder.Options.AuthorizationOptions.Method}\")");
             }
 
-            // swap out the master templating provider for the one that includes
-            // support for the subscription action type if and only if the developer has not
-            // already registered their own custom one
-            if (GraphQLProviders.TemplateProvider == null || GraphQLProviders.TemplateProvider.GetType() == typeof(DefaultTypeTemplateProvider))
-                GraphQLProviders.TemplateProvider = new SubscriptionEnabledTypeTemplateProvider();
+            // swap out the master schema factory to one that includes
+            // support for the subscription action type
+            var existingFactories = _schemaBuilder
+                .Options
+                .ServiceCollection
+                .FirstOrDefault(x => x.ServiceType == typeof(IGraphQLSchemaFactory<TSchema>));
 
-            // swap out the master graph type maker to its "subscription enabled" version
-            // if and only if the developer has not already registered their own custom instance
-            if (GraphQLProviders.GraphTypeMakerProvider == null || GraphQLProviders.GraphTypeMakerProvider.GetType() == typeof(DefaultGraphTypeMakerProvider))
-                GraphQLProviders.GraphTypeMakerProvider = new SubscriptionEnabledGraphTypeMakerProvider();
+            if (existingFactories != null)
+            {
+                _schemaBuilder.Options
+                    .ServiceCollection
+                    .RemoveAll(typeof(IGraphQLSchemaFactory<TSchema>));
+            }
+
+            _schemaBuilder.Options
+                .ServiceCollection
+                .TryAdd(
+                    new ServiceDescriptor(
+                        typeof(IGraphQLSchemaFactory<TSchema>),
+                        typeof(SubscriptionEnabledGraphQLSchemaFactory<TSchema>),
+                        ServiceLifetime.Transient));
 
             // Update the query execution pipeline
             // ------------------------------------------

@@ -10,16 +10,21 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Directives;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Execution.TestData.GraphSchemaProcessorTestData;
     using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +46,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public DirectiveProcessorTypeSystemTests()
         {
             _serviceCollection = new ServiceCollection();
+
             _itemsExecuted = new List<object>();
             _typesToAdd = new List<Type>();
         }
@@ -50,10 +56,15 @@ namespace GraphQL.AspNet.Tests.Execution
             GraphMiddlewareInvocationDelegate<GraphDirectiveExecutionContext> delegateToExecute = null)
         {
             // build the schema
-            _schemaInstance = new GraphSchema();
-            var manager = new GraphSchemaManager(_schemaInstance);
-            foreach (var type in _typesToAdd)
-                manager.EnsureGraphType(type);
+            var options = new SchemaOptions<GraphSchema>(_serviceCollection);
+
+            var schemaFactory = new DefaultGraphQLSchemaFactory<GraphSchema>(
+                processTypeSystemDirectives: false);
+
+            _schemaInstance = schemaFactory.CreateInstance(
+                _serviceCollection.BuildServiceProvider().CreateScope(),
+                options.CreateConfiguration(),
+                _typesToAdd.Select(x => new SchemaTypeToRegister(x)));
 
             // build hte directive pipeline instance
             if (buildRequiredDirectivePipeline)

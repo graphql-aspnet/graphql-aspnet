@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -64,13 +64,8 @@ namespace GraphQL.AspNet.Interfaces.Internal
         Type ObjectType { get; }
 
         /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
-        string InternalFullName { get; }
-
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
+        /// Gets the name that defines this item within the .NET code of the application;
+        /// typically a class, struct, method or property name.
         /// </summary>
         /// <value>The internal name given to this item.</value>
         string InternalName { get; }

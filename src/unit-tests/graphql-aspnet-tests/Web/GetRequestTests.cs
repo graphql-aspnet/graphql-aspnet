@@ -17,8 +17,8 @@ namespace GraphQL.AspNet.Tests.Web
     using System.Web;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Web.CancelTokenTestData;
     using GraphQL.AspNet.Tests.Web.WebTestData;
     using Microsoft.AspNetCore.Http;

@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
@@ -31,10 +30,11 @@ namespace GraphQL.AspNet.Interfaces.Execution
         Task ResolveAsync(FieldResolutionContext context, CancellationToken cancelToken = default);
 
         /// <summary>
-        /// Gets the concrete type this resolver attempts to create as a during its invocation (the data type it returns).
-        /// If this resolver may generate a list, this type should represent a single list item. (i.e. 'string' not 'List{string}').
+        /// Gets the metadata that describes this instances implementation in the source code. The resolver will
+        /// use this data to properly instantiate and invoke the configured object methods, Func, dynamic delegates or properties
+        /// as appropriate.
         /// </summary>
-        /// <value>The type of the return.</value>
-        Type ObjectType { get; }
+        /// <value>The resolver's metadata collection.</value>
+        IGraphFieldResolverMetaData MetaData { get; }
     }
 }

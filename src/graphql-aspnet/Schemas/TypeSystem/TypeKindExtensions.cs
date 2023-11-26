@@ -15,33 +15,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     public static class TypeKindExtensions
     {
         /// <summary>
-        /// Determines whether this <see cref="TypeKind"/> is allowed to be transformed into the provided kind.
-        /// </summary>
-        /// <param name="kind">The kind to check.</param>
-        /// <param name="kindToBecome">The kind to become.</param>
-        /// <returns><c>true</c> if this instance can become the specified kind to become; otherwise, <c>false</c>.</returns>
-        internal static bool CanBecome(this TypeKind kind, TypeKind kindToBecome)
-        {
-            switch (kind)
-            {
-                case TypeKind.INTERFACE:
-                    return kindToBecome == TypeKind.ENUM || kindToBecome == TypeKind.SCALAR || kindToBecome == TypeKind.OBJECT;
-
-                case TypeKind.OBJECT:
-                    return kindToBecome == TypeKind.ENUM || kindToBecome == TypeKind.SCALAR || kindToBecome == TypeKind.INTERFACE;
-
-                case TypeKind.INPUT_OBJECT:
-                    return kindToBecome == TypeKind.ENUM || kindToBecome == TypeKind.SCALAR;
-
-                case TypeKind.NONE:
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
-
-        /// <summary>
         /// Determines whether the given kind of graph type is a valid leaf.
         /// </summary>
         /// <param name="kind">The kind to check.</param>

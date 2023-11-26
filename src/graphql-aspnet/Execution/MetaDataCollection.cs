@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Execution
         // dictionary with a locking mechanism.
         //
         // Given its scope (with a single request and only in user code)
-        // its unlikely object will be under heavy pressure need the
+        // its unlikely object will be under heavy pressure needing the
         // speed of lock free reads provided by ConcurrentDictionary
         // ------
         private Dictionary<string, object> _localDictionary;

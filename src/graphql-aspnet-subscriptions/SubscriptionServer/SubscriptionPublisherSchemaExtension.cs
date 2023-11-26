@@ -10,12 +10,16 @@
 namespace GraphQL.AspNet.SubscriptionServer
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
     /// A schema extension encapsulating the ability for a given schema to publish subscription events from
@@ -45,24 +49,6 @@ namespace GraphQL.AspNet.SubscriptionServer
         {
             _primaryOptions = options;
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);
-
-            // swap out the master providers for the ones that includes
-            // support for the subscription action type
-            if (!(GraphQLProviders.TemplateProvider is SubscriptionEnabledTypeTemplateProvider))
-                GraphQLProviders.TemplateProvider = new SubscriptionEnabledTypeTemplateProvider();
-
-            if (!(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider))
-                GraphQLProviders.GraphTypeMakerProvider = new SubscriptionEnabledGraphTypeMakerProvider();
-        }
-
-        /// <summary>
-        /// Invokes this instance to perform any final setup requirements as part of
-        /// its configuration during startup.
-        /// </summary>
-        /// <param name="app">The application builder, no middleware will be registered if not supplied.</param>
-        /// <param name="serviceProvider">The service provider to use.</param>
-        public void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null)
-        {
-        }
+         }
     }
 }

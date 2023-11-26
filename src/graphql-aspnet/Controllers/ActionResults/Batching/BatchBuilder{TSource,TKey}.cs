@@ -24,11 +24,10 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
         /// <summary>
         /// Initializes a new instance of the <see cref="BatchBuilder{TSource, TKey}" /> class.
         /// </summary>
-        /// <param name="field">The field for witch this batch is being produced.</param>
         /// <param name="sourceData">The source data.</param>
         /// <param name="sourceKeySelector">A function to extract a single key value from each source item.</param>
-        public BatchBuilder(IGraphField field, IEnumerable<TSource> sourceData, Func<TSource, TKey> sourceKeySelector)
-            : base(field, sourceData, null, sourceKeySelector, null)
+        public BatchBuilder(IEnumerable<TSource> sourceData, Func<TSource, TKey> sourceKeySelector)
+            : base(sourceData, null, sourceKeySelector, null)
         {
         }
 
@@ -45,7 +44,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
             where TResult : class
         {
             return new BatchBuilder<TSource, TResult, TKey>(
-                this.Field,
                 this.SourceData,
                 resultData,
                 this.SourceKeySelector,
@@ -64,7 +62,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
         public BatchBuilder<TSource, TResult, TKey> WithResults<TResult>(IEnumerable<TResult> resultData, Func<TResult, IEnumerable<TKey>> resultKeySelector)
             where TResult : class
         {
-            return new BatchBuilder<TSource, TResult, TKey>(this.Field, this.SourceData, resultData, this.SourceKeySelector, resultKeySelector);
+            return new BatchBuilder<TSource, TResult, TKey>(this.SourceData, resultData, this.SourceKeySelector, resultKeySelector);
         }
     }
 }

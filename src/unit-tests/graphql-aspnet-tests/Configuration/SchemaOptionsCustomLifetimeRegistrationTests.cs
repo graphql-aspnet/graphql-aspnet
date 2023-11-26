@@ -22,8 +22,6 @@ namespace GraphQL.AspNet.Tests.Configuration
         [Test]
         public void DirectiveAddedWithNonDefaultLifeTime_IsRegisteredAsSuch()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-
             GraphQLServerSettings.ControllerServiceLifeTime = ServiceLifetime.Transient;
 
             var collection = new ServiceCollection();
@@ -41,8 +39,6 @@ namespace GraphQL.AspNet.Tests.Configuration
         [Test]
         public void ControllerAddedWithNonDefaultLifeTime_IsRegisteredAsSuch()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-
             GraphQLServerSettings.ControllerServiceLifeTime = ServiceLifetime.Transient;
 
             var collection = new ServiceCollection();

@@ -11,9 +11,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A builder to help construct a batch result for a field that can be properly dispursed to the source items in the batch.
@@ -26,19 +24,16 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
         /// <summary>
         /// Initializes a new instance of the <see cref="BatchBuilder{TSource, TResult, TKey}"/> class.
         /// </summary>
-        /// <param name="field">The field for witch this batch is being produced.</param>
         /// <param name="sourceData">The source data.</param>
         /// <param name="resultData">The result data.</param>
         /// <param name="sourceKeySelector">The source key selector.</param>
         /// <param name="resultKeySelector">The result key selector.</param>
         public BatchBuilder(
-            IGraphField field,
             IEnumerable<TSource> sourceData,
             IEnumerable<TResult> resultData,
             Func<TSource, TKey> sourceKeySelector,
             Func<TResult, IEnumerable<TKey>> resultKeySelector)
         {
-            this.Field = field;
             this.SourceData = sourceData;
             this.ResultData = resultData;
             this.SourceKeySelector = sourceKeySelector;
@@ -54,91 +49,23 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
             if (this.SourceData == null)
             {
                 return new InternalServerErrorGraphActionResult("The source data list, when attempting to finalize a " +
-                                                                $"batch for field '{this.Field.Name}', was null.");
+                                                                $"batch was null.");
             }
 
             if (this.SourceKeySelector == null)
             {
                 return new InternalServerErrorGraphActionResult("The source key locator, when attempting to finalize a " +
-                                                                $"batch for field '{this.Field.Name}', was null.");
+                                                                $"batch was null.");
             }
 
             if (this.ResultData != null && this.ResultKeySelector == null)
             {
                 return new InternalServerErrorGraphActionResult("The result key locator, when attempting to finalize a " +
-                                                                $"batch for field '{this.Field.Name}', was null.");
+                                                                $"batch was null.");
             }
 
-            var dictionary = new Dictionary<TSource, object>();
-
-            // key out the results
-            var resultsByKey = new Dictionary<TKey, HashSet<TResult>>();
-            if (this.ResultData != null)
-            {
-                // N:N relationships should complete in O(M)
-                // where M is the total number of keys defined across all instances
-                //
-                // 1:N relationships it should process in O(N)
-                // where N is the number of result items
-                foreach (var item in this.ResultData)
-                {
-                    if (item == null)
-                        continue;
-
-                    var keys = this.ResultKeySelector(item) ?? Enumerable.Empty<TKey>();
-                    foreach (var key in keys)
-                    {
-                        if (key == null)
-                            continue;
-
-                        if (!resultsByKey.ContainsKey(key))
-                            resultsByKey.Add(key, new HashSet<TResult>());
-
-                        resultsByKey[key].Add(item);
-                    }
-                }
-            }
-
-            var fieldReturnsAList = this.Field.TypeExpression.IsListOfItems;
-
-            // add each source item to the reslt dictionary pulling in hte matching items from
-            // the results set and ensuring list vs no list depending on the executed field.
-            foreach (var sourceItem in this.SourceData)
-            {
-                object sourceResults = null;
-                var key = this.SourceKeySelector(sourceItem);
-                var lookupResults = resultsByKey.ContainsKey(key) ? resultsByKey[key] : null;
-                if (lookupResults != null)
-                {
-                    if (fieldReturnsAList)
-                    {
-                        sourceResults = lookupResults.ToList();
-                    }
-                    else
-                    {
-                        if (lookupResults.Count > 1)
-                        {
-                            return new InternalServerErrorGraphActionResult(
-                                $"Invalid field resolution. When attempting to finalize a batch for field '{this.Field.Name}', " +
-                                $"a source item with key '{key}' had {lookupResults.Count} result(s) in the batch was expected to have " +
-                                "a single item.");
-                        }
-
-                        sourceResults = lookupResults.FirstOrDefault();
-                    }
-                }
-
-                dictionary.Add(sourceItem, sourceResults);
-            }
-
-            return new ObjectReturnedGraphActionResult(dictionary);
+            return new CompleteBatchOperationGraphActionResult<TSource, TResult, TKey>(this);
         }
-
-        /// <summary>
-        /// Gets the field for witch this batch is being produced.
-        /// </summary>
-        /// <value>The field.</value>
-        public IGraphField Field { get; }
 
         /// <summary>
         /// Gets or sets the source data.

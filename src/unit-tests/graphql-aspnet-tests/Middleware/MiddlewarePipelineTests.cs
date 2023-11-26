@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             // fake a graph ql request context
             var server = serverBuilder.Build();
-            var fieldBuilder = server.CreateGraphTypeFieldContextBuilder<MiddlewareController>(
+            var fieldBuilder = server.CreateFieldContextBuilder<MiddlewareController>(
                 nameof(MiddlewareController.FieldOfData));
             var executionContext = fieldBuilder.CreateExecutionContext();
 
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             // fake a graph ql request context
             var server = serverBuilder.Build();
-            var fieldBuilder = server.CreateGraphTypeFieldContextBuilder<MiddlewareController>(
+            var fieldBuilder = server.CreateFieldContextBuilder<MiddlewareController>(
                 nameof(MiddlewareController.FieldOfData));
 
             var executionContext = fieldBuilder.CreateExecutionContext();
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             // fake a graph ql request context
             var server = serverBuilder.Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<MiddlewareController>(
+            var builder = server.CreateFieldContextBuilder<MiddlewareController>(
                 nameof(MiddlewareController.FieldOfData));
             var context = builder.CreateExecutionContext();
 
@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             // fake a graph ql request context
             var server = serverBuilder.Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<MiddlewareController>(
+            var builder = server.CreateFieldContextBuilder<MiddlewareController>(
                 nameof(MiddlewareController.FieldOfData));
 
             // execute the pipeline multiple times
@@ -238,7 +238,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             Assert.IsNotNull(pipeline);
 
             var server = serverBuilder.Build();
-            var builder = server.CreateGraphTypeFieldContextBuilder<MiddlewareController>(
+            var builder = server.CreateFieldContextBuilder<MiddlewareController>(
                 nameof(MiddlewareController.FieldOfData));
 
             // make an empty service collection (preventing creation if the middleware isnt found)

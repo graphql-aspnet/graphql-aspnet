@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using NSubstitute;
 
@@ -157,7 +158,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             foreach (var kvp in _sourceData)
             {
                 var mockField = Substitute.For<IGraphField>();
-                mockField.FieldSource.Returns(Internal.TypeTemplates.GraphFieldSource.Action);
+                mockField.FieldSource.Returns(GraphFieldSource.Action);
                 mockField.Route.Returns(kvp.Key);
                 context.DefaultFieldSources.AddSource(mockField, kvp.Value);
             }

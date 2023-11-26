@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Engine
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

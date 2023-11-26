@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.FLOAT, typeof(float))
         {
             this.Description = $"A 32-bit, floating-point value. (Min: {float.MinValue}, Max: {float.MaxValue})";
-            this.OtherKnownTypes = new TypeCollection(typeof(float?));
         }
 
         /// <inheritdoc />
@@ -39,9 +38,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             throw new UnresolvedValueException(data, typeof(float));
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.Number;

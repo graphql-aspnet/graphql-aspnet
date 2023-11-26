@@ -31,12 +31,13 @@ namespace GraphQL.AspNet.Configuration
             this.AllowedOperations = new HashSet<GraphOperationType>();
             this.AllowedOperations.Add(GraphOperationType.Query);
             this.AllowedOperations.Add(GraphOperationType.Mutation);
+            this.ArgumentBindingRule = SchemaArgumentBindingRules.ParametersPreferQueryResolution;
         }
 
         /// <summary>
         /// Merges the specified configuration setttings into this instance.
         /// </summary>
-        /// <param name="config">The configuration.</param>
+        /// <param name="config">The configuration values to merge into this instance.</param>
         public void Merge(ISchemaDeclarationConfiguration config)
         {
             if (config == null)
@@ -45,6 +46,7 @@ namespace GraphQL.AspNet.Configuration
             this.DisableIntrospection = config.DisableIntrospection;
             this.FieldDeclarationRequirements = config.FieldDeclarationRequirements;
             this.GraphNamingFormatter = config.GraphNamingFormatter;
+            this.ArgumentBindingRule = config.ArgumentBindingRule;
 
             if (config.AllowedOperations != null)
             {
@@ -55,6 +57,9 @@ namespace GraphQL.AspNet.Configuration
 
         /// <inheritdoc />
         public bool DisableIntrospection { get; set; }
+
+        /// <inheritdoc />
+        public SchemaArgumentBindingRules ArgumentBindingRule { get; set; }
 
         /// <inheritdoc />
         public TemplateDeclarationRequirements FieldDeclarationRequirements { get; set; } = TemplateDeclarationRequirements.Default;

@@ -16,10 +16,13 @@ namespace GraphQL.AspNet.Tests.Controllers
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.SubscriptionServer;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Controllers.ControllerTestData;
     using NUnit.Framework;
+    using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Controllers;
 
     [TestFixture]
     public class ControllerExtensionTests
@@ -31,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.MutationRaisesSubEvent));
 
             var arg1Value = "random string";
@@ -40,11 +43,11 @@ namespace GraphQL.AspNet.Tests.Controllers
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
             var controller = new InvokableController();
-            var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod, resolutionContext);
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
 
             // ensure the method executed completely
             Assert.IsNotNull(result);
-            Assert.IsTrue(result is ObjectReturnedGraphActionResult);
+            Assert.IsTrue(result is OperationCompleteGraphActionResult);
 
             // ensure the event collection was created on the context
             Assert.IsTrue(resolutionContext.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION));
@@ -69,7 +72,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.MutationRaisesSubEventNoData));
 
             var arg1Value = "random string";
@@ -81,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Controllers
 
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod, resolutionContext);
+                var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
             });
         }
 
@@ -92,7 +95,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.MutationRaisesSubEvent));
 
             var arg1Value = "random string";
@@ -103,11 +106,11 @@ namespace GraphQL.AspNet.Tests.Controllers
             resolutionContext.Session.Items.TryAdd(SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, eventCollection);
 
             var controller = new InvokableController();
-            var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod, resolutionContext);
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
 
             // ensure the method executed completely
             Assert.IsNotNull(result);
-            Assert.IsTrue(result is ObjectReturnedGraphActionResult);
+            Assert.IsTrue(result is OperationCompleteGraphActionResult);
 
             Assert.AreEqual(1, eventCollection.Count);
         }
@@ -119,7 +122,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.MutationRaisesSubEvent));
 
             var arg1Value = "random string";
@@ -136,7 +139,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             var controller = new InvokableController();
             Assert.ThrowsAsync<GraphExecutionException>(async () =>
             {
-                var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod, resolutionContext);
+                var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
             });
         }
 
@@ -147,7 +150,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.MutationRaiseSubEventWithNoEventName));
 
             var arg1Value = "random string";
@@ -158,8 +161,48 @@ namespace GraphQL.AspNet.Tests.Controllers
 
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod, resolutionContext);
+                var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
             });
+        }
+
+        [Test]
+        public async Task PublishSubEvent_OnRuntimeFIeld_ExistingEventCollectionisAppendedTo()
+        {
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphQL((o) =>
+                {
+                    o.MapMutation("field1")
+                    .WithInternalName("Mutation1")
+                    .AddPossibleTypes(typeof(string))
+                    .AddResolver(
+                        (FieldResolutionContext context, string arg1) =>
+                        {
+                            SubscriptionEvents.PublishSubscriptionEvent(context, "event1", new TwoPropertyObject()
+                            {
+                                Property1 = arg1,
+                            });
+                            return GraphActionResult.Ok("data result");
+                        });
+                })
+                .Build();
+
+            var fieldContextBuilder = server.CreateFieldContextBuilder("Mutation1");
+
+            var arg1Value = "random string";
+            fieldContextBuilder.AddInputArgument("arg1", arg1Value);
+
+            var resolutionContext = fieldContextBuilder.CreateResolutionContext();
+            var eventCollection = new List<SubscriptionEventProxy>();
+            resolutionContext.Session.Items.TryAdd(SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, eventCollection);
+
+            var controller = new RuntimeFieldExecutionController();
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
+
+            // ensure the method executed completely
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result is OperationCompleteGraphActionResult);
+
+            Assert.AreEqual(1, eventCollection.Count);
         }
     }
 }

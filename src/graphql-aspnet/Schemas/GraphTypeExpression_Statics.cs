@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Schemas
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
-    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -263,15 +263,13 @@ namespace GraphQL.AspNet.Schemas
         /// </remarks>
         /// <param name="target">The target expression to which a value is being given.</param>
         /// <param name="supplied">The expression of the value to be supplied to the target.</param>
+        /// <param name="matchTypeName">When true, the inner type name of the <paramref name="supplied"/> expression must match exactly (case-sensitive) to
+        /// that of the <paramref name="target"/> expression.</param>
         /// <returns><c>true</c> if a value of the <paramref name="supplied"/> expression is
         /// compatiable and could be supplied or used as an input value to an item of the <paramref name="target"/> expression, <c>false</c> otherwise.</returns>
-        public static bool AreTypesCompatiable(GraphTypeExpression target, GraphTypeExpression supplied)
+        public static bool AreTypesCompatiable(GraphTypeExpression target, GraphTypeExpression supplied, bool matchTypeName = true)
         {
             if (target == null || supplied == null)
-                return false;
-
-            // when root types don't match they can never be compatible
-            if (target.TypeName != supplied.TypeName)
                 return false;
 
             if (!target.IsNullable)
@@ -279,25 +277,29 @@ namespace GraphQL.AspNet.Schemas
                 if (supplied.IsNullable)
                     return false;
 
-                return AreTypesCompatiable(target.UnWrapExpression(), supplied.UnWrapExpression());
+                return AreTypesCompatiable(target.UnWrapExpression(), supplied.UnWrapExpression(), matchTypeName);
             }
             else if (!supplied.IsNullable)
             {
-                return AreTypesCompatiable(target, supplied.UnWrapExpression());
+                return AreTypesCompatiable(target, supplied.UnWrapExpression(), matchTypeName);
             }
             else if (target.IsListOfItems)
             {
                 if (!supplied.IsListOfItems)
                     return false;
 
-                return AreTypesCompatiable(target.UnWrapExpression(), supplied.UnWrapExpression());
+                return AreTypesCompatiable(target.UnWrapExpression(), supplied.UnWrapExpression(), matchTypeName);
             }
             else if (supplied.IsListOfItems)
             {
                 return false;
             }
 
-            return target == supplied;
+            // when root types don't match they can never be compatible
+            if (matchTypeName)
+                return target == supplied;
+
+            return true;
         }
     }
 }

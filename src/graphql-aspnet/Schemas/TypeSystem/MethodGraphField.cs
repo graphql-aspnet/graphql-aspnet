@@ -12,13 +12,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
 
@@ -35,20 +33,22 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="MethodGraphField" /> class.
         /// </summary>
         /// <param name="fieldName">Name of the field in the graph.</param>
+        /// <param name="internalName">The internal name that represents the method this field respresents.</param>
         /// <param name="typeExpression">The meta data describing the type of data this field returns.</param>
         /// <param name="route">The formal route to this field in the object graph.</param>
-        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
+        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="mode">The mode in which the runtime will process this field.</param>
         /// <param name="resolver">The resolver to be invoked to produce data when this field is called.</param>
         /// <param name="securityPolicies">The security policies that apply to this field.</param>
         /// <param name="directives">The directives to apply to this field when its added to a schema.</param>
         public MethodGraphField(
             string fieldName,
+            string internalName,
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
-            Type objectType = null,
-            Type declaredReturnType = null,
+            Type declaredReturnType,
+            Type objectType,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
@@ -58,8 +58,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.Arguments = new GraphFieldArgumentCollection(this);
-            this.ObjectType = objectType;
-            this.DeclaredReturnType = declaredReturnType;
+            this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
+            this.DeclaredReturnType = Validation.ThrowIfNullOrReturn(declaredReturnType, nameof(declaredReturnType));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
@@ -75,9 +76,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Resolver = newResolver;
             if (mode.HasValue)
                 this.Mode = mode.Value;
-
-            var unrwrappedType = GraphValidation.EliminateWrappersFromCoreType(this.Resolver?.ObjectType);
-            this.IsLeaf = this.Resolver?.ObjectType != null && GraphQLProviders.ScalarProvider.IsLeaf(unrwrappedType);
         }
 
         /// <inheritdoc/>
@@ -148,10 +146,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             return new MethodGraphField(
                 this.Name,
+                this.InternalName,
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
-                this.ObjectType,
                 this.DeclaredReturnType,
+                this.ObjectType,
                 this.Mode,
                 this.Resolver,
                 this.SecurityGroups,
@@ -192,9 +191,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public FieldResolutionMode Mode { get; protected set; }
 
         /// <inheritdoc/>
-        public bool IsLeaf { get; protected set; }
-
-        /// <inheritdoc/>
         public bool IsDeprecated { get; set; }
 
         /// <inheritdoc/>
@@ -214,5 +210,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public string InternalName { get; }
     }
 }

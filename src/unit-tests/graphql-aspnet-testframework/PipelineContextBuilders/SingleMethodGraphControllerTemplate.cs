@@ -9,27 +9,26 @@
 
 namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
-    using System.Reflection;
-    using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using System;
+    using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// A mocked controller template that will selectively parse actions instead of the whole template.
     /// </summary>
-    /// <typeparam name="TControllerType">The type of the controller to templatize.</typeparam>
-    public class SingleMethodGraphControllerTemplate<TControllerType> : GraphControllerTemplate
-        where TControllerType : GraphController
+    public class SingleMethodGraphControllerTemplate : GraphControllerTemplate
     {
         private readonly string _methodName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SingleMethodGraphControllerTemplate{TControllerType}"/> class.
+        /// Initializes a new instance of the <see cref="SingleMethodGraphControllerTemplate" /> class.
         /// </summary>
+        /// <param name="controllerType">Type of the controller.</param>
         /// <param name="methodName">Name of the single action method to parse. When not
-        /// provided (e.g. <c>null</c>) this template will function the same as <see cref="GraphControllerTemplate"/>
+        /// provided (e.g. <c>null</c>) this template will function the same as <see cref="GraphControllerTemplate" />
         /// and all methods will be parsed.</param>
-        public SingleMethodGraphControllerTemplate(string methodName = null)
-             : base(typeof(TControllerType))
+        public SingleMethodGraphControllerTemplate(Type controllerType, string methodName = null)
+             : base(controllerType)
         {
             _methodName = methodName;
         }
@@ -41,9 +40,9 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// </summary>
         /// <param name="memberInfo">The member information to check.</param>
         /// <returns><c>true</c> if the info represents a possible graph field; otherwise, <c>false</c>.</returns>
-        protected override bool CouldBeGraphField(MemberInfo memberInfo)
+        protected override bool CouldBeGraphField(IMemberInfoProvider memberInfo)
         {
-            if (_methodName != null && memberInfo.Name != _methodName)
+            if (_methodName != null && memberInfo.MemberInfo.Name != _methodName)
                 return false;
 
             return base.CouldBeGraphField(memberInfo);

@@ -24,7 +24,8 @@ namespace GraphQL.AspNet.Common.Generics
     internal static class InstanceFactory
     {
         private static readonly ConcurrentDictionary<Tuple<Type, Type, Type, Type>, ObjectActivator> CACHED_OBJECT_CREATORS;
-        private static readonly ConcurrentDictionary<MethodInfo, MethodInvoker> CACHED_METHOD_INVOKERS;
+        private static readonly ConcurrentDictionary<MethodInfo, InstanceMethodInvoker> CACHED_INSTANCE_METHOD_INVOKERS;
+        private static readonly ConcurrentDictionary<MethodInfo, StaticMethodInvoker> CACHED_STATIC_METHOD_INVOKERS;
         private static readonly ConcurrentDictionary<Type, PropertySetterCollection> CACHED_PROPERTY_SETTER_INVOKERS;
         private static readonly ConcurrentDictionary<Type, PropertyGetterCollection> CACHED_PROPERTY_GETTER_INVOKERS;
 
@@ -34,7 +35,8 @@ namespace GraphQL.AspNet.Common.Generics
         static InstanceFactory()
         {
             CACHED_OBJECT_CREATORS = new ConcurrentDictionary<Tuple<Type, Type, Type, Type>, ObjectActivator>();
-            CACHED_METHOD_INVOKERS = new ConcurrentDictionary<MethodInfo, MethodInvoker>();
+            CACHED_INSTANCE_METHOD_INVOKERS = new ConcurrentDictionary<MethodInfo, InstanceMethodInvoker>();
+            CACHED_STATIC_METHOD_INVOKERS = new ConcurrentDictionary<MethodInfo, StaticMethodInvoker>();
             CACHED_PROPERTY_SETTER_INVOKERS = new ConcurrentDictionary<Type, PropertySetterCollection>();
             CACHED_PROPERTY_GETTER_INVOKERS = new ConcurrentDictionary<Type, PropertyGetterCollection>();
         }
@@ -45,7 +47,8 @@ namespace GraphQL.AspNet.Common.Generics
         public static void Clear()
         {
             CACHED_OBJECT_CREATORS.Clear();
-            CACHED_METHOD_INVOKERS.Clear();
+            CACHED_INSTANCE_METHOD_INVOKERS.Clear();
+            CACHED_STATIC_METHOD_INVOKERS.Clear();
             CACHED_PROPERTY_SETTER_INVOKERS.Clear();
             CACHED_PROPERTY_GETTER_INVOKERS.Clear();
         }
@@ -169,17 +172,17 @@ namespace GraphQL.AspNet.Common.Generics
         }
 
         /// <summary>
-        /// <para>Creates a compiled lamda expression to invoke an arbitrary method via a common set of parameters. This lamda is cached for any future use greatly speeding up
-        /// the invocation.</para>
+        /// Creates a compiled lamda expression to invoke an arbitrary method via a common set of parameters on an object instance.
+        /// This lamda is cached for any future use greatly speeding up the invocation.
         /// </summary>
         /// <param name="methodInfo">The method information.</param>
         /// <returns>Func&lt;System.Object, System.Object[], System.Object&gt;.</returns>
-        public static MethodInvoker CreateInstanceMethodInvoker(MethodInfo methodInfo)
+        public static InstanceMethodInvoker CreateInstanceMethodInvoker(MethodInfo methodInfo)
         {
             if (methodInfo == null)
                 return null;
 
-            if (CACHED_METHOD_INVOKERS.TryGetValue(methodInfo, out var invoker))
+            if (CACHED_INSTANCE_METHOD_INVOKERS.TryGetValue(methodInfo, out var invoker))
                 return invoker;
 
             if (methodInfo.IsStatic)
@@ -194,17 +197,114 @@ namespace GraphQL.AspNet.Common.Generics
                                             "This instance creator only supports methods with a return value.");
             }
 
-            invoker = CreateMethodInvoker(methodInfo);
-            CACHED_METHOD_INVOKERS.TryAdd(methodInfo, invoker);
+            invoker = CompileInstanceMethodInvoker(methodInfo);
+            CACHED_INSTANCE_METHOD_INVOKERS.TryAdd(methodInfo, invoker);
             return invoker;
         }
 
         /// <summary>
-        /// Creates the method invoker expression and compiles the resultant lambda.
+        /// Creates a compiled lamda expression to invoke an arbitrary static method via a common set of parameters.
+        /// This lamda is cached for any future use greatly speeding up the invocation.
+        /// </summary>
+        /// <param name="methodInfo">The method to create an expression for.</param>
+        /// <returns>StaticMethodInvoker.</returns>
+        public static StaticMethodInvoker CreateStaticMethodInvoker(MethodInfo methodInfo)
+        {
+            if (methodInfo == null)
+                return null;
+
+            if (CACHED_STATIC_METHOD_INVOKERS.TryGetValue(methodInfo, out var invoker))
+                return invoker;
+
+            if (!methodInfo.IsStatic)
+            {
+                throw new ArgumentException($"The method '{methodInfo.Name}' on type '{methodInfo.DeclaringType.FriendlyName()}' is NOT static " +
+                                            "and cannot be used to create a static method reference.");
+            }
+
+            if (methodInfo.ReturnType == typeof(void))
+            {
+                throw new ArgumentException($"The method '{methodInfo.Name}' on type '{methodInfo.DeclaringType.FriendlyName()}' does not return a value. " +
+                                            "This instance creator only supports methods with a return value.");
+            }
+
+            invoker = CompileStaticMethodInvoker(methodInfo);
+            CACHED_STATIC_METHOD_INVOKERS.TryAdd(methodInfo, invoker);
+            return invoker;
+        }
+
+        /// <summary>
+        /// Compiles the method invoker expression for a static method and compiles the resultant lambda.
         /// </summary>
         /// <param name="methodInfo">The method to create an expression for.</param>
         /// <returns>MethodInvoker.</returns>
-        private static MethodInvoker CreateMethodInvoker(MethodInfo methodInfo)
+        private static StaticMethodInvoker CompileStaticMethodInvoker(MethodInfo methodInfo)
+        {
+            Validation.ThrowIfNull(methodInfo, nameof(methodInfo));
+
+            // -------------------------------------------
+            // Function call parameters
+            // -------------------------------------------
+            // e.g.
+            //  object[] paramSet = new object[];
+            // "var returnValue = invoke(paramSet);
+            //
+            // create a single param of type object[] tha will hold the variable length of method arguments being passed in
+            ParameterExpression inputArguments = Expression.Parameter(typeof(object[]), "args");
+
+            // -------------------------------------------
+            // method body
+            // -------------------------------------------
+
+            // invocation parameters to pass to the method
+            ParameterInfo[] paramsInfo = methodInfo.GetParameters();
+
+            // a set of expressions that represents
+            // a casting of each supplied object to its specific type for invocation
+            Expression[] argsAssignments = new Expression[paramsInfo.Length];
+
+            // pick each arg from the supplied method parameters and create a expression
+            // that casts them into the required type for the parameter position on the method
+            for (var i = 0; i < paramsInfo.Length; i++)
+            {
+                Expression index = Expression.Constant(i);
+                Type paramType = paramsInfo[i].ParameterType;
+                Expression paramAccessorExp = Expression.ArrayIndex(inputArguments, index);
+                if (paramType.IsValueType)
+                    argsAssignments[i] = Expression.Unbox(paramAccessorExp, paramType);
+                else
+                    argsAssignments[i] = Expression.Convert(paramAccessorExp, paramType);
+            }
+
+            // a direct call to the method on the invokable object with the supplied parameters
+            var methodCall = Expression.Call(methodInfo, argsAssignments);
+
+            // Execute the method call and assign its output to returnedVariable
+            var returnedVariable = Expression.Variable(methodInfo.ReturnType);
+            var methodCallResultAssigned = Expression.Assign(returnedVariable, methodCall);
+
+            // box the method result into an object
+            var boxedResult = Expression.Variable(typeof(object));
+            var boxedResultAssignment = Expression.Assign(boxedResult, Expression.Convert(returnedVariable, typeof(object)));
+
+            // assembly the method body
+            var methodBody = Expression.Block(
+                new ParameterExpression[] { returnedVariable, boxedResult },
+                methodCallResultAssigned,
+                boxedResultAssignment,
+                boxedResult);
+
+            // Create lambda expression that accepts the "this" parameter and the args from the user.
+            var lambda = Expression.Lambda<StaticMethodInvoker>(methodBody, new ParameterExpression[] { inputArguments });
+            return lambda.Compile();
+        }
+
+        /// <summary>
+        /// Compiles the method invoker expression for an instance based method and compiles the resultant lambda.
+        /// </summary>
+        /// <param name="methodInfo">The method to create an expression for.</param>
+        /// <returns>InstanceMethodInvoker.</returns>
+        private static InstanceMethodInvoker CompileInstanceMethodInvoker(MethodInfo methodInfo)
         {
             Validation.ThrowIfNull(methodInfo, nameof(methodInfo));
 
@@ -224,7 +324,7 @@ namespace GraphQL.AspNet.Common.Generics
             // -------------------------------------------
             // cast the input object to its required Type
             var castedObjectToInvokeOn = Expression.Variable(declaredType);
-            var castOperation = Expression.Assign(castedObjectToInvokeOn, Expression.Convert(objectToInvokeOn, declaredType));
+            var castingOperation = Expression.Assign(castedObjectToInvokeOn, Expression.Convert(objectToInvokeOn, declaredType));
 
             // invocation parameters to pass to the method
             ParameterInfo[] paramsInfo = methodInfo.GetParameters();
@@ -265,14 +365,14 @@ namespace GraphQL.AspNet.Common.Generics
 
             var methodBody = Expression.Block(
                 new ParameterExpression[] { castedObjectToInvokeOn, returnedVariable, boxedResult },
-                castOperation,
+                castingOperation,
                 methodCallResultAssigned,
                 boxedResultAssignment,
                 reassignReffedValue,
                 boxedResult);
 
             // Create lambda expression that accepts the "this" parameter and the args from the user.
-            var lambda = Expression.Lambda<MethodInvoker>(methodBody, new ParameterExpression[] { objectToInvokeOn, inputArguments });
+            var lambda = Expression.Lambda<InstanceMethodInvoker>(methodBody, new ParameterExpression[] { objectToInvokeOn, inputArguments });
             return lambda.Compile();
         }
 
@@ -304,7 +404,7 @@ namespace GraphQL.AspNet.Common.Generics
             // in combination with Roger Johanson: https://rogerjohansson.blog/2008/02/28/linq-expressions-creating-objects/ .
             // -----------------------------
             if (args == null)
-                return CreateInstance(type);
+                return CreateInstance(type, new object[0]);
 
             if ((args.Length > 3)
                 || (args.Length > 0 && args[0] == null)
@@ -458,19 +558,26 @@ namespace GraphQL.AspNet.Common.Generics
         /// Gets the creators cached to this application instance.
         /// </summary>
         /// <value>The cached creators.</value>
-        public static IReadOnlyDictionary<Tuple<Type, Type, Type, Type>,  ObjectActivator> ObjectCreators => CACHED_OBJECT_CREATORS;
+        public static IReadOnlyDictionary<Tuple<Type, Type, Type, Type>, ObjectActivator> ObjectCreators => CACHED_OBJECT_CREATORS;
 
         /// <summary>
-        /// Gets the collection of cached method invokers for fast invocation in this app instance.
+        /// Gets the collection of cached method invokers for fast invocation of methods on target
+        /// objects in this app instance.
         /// </summary>
         /// <value>The method invokers.</value>
-        public static IReadOnlyDictionary<MethodInfo,  MethodInvoker> MethodInvokers => CACHED_METHOD_INVOKERS;
+        public static IReadOnlyDictionary<MethodInfo, InstanceMethodInvoker> InstanceMethodInvokers => CACHED_INSTANCE_METHOD_INVOKERS;
+
+        /// <summary>
+        /// Gets the collection of cached static method invokers for fast invocation in this app instance.
+        /// </summary>
+        /// <value>The method invokers.</value>
+        public static IReadOnlyDictionary<MethodInfo, StaticMethodInvoker> StaticMethodInvokers => CACHED_STATIC_METHOD_INVOKERS;
 
         /// <summary>
         /// Gets the collection of cached property setter invokers for fast invocation in this app instance.
         /// </summary>
         /// <value>The cached collection of property "setter" invokers.</value>
-        public static IReadOnlyDictionary<Type,  PropertySetterCollection> PropertySetterInvokers => CACHED_PROPERTY_SETTER_INVOKERS;
+        public static IReadOnlyDictionary<Type, PropertySetterCollection> PropertySetterInvokers => CACHED_PROPERTY_SETTER_INVOKERS;
 
         /// <summary>
         /// Gets the collection of cached property getter invokers for fast invocation in this app instance.

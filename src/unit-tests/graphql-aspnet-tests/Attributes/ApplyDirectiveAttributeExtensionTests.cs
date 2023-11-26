@@ -9,9 +9,9 @@
 namespace GraphQL.AspNet.Tests.Attributes
 {
     using System.Linq;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Tests.Attributes.ApplyDirectiveAttributeTestData;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]

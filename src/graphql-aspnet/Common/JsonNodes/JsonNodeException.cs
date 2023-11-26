@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Common.Extensions
+namespace GraphQL.AspNet.Common.JsonNodes
 {
     using System;
     using System.Text.Json.Nodes;

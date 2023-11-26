@@ -28,6 +28,13 @@ namespace GraphQL.AspNet.Interfaces.Internal
         IGraphFieldResolver CreateResolver();
 
         /// <summary>
+        /// Creates the metadata object that describes the resolver that would be invoked at runtime
+        /// to fulfil a request the field.
+        /// </summary>
+        /// <returns>IGraphFieldResolverMetaData.</returns>
+        IGraphFieldResolverMetaData CreateResolverMetaData();
+
+        /// <summary>
         /// Gets the return type of this field as its declared in the C# code base with no modifications or
         /// coerions applied.
         /// </summary>

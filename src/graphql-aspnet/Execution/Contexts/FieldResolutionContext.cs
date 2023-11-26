@@ -9,35 +9,64 @@
 
 namespace GraphQL.AspNet.Execution.Contexts
 {
+    using System;
     using System.Diagnostics;
     using System.Security.Claims;
+    using System.Threading;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A context passed to a field resolver to complete its resolution task and generate data for a field.
     /// </summary>
+    [GraphSkip]
     [DebuggerDisplay("Field: {Request.Field.Route.Path} (Mode = {Request.Field.Mode})")]
     public class FieldResolutionContext : SchemaItemResolutionContext<IGraphFieldRequest>
     {
+        private readonly IGraphFieldRequest _fieldRequest;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldResolutionContext" /> class.
         /// </summary>
+        /// <param name="serviceProvider">The service provider instance that should be used to resolve any
+        /// needed services or non-schema arguments to the target resolver.</param>
+        /// <param name="querySession">The query session governing the request.</param>
         /// <param name="targetSchema">The schema in scope for this resolution context.</param>
-        /// <param name="parentContext">The parent context from which this field resolution context is created.</param>
-        /// <param name="fieldRequest">The request to resolve a specific field.</param>
-        /// <param name="arguments">The execution arguments that need to be passed to the field
-        /// resolver.</param>
-        /// <param name="user">Optional. The user context that authenticated and authorized for this
+        /// <param name="queryRequest">The master query request being executed.</param>
+        /// <param name="request">The resolution request to carry with the context.</param>
+        /// <param name="arguments">The arguments to be passed to the resolver when its executed.</param>
+        /// <param name="messages">The messages.</param>
+        /// <param name="logger">(Optional) A logger instance that can be used to record scoped log entries.</param>
+        /// <param name="user">(Optional) The user context that authenticated and authorized for this
         /// resolution context.</param>
+        /// <param name="cancelToken">The cancel token governing the resolution of the schema item.</param>
         public FieldResolutionContext(
+            IServiceProvider serviceProvider,
+            IQuerySession querySession,
             ISchema targetSchema,
-            IGraphQLMiddlewareExecutionContext parentContext,
-            IGraphFieldRequest fieldRequest,
+            IQueryExecutionRequest queryRequest,
+            IGraphFieldRequest request,
             IExecutionArgumentCollection arguments,
-            ClaimsPrincipal user = null)
-            : base(targetSchema, parentContext, fieldRequest, arguments, user)
+            IGraphMessageCollection messages = null,
+            IGraphEventLogger logger = null,
+            ClaimsPrincipal user = null,
+            CancellationToken cancelToken = default)
+            : base(
+                  serviceProvider,
+                  querySession,
+                  targetSchema,
+                  queryRequest,
+                  request,
+                  arguments,
+                  messages,
+                  logger,
+                  user,
+                  cancelToken)
         {
+            _fieldRequest = request;
         }
 
         /// <summary>
@@ -45,5 +74,14 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// </summary>
         /// <value>The result of executing a field's resolver.</value>
         public object Result { get; set; }
+
+        /// <inheritdoc />
+        public override SchemaItemPath Route => _fieldRequest?.Field.Route;
+
+        /// <inheritdoc />
+        public override IGraphArgumentCollection SchemaDefinedArguments => _fieldRequest.Field.Arguments;
+
+        /// <inheritdoc />
+        public override object SourceData => _fieldRequest?.Data?.Value;
     }
 }

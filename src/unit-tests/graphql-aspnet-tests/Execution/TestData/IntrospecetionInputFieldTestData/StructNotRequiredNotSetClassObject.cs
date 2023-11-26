@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospecetionInputFieldTestData
 {
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public struct StructNotRequiredNotSetClassObject
     {

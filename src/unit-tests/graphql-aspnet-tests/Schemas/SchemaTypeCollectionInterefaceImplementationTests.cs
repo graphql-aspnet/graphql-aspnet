@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -19,6 +18,11 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData.InterfaceRegistrationTestData;
     using NUnit.Framework;
+    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
+    using Microsoft.AspNetCore.Hosting.Server;
+    using GraphQL.AspNet.Tests.CommonHelpers;
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
@@ -75,10 +79,13 @@ namespace GraphQL.AspNet.Tests.Schemas
             _donut = this.MakeGraphType(typeof(Donut), TypeKind.OBJECT) as IObjectGraphType;
 
             // type extension
-            var template = GraphQLProviders.TemplateProvider.ParseType(typeof(PastryExtensionController)) as IGraphControllerTemplate;
-            var hasSugarTemplate = template.Extensions.FirstOrDefault(x => x.InternalName == nameof(PastryExtensionController.HasSugarExtension));
-            var hasGlazeTemplate = template.Extensions.FirstOrDefault(x => x.InternalName == nameof(PastryExtensionController.HasGlazeExtension));
-            var hasDoubleGlazeTemplate = template.Extensions.FirstOrDefault(x => x.InternalName == nameof(PastryExtensionController.HasDoubleGlazeExtension));
+            var template = new GraphControllerTemplate(typeof(PastryExtensionController)) as IGraphControllerTemplate;
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var hasSugarTemplate = template.Extensions.FirstOrDefault(x => x.DeclaredName == nameof(PastryExtensionController.HasSugarExtension));
+            var hasGlazeTemplate = template.Extensions.FirstOrDefault(x => x.DeclaredName == nameof(PastryExtensionController.HasGlazeExtension));
+            var hasDoubleGlazeTemplate = template.Extensions.FirstOrDefault(x => x.DeclaredName == nameof(PastryExtensionController.HasDoubleGlazeExtension));
             _hasSugarFieldExtension = this.MakeGraphField(hasSugarTemplate);
             _hasGlazeFieldExtension = this.MakeGraphField(hasGlazeTemplate);
             _hasDoubleGlazeFieldExtension = this.MakeGraphField(hasDoubleGlazeTemplate);
@@ -94,14 +101,20 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             var testServer = new TestServerBuilder().Build();
 
-            var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(testServer.Schema, kind);
-            return maker.CreateGraphType(type).GraphType;
+            var factory = testServer.CreateMakerFactory();
+
+            var template = factory.MakeTemplate(type, kind);
+            var maker = factory.CreateTypeMaker(type, kind);
+            return maker.CreateGraphType(template).GraphType;
         }
 
         private IGraphField MakeGraphField(IGraphFieldTemplate fieldTemplate)
         {
             var testServer = new TestServerBuilder().Build();
-            var maker = new GraphFieldMaker(testServer.Schema);
+
+            var factory = testServer.CreateMakerFactory();
+
+            var maker = factory.CreateFieldMaker();
             return maker.CreateField(fieldTemplate).Field;
         }
 
@@ -263,6 +276,9 @@ namespace GraphQL.AspNet.Tests.Schemas
             int positionToAddGlazeField,
             int positiontoAddDoubleGlazeField)
         {
+            // Tests the various scenarios of when a type extension, an OBJECT graph type and an INTERFACE
+            // graph type may be registered to ensure that all graph types contain all extensions by the end
+            // of the inclusion process regardless of the order encountered
             for (var i = 1; i <= 7; i++)
             {
                 if (positionToAddIPastry == i)

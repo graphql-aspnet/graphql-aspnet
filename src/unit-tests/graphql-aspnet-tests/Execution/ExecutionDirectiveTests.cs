@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.ExecutionDirectiveTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 

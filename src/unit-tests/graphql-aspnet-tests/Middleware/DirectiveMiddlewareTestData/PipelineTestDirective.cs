@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Middleware.DirectiveMiddlewareTestData
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     internal class PipelineTestDirective : GraphDirective
     {

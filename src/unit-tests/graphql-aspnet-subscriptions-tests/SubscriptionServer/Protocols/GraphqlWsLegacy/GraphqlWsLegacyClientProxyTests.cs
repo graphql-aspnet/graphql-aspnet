@@ -20,8 +20,8 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging.Messages;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Mocks;
     using GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.GraphqlWsLegacyData;
     using Microsoft.Extensions.DependencyInjection;

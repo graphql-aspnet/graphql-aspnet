@@ -15,10 +15,10 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -55,8 +55,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
 
             if (!suppliedArgumentData.ContainsKey(argumentDefinition.Name))
             {
-                if (argumentDefinition.IsRequired
-                    && argumentDefinition.ArgumentModifiers.IsPartOfTheSchema())
+                if (argumentDefinition.IsRequired)
                 {
                     // this should be an impossible scenario due to validation middleware
                     // However, the pipeline can be changed by the developer so we must

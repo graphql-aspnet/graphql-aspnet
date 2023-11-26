@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
@@ -19,6 +20,7 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema
     /// requirements of the multi-part request specification:
     /// <see href="https://github.com/jaydenseric/graphql-multipart-request-spec" />.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public class FileUploadScalarGraphType : ScalarGraphTypeBase
     {
         /// <summary>
@@ -52,9 +54,6 @@ namespace GraphQL.AspNet.ServerExtensions.MultipartRequests.Schema
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.Boolean | ScalarValueType.String | ScalarValueType.Number;
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes => TypeCollection.Empty;
 
         /// <inheritdoc />
         public override object Resolve(ReadOnlySpan<char> data)

@@ -14,8 +14,8 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -42,12 +42,12 @@ namespace GraphQL.AspNet.Tests.Configuration
                  .Build()
                  .Schema;
 
-            var applicator = new DirectiveBindingConfiguration("testDirective");
+            var applicator = new DirectiveBindingSchemaExtension("testDirective");
             applicator
                 .WithArguments(CreateArgs)
                 .ToItems(x => x is IGraphField);
 
-            ((ISchemaConfigurationExtension)applicator).Configure(schema);
+            ((IGraphQLServerExtension)applicator).EnsureSchema(schema);
 
             for (var i = 0; i < matchedSchemaItems.Count; i++)
             {
@@ -79,14 +79,14 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .Build()
                 .Schema;
 
-            var applicator = new DirectiveBindingConfiguration("testDirective");
+            var applicator = new DirectiveBindingSchemaExtension("testDirective");
             applicator
                 .WithArguments(CreateArgs)
                 .WithArguments(new object[0])
                 .WithArguments(CreateArgsOther)
                 .ToItems(x => x is IGraphField);
 
-            ((ISchemaConfigurationExtension)applicator).Configure(schema);
+            ((IGraphQLServerExtension)applicator).EnsureSchema(schema);
 
             // count would be greater than zero fi and only if the last
             // supplied function was executed and any fields were found
@@ -103,12 +103,12 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .Build()
                 .Schema;
 
-            var applicator = new DirectiveBindingConfiguration("testDirective");
+            var applicator = new DirectiveBindingSchemaExtension("testDirective");
             applicator
                 .WithArguments(argSet)
                 .ToItems(x => x is IGraphField);
 
-            ((ISchemaConfigurationExtension)applicator).Configure(schema);
+            ((IGraphQLServerExtension)applicator).EnsureSchema(schema);
 
             foreach (var item in schema.AllSchemaItems())
             {

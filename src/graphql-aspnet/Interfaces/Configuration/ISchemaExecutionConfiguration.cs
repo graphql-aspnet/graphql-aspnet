@@ -82,5 +82,15 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// </summary>
         /// <value>An integer representing the maximum calculated query complexity of a single query plan before its rejected.</value>
         float? MaxQueryComplexity { get; }
+
+        /// <summary>
+        /// Gets a value that determines the behaviort of the runtime when a required parameter
+        /// to a field or directive resolver cannot be found.
+        /// </summary>
+        /// <remarks>
+        /// Required refers to a method parameter that does not supply a default value.
+        /// </remarks>
+        /// <value>The resolver parameter resolution rule.</value>
+        ResolverParameterResolutionRules ResolverParameterResolutionRule { get; }
     }
 }

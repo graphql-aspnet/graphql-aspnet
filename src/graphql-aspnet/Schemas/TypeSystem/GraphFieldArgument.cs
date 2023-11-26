@@ -30,11 +30,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="parent">The parent schema item that owns this argument.</param>
         /// <param name="argumentName">Name of the argument.</param>
+        /// <param name="internalName">The internal name identifiying this argument.</param>
+        /// <param name="parameterName">Name of the parameter as it is declared in the source code.</param>
         /// <param name="typeExpression">The type expression.</param>
         /// <param name="route">The route path that identifies this argument.</param>
-        /// <param name="modifiers">The modifiers.</param>
-        /// <param name="parameterName">Name of the parameter as it is declared in the source code.</param>
-        /// <param name="internalName">The fully qualified internal name identifiying this argument.</param>
         /// <param name="objectType">The concrete type of the object representing this argument.</param>
         /// <param name="hasDefaultValue">if set to <c>true</c> indicates that this
         /// argument has a default value assigned, even if that argument is <c>null</c>.</param>
@@ -45,11 +44,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public GraphFieldArgument(
             ISchemaItem parent,
             string argumentName,
+            string internalName,
+            string parameterName,
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
-            GraphArgumentModifiers modifiers,
-            string parameterName,
-            string internalName,
             Type objectType,
             bool hasDefaultValue,
             object defaultValue = null,
@@ -63,7 +61,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.ParameterName = Validation.ThrowIfNullWhiteSpaceOrReturn(parameterName, nameof(parameterName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
-            this.ArgumentModifiers = modifiers;
 
             // by definition (rule 5.4.2.1) a nullable type expression on an argument implies
             // an optional field. that is to say it has an implicit default value of 'null'
@@ -82,11 +79,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             return new GraphFieldArgument(
                 parent,
                 this.Name,
+                this.InternalName,
+                this.ParameterName,
                 this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
-                this.ArgumentModifiers,
-                this.ParameterName,
-                this.InternalName,
                 this.ObjectType,
                 this.HasDefaultValue,
                 this.DefaultValue,
@@ -95,13 +91,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public string Name { get; set; }
+        public string Name { get; }
 
         /// <inheritdoc />
         public string Description { get; set; }
-
-        /// <inheritdoc />
-        public GraphArgumentModifiers ArgumentModifiers { get; }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; }

@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -149,10 +148,10 @@ namespace GraphQL.AspNet.Schemas
             var getters = InstanceFactory.CreatePropertyGetterInvokerCollection(obj.GetType());
             foreach (var field in inputObjectGraphType.Fields)
             {
-                if (!getters.ContainsKey(field.InternalName))
+                if (!getters.ContainsKey(field.DeclaredName))
                     continue;
 
-                var getter = getters[field.InternalName];
+                var getter = getters[field.DeclaredName];
                 builder.Append(field.Name);
                 builder.Append(Constants.QueryLanguage.FieldValueSeperator);
                 builder.Append(" ");

@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
         protected virtual IGraphActionResult Ok(object item)
         {
-            return new ObjectReturnedGraphActionResult(item);
+            return GraphActionResult.Ok(item);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
         protected virtual IGraphActionResult Ok()
         {
-            return this.Ok(null);
+            return GraphActionResult.Ok();
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Controllers
             string code = null,
             Exception exception = null)
         {
-            return new GraphFieldErrorActionResult(message, code, exception);
+            return GraphActionResult.Error(message, code, exception);
         }
 
         /// <summary>
@@ -71,8 +71,7 @@ namespace GraphQL.AspNet.Controllers
             string code = null,
             Exception exception = null)
         {
-            var errorMessage = new GraphExecutionMessage(severity, message, code, exception: exception);
-            return this.Error(errorMessage);
+            return GraphActionResult.Error(severity, message, code, exception: exception);
         }
 
         /// <summary>
@@ -82,7 +81,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult.</returns>
         protected virtual IGraphActionResult Error(IGraphMessage message)
         {
-            return new GraphFieldErrorActionResult(message);
+            return GraphActionResult.Error(message);
         }
 
         /// <summary>
@@ -93,7 +92,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult.</returns>
         protected virtual IGraphActionResult InternalServerError(string errorMessage)
         {
-            return new InternalServerErrorGraphActionResult(errorMessage);
+            return GraphActionResult.InternalServerError(errorMessage);
         }
 
         /// <summary>
@@ -104,7 +103,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult.</returns>
         protected virtual IGraphActionResult NotFound(string message = null)
         {
-            return new RouteNotFoundGraphActionResult(message);
+            return GraphActionResult.NotFound(message);
         }
 
         /// <summary>
@@ -115,7 +114,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult.</returns>
         protected virtual IGraphActionResult BadRequest(string message)
         {
-            return new BadRequestGraphActionResult(message);
+            return GraphActionResult.BadRequest(message);
         }
 
         /// <summary>
@@ -137,7 +136,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult.</returns>
         protected virtual IGraphActionResult Unauthorized(string message = null, string errorCode = null)
         {
-            return new UnauthorizedGraphActionResult(message, errorCode);
+            return GraphActionResult.Unauthorized(message, errorCode);
         }
 
         /// <summary>
@@ -150,7 +149,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult.</returns>
         protected virtual BatchBuilder StartBatch()
         {
-            return new BatchBuilder(this.Request.InvocationContext.Field);
+            return GraphActionResult.StartBatch();
         }
     }
 }

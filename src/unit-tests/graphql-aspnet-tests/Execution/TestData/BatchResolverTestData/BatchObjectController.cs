@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.BatchResolverTestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [GraphRoute("batch")]
     public class BatchObjectController : GraphController

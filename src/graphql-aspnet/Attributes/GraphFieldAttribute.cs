@@ -33,9 +33,10 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldAttribute"/> class.
         /// </summary>
-        /// <param name="name">Name of the field.</param>
-        public GraphFieldAttribute(string name)
-         : this(false, SchemaItemCollections.Types, name)
+        /// <param name="template">The template naming scheme to use to generate a graph field from this method or property. The exact name may be altered on a per schema
+        /// basis depending on field name formatting rules etc.</param>
+        public GraphFieldAttribute(string template)
+         : this(false, SchemaItemCollections.Types, template)
         {
         }
 
@@ -97,14 +98,14 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Gets the name of the union this field defines, if any.
         /// </summary>
-        /// <value>The name of the union.</value>
+        /// <value>The name of the union type to create when multiple return types are possible.</value>
         public string UnionTypeName { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance represents a template
         /// pathed from its root operation or if it is intended to be nested with another fragment.
         /// </summary>
-        /// <value><c>true</c> if this instance is root fragment; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if this instance is rooted to a top level operation; otherwise, <c>false</c>.</value>
         public bool IsRootFragment { get; }
 
         /// <summary>
@@ -145,7 +146,17 @@ namespace GraphQL.AspNet.Attributes
         /// Gets the mode indicating how the runtime should process
         /// the objects resolving this field.
         /// </summary>
-        /// <value>The mode.</value>
+        /// <value>The execution mode of this field when it is resolved by the runtime.</value>
         public virtual FieldResolutionMode ExecutionMode => FieldResolutionMode.PerSourceItem;
+
+        /// <summary>
+        /// Gets or sets a customized name to refer to this field in all log entries and error messages.
+        /// </summary>
+        /// <remarks>
+        /// When not supplied the name defaults to the fully qualified method or property name. (e.g. <c>'MyObject.MyMethod'</c>). This
+        /// can be especially helpful when working with runtime defined fields (e.g. minimal api).
+        /// </remarks>
+        /// <value>The name to refer to this field on internal messaging.</value>
+        public string InternalName { get; set; }
     }
 }

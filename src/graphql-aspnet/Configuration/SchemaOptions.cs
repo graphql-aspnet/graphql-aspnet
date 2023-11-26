@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
@@ -30,11 +31,11 @@ namespace GraphQL.AspNet.Configuration
     /// </summary>
     public abstract class SchemaOptions
     {
-        private readonly Dictionary<Type, IGraphQLServerExtension> _serverExtensions;
+        private readonly List<IGraphQLServerExtension> _serverExtensions;
         private readonly HashSet<SchemaTypeToRegister> _possibleTypes;
 
         private readonly List<ServiceToRegister> _registeredServices;
-        private List<ISchemaConfigurationExtension> _configExtensions;
+        private readonly List<IGraphQLRuntimeSchemaItemDefinition> _runtimeTemplates;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaOptions" /> class.
@@ -50,9 +51,9 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNotCastable<ISchema>(schemaType, nameof(schemaType));
 
             _possibleTypes = new HashSet<SchemaTypeToRegister>(SchemaTypeToRegister.DefaultEqualityComparer);
-            _serverExtensions = new Dictionary<Type, IGraphQLServerExtension>();
+            _runtimeTemplates = new List<IGraphQLRuntimeSchemaItemDefinition>();
+            _serverExtensions = new List<IGraphQLServerExtension>();
             _registeredServices = new List<ServiceToRegister>();
-            _configExtensions = new List<ISchemaConfigurationExtension>();
 
             this.DeclarationOptions = new SchemaDeclarationConfiguration();
             this.CacheOptions = new SchemaQueryExecutionPlanCacheConfiguration();
@@ -269,20 +270,7 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNull(extension, nameof(extension));
 
             extension.Configure(this);
-            _serverExtensions.Add(extension.GetType(), extension);
-        }
-
-        /// <summary>
-        /// Adds an extension to allow processing of schema instance by an extenal object
-        /// before the schema is complete. The state of the schema is not garunteed
-        /// when then extension is executed. It is highly likely that the schema will undergo
-        /// further processing after the extension executes.
-        /// </summary>
-        /// <param name="extension">The extension to apply.</param>
-        public void AddConfigurationExtension(ISchemaConfigurationExtension extension)
-        {
-            Validation.ThrowIfNull(extension, nameof(extension));
-            _configExtensions.Add(extension);
+            _serverExtensions.Add(extension);
         }
 
         /// <summary>
@@ -291,7 +279,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <typeparam name="TDirectiveType">The type of the directive to apply.</typeparam>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveBindingConfiguration ApplyDirective<TDirectiveType>()
+        public DirectiveBindingSchemaExtension ApplyDirective<TDirectiveType>()
             where TDirectiveType : GraphDirective
         {
             return this.ApplyDirective(typeof(TDirectiveType));
@@ -303,14 +291,14 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="directiveType">The type of the directive to apply to schema items.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveBindingConfiguration ApplyDirective(Type directiveType)
+        public DirectiveBindingSchemaExtension ApplyDirective(Type directiveType)
         {
             Validation.ThrowIfNull(directiveType, nameof(directiveType));
             Validation.ThrowIfNotCastable<GraphDirective>(directiveType, nameof(directiveType));
 
             this.AddType(directiveType, null, null);
-            var applicator = new DirectiveBindingConfiguration(directiveType);
-            this.AddConfigurationExtension(applicator);
+            var applicator = new DirectiveBindingSchemaExtension(directiveType);
+            this.RegisterExtension(applicator);
 
             return applicator;
         }
@@ -322,11 +310,11 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="directiveName">Name of the directive.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public DirectiveBindingConfiguration ApplyDirective(string directiveName)
+        public DirectiveBindingSchemaExtension ApplyDirective(string directiveName)
         {
             directiveName = Validation.ThrowIfNullWhiteSpaceOrReturn(directiveName, nameof(directiveName));
-            var applicator = new DirectiveBindingConfiguration(directiveName);
-            this.AddConfigurationExtension(applicator);
+            var applicator = new DirectiveBindingSchemaExtension(directiveName);
+            this.RegisterExtension(applicator);
 
             return applicator;
         }
@@ -348,18 +336,35 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
+        /// Adds a "runtime declared" schema item to this instance so that it can be
+        /// registered when the schema is set up.
+        /// </summary>
+        /// <remarks>
+        /// "Runtime declared" schema items are synonymous with minimal api defined fields and directives.
+        /// </remarks>
+        /// <param name="template">The schema item to include.</param>
+        public void AddRuntimeSchemaItem(IGraphQLRuntimeSchemaItemDefinition template)
+        {
+            this.ServiceCollection.AddRuntimeFieldExecutionSupport();
+            _runtimeTemplates.Add(template);
+        }
+
+        /// <summary>
+        /// Gets the runtime configured schema item templates that need to be setup
+        /// when the schema is generated.
+        /// </summary>
+        /// <remarks>
+        /// These are the templates created via the Minimal API methods.
+        /// </remarks>
+        /// <value>The runtime templates.</value>
+        public IEnumerable<IGraphQLRuntimeSchemaItemDefinition> RuntimeTemplates => _runtimeTemplates;
+
+        /// <summary>
         /// Gets the classes, enums, structs and other types that need to be
         /// registered to the schema when its created.
         /// </summary>
         /// <value>The registered schema types.</value>
         public IEnumerable<SchemaTypeToRegister> SchemaTypesToRegister => _possibleTypes;
-
-        /// <summary>
-        /// Gets the configuration extensions that will be applied to the schema instance when its
-        /// created.
-        /// </summary>
-        /// <value>The configuration extensions.</value>
-        public IEnumerable<ISchemaConfigurationExtension> ConfigurationExtensions => _configExtensions;
 
         /// <summary>
         /// Gets or sets a value indicating whether any <see cref="GraphController"/>, <see cref="GraphDirective"/>  or
@@ -411,7 +416,7 @@ namespace GraphQL.AspNet.Configuration
         /// Gets the set of options extensions added to this schema configuration.
         /// </summary>
         /// <value>The extensions.</value>
-        public IReadOnlyDictionary<Type, IGraphQLServerExtension> ServerExtensions => _serverExtensions;
+        public IEnumerable<IGraphQLServerExtension> ServerExtensions => _serverExtensions;
 
         /// <summary>
         /// Gets the service collection which contains all the required entries for

@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
         /// Initializes a new instance of the <see cref="Introspection_EnumValueType"/> class.
         /// </summary>
         public Introspection_EnumValueType()
-            : base(Constants.ReservedNames.ENUM_VALUE_TYPE)
+            : base(Constants.ReservedNames.ENUM_VALUE_TYPE, nameof(Introspection_EnumValueType))
         {
             // "__EnumValue" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection

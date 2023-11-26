@@ -44,6 +44,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         private bool _pathInitialized;
         private SchemaItemCollections _rootCollection;
         private string _path;
+        private string _pathMinusCollection;
         private SchemaItemPath _parentField;
         private string _name;
         private bool _isTopLevelField;
@@ -72,6 +73,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             _parentField = null;
             _isTopLevelField = false;
             _path = string.Empty;
+            _pathMinusCollection = string.Empty;
             _name = string.Empty;
             _isValid = false;
             _rootCollection = SchemaItemCollections.Unknown;
@@ -91,7 +93,6 @@ namespace GraphQL.AspNet.Schemas.Structural
 
                 // split the path into its fragments
                 List<string> pathFragments = workingPath.Split(new[] { RouteConstants.PATH_SEPERATOR }, StringSplitOptions.None).ToList();
-
                 switch (pathFragments[0])
                 {
                     case RouteConstants.QUERY_ROOT:
@@ -149,6 +150,12 @@ namespace GraphQL.AspNet.Schemas.Structural
                 _isTopLevelField = pathFragments.Count == 1 || (pathFragments.Count == 2 && _rootCollection > SchemaItemCollections.Unknown); // e.g. "[query]/name"
                 _isValid = _name.Length > 0;
                 _path = this.GeneratePathString(pathFragments);
+
+                if (_rootCollection == SchemaItemCollections.Unknown)
+                    _pathMinusCollection = this.GeneratePathString(pathFragments);
+                else
+                    _pathMinusCollection = $"{RouteConstants.PATH_SEPERATOR}{this.GeneratePathString(pathFragments.Skip(1).ToList())}";
+
                 _pathInitialized = true;
             }
         }
@@ -191,6 +198,17 @@ namespace GraphQL.AspNet.Schemas.Structural
         public bool HasChildRoute(SchemaItemPath route)
         {
             return (route?.Path?.Length ?? 0) > 0 && route.Path.StartsWith(this.Path);
+        }
+
+        /// <summary>
+        /// Deconstructs the instance into its constituent parts.
+        /// </summary>
+        /// <param name="collection">The collection this item belongs to.</param>
+        /// <param name="path">The path within the collection that points to this item.</param>
+        public void Deconstruct(out SchemaItemCollections collection, out string path)
+        {
+            collection = this.RootCollection;
+            path = _pathMinusCollection;
         }
 
         /// <summary>
@@ -310,40 +328,6 @@ namespace GraphQL.AspNet.Schemas.Structural
                 item = item.Parent;
             }
             while (item != null);
-        }
-
-        /// <summary>
-        /// Normalizes a given route path fragement removing duplicate seperators, ensuring starting and tail end seperators
-        /// are correct etc.
-        /// </summary>
-        /// <param name="routefragment">The fragment to normalize.</param>
-        /// <returns>System.String.</returns>
-        public static string NormalizeFragment(string routefragment)
-        {
-            // ensure a working path
-            routefragment = routefragment?.Trim() ?? string.Empty;
-            routefragment = routefragment.Replace(RouteConstants.ALT_PATH_SEPERATOR, RouteConstants.PATH_SEPERATOR);
-
-            // doubled up seperators may happen if a 3rd party is joining route fragments (especially if the seperator is a '/')
-            // trim them down
-            while (routefragment.Contains(RouteConstants.DOUBLE_PATH_SEPERATOR))
-            {
-                routefragment = routefragment.Replace(RouteConstants.DOUBLE_PATH_SEPERATOR, RouteConstants.PATH_SEPERATOR);
-            }
-
-            // if the path ends with or starts with a seperator (indicating a potential group segment)
-            // thats fine but is not needed to identify the segment in and of itself, trim it off
-            while (routefragment.EndsWith(RouteConstants.PATH_SEPERATOR))
-            {
-                routefragment = routefragment.Substring(0, routefragment.Length - RouteConstants.PATH_SEPERATOR.Length);
-            }
-
-            while (routefragment.StartsWith(RouteConstants.PATH_SEPERATOR))
-            {
-                routefragment = routefragment.Substring(routefragment.IndexOf(RouteConstants.PATH_SEPERATOR, StringComparison.Ordinal) + RouteConstants.PATH_SEPERATOR.Length);
-            }
-
-            return routefragment;
         }
 
         /// <summary>

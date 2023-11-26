@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
     using System.Text;
     using System.Text.Json;
     using GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy.Messaging;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Mocks;
     using GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy.GraphqlWsLegacyData;
     using NUnit.Framework;

@@ -27,33 +27,30 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="parent">The parent graph type that owns this virutal field.</param>
         /// <param name="name">The name of this field in the object graph.</param>
-        /// <param name="internalName">The name of this field as it exists in the .NET code.</param>
+        /// <param name="internalFullName">The fully qualified name of this field as it exists in the .NET code.</param>
         /// <param name="typeExpression">The graph type expression representing this field.</param>
         /// <param name="route">The route path for this argument.</param>
         /// <param name="concreteType">The concrete graph type in the server code that this argument is mapped to.</param>
         /// <param name="hasDefaultValue">if set to <c>true</c> indicates that this
         /// argument has a default value, even if its null.</param>
-        /// <param name="defaultValue">The default value.</param>
-        /// <param name="argModifiers">The argument modifiers.</param>
+        /// <param name="defaultValue">The default value of this argument when not supplied, if any.</param>
         public VirtualGraphFieldArgument(
             ISchemaItem parent,
             string name,
-            string internalName,
+            string internalFullName,
             GraphTypeExpression typeExpression,
             SchemaItemPath route,
             Type concreteType,
             bool hasDefaultValue,
-            object defaultValue = null,
-            GraphArgumentModifiers argModifiers = GraphArgumentModifiers.None)
+            object defaultValue = null)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
-            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalFullName, nameof(internalFullName));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ParameterName = this.Name;
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
-            this.ArgumentModifiers = argModifiers;
 
             // by definition (rule 5.4.2.1) a nullable type expression on an argument implies
             // an optional field. that is to say it has an implicit default value of 'null'
@@ -83,9 +80,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public object DefaultValue { get; }
-
-        /// <inheritdoc />
-        public GraphArgumentModifiers ArgumentModifiers { get; }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; }

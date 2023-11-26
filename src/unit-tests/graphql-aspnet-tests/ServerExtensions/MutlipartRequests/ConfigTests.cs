@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using System.Text;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.JsonNodes;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Configuration;

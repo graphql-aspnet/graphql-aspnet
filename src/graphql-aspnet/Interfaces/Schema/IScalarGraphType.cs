@@ -20,15 +20,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
     public interface IScalarGraphType : IGraphType, ITypedSchemaItem
     {
         /// <summary>
-        /// Gets a collection of other types that this scalar may be declared as. Scalars maybe
-        /// represented in C# in multiple formats (e.g. int and int?) but these
-        /// formats are still the same datatype from the perspective of graphql. This field captures the other known
-        /// types of this scalar so they can be grouped and processed in a similar manner.
-        /// </summary>
-        /// <value>The other known types.</value>
-        TypeCollection OtherKnownTypes { get; }
-
-        /// <summary>
         /// Gets the type of the value as it should be supplied on an input argument. Scalar values, from a standpoint of "raw data" can be submitted as
         /// strings, numbers or a boolean value. A source value resolver would then convert this raw value into its formal scalar representation.
         /// </summary>
@@ -48,6 +39,17 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// </summary>
         /// <value>The specified by URL.</value>
         string SpecifiedByUrl { get; set; }
+
+        /// <summary>
+        /// Clones this scalar instance to an exact copy with a new type name. This new type name.
+        /// </summary>
+        /// <param name="newName">The new name to assign to the scalar instance.</param>
+        /// <remarks>
+        /// This method is used during schema generation to generate a graph type named accoridng to the
+        /// schema's naming rules.
+        /// </remarks>
+        /// <returns>IScalarGraphType.</returns>
+        IScalarGraphType Clone(string newName);
 
         /// <summary>
         /// Serializes the scalar from its object representation to a

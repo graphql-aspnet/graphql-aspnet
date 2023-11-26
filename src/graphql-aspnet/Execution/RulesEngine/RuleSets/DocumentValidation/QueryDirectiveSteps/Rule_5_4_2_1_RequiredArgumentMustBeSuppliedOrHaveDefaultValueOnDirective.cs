@@ -37,14 +37,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
                 // inspect all declared arguments from the schema
                 foreach (var argument in directive.Arguments)
                 {
-                    // any argument flaged as being a source input (such as for type extensions)
-                    // or internal (such as subscription event sources)
-                    // and can be skipped when validating query document
-                    if (argument.ArgumentModifiers.IsSourceParameter())
-                        continue;
-                    if (argument.ArgumentModifiers.IsInternalParameter())
-                        continue;
-
                     if (argument.IsRequired && !suppliedArgs.ContainsKey(argument.Name.AsMemory()))
                     {
                         this.ValidationError(

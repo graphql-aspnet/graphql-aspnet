@@ -17,9 +17,8 @@ namespace GraphQL.AspNet.Schemas.Structural
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -92,10 +91,11 @@ namespace GraphQL.AspNet.Schemas.Structural
         {
             var field = new MethodGraphField(
                 fieldName,
+                "GraphQLCustomInternalField",
                 typeExpression,
                 route,
-                GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 typeof(TReturn),
+                GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 FieldResolutionMode.PerSourceItem,
                 new FunctionGraphFieldResolver<TSource, TReturn>(resolver));
             field.Description = description;

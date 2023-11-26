@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// Helper methods for working with <see cref="ResolverIsolationOptions"/>.

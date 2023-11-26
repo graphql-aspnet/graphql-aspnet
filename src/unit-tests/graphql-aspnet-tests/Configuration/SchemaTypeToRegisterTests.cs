@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]

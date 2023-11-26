@@ -317,7 +317,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
                     if (iof.Field == null)
                         return true;
 
-                    // TODO: Add support for default input values on fields (github issue #70)
                     hasLocationDefaultValue = !iof.Field.IsRequired;
                     originalLocationType = iof.Field.TypeExpression;
                     argName = iof.Name;

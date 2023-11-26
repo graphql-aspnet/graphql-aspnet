@@ -10,13 +10,12 @@
 namespace GraphQL.AspNet.Tests.Controllers
 {
     using System.Reflection;
-    using System.Security.Principal;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Controllers.InputModel;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Controllers.ControllerTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NSubstitute;
     using NUnit.Framework;
 
@@ -30,17 +29,17 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.AsyncActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
             var controller = new InvokableController();
-            var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod, resolutionContext);
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result is ObjectReturnedGraphActionResult);
+            Assert.IsTrue(result is OperationCompleteGraphActionResult);
 
             Assert.AreEqual(3, controller.CapturedItems.Count);
 
@@ -59,16 +58,16 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = tester.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.SyncronousActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
             var controller = new InvokableController();
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod, resolutionContext);
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result is ObjectReturnedGraphActionResult);
+            Assert.IsTrue(result is OperationCompleteGraphActionResult);
         }
 
         [Test]
@@ -77,15 +76,15 @@ namespace GraphQL.AspNet.Tests.Controllers
             var tester = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
-            var fieldContextBuilder = tester.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.SyncronousActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
-            fieldContextBuilder.GraphMethod.IsAsyncField.Returns(true);
+            fieldContextBuilder.ResolverMetaData.IsAsyncField.Returns(true);
 
             var controller = new InvokableController();
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod, resolutionContext);
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
 
             // ensure a server error reslt is generated
             Assert.IsNotNull(result);
@@ -98,14 +97,14 @@ namespace GraphQL.AspNet.Tests.Controllers
             var tester = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
-            var fieldContextBuilder = tester.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.SyncronousActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
-            fieldContextBuilder.GraphMethod.Method.Returns(null as MethodInfo);
+            fieldContextBuilder.ResolverMetaData.Method.Returns(null as MethodInfo);
 
             var controller = new InvokableController();
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod, resolutionContext);
+            var result = await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext);
 
             // ensure a server error reslt is generated
             Assert.IsNotNull(result);
@@ -118,14 +117,14 @@ namespace GraphQL.AspNet.Tests.Controllers
             var tester = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
-            var fieldContextBuilder = tester.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.AsyncActionMethodToCauseException));
 
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
             var controller = new InvokableController();
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
-            Assert.ThrowsAsync<UserThrownException>(async () => await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod, resolutionContext));
+            Assert.ThrowsAsync<UserThrownException>(async () => await controller.InvokeActionAsync(fieldContextBuilder.ResolverMetaData, resolutionContext));
         }
 
         [Test]
@@ -135,13 +134,13 @@ namespace GraphQL.AspNet.Tests.Controllers
                 .AddType<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
                 nameof(InvokableController.ErrorResult));
 
             var controller = new InvokableController();
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             var result = await controller.InvokeActionAsync(
-                fieldContextBuilder.GraphMethod,
+                fieldContextBuilder.ResolverMetaData,
                 resolutionContext) as GraphFieldErrorActionResult;
 
             Assert.IsNotNull(result);

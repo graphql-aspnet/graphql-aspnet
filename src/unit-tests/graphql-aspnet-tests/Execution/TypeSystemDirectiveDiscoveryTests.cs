@@ -123,13 +123,10 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void ScalarDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-
-            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(MarkedScalarByAttribute));
-
             // the object has a property that returns the custom scalar
             // forcing the enclusion of the scalar and thus the directive on said scalar
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddType<MarkedScalarByAttribute>()
                 .AddType<ObjectWithMarkedScalar>()
                 .Build();
 

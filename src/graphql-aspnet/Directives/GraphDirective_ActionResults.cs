@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Directives
 {
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Directives.ActionResults;
+    using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
 
@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Directives
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
         protected virtual IGraphActionResult Ok()
         {
-            return new DirectiveOkActionResult();
+            return GraphActionResult.Ok();
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Directives
         /// <returns>IGraphActionResult.</returns>
         protected virtual IGraphActionResult Cancel()
         {
-            return new DirectiveCancelPipelineResult();
+            return GraphActionResult.Cancel();
         }
     }
 }

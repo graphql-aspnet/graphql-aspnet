@@ -24,13 +24,13 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// Gets the declared numerical value of the enum.
         /// </summary>
         /// <value>The value of the neum.</value>
-        object InternalValue { get; }
+        object DeclaredValue { get; }
 
         /// <summary>
         /// Gets the declared label applied to the enum value by .NET.
         /// (e.g. 'Value1' for the enum value <c>MyEnum.Value1</c>).
         /// </summary>
-        /// <value>The internal label.</value>
-        string InternalLabel { get; }
+        /// <value>The declared label in source code.</value>
+        string DeclaredLabel { get; }
     }
 }

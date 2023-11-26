@@ -30,12 +30,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="InterfaceGraphType" /> class.
         /// </summary>
         /// <param name="name">The name of the interface as it will appear in the schema.</param>
+        /// <param name="internalName">The internal name of the interface as defined in source code.</param>
         /// <param name="concreteType">The concrete type representing this interface.</param>
         /// <param name="route">The route path that identifies this interface.</param>
         /// <param name="directives">The directives to apply to this type
         /// when its added to a schema.</param>
         public InterfaceGraphType(
             string name,
+            string internalName,
             Type concreteType,
             SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
@@ -43,7 +45,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
-            this.InternalName = this.ObjectType.FriendlyName();
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.InterfaceNames = new HashSet<string>();
 
             _fieldSet = new GraphFieldCollection(this);

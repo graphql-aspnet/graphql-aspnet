@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
     using System.Diagnostics;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Internal.Resolvers.Introspeection;
+    using GraphQL.AspNet.Execution.Resolvers.Introspeection;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
         /// Initializes a new instance of the <see cref="Introspection_TypeType" /> class.
         /// </summary>
         public Introspection_TypeType()
-            : base(Constants.ReservedNames.TYPE_TYPE)
+            : base(Constants.ReservedNames.TYPE_TYPE, nameof(Introspection_TypeType))
         {
             // "__Type" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
@@ -57,8 +57,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
             // fields
             var fieldsField = new MethodGraphField(
                 "fields",
+                "Introspection_TypeType_Fields",
                 new GraphTypeExpression(Constants.ReservedNames.FIELD_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "fields"),
+                declaredReturnType: typeof(IEnumerable<IntrospectedField>),
+                objectType: typeof(IEnumerable<IntrospectedField>),
                 mode: FieldResolutionMode.PerSourceItem,
                 resolver: new Type_TypeGraphFieldResolver())
             {
@@ -93,8 +96,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
             // enumValues
             var enumValuesField = new MethodGraphField(
                 "enumValues",
+                "Introspection_TypeType_EnumValues",
                 new GraphTypeExpression(Constants.ReservedNames.ENUM_VALUE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, Constants.ReservedNames.ENUM_VALUE_TYPE),
+                declaredReturnType: typeof(IEnumerable<IntrospectedEnumValue>),
+                objectType: typeof(IEnumerable<IntrospectedEnumValue>),
                 mode: FieldResolutionMode.PerSourceItem,
                 resolver: new Type_EnumValuesGraphFieldResolver())
             {

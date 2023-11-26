@@ -27,10 +27,13 @@ namespace GraphQL.AspNet.TestFramework.Tests
                 Task.Run(BuildServer<AppController>),
                 Task.Run(BuildServer<AppController>),
                 Task.Run(BuildServer<AppController>),
+                Task.Run(BuildServer<AppController>),
+                Task.Run(BuildServer<AppController>),
+                Task.Run(BuildServer<AppController>),
                 Task.Run(BuildServer<AppController>));
         }
 
-        [GraphRoute("with-param")]
+        [GraphRoute("withParam")]
         public class AppController : GraphController
         {
             [Query("get")]

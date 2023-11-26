@@ -33,7 +33,5 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.TypeSystemDirectiveTestData
         }
 
         public override ScalarValueType ValueType => ScalarValueType.Boolean;
-
-        public override TypeCollection OtherKnownTypes => TypeCollection.Empty;
     }
 }

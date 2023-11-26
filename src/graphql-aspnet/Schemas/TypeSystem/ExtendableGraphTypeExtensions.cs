@@ -12,9 +12,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -66,16 +65,17 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             where TSource : class
         {
             Validation.ThrowIfNullOrReturn(graphType, nameof(graphType));
-            Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
+            fieldName = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
 
             var fieldRoute = graphType.Route.CreateChild(fieldName);
 
             var field = new MethodGraphField(
                 fieldName,
+                $"GraphQLExtendedField",
                 typeExpression,
                 fieldRoute,
-                GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 typeof(TReturn),
+                GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 FieldResolutionMode.PerSourceItem,
                 new FunctionGraphFieldResolver<TSource, TReturn>(resolver));
             field.Description = description;

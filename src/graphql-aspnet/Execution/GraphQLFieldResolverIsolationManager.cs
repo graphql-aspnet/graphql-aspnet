@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// A default implementation of the resolver isolation manager, wrapping a simple

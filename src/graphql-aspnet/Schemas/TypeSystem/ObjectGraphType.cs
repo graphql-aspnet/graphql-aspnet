@@ -28,20 +28,20 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="ObjectGraphType" /> class.
         /// </summary>
         /// <param name="name">The name of the graph type.</param>
+        /// <param name="internalName">The defined internal name for this graph type.</param>
         /// <param name="objectType">The concrete type that this graphtype is made from.</param>
         /// <param name="route">The route path that identifies this object in the schema..</param>
         /// <param name="directives">The directives applied to this object
         /// when its added to a schema.</param>
         public ObjectGraphType(
             string name,
+            string internalName,
             Type objectType,
             SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
-            : base(name, route, directives)
+            : base(name, internalName, route, directives)
         {
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
-            this.InternalName = this.ObjectType.FriendlyName();
-
             this.GraphFieldCollection.AddField(new Introspection_TypeNameMetaField(name));
         }
 
@@ -59,8 +59,5 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public Type ObjectType { get; }
-
-        /// <inheritdoc />
-        public string InternalName { get; }
     }
 }

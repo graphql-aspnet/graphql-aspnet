@@ -35,6 +35,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             IAppliedDirectiveCollection directives = null)
             : base(
                   Constants.ReservedNames.FindOperationTypeNameByType(operationType),
+                  $"{nameof(GraphOperation)}.{Constants.ReservedNames.FindOperationTypeNameByType(operationType)}",
                   new SchemaItemPath(SchemaItemCollections.Types, Constants.ReservedNames.FindOperationTypeNameByType(operationType)),
                   directives)
         {
@@ -65,8 +66,5 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public Type ObjectType => typeof(GraphOperation);
-
-        /// <inheritdoc />
-        public string InternalName => $"{typeof(GraphOperation).FriendlyName()}.{this.OperationType}";
     }
 }

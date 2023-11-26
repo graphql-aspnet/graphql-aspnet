@@ -14,8 +14,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
@@ -37,8 +37,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
         public Introspection_SchemaField(IntrospectedSchema schema)
             : base(
                 Constants.ReservedNames.SCHEMA_FIELD,
+                nameof(Introspection_SchemaField),
                 new GraphTypeExpression(Constants.ReservedNames.SCHEMA_TYPE),
                 FIELD_PATH,
+                typeof(IntrospectedSchema),
+                typeof(IntrospectedSchema),
                 resolver: new FunctionGraphFieldResolver<object, IntrospectedSchema>((x) => schema.AsCompletedTask()))
         {
             this.IntrospectedSchema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));

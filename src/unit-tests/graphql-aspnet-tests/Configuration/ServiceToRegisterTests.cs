@@ -9,7 +9,8 @@
 namespace GraphQL.AspNet.Tests.Configuration
 {
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.Interfaces;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;

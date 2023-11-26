@@ -24,7 +24,6 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Internal;
 
     /// <summary>
     /// An ecapsulation of a piece of real data supplied to, or resolved from, a graph field.
@@ -369,8 +368,9 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             if (!this.Status.IncludeInOutput())
                 return false;
 
-            // leafs have nothing underneath  them, the resolved data IS the item value.
-            if (this.FieldContext.Field.IsLeaf)
+            // leafs have nothing underneath them, the resolved data IS the item value.
+            var graphType = this.Schema.KnownTypes.FindGraphType(this.FieldContext.Field.TypeExpression.TypeName);
+            if (graphType.Kind.IsLeafKind())
             {
                 // List<SomeScalar> and List<SomeEnum> are leafs since there is no further
                 // resolution to the data but its still must be projected

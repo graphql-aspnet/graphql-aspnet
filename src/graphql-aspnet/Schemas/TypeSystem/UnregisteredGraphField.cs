@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// A comparer to evaluate the equality of two <see cref="UnregisteredGraphFieldComparer"/> to prevent
         /// duplicate registrations of extension fields.
         /// </summary>
-        public class UnregisteredGraphFieldComparer : IEqualityComparer<UnregisteredGraphField>
+        private class UnregisteredGraphFieldComparer : IEqualityComparer<UnregisteredGraphField>
         {
             /// <summary>
             /// Determines whether the specified objects are equal.

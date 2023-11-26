@@ -9,14 +9,8 @@
 
 namespace GraphQL.AspNet.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers.ActionResults;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.SubscriptionServer;
 
     /// <summary>
     /// Extension methods to expose subscription to graph controllers.
@@ -33,39 +27,7 @@ namespace GraphQL.AspNet.Controllers
         /// <param name="dataObject">The data object to pass with the event.</param>
         public static void PublishSubscriptionEvent(this GraphController controller, string eventName, object dataObject)
         {
-            Validation.ThrowIfNull(dataObject, nameof(dataObject));
-            eventName = Validation.ThrowIfNullWhiteSpaceOrReturn(eventName, nameof(eventName));
-
-            var contextData = controller.Context.Session.Items;
-
-            // add or reference the list of events on the active context
-            var eventsCollectionFound = contextData
-                .TryGetValue(
-                    SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION,
-                    out var listObject);
-
-            if (!eventsCollectionFound)
-            {
-                listObject = new List<SubscriptionEventProxy>(1);
-                contextData.TryAdd(
-                    SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION,
-                    listObject);
-            }
-
-            var eventList = listObject as IList<SubscriptionEventProxy>;
-            if (eventList == null)
-            {
-                throw new GraphExecutionException(
-                    $"Unable to cast the context data item '{SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION}' " +
-                    $"(type: {listObject?.GetType().FriendlyName() ?? "unknown"}), into " +
-                    $"{typeof(IList<SubscriptionEvent>).FriendlyName()}. Event '{eventName}' could not be published.",
-                    controller.Request.Origin);
-            }
-
-            lock (eventList)
-            {
-                eventList.Add(new SubscriptionEventProxy(eventName, dataObject));
-            }
+            controller?.Context?.PublishSubscriptionEvent(eventName, dataObject);
         }
 
         /// <summary>
@@ -85,7 +47,7 @@ namespace GraphQL.AspNet.Controllers
         /// and no data should be sent to the connected client.</returns>
         public static IGraphActionResult SkipSubscriptionEvent(this GraphController controller, bool completeSubscirption = false)
         {
-            return new SkipSubscriptionEventGraphActionResult(completeSubscirption);
+            return SubscriptionGraphActionResult.SkipSubscriptionEvent(completeSubscirption);
         }
 
         /// <summary>
@@ -106,7 +68,7 @@ namespace GraphQL.AspNet.Controllers
         /// once processing is completed.</returns>
         public static IGraphActionResult OkAndComplete(this GraphController controller, object item = null)
         {
-            return new CompleteSubscriptionGraphActionResult(item);
+            return SubscriptionGraphActionResult.OkAndComplete(item);
         }
     }
 }

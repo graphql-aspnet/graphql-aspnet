@@ -30,7 +30,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             this.Description = "A 128-bit, floating point value that offers greater local " +
                                "precision, with a smaller range, than other floating-point types. " +
                                $"(Min: {decimal.MinValue}, Max: {decimal.MaxValue})";
-            this.OtherKnownTypes = new TypeCollection(typeof(decimal?));
         }
 
         /// <inheritdoc />
@@ -41,9 +40,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             throw new UnresolvedValueException(data, typeof(decimal));
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.Number;

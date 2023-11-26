@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.Tests.Execution
     using System;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 .AddType<SimpleExecutionController>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<SimpleExecutionController>(
+            var builder = server.CreateFieldContextBuilder<SimpleExecutionController>(
                 nameof(SimpleExecutionController.SimpleQueryMethod));
             builder.AddInputArgument("arg1", "my value");
             builder.AddInputArgument("arg2", 15L);
@@ -930,7 +930,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task TypeExtension_OnGeneralObject_ResolvesDataCorrectly()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.IncludeExceptions)
          .AddType<TypeExtensionOnTwoPropertyObjectController>()
          .Build();
 

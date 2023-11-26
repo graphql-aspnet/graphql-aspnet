@@ -27,15 +27,14 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// <param name="method">The method being invoked.</param>
         /// <param name="request">The request being executed on the method.</param>
         /// <param name="result">The result that was generated.</param>
-        public ActionMethodInvocationCompletedLogEntry(IGraphFieldResolverMethod method, IDataRequest request, object result)
+        public ActionMethodInvocationCompletedLogEntry(IGraphFieldResolverMetaData method, IDataRequest request, object result)
             : base(LogEventIds.ControllerInvocationCompleted)
         {
             this.PipelineRequestId = request?.Id.ToString();
-            this.ControllerName = method?.Parent?.InternalFullName;
+            this.ControllerName = method?.ParentInternalName;
             this.ActionName = method?.InternalName;
-            this.FieldPath = method?.Route?.Path;
             this.ResultTypeName = result?.GetType().FriendlyName(true);
-            _shortControllerName = method?.Parent?.InternalName;
+            _shortControllerName = method?.ParentInternalName;
         }
 
         /// <summary>
@@ -67,16 +66,6 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         {
             get => this.GetProperty<string>(LogPropertyNames.ACTION_NAME);
             private set => this.SetProperty(LogPropertyNames.ACTION_NAME, value);
-        }
-
-        /// <summary>
-        /// Gets the path, in the target schema, of the action.
-        /// </summary>
-        /// <value>The action name.</value>
-        public string FieldPath
-        {
-            get => this.GetProperty<string>(LogPropertyNames.SCHEMA_ITEM_PATH);
-            private set => this.SetProperty(LogPropertyNames.SCHEMA_ITEM_PATH, value);
         }
 
          /// <summary>

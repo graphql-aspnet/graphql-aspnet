@@ -10,9 +10,9 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.UnionTypeExecutionTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -281,6 +281,112 @@ namespace GraphQL.AspNet.Tests.Execution
             }
 
             Assert.Fail("Expected a specific unhandled exception from the failed union, got none");
+        }
+
+        [Test]
+        public async Task WhenMultipleUnrelatedTypesAreReturnedGenerally_AndOneExecutesABatchExtensionForAnImplementedInterface_QueryExecutesCorrectly()
+        {
+            var server = new TestServerBuilder(TestOptions.IncludeExceptions)
+                .AddType<Television>()
+                .AddType<Person>()
+                .AddType<Home>()
+                .AddType<IBuilding>()
+                .AddGraphController<UnrelatedItemsController>()
+                .Build();
+
+            // The Items on retrieveItems are not related (Person, Home, TV)
+            // The method returns the unioned items as a List<object> to the runtime
+            //
+            // IBuilding, which home implements, has `.perimeter` built as a batch extension
+            // and needs to take inthe IEnumerable<IBuilding>
+            //
+            // The runtime must properlty detect and cast the right items of List<object>
+            // to a single IEnumerable<IBuilding> to correctly invoke the batch extension
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        retrieveItems {
+                            ... on Home {
+                                id
+                                name
+
+                                #this is a batch extension
+                                perimeter
+                            }
+                        }
+                    }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveItems"" : [{
+                            ""id"" : 1,
+                            ""name"": ""Home 1"",
+                            ""perimeter"": 1000
+                        },
+                        {
+                            ""id"" : 2,
+                            ""name"": ""Home 2"",
+                            ""perimeter"": 1400
+                        }]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task WhenMultipleUnrelatedTypesAreReturnedGenerally_AndOneExecutesATypeExtensionForAnImplementedInterface_QueryExecutesCorrectly()
+        {
+            var server = new TestServerBuilder()
+                .AddType<Television>()
+                .AddType<Person>()
+                .AddType<Home>()
+                .AddType<IBuilding>()
+                .AddGraphController<UnrelatedItemsController>()
+                .Build();
+
+            // The items on retrieveItems are not related (Person, Home, TV)
+            // The method returns the unioned items as a List<object> to the runtime
+            //
+            // IBuilding, which home implements, has `.squareFeet` built as a type extension
+            // and needs to take in an IBuilding
+            //
+            // The runtime must detect and properly cast the right objects in the unioned list
+            // to IBuilding to correctly invoke the type extension
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"query {
+                        retrieveItems {
+                            ... on Home {
+                                id
+                                name
+
+                                #this is a single item type extension
+                                squareFeet
+                            }
+                        }
+                    }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveItems"" : [{
+                            ""id"" : 1,
+                            ""name"": ""Home 1"",
+                            ""squareFeet"": 60000
+                        },
+                        {
+                            ""id"" : 2,
+                            ""name"": ""Home 2"",
+                            ""squareFeet"": 120000
+                        }]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
     }
 }

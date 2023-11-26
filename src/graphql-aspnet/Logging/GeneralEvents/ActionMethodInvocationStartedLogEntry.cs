@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Logging.GeneralEvents
 {
     using System;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
@@ -25,16 +26,18 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// </summary>
         /// <param name="method">The method being invoked.</param>
         /// <param name="request">The request being executed on the method.</param>
-        public ActionMethodInvocationStartedLogEntry(IGraphFieldResolverMethod method, IDataRequest request)
+        public ActionMethodInvocationStartedLogEntry(IGraphFieldResolverMetaData method, IDataRequest request)
             : base(LogEventIds.ControllerInvocationStarted)
         {
             this.PipelineRequestId = request?.Id.ToString();
-            this.ControllerName = method?.Parent?.InternalFullName;
-            this.ActionName = method?.Name;
-            this.FieldPath = method?.Route?.Path;
-            this.SourceObjectType = method?.ObjectType?.ToString();
+            this.ControllerName = method?.ParentInternalName;
+            this.ActionName = method?.InternalName;
+
+            if (request is IGraphFieldRequest gfr)
+                this.SourceObjectType = gfr.InvocationContext?.ExpectedSourceType?.FriendlyName(true);
+
             this.IsAsync = method?.IsAsyncField;
-            _shortControllerName = method?.Parent?.InternalName;
+            _shortControllerName = method?.ParentInternalName;
         }
 
         /// <summary>
@@ -66,16 +69,6 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         {
             get => this.GetProperty<string>(LogPropertyNames.ACTION_NAME);
             private set => this.SetProperty(LogPropertyNames.ACTION_NAME, value);
-        }
-
-        /// <summary>
-        /// Gets the path, in the target schema, of the action.
-        /// </summary>
-        /// <value>The action name.</value>
-        public string FieldPath
-        {
-            get => this.GetProperty<string>(LogPropertyNames.SCHEMA_ITEM_PATH);
-            private set => this.SetProperty(LogPropertyNames.SCHEMA_ITEM_PATH, value);
         }
 
          /// <summary>

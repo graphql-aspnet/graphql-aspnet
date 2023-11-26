@@ -34,6 +34,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="UnionGraphType" /> class.
         /// </summary>
         /// <param name="name">The name of the union as it appears in the target schema (case sensitive).</param>
+        /// <param name="internalName">The defined internal name for this graph type.</param>
         /// <param name="typeResolver">The type resolver used to match field resolve values with
         /// expected graph types in this union.</param>
         /// <param name="route">The unique route of this item.</param>
@@ -41,11 +42,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// to execute against this union when it is added to a schema.</param>
         public UnionGraphType(
             string name,
+            string internalName,
             IUnionGraphTypeMapper typeResolver,
             SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.TypeMapper = typeResolver;
             this.Publish = true;
@@ -87,6 +90,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public virtual string Name { get; set; }
+
+        /// <inheritdoc />
+        public string InternalName { get; }
 
         /// <inheritdoc />
         public virtual string Description { get; set; }

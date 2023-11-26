@@ -27,7 +27,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.LONG, typeof(long))
         {
             this.Description = $"A 64-bit integer. (Min: {long.MinValue}, Max: {long.MaxValue})";
-            this.OtherKnownTypes = new TypeCollection(typeof(long?));
         }
 
         /// <inheritdoc />
@@ -38,9 +37,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             throw new UnresolvedValueException(data, typeof(long));
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.Number;

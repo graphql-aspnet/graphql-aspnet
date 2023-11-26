@@ -27,7 +27,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.GUID, typeof(Guid))
         {
             this.Description = "A standard guid (e.g. '6dd43342-ffe6-4964-bb6f-e31c8e50ec86').";
-            this.OtherKnownTypes = TypeCollection.Empty;
         }
 
         /// <inheritdoc />
@@ -47,9 +46,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return ((Guid)item).ToString();
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.String;

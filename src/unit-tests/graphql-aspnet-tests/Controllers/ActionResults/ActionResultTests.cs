@@ -14,11 +14,12 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
     using System.Threading.Tasks;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Controllers.InputModel;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.Generation;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
     using GraphQL.AspNet.Tests.Controllers.ActionResults.ActuionResultTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NSubstitute;
@@ -33,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
                 .AddType<ActionableController>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<ActionableController>(
+            var builder = server.CreateFieldContextBuilder<ActionableController>(
                 nameof(ActionableController.DoStuff));
             return builder.CreateResolutionContext();
         }
@@ -119,7 +120,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         [Test]
         public async Task InternalServerError_WithAction_AndException_FriendlyErrorMessage()
         {
-            var action = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)) as IGraphFieldResolverMethod;
+            var action = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)).CreateResolverMetaData();
 
             var exception = new Exception("Fail");
             var actionResult = new InternalServerErrorGraphActionResult(action, exception);
@@ -155,7 +156,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         {
             var testObject = new object();
 
-            var actionResult = new ObjectReturnedGraphActionResult(testObject);
+            var actionResult = new OperationCompleteGraphActionResult(testObject);
 
             var context = this.CreateResolutionContext();
             await actionResult.CompleteAsync(context);
@@ -165,12 +166,12 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         }
 
         [Test]
-        public async Task RouteNotFound_ViaGraphAction_YieldsNegativeResult()
+        public async Task RouteNotFound_ViaResolverMetaData_WithThrownException_YieldsNegativeResult_AndThrowsExceptionWrappedException()
         {
-            var action = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)) as IGraphFieldResolverMethod;
+            var resolverMetadata = GraphQLTemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff)).CreateResolverMetaData();
 
             var exception = new Exception("fail");
-            var actionResult = new RouteNotFoundGraphActionResult(action, exception);
+            var actionResult = new RouteNotFoundGraphActionResult(resolverMetadata, exception);
 
             var context = this.CreateResolutionContext();
             await actionResult.CompleteAsync(context);
@@ -178,7 +179,11 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             Assert.IsTrue(context.IsCancelled);
             Assert.AreEqual(1, context.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_ROUTE, context.Messages[0].Code);
-            Assert.IsTrue(context.Messages[0].Message.Contains(action.Name));
+
+            // exception message should have the resolver name in it
+            Assert.IsTrue(context.Messages[0].Message.Contains(context.Route.Name));
+            Assert.IsTrue(context.Messages[0].Exception.Message.Contains(resolverMetadata.InternalName));
+            Assert.AreEqual(context.Messages[0].Exception.InnerException, exception);
         }
 
         [Test]

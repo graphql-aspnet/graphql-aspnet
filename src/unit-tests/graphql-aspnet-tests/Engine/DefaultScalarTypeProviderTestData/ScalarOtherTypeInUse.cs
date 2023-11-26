@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
     {
         public ScalarOtherTypeInUse()
         {
-            this.OtherKnownTypes = new TypeCollection(typeof(int));
         }
     }
 }

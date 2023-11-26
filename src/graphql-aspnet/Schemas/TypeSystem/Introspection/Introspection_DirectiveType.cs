@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
         /// Initializes a new instance of the <see cref="Introspection_DirectiveType"/> class.
         /// </summary>
         public Introspection_DirectiveType()
-            : base(Constants.ReservedNames.DIRECTIVE_TYPE)
+            : base(Constants.ReservedNames.DIRECTIVE_TYPE, nameof(Introspection_DirectiveType))
         {
             // "__Directive" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection

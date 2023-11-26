@@ -31,7 +31,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.TIMEONLY, typeof(TimeOnly))
         {
             this.Description = "A time of day that does not include a date component.";
-            this.OtherKnownTypes = new TypeCollection(typeof(TimeOnly?));
         }
 
         /// <inheritdoc />
@@ -59,9 +58,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return Constants.QueryLanguage.NULL;
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.String;

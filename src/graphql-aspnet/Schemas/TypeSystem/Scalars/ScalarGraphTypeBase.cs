@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
                 return true;
 
             var itemType = item.GetType();
-            return itemType == this.ObjectType || this.OtherKnownTypes.Contains(itemType);
+            return itemType == this.ObjectType;
         }
 
         /// <inheritdoc />
@@ -100,7 +100,21 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         }
 
         /// <inheritdoc />
-        public virtual string Name { get; set; }
+        public virtual IScalarGraphType Clone(string newName)
+        {
+            newName = Validation.ThrowIfNullWhiteSpaceOrReturn(newName, nameof(newName));
+            var newInstance = GlobalTypes.CreateScalarInstanceOrThrow(this.GetType()) as ScalarGraphTypeBase;
+
+            // some built in scalars (defined against this class)
+            // should never be renameable (string, int, float, id, boolean)
+            if (GlobalTypes.CanBeRenamed(this.Name))
+                newInstance.Name = newName;
+
+            return newInstance;
+        }
+
+        /// <inheritdoc />
+        public virtual string Name { get; protected set; }
 
         /// <inheritdoc />
         public virtual Type ObjectType { get; }
@@ -122,9 +136,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
         /// <inheritdoc />
         public virtual ILeafValueResolver SourceResolver { get; set; }
-
-        /// <inheritdoc />
-        public abstract TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public virtual bool IsVirtual => false;

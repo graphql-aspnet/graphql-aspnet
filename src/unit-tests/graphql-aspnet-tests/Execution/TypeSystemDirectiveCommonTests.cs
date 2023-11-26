@@ -30,10 +30,12 @@ namespace GraphQL.AspNet.Tests.Execution
                 LastName = "Smith",
             };
 
-            var context = server.CreateFieldExecutionContext<TestPersonWithResolverExtensionDirectiveByType>(
-                nameof(TestPersonWithResolverExtensionDirectiveByType.Name),
-                person);
+            var contextBuilder = server.CreateFieldContextBuilder<TestPersonWithResolverExtensionDirectiveByType>(
+                nameof(TestPersonWithResolverExtensionDirectiveByType.Name));
 
+            contextBuilder.AddSourceData(person);
+
+            var context = contextBuilder.CreateExecutionContext();
             await server.ExecuteField(context);
 
             var data = context.Result?.ToString();
@@ -54,10 +56,12 @@ namespace GraphQL.AspNet.Tests.Execution
                 LastName = "Smith",
             };
 
-            var context = server.CreateFieldExecutionContext<TestPersonWithResolverExtensionDirectiveByName>(
-                nameof(TestPersonWithResolverExtensionDirectiveByName.Name),
-                person);
+            var contextBuilder = server.CreateFieldContextBuilder<TestPersonWithResolverExtensionDirectiveByName>(
+                nameof(TestPersonWithResolverExtensionDirectiveByName.Name));
 
+            contextBuilder.AddSourceData(person);
+
+            var context = contextBuilder.CreateExecutionContext();
             await server.ExecuteField(context);
 
             var data = context.Result?.ToString();
@@ -80,10 +84,12 @@ namespace GraphQL.AspNet.Tests.Execution
                 LastName = "Smith",
             };
 
-            var context = server.CreateFieldExecutionContext<TestPersonWithResolverExtensionDirectiveByName>(
-                nameof(TestPersonWithResolverExtensionDirectiveByName.Name),
-                person);
+            var contextBuilder = server.CreateFieldContextBuilder<TestPersonWithResolverExtensionDirectiveByName>(
+                nameof(TestPersonWithResolverExtensionDirectiveByName.Name));
 
+            contextBuilder.AddSourceData(person);
+
+            var context = contextBuilder.CreateExecutionContext();
             await server.ExecuteField(context);
 
             var data = context.Result?.ToString();
@@ -104,9 +110,10 @@ namespace GraphQL.AspNet.Tests.Execution
                 Property2 = "prop 2",
             };
 
-            var context = server.CreateFieldExecutionContext<TestObjectWithAddFieldDirectiveByType>(
-                "property3",
-                obj);
+            var contextBuilder = server.CreateFieldContextBuilder<TestObjectWithAddFieldDirectiveByType>("property3")
+                .AddSourceData(obj);
+
+            var context = contextBuilder.CreateExecutionContext();
 
             await server.ExecuteField(context);
 

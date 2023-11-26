@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Internal
 {
     using System;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -18,6 +19,12 @@ namespace GraphQL.AspNet.Interfaces.Internal
     /// </summary>
     public interface IGraphArgumentTemplate : ISchemaItemTemplate
     {
+        /// <summary>
+        /// Creates a metadata object representing the parameter parsed by this template.
+        /// </summary>
+        /// <returns>IGraphFieldResolverParameterMetaData.</returns>
+        IGraphFieldResolverParameterMetaData CreateResolverMetaData();
+
         /// <summary>
         /// Gets the parent method this parameter belongs to.
         /// </summary>
@@ -37,18 +44,17 @@ namespace GraphQL.AspNet.Interfaces.Internal
         GraphTypeExpression TypeExpression { get; }
 
         /// <summary>
-        /// Gets a value indicating that this argument represents the resolved data item created
-        /// by the resolution of the parent field to this field. If true, this argument will not be available
-        /// on the object graph.
+        /// Gets a value indicating what role this argument plays in a resolver, whether it be part of the schema,
+        /// a parent resolved data value, an injected value from a service provider etc.
         /// </summary>
-        /// <value><c>true</c> if this instance is source data field; otherwise, <c>false</c>.</value>
-        GraphArgumentModifiers ArgumentModifiers { get; }
+        /// <value>The argument modifier value applied to this parameter.</value>
+        GraphArgumentModifiers ArgumentModifier { get; }
 
         /// <summary>
         /// Gets the name of the argument as its declared in the server side code.
         /// </summary>
         /// <value>The name of the declared argument.</value>
-        string DeclaredArgumentName { get; }
+        string ParameterName { get; }
 
         /// <summary>
         /// Gets the input type of this argument as its declared in the C# code base with no modifications or

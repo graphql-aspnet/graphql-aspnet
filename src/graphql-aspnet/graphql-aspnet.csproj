@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\library-common.props" />
 
   <PropertyGroup>
@@ -9,13 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Directives\ActionResults\**" />
+    <EmbeddedResource Remove="Directives\ActionResults\**" />
+    <None Remove="Directives\ActionResults\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
 
-
-  <!-- netstandard 2.0 -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <Compile Remove="ServerExtensions/MultipartRequests/**/*.*" />
-    <Compile Remove="Common/JsonNodes/**/*.*" />
-  </ItemGroup>
 </Project>

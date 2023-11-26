@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospectionTestData
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [Repeatable]
     public class ARepeatableDirective : GraphDirective

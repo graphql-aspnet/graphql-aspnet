@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.CommonHelpers;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     [GraphRoute("path0/path1")]
     [Description("Kitchen sinks are great")]

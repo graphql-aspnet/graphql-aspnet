@@ -10,8 +10,8 @@ namespace GraphQL.AspNet.Interfaces.Internal
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

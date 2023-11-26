@@ -20,8 +20,8 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Web;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using NSubstitute;

@@ -36,13 +36,13 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = Substitute.For<IEnumValue>();
             enumValue.Name.Returns("VALUE1");
-            enumValue.InternalValue.Returns(EnumValueTestEnum.Value1);
-            enumValue.InternalLabel.Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
             var enumValue2 = Substitute.For<IEnumValue>();
             enumValue2.Name.Returns("VALUE1");
-            enumValue2.InternalValue.Returns(EnumValueTestEnum.Value1);
-            enumValue.InternalLabel.Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue2.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner);
             collection.Add(enumValue);
@@ -69,8 +69,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = Substitute.For<IEnumValue>();
             enumValue.Name.Returns("VALUE1");
-            enumValue.InternalValue.Returns(EnumValueTestEnum.Value1);
-            enumValue.InternalLabel.Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner);
             collection.Add(enumValue);
@@ -81,6 +81,26 @@ namespace GraphQL.AspNet.Tests.Schemas
                 Assert.AreEqual(enumValue, result);
             else
                 Assert.IsNull(result);
+        }
+
+        [Test]
+        public void FindEnumValue_NullPassed_RetunsNull()
+        {
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ValidateObject(Arg.Any<object>()).Returns(true);
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
+
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
+
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
+
+            var result = collection.FindByEnumValue(null);
+            Assert.IsNull(result);
         }
 
         [TestCase("VALUE1", true)]
@@ -94,8 +114,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = Substitute.For<IEnumValue>();
             enumValue.Name.Returns("VALUE1");
-            enumValue.InternalValue.Returns(EnumValueTestEnum.Value1);
-            enumValue.InternalLabel.Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner);
             collection.Add(enumValue);
@@ -115,8 +135,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var enumValue = Substitute.For<IEnumValue>();
             enumValue.Name.Returns("VALUE1");
-            enumValue.InternalValue.Returns(EnumValueTestEnum.Value1);
-            enumValue.InternalLabel.Returns(EnumValueTestEnum.Value1.ToString());
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
 
             var collection = new EnumValueCollection(owner);
             collection.Add(enumValue);
@@ -135,6 +155,76 @@ namespace GraphQL.AspNet.Tests.Schemas
                         var item = collection[name];
                     });
             }
+        }
+
+        [TestCase("VALUE1", true)]
+        [TestCase("VALUE2", false)]
+        public void TryGetValue(string name, bool shouldBeFound)
+        {
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
+
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
+
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
+
+            var result = collection.TryGetValue(name, out var item);
+            if (shouldBeFound)
+            {
+                Assert.IsTrue(result);
+                Assert.IsNotNull(item);
+                Assert.AreEqual(enumValue, item);
+            }
+            else
+            {
+                Assert.IsFalse(result);
+                Assert.IsNull(item);
+            }
+        }
+
+        [Test]
+        public void Remove_ValidValueIsRemoved()
+        {
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
+
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
+
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
+
+            Assert.AreEqual(1, collection.Count);
+            collection.Remove("VALUE1");
+            Assert.AreEqual(0, collection.Count);
+        }
+
+        [Test]
+        public void Remove_InvalidValueIsIgnored()
+        {
+            var owner = Substitute.For<IEnumGraphType>();
+            owner.Name.Returns("graphType");
+            owner.ObjectType.Returns(typeof(EnumValueTestEnum));
+
+            var enumValue = Substitute.For<IEnumValue>();
+            enumValue.Name.Returns("VALUE1");
+            enumValue.DeclaredValue.Returns(EnumValueTestEnum.Value1);
+            enumValue.DeclaredLabel.Returns(EnumValueTestEnum.Value1.ToString());
+
+            var collection = new EnumValueCollection(owner);
+            collection.Add(enumValue);
+
+            Assert.AreEqual(1, collection.Count);
+            collection.Remove("VALUE1DDD");
+            Assert.AreEqual(1, collection.Count);
         }
     }
 }

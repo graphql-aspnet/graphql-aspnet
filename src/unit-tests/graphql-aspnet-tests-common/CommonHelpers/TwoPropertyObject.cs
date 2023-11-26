@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
+namespace GraphQL.AspNet.Tests.Common.CommonHelpers
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Tests.Framework.Interfaces;
+    using GraphQL.AspNet.Tests.Common.Interfaces;
 
     /// <summary>
     /// A represenstion of some data object with two properties of different value types.
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{Property1}|{Property2}";
+            return $"{this.Property1}|{this.Property2}";
         }
     }
 }

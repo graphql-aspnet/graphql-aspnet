@@ -40,7 +40,6 @@ namespace GraphQL.AspNet.Tests.Logging
 
             argTemplate.Name.Returns(name);
             argTemplate.TypeExpression.Returns(new GraphTypeExpression(name, wrappers));
-            argTemplate.ArgumentModifiers.Returns(GraphArgumentModifiers.None);
             argTemplate.ObjectType.Returns(concreteType);
             argTemplate.ParameterName.Returns(name);
 
@@ -48,14 +47,14 @@ namespace GraphQL.AspNet.Tests.Logging
         }
 
         private void ValidateModelDictionaryToLogEntry(
-            IGraphFieldResolverMethod graphMethod,
+            IGraphFieldResolverMetaData resolverMetaData,
             IGraphFieldRequest fieldRequest,
             InputModelStateDictionary dictionary,
             ActionMethodModelStateValidatedLogEntry logEntry)
         {
             Assert.AreEqual(fieldRequest.Id.ToString(), logEntry.PipelineRequestId);
-            Assert.AreEqual(graphMethod.Parent.ObjectType.FriendlyName(true), logEntry.ControllerName);
-            Assert.AreEqual(graphMethod.Name, logEntry.ActionName);
+            Assert.AreEqual(resolverMetaData.ParentInternalName, logEntry.ControllerName);
+            Assert.AreEqual(resolverMetaData.InternalName, logEntry.ActionName);
             Assert.AreEqual(dictionary.IsValid, logEntry.ModelDataIsValid);
 
             foreach (var kvp in dictionary)
@@ -111,7 +110,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 .AddType<LogTestController>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+            var builder = server.CreateFieldContextBuilder<LogTestController>(
                     nameof(LogTestController.ValidatableInputObject));
 
             var context = builder.CreateExecutionContext();
@@ -127,11 +126,11 @@ namespace GraphQL.AspNet.Tests.Logging
             var dictionary = generator.CreateStateDictionary(argumentToTest);
 
             var entry = new ActionMethodModelStateValidatedLogEntry(
-                builder.GraphMethod,
+                builder.ResolverMetaData,
                 context.Request,
                 dictionary);
 
-            this.ValidateModelDictionaryToLogEntry(builder.GraphMethod, context.Request, dictionary, entry);
+            this.ValidateModelDictionaryToLogEntry(builder.ResolverMetaData, context.Request, dictionary, entry);
         }
 
         [Test]
@@ -141,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 .AddType<LogTestController>()
                 .Build();
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+            var builder = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ValidatableInputObject));
 
             var context = builder.CreateExecutionContext();
@@ -157,11 +156,11 @@ namespace GraphQL.AspNet.Tests.Logging
             var dictionary = generator.CreateStateDictionary(argumentToTest);
 
             var entry = new ActionMethodModelStateValidatedLogEntry(
-                builder.GraphMethod,
+                builder.ResolverMetaData,
                 context.Request,
                 dictionary);
 
-            this.ValidateModelDictionaryToLogEntry(builder.GraphMethod, context.Request, dictionary, entry);
+            this.ValidateModelDictionaryToLogEntry(builder.ResolverMetaData, context.Request, dictionary, entry);
         }
     }
 }

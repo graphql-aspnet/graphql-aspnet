@@ -13,12 +13,12 @@ namespace GraphQL.AspNet.Execution.Variables
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.QueryPlans;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Resolvers;
 
     /// <summary>
     /// An object that attempts to convert the untyped keyvalue pairs (usually pulled from a json doc)

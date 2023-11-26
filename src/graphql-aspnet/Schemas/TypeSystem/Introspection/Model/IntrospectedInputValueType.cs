@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>

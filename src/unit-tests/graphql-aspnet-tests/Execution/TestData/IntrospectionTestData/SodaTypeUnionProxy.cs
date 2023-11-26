@@ -23,6 +23,8 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospectionTestData
 
         public bool Publish { get; set; } = true;
 
+        public string InternalName { get; } = "InternalSodaTypes";
+
         public Type MapType(Type runtimeObjectType)
         {
             return runtimeObjectType;

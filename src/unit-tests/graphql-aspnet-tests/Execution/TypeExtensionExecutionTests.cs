@@ -14,11 +14,11 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NSubstitute;
     using NUnit.Framework;
     using Microsoft.Extensions.DependencyInjection;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.BatchResolverTestData;
 
     [TestFixture]

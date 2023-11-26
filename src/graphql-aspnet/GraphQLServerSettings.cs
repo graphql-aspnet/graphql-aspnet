@@ -11,7 +11,6 @@ namespace GraphQL.AspNet
 {
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

@@ -27,7 +27,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.BOOLEAN, typeof(bool))
         {
             this.Description = "A boolean value (Expressed as: true | false)";
-            this.OtherKnownTypes = new TypeCollection(typeof(bool?));
         }
 
         /// <inheritdoc />
@@ -54,9 +53,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return Constants.QueryLanguage.NULL;
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.Boolean;

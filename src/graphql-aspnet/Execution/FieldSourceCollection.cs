@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>

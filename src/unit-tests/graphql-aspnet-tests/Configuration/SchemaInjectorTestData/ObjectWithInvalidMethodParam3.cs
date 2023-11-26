@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.Configuration.SchemaInjectorTestData
 {
     using System;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class ObjectWithInvalidMethodParam3
     {

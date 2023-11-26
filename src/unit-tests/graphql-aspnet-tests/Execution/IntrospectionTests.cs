@@ -18,10 +18,10 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData;
     using GraphQL.AspNet.Tests.Execution.TestData.IntrospectionTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -1165,7 +1165,7 @@ namespace GraphQL.AspNet.Tests.Execution
                       schemaItem != null
                         && schemaItem is IEnumValue ev
                         && ev.Parent.ObjectType == typeof(IntrospectableEnum)
-                        && Convert.ToInt32(ev.InternalValue) == (int)IntrospectableEnum.Value1);
+                        && Convert.ToInt32(ev.DeclaredValue) == (int)IntrospectableEnum.Value1);
             })
             .Build();
 
@@ -1345,13 +1345,10 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task SpecifiedByEarlyBound_PopulateSpecifiedByURL()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-
-            GraphQLProviders.ScalarProvider = new DefaultScalarGraphTypeProvider();
-            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(CustomSpecifiedScalar));
             var serverBuilder = new TestServerBuilder();
             var server = serverBuilder.AddGraphQL(o =>
             {
+                o.AddGraphType<CustomSpecifiedScalar>();
                 o.AddGraphType<ObjectWithCustomScalar>();
             })
             .Build();

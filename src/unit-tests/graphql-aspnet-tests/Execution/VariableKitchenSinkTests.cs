@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.VariableExecutionTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.Extensions.Hosting;
     using NSubstitute;
     using NUnit.Framework;

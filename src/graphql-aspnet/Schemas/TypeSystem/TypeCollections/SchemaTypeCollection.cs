@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -162,7 +161,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 return null;
 
             if (data is Type type)
-                return this.FindGraphType(type, TypeKind.OBJECT);
+            {
+                this.DenySearchForListAndKVP(type);
+                return _concreteTypes.FindGraphType(type, null);
+            }
 
             if (data is VirtualResolvedObject virtualFieldObject)
             {
@@ -251,10 +253,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             if (concreteType == null)
                 return;
 
-            if (GraphQLProviders.ScalarProvider.IsScalar(concreteType))
-                return;
-
-            if (concreteType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(concreteType))
+            if (concreteType != typeof(string) && Validation.IsCastable(concreteType, typeof(IEnumerable)))
             {
                 throw new GraphTypeDeclarationException(
                     $"Schema Type Collection search, graph type mismatch, {concreteType.FriendlyName()}. Collections and KeyValuePair enumerable types " +

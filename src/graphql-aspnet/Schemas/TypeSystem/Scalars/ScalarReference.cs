@@ -41,11 +41,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             reference.InstanceType = instanceType;
             reference.PrimaryType = graphType.ObjectType;
 
-            if (graphType.OtherKnownTypes.Count > 0)
-                reference.OtherKnownTypes = graphType.OtherKnownTypes.ToList();
-            else
-                reference.OtherKnownTypes = new List<Type>();
-
             reference.Name = graphType.Name;
             return reference;
         }
@@ -69,13 +64,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         /// </summary>
         /// <value>The type of the primary.</value>
         public Type PrimaryType { get; private set; }
-
-        /// <summary>
-        /// Gets a list of known alternate .NET types that can be
-        /// handled by this scalar (e.g. int?, long? etc.)
-        /// </summary>
-        /// <value>The other known types.</value>
-        public IReadOnlyList<Type> OtherKnownTypes { get; private set; }
 
         /// <summary>
         /// Gets the name of this scalar as it has been declared.

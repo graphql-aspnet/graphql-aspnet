@@ -12,7 +12,8 @@ namespace GraphQL.AspNet.Tests.Common
     using System.Collections.Generic;
     using System.Text.Json.Nodes;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Common.JsonNodes;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]

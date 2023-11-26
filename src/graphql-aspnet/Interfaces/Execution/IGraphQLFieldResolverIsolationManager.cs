@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// A manager that will allow GraphQL field resolvers to take isolated control

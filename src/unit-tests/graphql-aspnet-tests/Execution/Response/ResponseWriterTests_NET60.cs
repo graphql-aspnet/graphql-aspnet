@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution.Response
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using NSubstitute;
     using NUnit.Framework;
 

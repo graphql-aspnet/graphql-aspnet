@@ -27,7 +27,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             : base(Constants.ScalarNames.UINT, typeof(uint))
         {
             this.Description = $"A 32-bit, unsigned integer. (Min: {uint.MinValue}, Max: {uint.MaxValue})";
-            this.OtherKnownTypes = new TypeCollection(typeof(uint?));
         }
 
         /// <inheritdoc />
@@ -38,9 +37,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             throw new UnresolvedValueException(data, typeof(uint));
         }
-
-        /// <inheritdoc />
-        public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
         public override ScalarValueType ValueType => ScalarValueType.Number;

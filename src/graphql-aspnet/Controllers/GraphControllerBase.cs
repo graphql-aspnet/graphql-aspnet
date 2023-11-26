@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Controllers
 {
     using System;
+    using System.Data.SqlTypes;
     using System.Reflection;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Web;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -34,60 +36,49 @@ namespace GraphQL.AspNet.Controllers
         where TRequest : class, IDataRequest
     {
         private SchemaItemResolutionContext<TRequest> _schemaItemContext;
-        private IGraphFieldResolverMethod _action;
+        private IGraphFieldResolverMetaData _resolverMetaData;
 
         /// <summary>
         /// Invoke the specified action method as an asynchronous operation.
         /// </summary>
-        /// <param name="actionToInvoke">The action to invoke.</param>
+        /// <param name="resolverMetadata">The metadata describing the method on this controller to invoke.</param>
         /// <param name="schemaItemContext">The invocation context to process.</param>
         /// <returns>Task&lt;System.Object&gt;.</returns>
         [GraphSkip]
         internal virtual async Task<object> InvokeActionAsync(
-            IGraphFieldResolverMethod actionToInvoke,
+            IGraphFieldResolverMetaData resolverMetadata,
             SchemaItemResolutionContext<TRequest> schemaItemContext)
         {
             // deconstruct the context for processing
             Validation.ThrowIfNull(schemaItemContext, nameof(schemaItemContext));
             _schemaItemContext = schemaItemContext;
-            _action = actionToInvoke;
+            _resolverMetaData = resolverMetadata;
 
             // ensure a field request is available
             var fieldRequest = schemaItemContext?.Request;
             Validation.ThrowIfNull(fieldRequest, nameof(fieldRequest));
 
-            _schemaItemContext.Logger?.ActionMethodInvocationRequestStarted(_action, this.Request);
+            _schemaItemContext.Logger?.ActionMethodInvocationRequestStarted(_resolverMetaData, this.Request);
 
             if (_schemaItemContext.QueryRequest is IQueryExecutionWebRequest webRequest)
                 this.HttpContext = webRequest.HttpContext;
 
-            if (_action?.Method == null)
+            if (_resolverMetaData?.Method == null)
             {
                 return new InternalServerErrorGraphActionResult(
-                    $"The definition for field '{this.GetType().Name}' defined no graph action to execute. Operation failed.");
+                    $"The definition for field '{this.GetType().Name}' defined no resolver to execute. Operation failed.");
             }
 
             try
             {
                 var modelGenerator = new ModelStateGenerator(schemaItemContext.ServiceProvider);
-                this.ModelState = modelGenerator.CreateStateDictionary(schemaItemContext.Arguments);
+                this.ModelState = modelGenerator.CreateStateDictionary(schemaItemContext.ExecutionSuppliedArguments);
 
-                _schemaItemContext.Logger?.ActionMethodModelStateValidated(_action, this.Request, this.ModelState);
+                _schemaItemContext.Logger?.ActionMethodModelStateValidated(_resolverMetaData, this.Request, this.ModelState);
 
-                // ensure this controller type is or inherits from the controller type where the method is actually
-                // declared as the method will be invoked aganst this instance.
-                if (!Validation.IsCastable(this.GetType(), _action.Method.DeclaringType))
-                {
-                    throw new TargetException($"Unable to invoke action '{_action.Route.Path}' on controller '{this.GetType().FriendlyName()}'. The controller " +
-                                              "does not own the method.");
-                }
-
-                var invoker = InstanceFactory.CreateInstanceMethodInvoker(_action.Method);
-                var invocationParameters = schemaItemContext.Arguments.PrepareArguments(_action);
-
-                var controllerRef = this as object;
-                var invokeReturn = invoker(ref controllerRef, invocationParameters);
-                if (_action.IsAsyncField)
+                var invocationParameters = _schemaItemContext.ExecutionSuppliedArguments.PrepareArguments(_resolverMetaData);
+                var invokeReturn = this.CreateAndInvokeAction(_resolverMetaData, invocationParameters);
+                if (_resolverMetaData.IsAsyncField)
                 {
                     if (invokeReturn is Task task)
                     {
@@ -95,26 +86,26 @@ namespace GraphQL.AspNet.Controllers
                         if (task.IsFaulted)
                             throw task.UnwrapException();
 
-                        invokeReturn = task.ResultOfTypeOrNull(_action.ExpectedReturnType);
+                        invokeReturn = task.ResultOfTypeOrNull(_resolverMetaData.ExpectedReturnType);
                     }
                     else
                     {
                         // given all the checking and parsing this should be impossible, but just in case
                         invokeReturn = new InternalServerErrorGraphActionResult(
-                            $"The action '{_action.Route.Path}' is defined " +
+                            $"The action '{_resolverMetaData.InternalName}' on controller '{_resolverMetaData.ParentInternalName}' is defined " +
                             $"as asyncronous but it did not return a {typeof(Task)}.");
                     }
                 }
 
-                _schemaItemContext.Logger?.ActionMethodInvocationCompleted(_action, this.Request, invokeReturn);
+                _schemaItemContext.Logger?.ActionMethodInvocationCompleted(_resolverMetaData, this.Request, invokeReturn);
                 return invokeReturn;
             }
             catch (TargetInvocationException ti)
             {
                 var innerException = ti.InnerException ?? ti;
-                _schemaItemContext.Logger?.ActionMethodInvocationException(_action, this.Request, innerException);
+                _schemaItemContext.Logger?.ActionMethodInvocationException(_resolverMetaData, this.Request, innerException);
 
-                return new InternalServerErrorGraphActionResult(_action, innerException);
+                return new InternalServerErrorGraphActionResult(_resolverMetaData, innerException);
             }
             catch (Exception ex)
             {
@@ -124,16 +115,67 @@ namespace GraphQL.AspNet.Controllers
                     // might happen if a method was declared differently than the actual call signature
                     case TargetException _:
                     case TargetParameterCountException _:
-                        _schemaItemContext.Logger?.ActionMethodInvocationException(_action, this.Request, ex);
-                        return new RouteNotFoundGraphActionResult(_action, ex);
+                        _schemaItemContext.Logger?.ActionMethodInvocationException(_resolverMetaData, this.Request, ex);
+                        return new RouteNotFoundGraphActionResult(_resolverMetaData, ex);
 
                     default:
 
                         // total failure by the user's action code.
                         // record and bubble
-                        _schemaItemContext.Logger?.ActionMethodUnhandledException(_action, this.Request, ex);
+                        _schemaItemContext.Logger?.ActionMethodUnhandledException(_resolverMetaData, this.Request, ex);
                         throw;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Invoke the actual C# method declared by the <paramref name="resolverMetaData"/>
+        /// using this controller instance as the target object of the invocation.
+        /// </summary>
+        /// <param name="resolverMetaData">The resolver declaration that needs to be executed.</param>
+        /// <param name="invocationArguments">The realized set of arguments that need
+        /// to be passed to the invocable method instance.</param>
+        /// <returns>The exact return value from the invoked resolver.</returns>
+        protected virtual object CreateAndInvokeAction(IGraphFieldResolverMetaData resolverMetaData, object[] invocationArguments)
+        {
+            switch (resolverMetaData.DefinitionSource)
+            {
+                case ItemSource.DesignTime:
+                    if (!Validation.IsCastable(this.GetType(), resolverMetaData.Method.DeclaringType))
+                    {
+                        throw new TargetException($"Unable to invoke action '{_resolverMetaData.InternalName}' on controller '{this.GetType().FriendlyName()}'. The controller " +
+                                                  "does not own the method.");
+                    }
+
+                    if (resolverMetaData.Method.IsStatic)
+                    {
+                        throw new TargetException($"Unable to invoke action '{_resolverMetaData.InternalName}' on controller '{this.GetType().FriendlyName()}'. The method " +
+                                                  "is static and cannot be directly invoked on this controller instance.");
+                    }
+
+                    var ctrlInvoker = InstanceFactory.CreateInstanceMethodInvoker(resolverMetaData.Method);
+                    var controllerRef = this as object;
+                    return ctrlInvoker(ref controllerRef, invocationArguments);
+
+                case ItemSource.Runtime:
+                    // minimal api resolvers are allowed to be static since there is no
+                    // extra context to setup or make available such as 'this.User' etc.
+                    if (resolverMetaData.Method.IsStatic)
+                    {
+                        var staticInvoker = InstanceFactory.CreateStaticMethodInvoker(resolverMetaData.Method);
+                        return staticInvoker(invocationArguments);
+                    }
+                    else
+                    {
+                        var instanceInvoker = InstanceFactory.CreateInstanceMethodInvoker(resolverMetaData.Method);
+                        var instance = InstanceFactory.CreateInstance(resolverMetaData.Method.DeclaringType);
+                        return instanceInvoker(ref instance, invocationArguments);
+                    }
+
+                default:
+                    throw new TargetException(
+                        $"Unable to execute the target resolver {resolverMetaData.InternalName}. " +
+                        $"Invalid or unsupported source location '{_resolverMetaData.DefinitionSource}'.");
             }
         }
 

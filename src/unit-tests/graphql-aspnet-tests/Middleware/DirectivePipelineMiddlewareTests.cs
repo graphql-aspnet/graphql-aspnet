@@ -16,8 +16,8 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Middleware.DirectiveMiddlewareTestData;
     using NUnit.Framework;
 
@@ -37,12 +37,13 @@ namespace GraphQL.AspNet.Tests.Middleware
               .AddType<PipelineTestDirective>()
               .Build();
 
-            var context = server.CreateDirectiveExecutionContext<PipelineTestDirective>(
+            var context = server.CreateDirectiveContextBuilder<PipelineTestDirective>(
                 DirectiveLocation.OBJECT,
                 new TwoPropertyObject(),
                 DirectiveInvocationPhase.SchemaGeneration,
                 SourceOrigin.None,
-                new object[] { 5 }); // directive requires 2 argument, only 1 supplied
+                new object[] { 5 }) // directive requires 2 argument, only 1 supplied
+                .CreateExecutionContext();
 
             Assert.IsTrue(context.IsValid);
 
@@ -62,12 +63,13 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             var testObject = new TwoPropertyObject();
 
-            var context = server.CreateDirectiveExecutionContext<PipelineTestDirective>(
+            var context = server.CreateDirectiveContextBuilder<PipelineTestDirective>(
                 DirectiveLocation.OBJECT,
                 testObject,
                 DirectiveInvocationPhase.SchemaGeneration,
                 SourceOrigin.None,
-                new object[] { "testValue", 5 });
+                new object[] { "testValue", 5 })
+                .CreateExecutionContext();
 
             Assert.IsTrue(context.IsValid);
 

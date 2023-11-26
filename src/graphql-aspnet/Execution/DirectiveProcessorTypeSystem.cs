@@ -59,22 +59,31 @@ namespace GraphQL.AspNet.Execution
         /// using standard directive pipeline.
         /// </summary>
         /// <param name="schema">The schema to apply directives too.</param>
-        public void ApplyDirectives(TSchema schema)
+        /// <returns>The total number of directives applied across the entire schema.</returns>
+        public int ApplyDirectives(TSchema schema)
         {
+            Validation.ThrowIfNull(schema, nameof(schema));
+
             // all schema items
-            var anyDirectivesApplied = false;
+            var totalApplied = 0;
             foreach (var item in schema.AllSchemaItems())
-                anyDirectivesApplied = this.ApplyDirectivesToItem(schema, item) || anyDirectivesApplied;
+            {
+                totalApplied += this.ApplyDirectivesToItem(schema, item);
+            }
+
+            return totalApplied;
         }
 
         /// <summary>
-        /// Applies the directives to item.
+        /// Applies queued directives to item.
         /// </summary>
-        /// <param name="schema">The schema.</param>
-        /// <param name="item">The item.</param>
-        private bool ApplyDirectivesToItem(TSchema schema, ISchemaItem item)
+        /// <param name="schema">The schema the <paramref name="item"/> belongs to.</param>
+        /// <param name="item">The item to apply directives on.</param>
+        /// <returns>The total number of directives applied to  <paramref name="item"/>.</returns>
+        private int ApplyDirectivesToItem(TSchema schema, ISchemaItem item)
         {
             var invokedDirectives = new HashSet<IDirective>();
+
             foreach (var appliedDirective in item.AppliedDirectives)
             {
                 var scopedProvider = _serviceProvider.CreateScope();
@@ -207,7 +216,7 @@ namespace GraphQL.AspNet.Execution
                 }
             }
 
-            return item.AppliedDirectives.Count > 0;
+            return item.AppliedDirectives.Count;
         }
 
         private IInputArgumentCollection GatherInputArguments(IDirective targetDirective, object[] arguments)

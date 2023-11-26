@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData
 {
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class NullableFieldArgumentTestController : GraphIdController
     {

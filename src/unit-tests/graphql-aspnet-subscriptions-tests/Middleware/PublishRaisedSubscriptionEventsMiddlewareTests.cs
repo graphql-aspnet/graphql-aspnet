@@ -19,8 +19,8 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.SubscriptionServer;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]

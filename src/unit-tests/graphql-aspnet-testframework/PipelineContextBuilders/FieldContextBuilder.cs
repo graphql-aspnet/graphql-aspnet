@@ -10,22 +10,23 @@
 namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
     using System;
+    using System.Threading;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Security;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using NSubstitute;
 
     /// <summary>
@@ -41,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         private readonly IFieldDocumentPart _mockFieldDocumentPart;
         private readonly IGraphMessageCollection _messageCollection;
         private readonly IInputArgumentCollection _arguments;
-
+        private readonly IGraphFieldResolverMetaData _mockResolverMetaData;
         private IUserSecurityContext _securityContext;
 
         /// <summary>
@@ -51,13 +52,13 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <param name="userSecurityContext">The user security context.</param>
         /// <param name="graphField">The graph field.</param>
         /// <param name="schema">The schema.</param>
-        /// <param name="graphMethod">The metadata describing the method/functon to be invoked by a resolver.</param>
+        /// <param name="resolverMetadata">The metadata describing the method/functon to be invoked by a resolver.</param>
         public FieldContextBuilder(
             IServiceProvider serviceProvider,
             IUserSecurityContext userSecurityContext,
             IGraphField graphField,
             ISchema schema,
-            IGraphFieldResolverMethod graphMethod)
+            IGraphFieldResolverMetaData resolverMetadata)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _graphField = Validation.ThrowIfNullOrReturn(graphField, nameof(graphField));
@@ -69,10 +70,13 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 
             Type expectedInputType = null;
 
-            if (!Validation.IsCastable<GraphDirective>(graphMethod.Parent.ObjectType)
-                && !Validation.IsCastable<GraphController>(graphMethod.Parent.ObjectType))
+            if (!Validation.IsCastable<GraphDirective>(resolverMetadata.ParentObjectType)
+                && !Validation.IsCastable<GraphController>(resolverMetadata.ParentObjectType))
             {
-                expectedInputType = graphMethod.Parent.ObjectType;
+                if (graphField.Parent is IInterfaceGraphType iif)
+                    expectedInputType = iif.ObjectType;
+                else if (graphField.Parent is IObjectGraphType ogt)
+                    expectedInputType = ogt.ObjectType;
             }
 
             _mockFieldDocumentPart = Substitute.For<IFieldDocumentPart>();
@@ -99,17 +103,15 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockRequest.Field.Returns(_graphField);
             _mockRequest.InvocationContext.Returns(_mockInvocationContext);
 
-            this.GraphMethod = Substitute.For<IGraphFieldResolverMethod>();
-            this.GraphMethod.Parent.Returns(graphMethod.Parent);
-            this.GraphMethod.ObjectType.Returns(graphMethod.ObjectType);
-            this.GraphMethod.ExpectedReturnType.Returns(graphMethod.ExpectedReturnType);
-            this.GraphMethod.Method.Returns(graphMethod.Method);
-            this.GraphMethod.IsAsyncField.Returns(graphMethod.IsAsyncField);
-            this.GraphMethod.Name.Returns(graphMethod.Name);
-            this.GraphMethod.InternalFullName.Returns(graphMethod.InternalFullName);
-            this.GraphMethod.InternalName.Returns(graphMethod.InternalName);
-            this.GraphMethod.Route.Returns(graphMethod.Route);
-            this.GraphMethod.Arguments.Returns(graphMethod.Arguments);
+            _mockResolverMetaData = Substitute.For<IGraphFieldResolverMetaData>();
+            _mockResolverMetaData.ParentInternalName.Returns(resolverMetadata.ParentInternalName);
+            _mockResolverMetaData.ParentObjectType.Returns(resolverMetadata.ParentObjectType);
+            _mockResolverMetaData.ExpectedReturnType.Returns(resolverMetadata.ExpectedReturnType);
+            _mockResolverMetaData.Method.Returns(resolverMetadata.Method);
+            _mockResolverMetaData.IsAsyncField.Returns(resolverMetadata.IsAsyncField);
+            _mockResolverMetaData.InternalName.Returns(resolverMetadata.InternalName);
+            _mockResolverMetaData.Parameters.Returns(resolverMetadata.Parameters);
+            _mockResolverMetaData.DefinitionSource.Returns(resolverMetadata.DefinitionSource);
         }
 
         /// <summary>
@@ -142,7 +144,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <summary>
         /// Adds a value for a given input argument to this field. It is assumed the value will cast correctly.
         /// </summary>
-        /// <param name="argumentName">Name of the input field, as declared in the schema, on the field being mocked.</param>
+        /// <param name="argumentName">Name of the argument, as declared in the schema, on the field.</param>
         /// <param name="value">A fully resolved value to use.</param>
         /// <returns>MockFieldRequest.</returns>
         public FieldContextBuilder AddInputArgument(string argumentName, object value)
@@ -155,9 +157,9 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         }
 
         /// <summary>
-        /// alters the security context to be different than that provided by the server that created this builder.
+        /// Alters the security context to be different than that provided by the test server that created this builder.
         /// </summary>
-        /// <param name="securityContext">The security context.</param>
+        /// <param name="securityContext">The user security context.</param>
         /// <returns>MockFieldRequest.</returns>
         public FieldContextBuilder AddSecurityContext(IUserSecurityContext securityContext)
         {
@@ -182,9 +184,9 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         }
 
         /// <summary>
-        /// Creates an authorization context to validate the field request this builder is creating.
+        /// Creates an authorization context that can be used to test authorization middleware components.
         /// </summary>
-        /// <returns>GraphFieldAuthorizationContext.</returns>
+        /// <returns>SchemaItemSecurityChallengeContext.</returns>
         public SchemaItemSecurityChallengeContext CreateSecurityContext()
         {
             var parent = this.CreateFakeParentMiddlewareContext();
@@ -196,7 +198,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         }
 
         /// <summary>
-        /// Creates this instance.
+        /// Creates an execution context that can be used to test field middleware pipeline contents.
         /// </summary>
         /// <returns>GraphFieldExecutionContext.</returns>
         public GraphFieldExecutionContext CreateExecutionContext()
@@ -208,8 +210,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         }
 
         /// <summary>
-        /// Creates the resolution context capable of being acted on directly by a resolver, as opposed to being
-        /// processed through a pipeline.
+        /// Creates the resolution context that can be passed to a resolver to test field resolution.
         /// </summary>
         /// <returns>FieldResolutionContext.</returns>
         public FieldResolutionContext CreateResolutionContext()
@@ -222,13 +223,17 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
                 context.Messages,
                 out var executionArguments);
 
-            executionArguments = executionArguments.ForContext(context);
-
             return new FieldResolutionContext(
+                this.ServiceProvider,
+                context.Session,
                 _schema,
-                this.CreateFakeParentMiddlewareContext(),
+                context.QueryRequest,
                 this.FieldRequest,
-                executionArguments);
+                executionArguments,
+                context.Messages,
+                context.Logger,
+                context.User,
+                CancellationToken.None);
         }
 
         /// <summary>
@@ -249,6 +254,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// against the testserver.
         /// </summary>
         /// <value>The graph method.</value>
-        public IGraphFieldResolverMethod GraphMethod { get; }
+        public IGraphFieldResolverMetaData ResolverMetaData => _mockResolverMetaData;
     }
 }

@@ -16,11 +16,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Resolvers;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
 
@@ -66,6 +66,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.TypeExpression = new GraphTypeExpression(parentTypeName);
             this.Arguments = new GraphFieldArgumentCollection(this);
             this.Resolver = new GraphControllerRouteFieldResolver(new VirtualResolvedObject(this.TypeExpression.TypeName));
+            this.InternalName = $"VirtualField_{this.Name}";
 
             // fields made from controller route parameters have no policies directly unto themselves
             // any controller class level policies are individually added to fields they declare
@@ -155,9 +156,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public string DepreciationReason { get; set; }
 
         /// <inheritdoc />
-        public bool IsLeaf => false;
-
-        /// <inheritdoc />
         public bool IsDeprecated { get; set; }
 
         /// <inheritdoc />
@@ -192,5 +190,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public string InternalName { get; }
     }
 }

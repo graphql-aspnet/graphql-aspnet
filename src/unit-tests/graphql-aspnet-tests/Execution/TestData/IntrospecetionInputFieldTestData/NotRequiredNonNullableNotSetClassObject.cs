@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospecetionInputFieldTestDa
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class NotRequiredNonNullableNotSetClassObject
     {

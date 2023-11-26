@@ -24,7 +24,6 @@ namespace GraphQL.AspNet.Tests.Directives
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.Extensions.DependencyInjection;
     using NSubstitute;
     using NUnit.Framework;
@@ -33,6 +32,7 @@ namespace GraphQL.AspNet.Tests.Directives
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]

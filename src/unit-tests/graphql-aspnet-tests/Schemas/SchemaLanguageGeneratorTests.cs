@@ -19,8 +19,9 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.QueryLanguageTestData;
     using NUnit.Framework;
 
@@ -234,8 +235,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // ensure all scalars represented
             _unUsedScalarTypes = new List<Type>();
-            var scalarProvider = new DefaultScalarGraphTypeProvider();
-            foreach (var type in scalarProvider.ConcreteTypes)
+            foreach (var type in GlobalTypes.ScalarConcreteTypes)
             {
                 if (Validation.IsNullableOfT(type))
                     continue;

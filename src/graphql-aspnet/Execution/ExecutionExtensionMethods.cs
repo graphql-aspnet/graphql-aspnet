@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Execution
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Resolvers;
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 
     /// <summary>

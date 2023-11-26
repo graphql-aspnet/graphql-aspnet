@@ -14,8 +14,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Interfaces;
-    using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
-    using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
@@ -28,8 +26,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void AddMultipartRequestSupport_DoesNotThrowExceptionWhenNotPassingAction()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var options = new SchemaOptions<GraphSchema>(new ServiceCollection());
             options.AddMultipartRequestSupport();
         }
@@ -37,8 +33,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
         [Test]
         public void AddMultipartRequestSupport_ProvidedActionMethodIsCalled()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var wasCalled = false;
 
             var collection = new ServiceCollection();
@@ -62,16 +56,12 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
                 .SingleOrDefault(x =>
                     x.ServiceType == typeof(IFileUploadScalarValueMaker)));
 
-            GraphQLProviders.ScalarProvider.IsScalar(typeof(FileUpload));
-
             Assert.IsTrue(wasCalled);
         }
 
         [Test]
         public void AddMultipartRequestSupport_OnMultipleSchemas_RegistersGlobalEntitiesOnce()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint(true);
-
             var wasCalled1 = false;
             var collection = new ServiceCollection();
 
@@ -111,8 +101,6 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests
             Assert.IsNotNull(collection
                 .SingleOrDefault(x =>
                     x.ServiceType == typeof(IFileUploadScalarValueMaker)));
-
-            GraphQLProviders.ScalarProvider.IsScalar(typeof(FileUpload));
 
             Assert.IsTrue(wasCalled2);
         }

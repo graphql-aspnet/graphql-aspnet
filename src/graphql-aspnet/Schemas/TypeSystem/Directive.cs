@@ -12,9 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
@@ -31,6 +29,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="Directive" /> class.
         /// </summary>
         /// <param name="name">The name of the directive as it appears in the schema.</param>
+        /// <param name="internalName">The internal name of the directive as defined in the source code.</param>
         /// <param name="locations">The locations where this directive is valid.</param>
         /// <param name="directiveType">The concrete type of the directive.</param>
         /// <param name="route">The route path that identifies this directive.</param>
@@ -41,6 +40,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// that must be passed before this directive can be invoked.</param>
         public Directive(
             string name,
+            string internalName,
             DirectiveLocation locations,
             Type directiveType,
             SchemaItemPath route,
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Publish = true;
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ObjectType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
-            this.InternalName = this.ObjectType.FriendlyName();
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
 
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
             this.IsRepeatable = isRepeatable;

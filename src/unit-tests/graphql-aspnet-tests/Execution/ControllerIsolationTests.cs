@@ -11,9 +11,9 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.TestData.ControllerIsolationTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]

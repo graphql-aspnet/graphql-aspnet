@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.ServerExtensions.MutlipartRequests.TestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.ServerExtensions.MultipartRequests.Model;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class MultiPartFileController : GraphController
     {

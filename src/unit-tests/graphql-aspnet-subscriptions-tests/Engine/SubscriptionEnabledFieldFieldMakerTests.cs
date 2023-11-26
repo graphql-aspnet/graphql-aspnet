@@ -10,12 +10,13 @@
 namespace GraphQL.AspNet.Tests.Engine
 {
     using System.Linq;
-    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeMakers;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Schemas.TypeMakers;
     using GraphQL.AspNet.Tests.Engine.TestData;
+    using GraphQL.AspNet.Tests.Framework;
     using NSubstitute;
     using NUnit.Framework;
 
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Engine
         public void SubscriptionActionField_TransfersDirectives()
         {
             var mockController = Substitute.For<IGraphControllerTemplate>();
-            mockController.InternalFullName.Returns(typeof(SubscriptionTestController).Name);
+            mockController.InternalName.Returns(typeof(SubscriptionTestController).Name);
             mockController.Route.Returns(new SchemaItemPath("path0"));
             mockController.Name.Returns("path0");
             mockController.ObjectType.Returns(typeof(SubscriptionTestController));
@@ -38,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Engine
 
             var schema = new TestServerBuilder().Build().Schema;
 
-            var maker = new SubscriptionEnabledGraphFieldMaker(schema);
+            var maker = new SubscriptionEnabledGraphFieldMaker(schema, new GraphArgumentMaker(schema));
 
             var field = maker.CreateField(actionTemplate).Field;
 

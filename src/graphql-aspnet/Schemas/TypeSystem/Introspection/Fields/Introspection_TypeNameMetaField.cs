@@ -14,8 +14,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -37,8 +37,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
         public Introspection_TypeNameMetaField(string graphTypeName)
             : base(
                 Constants.ReservedNames.TYPENAME_FIELD,
+                nameof(Introspection_TypeNameMetaField),
                 new GraphTypeExpression(Constants.ScalarNames.STRING, MetaGraphTypes.IsNotNull),
-                FIELD_PATH)
+                FIELD_PATH,
+                typeof(string),
+                typeof(string),
+                FieldResolutionMode.PerSourceItem)
         {
             Validation.ThrowIfNull(graphTypeName, nameof(graphTypeName));
             this.UpdateResolver(new FunctionGraphFieldResolver<object, string>((obj) => graphTypeName.AsCompletedTask()), FieldResolutionMode.PerSourceItem);

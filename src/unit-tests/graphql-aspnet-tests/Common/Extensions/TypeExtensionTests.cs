@@ -15,9 +15,9 @@ namespace GraphQL.AspNet.Tests.Common.Extensions
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Common.Extensions.AttributeTestData;
     using GraphQL.AspNet.Tests.Common.Extensions.ReflectionExtensionTestData;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.ThirdPartyDll;
     using GraphQL.AspNet.Tests.ThirdPartyDll.Model;
     using NUnit.Framework;

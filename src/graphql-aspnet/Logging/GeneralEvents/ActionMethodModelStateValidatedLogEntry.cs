@@ -32,17 +32,17 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         /// <param name="request">The request being executed on the method.</param>
         /// <param name="modelState">the model dictionary created by the controller.</param>
         public ActionMethodModelStateValidatedLogEntry(
-            IGraphFieldResolverMethod method,
+            IGraphFieldResolverMetaData method,
             IDataRequest request,
             InputModelStateDictionary modelState)
             : base(LogEventIds.ControllerModelValidated)
         {
             this.PipelineRequestId = request?.Id.ToString();
-            this.ControllerName = method?.Parent?.ObjectType?.FriendlyName(true) ?? method?.Parent?.Name;
-            this.ActionName = method?.Name;
-            this.FieldPath = method?.Route?.Path;
+            this.ControllerName = method?.ParentInternalName;
+            this.ActionName = method?.InternalName;
             this.ModelDataIsValid = modelState?.IsValid;
-            _shortControllerName = method?.Parent?.ObjectType?.FriendlyName() ?? method?.Parent?.Name;
+
+            _shortControllerName = method?.ParentInternalName;
             this.ModelItems = null;
             if (modelState?.Values != null && modelState.Values.Any())
             {
@@ -88,16 +88,6 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
         {
             get => this.GetProperty<string>(LogPropertyNames.ACTION_NAME);
             private set => this.SetProperty(LogPropertyNames.ACTION_NAME, value);
-        }
-
-        /// <summary>
-        /// Gets the path, in the target schema, of the action.
-        /// </summary>
-        /// <value>The action name.</value>
-        public string FieldPath
-        {
-            get => this.GetProperty<string>(LogPropertyNames.SCHEMA_ITEM_PATH);
-            private set => this.SetProperty(LogPropertyNames.SCHEMA_ITEM_PATH, value);
         }
 
         /// <summary>

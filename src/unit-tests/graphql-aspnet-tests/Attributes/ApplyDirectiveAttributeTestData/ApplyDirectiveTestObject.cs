@@ -8,7 +8,7 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Attributes.ApplyDirectiveAttributeTestData
 {
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     [InheritedApplyDirective(typeof(TwoPropertyObject), "arg1")]
     internal class ApplyDirectiveTestObject

@@ -9,9 +9,11 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A resolver that can process requests to invoke a directive and produce a result.
@@ -26,5 +28,13 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="cancelToken">The cancel token monitoring the execution of a graph request.</param>
         /// <returns>Task.</returns>
         Task ResolveAsync(DirectiveResolutionContext directiveRequest, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Gets the metadata set that describes this instance's implementation in the source code. The resolver will
+        /// use this data to properly instantiate and invoke the configured object methods, Func, dynamic delegates or properties
+        /// as appropriate.
+        /// </summary>
+        /// <value>The resolver's metadata collection.</value>
+        IReadOnlyDictionary<DirectiveLocation, IGraphFieldResolverMetaData> MetaData { get; }
     }
 }

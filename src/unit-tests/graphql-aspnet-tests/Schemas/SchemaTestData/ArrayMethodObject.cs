@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
 {
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class ArrayMethodObject
     {

@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
 {
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
 
     /// <summary>
     /// Describes a single field in the type system. This describes how a given field is to be represented with its
@@ -41,13 +41,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// <param name="parent">The new parent item that will own this new field.</param>
         /// <returns>IGraphField.</returns>
         IGraphField Clone(IGraphType parent);
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is a leaf field; one capable of generating
-        /// a real data item vs. generating data to be used in down stream projections.
-        /// </summary>
-        /// <value><c>true</c> if this instance is a leaf field; otherwise, <c>false</c>.</value>
-        bool IsLeaf { get; }
 
         /// <summary>
         /// <para>Gets an object that will perform some operation against an execution

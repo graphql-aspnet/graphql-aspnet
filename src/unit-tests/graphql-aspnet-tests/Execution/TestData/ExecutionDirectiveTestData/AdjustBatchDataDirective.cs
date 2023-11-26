@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionDirectiveTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
 
     public class AdjustBatchDataDirective : GraphDirective
     {

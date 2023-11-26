@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using System;
+    using System.Security.Claims;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -114,6 +115,9 @@ namespace GraphQL.AspNet.Tests.Execution
             var metrics = Substitute.For<IQueryExecutionMetrics>();
             var securityContext = Substitute.For<IUserSecurityContext>();
             var schema = new GraphSchema();
+            var user = new ClaimsPrincipal();
+            var session = new QuerySession();
+            var messages = new GraphMessageCollection();
 
             parentContext.QueryRequest.Returns(queryRequest);
             parentContext.ServiceProvider.Returns(serviceProvider);
@@ -127,18 +131,24 @@ namespace GraphQL.AspNet.Tests.Execution
             var sourceFieldCollection = new FieldSourceCollection();
 
             var context = new DirectiveResolutionContext(
+                serviceProvider,
+                session,
                 schema,
-                parentContext,
+                queryRequest,
                 directiveRequest,
-                args);
+                args,
+                messages,
+                logger,
+                user);
 
             Assert.AreEqual(queryRequest, context.QueryRequest);
             Assert.AreEqual(directiveRequest, context.Request);
             Assert.AreEqual(serviceProvider, context.ServiceProvider);
             Assert.AreEqual(logger, context.Logger);
-            Assert.AreEqual(metrics, context.Metrics);
-            Assert.AreEqual(securityContext, context.SecurityContext);
             Assert.AreEqual(schema, context.Schema);
+            Assert.AreEqual(directiveRequest, context.Request);
+            Assert.AreEqual(messages, context.Messages);
+            Assert.AreEqual(session, context.Session);
         }
     }
 }

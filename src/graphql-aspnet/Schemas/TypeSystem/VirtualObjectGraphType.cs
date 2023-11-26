@@ -40,6 +40,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public VirtualObjectGraphType(string name)
          : base(
                name,
+               $"{nameof(VirtualObjectGraphType)}_{name}",
                new SchemaItemPath(SchemaItemCollections.Types, name))
         {
             // add the __typename as a field for this virtual object
@@ -63,8 +64,5 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public Type ObjectType => typeof(VirtualObjectGraphType);
-
-        /// <inheritdoc />
-        public string InternalName => typeof(VirtualObjectGraphType).FriendlyName();
     }
 }

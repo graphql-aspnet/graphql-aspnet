@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
         /// Initializes a new instance of the <see cref="Introspection_InputValueType"/> class.
         /// </summary>
         public Introspection_InputValueType()
-            : base(Constants.ReservedNames.INPUT_VALUE_TYPE)
+            : base(Constants.ReservedNames.INPUT_VALUE_TYPE, nameof(Introspection_InputValueType))
         {
             // "__InputValue" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection

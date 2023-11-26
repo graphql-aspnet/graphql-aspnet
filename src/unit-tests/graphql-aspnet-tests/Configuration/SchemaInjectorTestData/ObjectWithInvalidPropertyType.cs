@@ -10,8 +10,6 @@
 namespace GraphQL.AspNet.Tests.Configuration.SchemaInjectorTestData
 {
     using System;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.AspNet.Tests.Framework.Interfaces;
 
     public class ObjectWithInvalidPropertyType
     {

@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Configuration
 {
+    using System;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -16,9 +17,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Parsing;
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Web;
@@ -34,20 +33,6 @@ namespace GraphQL.AspNet.Tests.Configuration
     [TestFixture]
     public class ConfigurationSetupTests
     {
-        [SetUp]
-        public void Setup()
-        {
-            GraphQLProviders.TemplateProvider.CacheTemplates = true;
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            GraphQLSchemaBuilderExtensions.Clear();
-            GraphQLProviders.TemplateProvider.Clear();
-            GraphQLProviders.TemplateProvider.CacheTemplates = false;
-        }
-
         [Test]
         public void AddGraphQL_AddingDefaultSchema_WithOneController_GeneratesAllDefaultEngineParts()
         {
@@ -71,8 +56,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(IQueryExecutionPlanGenerator<GraphSchema>)) as DefaultQueryExecutionPlanGenerator<GraphSchema>);
             Assert.IsNotNull(sp.GetService(typeof(IQueryResponseWriter<GraphSchema>)) as DefaultQueryResponseWriter<GraphSchema>);
             Assert.IsNotNull(sp.GetService(typeof(IQueryExecutionMetricsFactory<GraphSchema>)) as DefaultQueryExecutionMetricsFactory<GraphSchema>);
-
-            GraphQLProviders.TemplateProvider.Clear();
         }
 
         [Test]
@@ -81,29 +64,10 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGraphQL();
 
-            Assert.Throws<GraphTypeDeclarationException>(() =>
+            Assert.Throws<InvalidOperationException>(() =>
             {
                 serviceCollection.AddGraphQL<GraphSchema>();
             });
-
-            GraphQLProviders.TemplateProvider.Clear();
-        }
-
-        [Test]
-        public void UseGraphQL_PerformsPreparseAndSetupRoutines()
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddGraphQL(options =>
-            {
-                options.AddType<FanController>();
-            });
-
-            var sp = serviceCollection.BuildServiceProvider();
-            sp.UseGraphQL();
-
-            // FanController, FanItem, FanSpeed,
-            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective
-            Assert.AreEqual(7, GraphQLProviders.TemplateProvider.Count);
         }
 
         [Test]
@@ -117,11 +81,6 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             var provider = serviceCollection.BuildServiceProvider();
             provider.UseGraphQL();
-
-            // virtualResolvedObject, candleController, candle, waxType,
-            // customerController, customer,
-            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective
-            Assert.AreEqual(10, GraphQLProviders.TemplateProvider.Count);
 
             var sp = serviceCollection.BuildServiceProvider();
             sp.UseGraphQL();
@@ -152,11 +111,6 @@ namespace GraphQL.AspNet.Tests.Configuration
             var provider = serviceCollection.BuildServiceProvider();
             provider.UseGraphQL();
 
-            // virtualResolvedObject, candleController, candle, waxType,
-            // customerController, customer,
-            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective
-            Assert.AreEqual(10, GraphQLProviders.TemplateProvider.Count);
-
             var sp = serviceCollection.BuildServiceProvider();
             var schema = sp.GetService(typeof(CandleSchema)) as ISchema;
             Assert.IsNotNull(schema);
@@ -183,11 +137,6 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             var provider = serviceCollection.BuildServiceProvider();
             provider.UseGraphQL();
-
-            // virtualResolvedObject, candleController, candle,
-            // waxType,
-            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective
-            Assert.AreEqual(8, GraphQLProviders.TemplateProvider.Count);
 
             var sp = serviceCollection.BuildServiceProvider();
             var schema = sp.GetService(typeof(GraphSchema)) as ISchema;
@@ -219,7 +168,6 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             // sample1Directive,
             // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective
-            Assert.AreEqual(5, GraphQLProviders.TemplateProvider.Count);
             var schema = provider.GetService(typeof(GraphSchema)) as GraphSchema;
 
             Assert.IsNotNull(schema);
@@ -302,8 +250,6 @@ namespace GraphQL.AspNet.Tests.Configuration
         [Test]
         public void ChangingGlobalConfig_ChangesHowControllersAreRegistered()
         {
-            using var restorePoint = new GraphQLGlobalRestorePoint();
-
             // make sure the original setting is not what we hope to change it to
             // otherwise the test is inconclusive
             if (GraphQLServerSettings.ControllerServiceLifeTime == ServiceLifetime.Singleton)

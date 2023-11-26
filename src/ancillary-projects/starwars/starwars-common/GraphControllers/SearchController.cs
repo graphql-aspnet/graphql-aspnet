@@ -11,15 +11,12 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
 {
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.StarwarsAPI.Common.Model;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
-    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
     /// A controller to handle search queries across the spectrum of the star wars universe.
@@ -42,7 +39,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
         /// </summary>
         /// <param name="searchText">The text to search for.</param>
         /// <returns>Task&lt;IGraphActionResult&gt;.</returns>
-        [QueryRoot("search","SearchResults", typeof(Droid), typeof(Human), typeof(Starship), TypeExpression = "[Type]")]
+        [QueryRoot("search", "SearchResults", typeof(Droid), typeof(Human), typeof(Starship), TypeExpression = "[Type]")]
         [Description("Searches for the specified text as the name of a starship or character (not case sensitive).")]
         public async Task<IGraphActionResult> GlobalSearch(string searchText = "*")
         {
