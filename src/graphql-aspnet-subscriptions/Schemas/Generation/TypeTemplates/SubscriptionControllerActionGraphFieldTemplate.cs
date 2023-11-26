@@ -17,9 +17,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// Describes an subscription action on a <see cref="GraphController"/>, that can be registered
@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             }
 
             // ensure there is only one param marked as the source object
-            var sourceArgument = this.Arguments.SingleOrDefault(x => x.ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            var sourceArgument = this.Arguments.SingleOrDefault(x => x.ArgumentModifier.HasFlag(ParameterModifiers.ParentFieldResult));
             if (sourceArgument == null)
             {
                 throw new GraphTypeDeclarationException(

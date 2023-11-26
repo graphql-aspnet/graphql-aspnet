@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.Execution.Resolvers
     using System.Diagnostics;
     using System.Reflection;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A metadata object containing parsed and computed values related to a single parameter
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             ParameterInfo paramInfo,
             string internalName,
             string parentInternalName,
-            GraphArgumentModifiers modifiers,
+            ParameterModifiers modifiers,
             bool isListBasedParameter,
             bool hasDefaultValue,
             object defaultValue = null)
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
         public string InternalName { get; }
 
         /// <inheritdoc />
-        public GraphArgumentModifiers ArgumentModifiers { get; private set; }
+        public ParameterModifiers ArgumentModifiers { get; private set; }
 
         /// <inheritdoc />
         public object DefaultValue { get; }

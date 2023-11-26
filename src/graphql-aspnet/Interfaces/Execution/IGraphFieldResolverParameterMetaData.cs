@@ -11,8 +11,8 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
     using System.Reflection;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A metadata object containing parsed and computed values related to a single parameter
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// it.
         /// </summary>
         /// <value>The argument modifiers.</value>
-        GraphArgumentModifiers ArgumentModifiers { get; }
+        ParameterModifiers ArgumentModifiers { get; }
 
         /// <summary>
         /// Gets the default value assigned to this parameter, if any.

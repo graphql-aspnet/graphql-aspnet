@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Internal
 {
     using System;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -56,7 +57,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// a parent resolved data value, an injected value from a service provider etc.
         /// </summary>
         /// <value>The argument modifier value applied to this parameter.</value>
-        GraphArgumentModifiers ArgumentModifier { get; }
+        ParameterModifiers ArgumentModifier { get; }
 
         /// <summary>
         /// Gets the name of the argument as its declared in the server side code.

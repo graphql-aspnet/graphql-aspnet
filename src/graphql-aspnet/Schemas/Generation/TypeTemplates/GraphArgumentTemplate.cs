@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     {
         private FromGraphQLAttribute _argDeclaration;
         private bool _invalidTypeExpression;
-        private HashSet<GraphArgumentModifiers> _foundModifiers;
+        private HashSet<ParameterModifiers> _foundModifiers;
         private GraphSkipAttribute _argSkipDeclaration;
         private GraphSkipAttribute _argTypeSkipDeclaration;
         private bool _isParsed = false;
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             Validation.ThrowIfNull(parent, nameof(parent));
             Validation.ThrowIfNull(parameter, nameof(parameter));
 
-            _foundModifiers = new HashSet<GraphArgumentModifiers>();
+            _foundModifiers = new HashSet<ParameterModifiers>();
 
             this.Parent = parent;
             this.Parameter = parameter;
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_argDeclaration != null)
             {
                 name = _argDeclaration?.ArgumentName?.Trim();
-                _foundModifiers.Add(GraphArgumentModifiers.ExplicitSchemaItem);
+                _foundModifiers.Add(ParameterModifiers.ExplicitSchemaItem);
                 this.InternalName = _argDeclaration.InternalName;
             }
 
@@ -142,22 +142,22 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             // how this argument performs within the application.
             var fromServicesAttrib = this.Parameter.SingleAttributeOfTypeOrDefault<FromServicesAttribute>();
             if (fromServicesAttrib != null)
-                _foundModifiers.Add(GraphArgumentModifiers.ExplicitInjected);
+                _foundModifiers.Add(ParameterModifiers.ExplicitInjected);
 
             if (this.IsSourceDataArgument())
-                _foundModifiers.Add(GraphArgumentModifiers.ParentFieldResult);
+                _foundModifiers.Add(ParameterModifiers.ParentFieldResult);
 
             if (this.IsCancellationTokenArgument())
-                _foundModifiers.Add(GraphArgumentModifiers.CancellationToken);
+                _foundModifiers.Add(ParameterModifiers.CancellationToken);
 
             if (this.IsResolutionContext())
-                _foundModifiers.Add(GraphArgumentModifiers.ResolutionContext);
+                _foundModifiers.Add(ParameterModifiers.ResolutionContext);
 
             if (this.IsHttpContext())
-                _foundModifiers.Add(GraphArgumentModifiers.HttpContext);
+                _foundModifiers.Add(ParameterModifiers.HttpContext);
 
             if (this.MustBeInjected() && _foundModifiers.Count == 0)
-                _foundModifiers.Add(GraphArgumentModifiers.ImplicitInjected);
+                _foundModifiers.Add(ParameterModifiers.ImplicitInjected);
 
             if (_foundModifiers.Count > 0)
                 this.ArgumentModifier = _foundModifiers.First();
@@ -324,7 +324,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     $".NET parameter. (Declared '{this.TypeExpression}' is incompatiable with '{actualTypeExpression}') ");
             }
 
-            if (_foundModifiers.Contains(GraphArgumentModifiers.ExplicitSchemaItem))
+            if (_foundModifiers.Contains(ParameterModifiers.ExplicitSchemaItem))
             {
                 if (this.ObjectType.IsInterface)
                 {
@@ -344,8 +344,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             // the most common scenario for multiple arg modifiers,
             // throw an exception with explicit text on how to fix it
-            if (_foundModifiers.Contains(GraphArgumentModifiers.ExplicitInjected)
-                && _foundModifiers.Contains(GraphArgumentModifiers.ExplicitSchemaItem))
+            if (_foundModifiers.Contains(ParameterModifiers.ExplicitInjected)
+                && _foundModifiers.Contains(ParameterModifiers.ExplicitSchemaItem))
             {
                 throw new GraphTypeDeclarationException(
                        $"The item '{this.Parent.InternalName}' declares a parameter '{this.Name}' that " +
@@ -354,8 +354,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                        $"{nameof(FromGraphQLAttribute)} or {nameof(FromServicesAttribute)}, but not both.");
             }
 
-            if (_foundModifiers.Contains(GraphArgumentModifiers.ImplicitInjected)
-              && _foundModifiers.Contains(GraphArgumentModifiers.ExplicitSchemaItem))
+            if (_foundModifiers.Contains(ParameterModifiers.ImplicitInjected)
+              && _foundModifiers.Contains(ParameterModifiers.ExplicitSchemaItem))
             {
                 throw new GraphTypeDeclarationException(
                        $"The item '{this.Parent.InternalName}' declares a parameter '{this.Name}' that " +
@@ -454,7 +454,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public Type ObjectType { get; private set; }
 
         /// <inheritdoc />
-        public GraphArgumentModifiers ArgumentModifier { get; protected set; }
+        public ParameterModifiers ArgumentModifier { get; protected set; }
 
         /// <inheritdoc />
         public string ParameterName => this.Parameter.Name;
