@@ -9,6 +9,8 @@
 
 namespace GraphQL.AspNet.Configuration.Formatting
 {
+    using System;
+
     /// <summary>
     /// A builder class to formulate a <see cref="GraphSchemaFormatStrategy"/>
     /// with various options.
@@ -73,6 +75,18 @@ namespace GraphQL.AspNet.Configuration.Formatting
             if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullReferenceTypes))
                 _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullReferenceTypes;
 
+            return this;
+        }
+
+        /// <summary>
+        /// Clears all nullability rules, including the default non-null template rule, such that
+        /// no rules are applied to any objects. All intermediate graph types, strings, lists are treated
+        /// as nullable.
+        /// </summary>
+        /// <returns>SchemaFormatStrategyBuilder.</returns>
+        public GraphSchemaFormatStrategyBuilder ClearNullabilityRules()
+        {
+            _format.NullabilityStrategy = NullabilityFormatStrategy.None;
             return this;
         }
 

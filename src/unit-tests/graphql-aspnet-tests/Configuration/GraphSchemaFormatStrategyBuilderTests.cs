@@ -68,38 +68,49 @@ namespace GraphQL.AspNet.Tests.Configuration
         }
 
         [Test]
+        public void ClearNullabilityRules_UpdatesNullabilityStrategy()
+        {
+            var strat = GraphSchemaFormatStrategyBuilder
+                .Create()
+                .ClearNullabilityRules()
+                .Build();
+
+            Assert.AreEqual(NullabilityFormatStrategy.None, strat.NullabilityStrategy);
+        }
+
+        [Test]
         public void WithRequiredObjects_UpdatesNullabilityStrategy()
         {
-
             var strat = GraphSchemaFormatStrategyBuilder
                 .Create()
                 .WithRequiredObjects()
                 .Build();
 
+            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullTemplates));
             Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullReferenceTypes));
         }
 
         [Test]
         public void WithRequiredStrings_UpdatesNullabilityStrategy()
         {
-
             var strat = GraphSchemaFormatStrategyBuilder
                 .Create()
                 .WithRequiredStrings()
                 .Build();
 
+            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullTemplates));
             Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullStrings));
         }
 
         [Test]
         public void WithRequiredLists_UpdatesNullabilityStrategy()
         {
-
             var strat = GraphSchemaFormatStrategyBuilder
                 .Create()
                 .WithRequiredLists()
                 .Build();
 
+            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullTemplates));
             Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullLists));
         }
     }

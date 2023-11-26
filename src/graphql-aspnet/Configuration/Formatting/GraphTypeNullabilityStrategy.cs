@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// the source code. All strings and reference types passed to an argument or returned
         /// from a field are considered nullable unless otherwise overriden.
         /// </summary>
-        Default = 0,
+        None = 0,
 
         /// <summary>
         /// Intermediate graph types, created when you use path templates on your
@@ -48,5 +48,12 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// default.
         /// </summary>
         NonNullReferenceTypes = 8,
+
+        /// <summary>
+        /// No changes are made to the nullability of different fields. They are used as provided in
+        /// the source code. All strings and reference types passed to an argument or returned
+        /// from a field are considered nullable unless otherwise overriden.
+        /// </summary>
+        Default = NonNullTemplates,
     }
 }

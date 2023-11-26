@@ -138,7 +138,7 @@ namespace GraphQL.AspNet.Tests.Execution
                                                 ""path"": [""simple""],
                                                 ""fieldName"": ""simple"",
                                                 ""parentType"" : ""Query"",
-                                                ""returnType"": ""Query_Simple"",
+                                                ""returnType"": ""Query_Simple!"",
                                                 ""startOffset"": [simpleStartOffset],
                                                 ""duration"": [simpleDuration]
                                             },
@@ -258,7 +258,7 @@ namespace GraphQL.AspNet.Tests.Execution
 				            ""path"": [ ""batch""],
 				            ""parentType"": ""Query"",
 				            ""fieldName"": ""batch"",
-				            ""returnType"": ""Query_Batch"",
+				            ""returnType"": ""Query_Batch!"",
 				            ""startOffset"": ""<anyValue>"",
 				            ""duration"": ""<anyValue>""
 			              },
@@ -429,7 +429,7 @@ namespace GraphQL.AspNet.Tests.Execution
                         ""path"": [""batch""],
                         ""parentType"": ""Query"",
                         ""fieldName"": ""batch"",
-                        ""returnType"": ""Query_Batch"",
+                        ""returnType"": ""Query_Batch!"",
                         ""startOffset"": ""<anyValue>"",
                         ""duration"": ""<anyValue>""
                       },
