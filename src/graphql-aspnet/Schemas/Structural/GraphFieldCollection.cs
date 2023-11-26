@@ -1,4 +1,4 @@
-﻿// *************************************************************
+// *************************************************************
 // project:  graphql-aspnet
 // --
 // repo: https://github.com/graphql-aspnet
@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.Resolvers;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
