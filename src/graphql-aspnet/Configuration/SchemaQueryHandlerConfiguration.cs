@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Configuration
         /// HTTP request routing manually.
         /// </para>
         /// <para>
-        /// Default: false  (i.e. "DO INCLUDE the default route").
+        /// Default: false  (i.e. "YES, DO INCLUDE the default route").
         /// </para>
         /// </summary>
         /// <value><c>true</c> if the route should be disabled; otherwise, <c>false</c>.</value>

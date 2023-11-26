@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         /// <returns>IGraphActionResult.</returns>
         public static IGraphActionResult NotFound(string message)
         {
-            return new RouteNotFoundGraphActionResult(message);
+            return new PathNotFoundGraphActionResult(message);
         }
 
         /// <summary>

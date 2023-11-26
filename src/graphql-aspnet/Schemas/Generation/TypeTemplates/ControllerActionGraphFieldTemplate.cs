@@ -51,24 +51,20 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         {
         }
 
-        /// <summary>
-        /// When overridden in a child class, this metyhod builds the route that will be assigned to this method
-        /// using the implementation rules of the concrete type.
-        /// </summary>
-        /// <returns>GraphRoutePath.</returns>
-        protected override SchemaItemPath GenerateFieldPath()
+        /// <inheritdoc />
+        protected override ItemPath GenerateFieldPath()
         {
             // Various meta data fields about the method
             // -------------------------------------------
             var graphMethodAttrib = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
-            var fieldType = graphMethodAttrib?.FieldType ?? SchemaItemCollections.Unknown;
+            var fieldType = graphMethodAttrib?.FieldType ?? ItemPathRoots.Unknown;
 
-            var routeFragment = graphMethodAttrib?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
-            routeFragment = routeFragment.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();
+            var pathFragment = graphMethodAttrib?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
+            pathFragment = pathFragment.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();
 
             // remove the parent fragment this method should be nested under if this method is marked as a root entry
-            var parentRouteFragment = (graphMethodAttrib?.IsRootFragment ?? false) ? string.Empty : this.Parent.Route.Path;
-            return new SchemaItemPath(SchemaItemPath.Join(fieldType, parentRouteFragment, routeFragment));
+            var parentRouteFragment = (graphMethodAttrib?.IsRootFragment ?? false) ? string.Empty : this.Parent.ItemPath.Path;
+            return new ItemPath(ItemPath.Join(fieldType, parentRouteFragment, pathFragment));
         }
 
         /// <inheritdoc />

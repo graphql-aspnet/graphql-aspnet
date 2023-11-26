@@ -25,10 +25,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// An representation of a field on an object graph that maps to no concrete structure in the application. Typically used
-    /// for nesting controller actions on lengthy route paths.
+    /// An representation of a field on an object graph type that maps to no concrete structure in the application. Typically used
+    /// for nesting controller actions on lengthy path templates.
     /// </summary>
-    [DebuggerDisplay("Virtual Field: {Route.Path}")]
+    [DebuggerDisplay("Virtual Field: {ItemPath.Path}")]
     public class VirtualGraphField : IGraphField, IGraphItemDependencies
     {
         private static readonly IList<DependentType> REQUIRED_TYPES;
@@ -45,30 +45,27 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <summary>
         /// Initializes a new instance of the <see cref="VirtualGraphField" /> class.
         /// </summary>
-        /// <param name="parent">The parent graph type that owns this field.</param>
         /// <param name="fieldName">Name of the field in the object graph.</param>
-        /// <param name="route">The path segment that represents this virtual field.</param>
+        /// <param name="itemPath">The path segment that represents this virtual field.</param>
         /// <param name="parentTypeName">The type name to use for the virtual type that owns this field.</param>
         public VirtualGraphField(
-            IGraphType parent,
             string fieldName,
-            SchemaItemPath route,
+            ItemPath itemPath,
             string parentTypeName)
         {
-            Validation.ThrowIfNull(route, nameof(route));
+            Validation.ThrowIfNull(itemPath, nameof(itemPath));
             parentTypeName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentTypeName, nameof(parentTypeName));
 
-            this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
 
             this.AssociatedGraphType = new VirtualObjectGraphType(parentTypeName);
             this.TypeExpression = new GraphTypeExpression(parentTypeName);
             this.Arguments = new GraphFieldArgumentCollection(this);
-            this.Resolver = new GraphControllerRouteFieldResolver(new VirtualResolvedObject(this.TypeExpression.TypeName));
+            this.Resolver = new GraphControllerVirtualFieldResolver(new VirtualResolvedObject(this.TypeExpression.TypeName));
             this.InternalName = $"VirtualField_{this.Name}";
 
-            // fields made from controller route parameters have no policies directly unto themselves
+            // fields made from controller path parameters have no policies directly unto themselves
             // any controller class level policies are individually added to fields they declare
             this.SecurityGroups = new AppliedSecurityPolicyGroups();
             this.Complexity = 1;
@@ -87,15 +84,36 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public void AssignParent(IGraphType parent)
+        public IGraphField Clone(
+            ISchemaItem parent = null,
+            string fieldName = null,
+            GraphTypeExpression typeExpression = null)
         {
-            this.Parent = this.Parent;
-        }
+            parent = parent ?? this.Parent;
+            fieldName = fieldName?.Trim() ?? this.Name;
+            typeExpression = typeExpression ?? this.TypeExpression;
 
-        /// <inheritdoc />
-        public IGraphField Clone(IGraphType parent)
-        {
-            throw new NotImplementedException("Virtual Fields cannot be cloned.");
+            var itemPath = this.ItemPath;
+            itemPath = parent?.ItemPath.CreateChild(fieldName) ?? itemPath;
+
+            var clonedItem = new VirtualGraphField(
+                fieldName,
+                itemPath,
+                typeExpression.TypeName);
+
+            clonedItem.Description = this.Description;
+            clonedItem.TypeExpression = typeExpression.Clone();
+            clonedItem.Publish = this.Publish;
+            clonedItem.DeprecationReason = this.DeprecationReason;
+            clonedItem.IsDeprecated = this.IsDeprecated;
+            clonedItem.Complexity = this.Complexity;
+            clonedItem.Parent = parent;
+
+            // clone over the arguments
+            foreach (var argument in this.Arguments)
+                clonedItem.Arguments.AddArgument(argument.Clone(clonedItem));
+
+            return clonedItem;
         }
 
         /// <inheritdoc />
@@ -113,9 +131,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <summary>
-        /// Gets the tracked copy of the graph type that represents this virtual field.
+        /// Gets the tracked copy of the graph type that this virtual field will
+        /// always return.
         /// </summary>
-        /// <value>The type of the associated graph.</value>
+        /// <value>The object graph type this virutal field will return when resolved.</value>
         public IObjectGraphType AssociatedGraphType { get; }
 
         /// <inheritdoc />
@@ -128,7 +147,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public string Name { get; set; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; set; }

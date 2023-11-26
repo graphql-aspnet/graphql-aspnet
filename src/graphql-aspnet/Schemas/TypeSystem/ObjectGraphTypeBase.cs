@@ -29,27 +29,40 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name of the graph type as it is displayed in the __type information.</param>
         /// <param name="internalName">The defined internal name for this graph type.</param>
-        /// <param name="route">The route path of this object.</param>
+        /// <param name="itemPath">The item path of this object in the schema.</param>
         /// <param name="directives">The directives applied to this schema item
         /// when its added to a schema.</param>
         protected ObjectGraphTypeBase(
             string name,
             string internalName,
-            SchemaItemPath route,
+            ItemPath itemPath,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
-            _graphFields = new GraphFieldCollection(this);
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
+            _graphFields = new GraphFieldCollection();
             this.InterfaceNames = new HashSet<string>();
             this.Publish = true;
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
         }
 
+        /// <inheritdoc cref="IExtendableGraphType.Extend" />
+        public virtual IGraphField Extend(IGraphField newField)
+        {
+            Validation.ThrowIfNull(newField, nameof(newField));
+            if (newField.Parent != this)
+                newField = newField.Clone(this);
+
+            return this.GraphFieldCollection.AddField(newField);
+        }
+
         /// <inheritdoc />
         public abstract bool ValidateObject(object item);
+
+        /// <inheritdoc />
+        public abstract IGraphType Clone(string typeName = null);
 
         /// <summary>
         /// Gets the mutatable collection of graph fields.
@@ -98,6 +111,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
     }
 }

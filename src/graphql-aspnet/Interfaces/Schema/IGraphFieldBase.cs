@@ -18,12 +18,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
     public interface IGraphFieldBase : ITypedSchemaItem, ISchemaItem
     {
         /// <summary>
-        /// Updates the known graph type this field belongs to.
-        /// </summary>
-        /// <param name="parent">The new parent.</param>
-        void AssignParent(IGraphType parent);
-
-        /// <summary>
         /// Gets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
         /// declaration used in schema definition language.)
         /// </summary>

@@ -15,6 +15,14 @@ namespace GraphQL.AspNet.Interfaces.Schema
     public interface IEnumValue : ISchemaItem, IDeprecatable
     {
         /// <summary>
+        /// Creates a shallow clone of this instance, replacing specific argument values if supplied.
+        /// </summary>
+        /// <param name="parent">When not null, represents the new parent item that will own this new field.</param>
+        /// <param name="valueName">When supplied, represents a new name to use for this enum value in a schema.</param>
+        /// <returns>IEnumValue.</returns>
+        IEnumValue Clone(IEnumGraphType parent = null, string valueName = null);
+
+        /// <summary>
         /// Gets the parent enum graph type that owns this value.
         /// </summary>
         /// <value>The parent.</value>

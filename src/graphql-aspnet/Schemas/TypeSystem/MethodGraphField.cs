@@ -22,20 +22,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
     /// <summary>
     /// A representation of a field as it would be defined in an object graph that originated
-    /// from a .NET method invocation.
+    /// from a .NET method or property invocation.
     /// </summary>
-    [DebuggerDisplay("Field: {Route.Path}")]
+    [DebuggerDisplay("Field: {ItemPath.Path}")]
     public class MethodGraphField : IGraphField
     {
-        private IGraphType _parent = null;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodGraphField" /> class.
         /// </summary>
         /// <param name="fieldName">Name of the field in the graph.</param>
         /// <param name="internalName">The internal name that represents the method this field respresents.</param>
         /// <param name="typeExpression">The meta data describing the type of data this field returns.</param>
-        /// <param name="route">The formal route to this field in the object graph.</param>
+        /// <param name="itemPath">The formal path to this field in the object graph.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
         /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="mode">The mode in which the runtime will process this field.</param>
@@ -46,7 +44,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string fieldName,
             string internalName,
             GraphTypeExpression typeExpression,
-            SchemaItemPath route,
+            ItemPath itemPath,
             Type declaredReturnType,
             Type objectType,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
@@ -56,7 +54,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
             this.Arguments = new GraphFieldArgumentCollection(this);
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.DeclaredReturnType = Validation.ThrowIfNullOrReturn(declaredReturnType, nameof(declaredReturnType));
@@ -79,34 +77,36 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc/>
-        public void AssignParent(IGraphType parent)
+        public virtual IGraphField Clone(ISchemaItem parent = null, string fieldName = null, GraphTypeExpression typeExpression = null)
         {
-            Validation.ThrowIfNull(parent, nameof(parent));
-            _parent = parent;
-        }
+            parent = parent ?? this.Parent;
+            fieldName = fieldName?.Trim() ?? this.Name;
 
-        /// <inheritdoc/>
-        public virtual IGraphField Clone(IGraphType parent)
-        {
-            Validation.ThrowIfNull(parent, nameof(parent));
+            var clonedItem = this.CreateNewInstance();
 
-            var newField = this.CreateNewInstance(parent);
+            // paths defined on operations cannot be repathed
+            // as they represent declared locations on the schema
+            var path = this.ItemPath.Clone();
+            if (!this.ItemPath.IsOperationRoot)
+                path = parent?.ItemPath.CreateChild(this.ItemPath.Name) ?? path;
 
             // assign all publically alterable fields
-            newField.Description = this.Description;
-            newField.Publish = this.Publish;
-            newField.Complexity = this.Complexity;
-            newField.IsDeprecated = this.IsDeprecated;
-            newField.DeprecationReason = this.DeprecationReason;
-            newField.FieldSource = this.FieldSource;
-
-            newField.AssignParent(parent);
+            clonedItem.Name = fieldName;
+            clonedItem.ItemPath = path;
+            clonedItem.TypeExpression = typeExpression ?? this.TypeExpression.Clone();
+            clonedItem.Description = this.Description;
+            clonedItem.Publish = this.Publish;
+            clonedItem.Complexity = this.Complexity;
+            clonedItem.IsDeprecated = this.IsDeprecated;
+            clonedItem.DeprecationReason = this.DeprecationReason;
+            clonedItem.FieldSource = this.FieldSource;
+            clonedItem.Parent = parent;
 
             // clone over the arguments
             foreach (var argument in this.Arguments)
-                newField.Arguments.AddArgument(argument.Clone(newField));
+                clonedItem.Arguments.AddArgument(argument.Clone(clonedItem));
 
-            return newField;
+            return clonedItem;
         }
 
         /// <inheritdoc/>
@@ -140,15 +140,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <remarks>
         /// This method is used as the basis for new object creation during cloning.
         /// </remarks>
-        /// <param name="parent">The item to assign as the parent of the new field.</param>
         /// <returns>IGraphField.</returns>
-        protected virtual MethodGraphField CreateNewInstance(IGraphType parent)
+        protected virtual MethodGraphField CreateNewInstance()
         {
             return new MethodGraphField(
                 this.Name,
                 this.InternalName,
                 this.TypeExpression.Clone(),
-                parent.Route.CreateChild(this.Name),
+                this.ItemPath,
                 this.DeclaredReturnType,
                 this.ObjectType,
                 this.Mode,
@@ -182,7 +181,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual bool Publish { get; set; }
 
         /// <inheritdoc/>
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; protected set; }
 
         /// <inheritdoc/>
         public IGraphFieldResolver Resolver { get; protected set; }
@@ -206,7 +205,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public bool IsVirtual => false;
 
         /// <inheritdoc/>
-        public ISchemaItem Parent => _parent;
+        public ISchemaItem Parent { get; protected set; }
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }

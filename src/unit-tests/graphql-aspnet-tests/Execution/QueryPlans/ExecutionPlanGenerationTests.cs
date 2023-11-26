@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             // "simple" should contain 1 child field called "simpleQueryMethod"
             Assert.AreEqual(0, queuedContext.Arguments.Count);
             Assert.AreEqual(1, queuedContext.ChildContexts.Count);
-            Assert.IsTrue(queuedContext.Field?.Resolver is GraphControllerRouteFieldResolver);
+            Assert.IsTrue(queuedContext.Field?.Resolver is GraphControllerVirtualFieldResolver);
 
             // simpleQueryMethod should contain 1 property to be resolved
             var child = queuedContext.ChildContexts[0];
@@ -244,7 +244,7 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
             // "simple" should contain 1 child field called "simpleQueryMethod"
             Assert.AreEqual(0, queuedContext.Arguments.Count);
             Assert.AreEqual(1, queuedContext.ChildContexts.Count);
-            Assert.IsTrue(queuedContext.Field?.Resolver is GraphControllerRouteFieldResolver);
+            Assert.IsTrue(queuedContext.Field?.Resolver is GraphControllerVirtualFieldResolver);
 
             // simpleQueryMethod should contain 2 properties to be resolved (the two props on the fragment)
             var child = queuedContext.ChildContexts[0];

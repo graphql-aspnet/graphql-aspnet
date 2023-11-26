@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
 
         public string InternalName { get; }
 
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Schemas.GlobalTypesTestData
 
         public string Description { get; set; }
 
-        public IScalarGraphType Clone(string newName)
+        public IGraphType Clone(string typeName = null)
         {
             throw new NotImplementedException();
         }

@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             string specifiedByUrl = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
-            this.Route = new SchemaItemPath(SchemaItemCollections.Scalars, this.Name);
+            this.ItemPath = new ItemPath(ItemPathRoots.Types, this.Name);
             this.ObjectType = Validation.ThrowIfNullOrReturn(primaryType, nameof(primaryType));
             this.InternalName = this.ObjectType.FriendlyName();
             this.Publish = true;
@@ -100,15 +100,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         }
 
         /// <inheritdoc />
-        public virtual IScalarGraphType Clone(string newName)
+        public virtual IGraphType Clone(string typeName = null)
         {
-            newName = Validation.ThrowIfNullWhiteSpaceOrReturn(newName, nameof(newName));
+            typeName = Validation.ThrowIfNullWhiteSpaceOrReturn(typeName, nameof(typeName));
             var newInstance = GlobalTypes.CreateScalarInstanceOrThrow(this.GetType()) as ScalarGraphTypeBase;
 
             // some built in scalars (defined against this class)
             // should never be renameable (string, int, float, id, boolean)
             if (GlobalTypes.CanBeRenamed(this.Name))
-                newInstance.Name = newName;
+                newInstance.Name = typeName;
 
             return newInstance;
         }
@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         /// <inheritdoc />
         public string SpecifiedByUrl { get; set; }

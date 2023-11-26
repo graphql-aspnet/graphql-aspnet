@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var field = options.MapQuery("/path1/path2", TestDelegate);
 
             Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Query, field.Route.RootCollection);
+            Assert.AreEqual(ItemPathRoots.Query, field.ItemPath.Root);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
 
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var field = builderMock.MapQuery("/path1/path2", TestDelegate);
 
             Assert.IsNotNull(field);
-            Assert.AreEqual(SchemaItemCollections.Query, field.Route.RootCollection);
+            Assert.AreEqual(ItemPathRoots.Query, field.ItemPath.Root);
 
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
             var field = builderMock.MapQuery("/path1/path2");
 
             Assert.IsNotNull(field);
-            Assert.AreEqual("[query]/path1/path2", field.Route.Path);
+            Assert.AreEqual("[query]/path1/path2", field.ItemPath.Path);
             Assert.IsInstanceOf(typeof(IGraphQLRuntimeResolvedFieldDefinition), field);
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
 

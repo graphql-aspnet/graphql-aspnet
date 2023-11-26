@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Execution
                     var failureMessage =
                         $"Type System Directive Invocation Failure. " +
                         $"The directive type named '{directiveName}' " +
-                        $"does not represent a valid directive on the target schema. (Target: '{item.Route.Path}', Schema: {schema.Name})";
+                        $"does not represent a valid directive on the target schema. (Target: '{item.ItemPath.Path}', Schema: {schema.Name})";
 
                     throw new SchemaConfigurationException(failureMessage);
                 }
@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Execution
                     {
                         throw new SchemaConfigurationException(
                             $"Unable to construct the schema '{schema.Name}'. " +
-                            $"The non-repeatable directive @{targetDirective.Name} is repeated on the schema item '{item.Name}'. (Target: '{item.Route.Path}', Schema: {schema.Name})");
+                            $"The non-repeatable directive @{targetDirective.Name} is repeated on the schema item '{item.Name}'. (Target: '{item.ItemPath.Path}', Schema: {schema.Name})");
                     }
                 }
 

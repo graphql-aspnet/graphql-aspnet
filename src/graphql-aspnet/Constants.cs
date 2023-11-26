@@ -193,7 +193,7 @@ namespace GraphQL.AspNet
             public const string INVALID_BATCH_RESULT = "INVALID_BATCH_RESULT";
             public const string FIELD_REQUEST_ABORTED = "FIELD_REQUEST_ABORTED";
             public const string REQUEST_ABORTED = "REQUEST_ABORTED";
-            public const string INVALID_ROUTE = "INVALID_ROUTE";
+            public const string INVALID_PATH = "INVALID_PATH";
             public const string MODEL_VALIDATION_ERROR = "MODEL_VALIDATION_ERROR";
             public const string BAD_REQUEST = "BAD_REQUEST";
             public const string EXECUTION_ERROR = "EXECUTION_ERROR";
@@ -281,11 +281,11 @@ namespace GraphQL.AspNet
         {
             /// <summary>
             /// Gets a collection of reserved names, defined by the graphql schema, that
-            /// may appear as route path segments in an introspection query but are otherwise
+            /// may appear as item path segments in an introspection query but are otherwise
             /// not allowed by user created controllers or types.
             /// </summary>
             /// <value>A read only hashset of all the known reserved names.</value>
-            public static IImmutableSet<string> IntrospectableRouteNames { get; }
+            public static IImmutableSet<string> IntrospectablePathNames { get; }
 
             // public directive names
             public const string SKIP_DIRECTIVE = "skip";
@@ -374,7 +374,7 @@ namespace GraphQL.AspNet
                 dicTypeToTypeName.Add(GraphOperationType.Subscription, SUBSCRIPTION_TYPE_NAME);
                 GRAPH_OPERATION_TYPE_NAME_BY_TYPE = dicTypeToTypeName;
 
-                IntrospectableRouteNames = ImmutableHashSet.Create(
+                IntrospectablePathNames = ImmutableHashSet.Create(
                             QUERY_TYPE_NAME,
                             MUTATION_TYPE_NAME,
                             SUBSCRIPTION_TYPE_NAME,
@@ -455,64 +455,49 @@ namespace GraphQL.AspNet
             public const string PARAMETER_META_NAME = "[parameter]";
 
             /// <summary>
-            /// A phrase, used at the start of a route string, to indicate the route should not map
+            /// A phrase, used at the start of a path string, to indicate the route should not map
             /// into the graph.
             /// </summary>
             public const string NOOP_ROOT = DELIMITER_ROOT_START + "noop" + DELIMITER_ROOT_END;
 
             /// <summary>
-            /// A phrase, used at the start of a route string, to indicate its part of the query root.
+            /// A phrase, used at the start of a path string, to indicate its part of the query root.
             /// </summary>
             public const string QUERY_ROOT = DELIMITER_ROOT_START + "query" + DELIMITER_ROOT_END;
 
             /// <summary>
-            /// A phrase, used at the start of a route string, to indicate its part of the mutation root.
+            /// A phrase, used at the start of a path string, to indicate its part of the mutation root.
             /// </summary>
             public const string MUTATION_ROOT = DELIMITER_ROOT_START + "mutation" + DELIMITER_ROOT_END;
 
             /// <summary>
-            /// A phrase, used at the start of a route string, to indicate its part of the object type tree.
+            /// A phrase, used at the start of a path string, to indicate its part of the object type tree.
             /// </summary>
             public const string TYPE_ROOT = DELIMITER_ROOT_START + "type" + DELIMITER_ROOT_END;
 
             /// <summary>
-            /// A phrase, used at the start of a route string, to indicate its part of the global scalar tree.
-            /// </summary>
-            public const string SCALAR_ROOT = DELIMITER_ROOT_START + "scalar" + DELIMITER_ROOT_END;
-
-            /// <summary>
-            /// A phrase, used at the start of a route string, to indicate that the object is a top level schema.
+            /// A phrase, used at the start of a path string, to indicate that the object is a top level schema.
             /// </summary>
             public const string SCHEMA_ROOT = DELIMITER_ROOT_START + "schema" + DELIMITER_ROOT_END;
 
             /// <summary>
-            /// A phrase, used at the start of a route string, to indicate its part of the subscription root.
+            /// A phrase, used at the start of a path string, to indicate its part of the subscription root.
             /// </summary>
             public const string SUBSCRIPTION_ROOT = DELIMITER_ROOT_START + "subscription" + DELIMITER_ROOT_END;
 
             /// <summary>
-            /// A phrase, used at the start of a route string, to indicate its part of the enum type tree.
-            /// </summary>
-            public const string ENUM_ROOT = DELIMITER_ROOT_START + "enum" + DELIMITER_ROOT_END;
-
-            /// <summary>
-            /// A phrase, used at the start of a route string, to indicate its part of the directive tree.
+            /// A phrase, used at the start of a path string, to indicate its part of the directive tree.
             /// </summary>
             public const string DIRECTIVE_ROOT = DELIMITER_ROOT_START + "directive" + DELIMITER_ROOT_END;
 
             /// <summary>
-            /// A phrase, used at the start of a route string, to indicate its part of the introspection
+            /// A phrase, used at the start of a path string, to indicate its part of the introspection
             /// item collection.
             /// </summary>
             public const string INTROSPECTION_ROOT = DELIMITER_ROOT_START + "introspection" + DELIMITER_ROOT_END;
 
             /// <summary>
-            /// A phrase, used at the start of a route string, to indicate its part of a document.
-            /// </summary>
-            public const string DOCUMENT_ROOT = DELIMITER_ROOT_START + "document" + DELIMITER_ROOT_END;
-
-            /// <summary>
-            /// The phrase used to seperate individual elements of a route fragement.
+            /// The phrase used to seperate individual elements of a path fragement.
             /// </summary>
             public const string PATH_SEPERATOR = "/";
 
@@ -533,7 +518,7 @@ namespace GraphQL.AspNet
             public const string DELIMITER_ROOT_END = "]";
 
             /// <summary>
-            /// A single string containing all used special characters in <see cref="SchemaItemPath"/> objects.
+            /// A single string containing all used special characters in <see cref="ItemPath"/> objects.
             /// </summary>
             public const string DELIMITERS_ALL = PATH_SEPERATOR + DELIMITER_ROOT_START + DELIMITER_ROOT_END;
 

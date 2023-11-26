@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
 
         /// <summary>
         /// Performs a final setup and initial cache build for the schema in the app domain. Also registers
-        /// the route to the application if required.
+        /// the url to the application if required.
         /// </summary>
         /// <param name="appBuilder">The application builder.</param>
         void UseSchema(IApplicationBuilder appBuilder);

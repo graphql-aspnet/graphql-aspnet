@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Tests.Framework
                 if (string.Equals(kvp.InternalName, fieldOrMethodName, StringComparison.OrdinalIgnoreCase))
                     return kvp;
 
-                if (string.Equals(kvp.Route.Name, fieldOrMethodName, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(kvp.ItemPath.Name, fieldOrMethodName, StringComparison.OrdinalIgnoreCase))
                     return kvp;
             }
 

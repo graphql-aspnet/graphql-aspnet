@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionAttribute_EmptyConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionAttribute();
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionAttribute_TemplateConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionAttribute("mySubscriptionRoute");
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("mySubscriptionRoute", attrib.Template);
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionAttribute_ReturnTypeConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionAttribute(typeof(SubscriptionAttributeTests));
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionAttribute_MultiTypeConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionAttribute(typeof(SubscriptionAttributeTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionAttribute_TemplateMultiTypeConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionAttribute("myField", typeof(SubscriptionAttributeTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionAttribute_UnionConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionAttribute("myField", "myUnionType", typeof(SubscriptionAttributeTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionRootAttribute_EmptyConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionRootAttribute();
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionRootAttribute_TemplateConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionRootAttribute("mySubscriptionRootRoute");
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("mySubscriptionRootRoute", attrib.Template);
@@ -133,7 +133,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionRootAttribute_ReturnTypeConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionRootAttribute(typeof(SubscriptionAttributeTests));
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -147,7 +147,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionRootAttribute_MultiTypeConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionRootAttribute(typeof(SubscriptionAttributeTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionRootAttribute_TemplateMultiTypeConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionRootAttribute("myField", typeof(SubscriptionAttributeTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
@@ -176,7 +176,7 @@ namespace GraphQL.AspNet.Tests.Attributes
         public void SubscriptionRootAttribute_UnionConstructor_PropertyCheck()
         {
             var attrib = new SubscriptionRootAttribute("myField", "myUnionType", typeof(SubscriptionAttributeTests), typeof(GraphFieldAttribute));
-            Assert.AreEqual(SchemaItemCollections.Subscription, attrib.FieldType);
+            Assert.AreEqual(ItemPathRoots.Subscription, attrib.FieldType);
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);

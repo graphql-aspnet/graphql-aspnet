@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
     [DebuggerDisplay("Field: {Name}")]
     internal class Introspection_SchemaField : MethodGraphField
     {
-        private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(SchemaItemCollections.Query, Constants.ReservedNames.SCHEMA_FIELD);
+        private static readonly ItemPath FIELD_PATH = new ItemPath(ItemPathRoots.Query, Constants.ReservedNames.SCHEMA_FIELD);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_SchemaField"/> class.
@@ -48,9 +48,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
         }
 
         /// <inheritdoc />
-        public override IGraphField Clone(IGraphType parent)
+        public override IGraphField Clone(ISchemaItem parent = null, string fieldName = null, GraphTypeExpression typeExpression = null)
         {
-            throw new NotImplementedException("Introspection related fields cannot be cloned.");
+            if (fieldName != null)
+                throw new NotSupportedException($"{nameof(Introspection_SchemaField)} does not support field name changes.");
+            if (typeExpression != null)
+                throw new NotSupportedException($"{nameof(Introspection_SchemaField)} does not support type expression changes.");
+
+            var item = new Introspection_SchemaField(this.IntrospectedSchema);
+
+            item.Parent = parent ?? this.Parent;
+            item.Description = this.Description;
+
+            return item;
         }
 
         /// <inheritdoc />

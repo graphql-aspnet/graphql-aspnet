@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 valueName = Constants.Routing.ENUM_VALUE_META_NAME;
 
             valueName = valueName.Replace(Constants.Routing.ENUM_VALUE_META_NAME, this.FieldInfo.Name);
-            this.Route = new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, valueName));
+            this.ItemPath = new ItemPath(ItemPath.Join(this.Parent.ItemPath.Path, valueName));
 
             if (string.IsNullOrWhiteSpace(this.InternalName))
                 this.InternalName = $"{this.Parent.InternalName}.{this.FieldInfo.Name}";

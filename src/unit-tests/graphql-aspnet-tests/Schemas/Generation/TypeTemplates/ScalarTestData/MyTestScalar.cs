@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ScalarTestData
             this.ValueType = ScalarValueType.Boolean;
             this.Name = "myScalar";
             this.Description = "myScalar Desc";
-            this.Route = new SchemaItemPath(SchemaItemCollections.Scalars, this.Name);
+            this.ItemPath = new ItemPath(ItemPathRoots.Types, this.Name);
             this.InternalName = "My.Test.Scalar";
             this.ObjectType = typeof(MyTestObject);
             this.SourceResolver = Substitute.For<ILeafValueResolver>();
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ScalarTestData
 
         public string InternalName { get; }
 
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ScalarTestData
 
         public string Description { get; set; }
 
-        public IScalarGraphType Clone(string newName)
+        public IGraphType Clone(string typeName = null)
         {
             throw new NotImplementedException();
         }

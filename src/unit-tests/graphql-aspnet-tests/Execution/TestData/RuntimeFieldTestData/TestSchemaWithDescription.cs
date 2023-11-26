@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.TestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTestData
 {
     using GraphQL.AspNet.Schemas;
 

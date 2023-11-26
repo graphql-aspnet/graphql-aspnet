@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 true,
                 false);
 
-            this.Route = new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, this.Name));
+            this.ItemPath = new ItemPath(ItemPath.Join(this.Parent.ItemPath.Path, this.Name));
 
             // parse all input parameters into the method
             foreach (var parameter in this.Method.GetParameters())
@@ -267,7 +267,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public string Description { get; private set; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; private set; }
+        public ItemPath ItemPath { get; private set; }
 
         /// <inheritdoc />
         public IReadOnlyList<IGraphArgumentTemplate> Arguments => _arguments;
@@ -313,5 +313,8 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
         /// <inheritdoc />
         public IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; private set; }
+
+        /// <inheritdoc />
+        public bool IsCustomTypeExpression => false;
     }
 }

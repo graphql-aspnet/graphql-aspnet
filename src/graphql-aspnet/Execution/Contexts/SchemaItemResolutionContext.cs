@@ -137,10 +137,10 @@ namespace GraphQL.AspNet.Execution.Contexts
         public ISchema Schema { get; }
 
         /// <summary>
-        /// Gets the route to the item being resolved.
+        /// Gets the path to the item being resolved.
         /// </summary>
-        /// <value>The route.</value>
-        public abstract SchemaItemPath Route { get; }
+        /// <value>The path of the item being resolved.</value>
+        public abstract ItemPath ItemPath { get; }
 
         /// <summary>
         /// Gets the set of arguments defined on the schema that are to be resolved to fulfill this request.

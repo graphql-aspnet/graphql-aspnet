@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == directive));
-            Assert.AreEqual("[directive]/myDirective", directive.Route.Path);
+            Assert.AreEqual("[directive]/myDirective", directive.ItemPath.Path);
             Assert.IsNull(directive.ReturnType);
             Assert.IsNull(directive.Resolver);
 
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == directive));
-            Assert.AreEqual("[directive]/myDirective", directive.Route.Path);
+            Assert.AreEqual("[directive]/myDirective", directive.ItemPath.Path);
             Assert.IsNull(directive.ReturnType);
             Assert.AreEqual(typeof(int), directive.Resolver.Method.ReturnType);
         }

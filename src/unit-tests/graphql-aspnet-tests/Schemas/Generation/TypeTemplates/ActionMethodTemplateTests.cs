@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var mockController = Substitute.For<IGraphControllerTemplate>();
             mockController.InternalName.Returns(typeof(TControllerType).Name);
-            mockController.Route.Returns(new SchemaItemPath("path0"));
+            mockController.ItemPath.Returns(new ItemPath("path0"));
             mockController.Name.Returns("path0");
             mockController.ObjectType.Returns(typeof(TControllerType));
 
@@ -52,14 +52,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual("MethodDescription", action.Description);
             Assert.AreEqual(typeof(OneMethodController), action.SourceObjectType);
             Assert.AreEqual(typeof(OneMethodController), action.Parent.ObjectType);
-            Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
-            Assert.AreEqual("[query]/path0/path1", action.Route.Path);
+            Assert.AreEqual(ItemPathRoots.Query, action.ItemPath.Root);
+            Assert.AreEqual("[query]/path0/path1", action.ItemPath.Path);
             Assert.AreEqual($"{nameof(OneMethodController)}.{nameof(OneMethodController.MethodWithBasicAttribtributes)}", action.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, action.Parent.ObjectType);
             Assert.AreEqual("path0", action.Parent.Name);
             Assert.AreEqual(methodInfo, action.Method);
             Assert.AreEqual(0, action.Arguments.Count);
-            Assert.IsFalse(action.Route.IsTopLevelField);
+            Assert.IsFalse(action.ItemPath.IsTopLevelField);
             Assert.IsFalse(action.IsAsyncField);
         }
 
@@ -69,10 +69,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var action = this.CreateActionTemplate<ContainerController>(nameof(ContainerController.RootMethod));
             action.ValidateOrThrow();
 
-            Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
+            Assert.AreEqual(ItemPathRoots.Query, action.ItemPath.Root);
             Assert.AreEqual(0, action.Arguments.Count);
             Assert.IsFalse(action.IsAsyncField);
-            Assert.AreEqual("[query]/path22", action.Route.Path);
+            Assert.AreEqual("[query]/path22", action.ItemPath.Path);
         }
 
         [Test]
@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var action = this.CreateActionTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
             action.ValidateOrThrow();
 
-            Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
+            Assert.AreEqual(ItemPathRoots.Query, action.ItemPath.Root);
             Assert.IsNotNull(action.UnionProxy);
             Assert.AreEqual(2, action.UnionProxy.Types.Count);
             Assert.AreEqual(action.ObjectType, typeof(object));
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var action = this.CreateActionTemplate<UnionTestController>(nameof(UnionTestController.UnionViaProxy));
             action.ValidateOrThrow();
 
-            Assert.AreEqual(SchemaItemCollections.Query, action.Route.RootCollection);
+            Assert.AreEqual(ItemPathRoots.Query, action.ItemPath.Root);
             Assert.IsNotNull(action.UnionProxy);
             Assert.AreEqual(typeof(UnionTestProxy), action.UnionProxy.GetType());
         }

@@ -9,8 +9,10 @@
 
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
+    using GraphQL.AspNet.Execution;
+
     /// <summary>
-    /// Extension helper methods for <see cref="GraphArgumentModifiers"/>.
+    /// Extension helper methods for <see cref="ParameterModifiers"/>.
     /// </summary>
     public static class GraphArgumentModifiersExtensions
     {
@@ -20,9 +22,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="modifiers">The modifiers to check.</param>
         /// <returns><c>true</c> if the parameters represent the resolver context; otherwise, <c>false</c>.</returns>
-        public static bool IsResolverContext(this GraphArgumentModifiers modifiers)
+        public static bool IsResolverContext(this ParameterModifiers modifiers)
         {
-            return modifiers == GraphArgumentModifiers.ResolutionContext;
+            return modifiers == ParameterModifiers.ResolutionContext;
         }
 
         /// <summary>
@@ -30,9 +32,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="modifier">The modifier set to check.</param>
         /// <returns><c>true</c> if the modifers set declares the parent field reslt modifer.</returns>
-        public static bool IsSourceParameter(this GraphArgumentModifiers modifier)
+        public static bool IsSourceParameter(this ParameterModifiers modifier)
         {
-            return modifier == GraphArgumentModifiers.ParentFieldResult;
+            return modifier == ParameterModifiers.ParentFieldResult;
         }
 
         /// <summary>
@@ -41,9 +43,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="modifier">The modifier set to check.</param>
         /// <returns><c>true</c> if the modifers set declares the internal modifer.</returns>
-        public static bool IsCancellationToken(this GraphArgumentModifiers modifier)
+        public static bool IsCancellationToken(this ParameterModifiers modifier)
         {
-            return modifier == GraphArgumentModifiers.CancellationToken;
+            return modifier == ParameterModifiers.CancellationToken;
         }
 
         /// <summary>
@@ -52,9 +54,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="modifier">The modifier to check.</param>
         /// <returns><c>true</c> if the modifier indicate the argument is part of the schema; otherwise, <c>false</c>.</returns>
-        public static bool CouldBePartOfTheSchema(this GraphArgumentModifiers modifier)
+        public static bool CouldBePartOfTheSchema(this ParameterModifiers modifier)
         {
-            return modifier == GraphArgumentModifiers.None ||
+            return modifier == ParameterModifiers.None ||
                    modifier.IsExplicitlyPartOfTheSchema();
         }
 
@@ -64,9 +66,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="modifier">The modifier to check.</param>
         /// <returns><c>true</c> if the modifier indicate the argument is explicitly declared to be a part of the schema; otherwise, <c>false</c>.</returns>
-        public static bool IsExplicitlyPartOfTheSchema(this GraphArgumentModifiers modifier)
+        public static bool IsExplicitlyPartOfTheSchema(this ParameterModifiers modifier)
         {
-            return modifier == GraphArgumentModifiers.ExplicitSchemaItem;
+            return modifier == ParameterModifiers.ExplicitSchemaItem;
         }
 
         /// <summary>
@@ -75,10 +77,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="modifier">The modifier to check.</param>
         /// <returns><c>true</c> if the modifier indicate the argument is to be resolved from a DI continer; otherwise, <c>false</c>.</returns>
-        public static bool IsInjected(this GraphArgumentModifiers modifier)
+        public static bool IsInjected(this ParameterModifiers modifier)
         {
-            return modifier == GraphArgumentModifiers.ExplicitInjected ||
-                modifier == GraphArgumentModifiers.ImplicitInjected;
+            return modifier == ParameterModifiers.ExplicitInjected ||
+                modifier == ParameterModifiers.ImplicitInjected;
         }
 
         /// <summary>
@@ -86,9 +88,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="modifier">The modifier to check.</param>
         /// <returns><c>true</c> if the parameters represent the global http context for the request; otherwise, <c>false</c>.</returns>
-        public static bool IsHttpContext(this GraphArgumentModifiers modifier)
+        public static bool IsHttpContext(this ParameterModifiers modifier)
         {
-            return modifier == GraphArgumentModifiers.HttpContext;
+            return modifier == ParameterModifiers.HttpContext;
         }
     }
 }

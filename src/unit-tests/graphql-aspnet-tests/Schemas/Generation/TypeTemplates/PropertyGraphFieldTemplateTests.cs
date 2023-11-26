@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_DescriptionAttribute_SetsValue()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var parent = obj;
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_DepreciationAttribute_SetsValues()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var parent = obj;
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_PropertyAsAnObject_SetsReturnTypeCorrectly()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var parent = obj;
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_PropertyAsAList_SetsReturnType_AsCoreItemNotTheList()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var parent = obj;
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_SecurityPolices_AreAdded()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var parent = obj;
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_InvalidName_ThrowsException()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var parent = obj;
@@ -129,7 +129,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_SkipDefined_ThrowsException()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var parent = obj;
@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_BasicObject_PropertyWithNoGetter_ThrowsException()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var parent = obj;
@@ -169,7 +169,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_BasicObject_PropertyReturnsArray_YieldsTemplate()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
@@ -191,7 +191,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_BasicObject_PropertyReturnsArrayOfKeyValuePair_YieldsTemplate()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
@@ -214,7 +214,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_AssignedDirective_IsTemplatized()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
@@ -239,7 +239,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void InvalidTypeExpression_ThrowsException()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var parent = obj;
@@ -258,7 +258,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void Parse_InternalName_IsSetCorrectly()
         {
             var obj = Substitute.For<IObjectGraphTypeTemplate>();
-            obj.Route.Returns(new SchemaItemPath("[type]/Item0"));
+            obj.ItemPath.Returns(new ItemPath("[type]/Item0"));
             obj.InternalName.Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(

@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
-    using GraphQL.AspNet.Tests.Internal.Templating.InterfaceTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.InterfaceTestData;
     using NUnit.Framework;
@@ -31,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.IsNotNull(template);
-            Assert.AreEqual("[type]/ISimpleInterface", template.Route.Path);
+            Assert.AreEqual("[type]/ISimpleInterface", template.ItemPath.Path);
             Assert.AreEqual(null, template.Description);
             Assert.AreEqual(typeof(ISimpleInterface), template.ObjectType);
             Assert.AreEqual(2, Enumerable.Count<IGraphFieldTemplate>(template.FieldTemplates));
@@ -68,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.IsNotNull(template);
-            Assert.AreEqual("[type]/ITestableInterfaceImplementation", template.Route.Path);
+            Assert.AreEqual("[type]/ITestableInterfaceImplementation", template.ItemPath.Path);
             Assert.AreEqual(typeof(ITestableInterfaceImplementation), template.ObjectType);
             Assert.AreEqual(5, Enumerable.Count<Type>(template.DeclaredInterfaces));
 

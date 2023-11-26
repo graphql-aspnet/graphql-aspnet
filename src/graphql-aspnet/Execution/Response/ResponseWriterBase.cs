@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Execution.Response
         {
             Validation.ThrowIfNull(schema, nameof(schema));
             this.TimeLocalizer = schema.Configuration.ResponseOptions.TimeStampLocalizer;
-            this.NameFormatter = schema.Configuration.DeclarationOptions.GraphNamingFormatter;
+            this.Formatter = schema.Configuration.DeclarationOptions.SchemaFormatStrategy;
 
             this.SerializerSettings = _serializerSettings;
         }
@@ -248,7 +248,7 @@ namespace GraphQL.AspNet.Execution.Response
             }
 
             if (value.GetType().IsEnum)
-                value = this.NameFormatter.FormatEnumValueName(value.ToString());
+                value = this.Formatter.FormatEnumValueName(value.ToString());
 
             switch (value)
             {
@@ -374,7 +374,7 @@ namespace GraphQL.AspNet.Execution.Response
         /// Gets the formatter used when writing graph names to the stream.
         /// </summary>
         /// <value>The name formatter.</value>
-        protected virtual GraphNameFormatter NameFormatter { get; }
+        protected virtual GraphSchemaFormatStrategy Formatter { get; }
 
         /// <summary>
         /// Gets a set of settings to use whenever the serializer needs to be directly invoked.

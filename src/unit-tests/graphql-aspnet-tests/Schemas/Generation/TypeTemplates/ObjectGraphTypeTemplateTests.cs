@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
-    using GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ObjectTypeTests;
     using NUnit.Framework;
@@ -47,7 +46,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.IsNotNull(template);
-            Assert.AreEqual("[type]/SimpleObjectNoMethods", template.Route.Path);
+            Assert.AreEqual("[type]/SimpleObjectNoMethods", template.ItemPath.Path);
             Assert.AreEqual(null, template.Description);
             Assert.AreEqual(typeof(SimpleObjectNoMethods), template.ObjectType);
             Assert.AreEqual(0, template.FieldTemplates.Count());
@@ -62,7 +61,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.IsNotNull(template);
-            Assert.AreEqual("[type]/SimpleStructNoMethods", template.Route.Path);
+            Assert.AreEqual("[type]/SimpleStructNoMethods", template.ItemPath.Path);
             Assert.AreEqual(null, template.Description);
             Assert.AreEqual(typeof(SimpleStructNoMethods), template.ObjectType);
             Assert.AreEqual(0, template.FieldTemplates.Count());
@@ -158,8 +157,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.IsNotNull(template);
 
             Assert.AreEqual(2, template.FieldTemplates.Count());
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/{nameof(TwoMethodsWithSameNameWithAttributeDiff)}/{nameof(TwoMethodsWithSameNameWithAttributeDiff.Method1)}"));
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/{nameof(TwoMethodsWithSameNameWithAttributeDiff)}/MethodA"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.ItemPath.Path == $"[type]/{nameof(TwoMethodsWithSameNameWithAttributeDiff)}/{nameof(TwoMethodsWithSameNameWithAttributeDiff.Method1)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.ItemPath.Path == $"[type]/{nameof(TwoMethodsWithSameNameWithAttributeDiff)}/MethodA"));
         }
 
         [Test]
@@ -172,8 +171,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.IsNotNull(template);
 
             Assert.AreEqual(2, template.FieldTemplates.Count());
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/{nameof(StructTwoMethodsWithSameNameWithAttributeDiff)}/{nameof(TwoMethodsWithSameNameWithAttributeDiff.Method1)}"));
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/{nameof(StructTwoMethodsWithSameNameWithAttributeDiff)}/MethodA"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.ItemPath.Path == $"[type]/{nameof(StructTwoMethodsWithSameNameWithAttributeDiff)}/{nameof(TwoMethodsWithSameNameWithAttributeDiff.Method1)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.ItemPath.Path == $"[type]/{nameof(StructTwoMethodsWithSameNameWithAttributeDiff)}/MethodA"));
         }
 
         [Test]
@@ -181,7 +180,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new ObjectGraphTypeTemplate(typeof(SchemaItemCollections));
+                var template = new ObjectGraphTypeTemplate(typeof(ItemPathRoots));
             });
         }
 
@@ -377,8 +376,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             Assert.AreEqual(2, template.FieldTemplates.Count());
 
-            Assert.IsNotNull(template.FieldTemplates.SingleOrDefault(x => x.Route.Name == nameof(ObjectWithStatics.InstanceProperty)));
-            Assert.IsNotNull(template.FieldTemplates.SingleOrDefault(x => x.Route.Name == nameof(ObjectWithStatics.InstanceMethod)));
+            Assert.IsNotNull(template.FieldTemplates.SingleOrDefault(x => x.ItemPath.Name == nameof(ObjectWithStatics.InstanceProperty)));
+            Assert.IsNotNull(template.FieldTemplates.SingleOrDefault(x => x.ItemPath.Name == nameof(ObjectWithStatics.InstanceMethod)));
         }
 
         [Test]

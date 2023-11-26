@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Logging.GeneralEvents
             : base(LogEventIds.SchemaItemAuthenticationStarted)
         {
             this.PipelineRequestId = context?.Request?.Id.ToString();
-            this.SchemaItemPath = context?.SecureSchemaItem?.Route?.Path;
+            this.SchemaItemPath = context?.SecureSchemaItem?.ItemPath?.Path;
         }
 
         /// <summary>

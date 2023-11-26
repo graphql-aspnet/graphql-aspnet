@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
 
                 if (directive == null)
                 {
-                    result = new RouteNotFoundGraphActionResult(
+                    result = new PathNotFoundGraphActionResult(
                         $"The directive '{action.InternalName}' " +
                         "was not found in the scoped service provider. Any directives that have constructor parameters " +
                         $"must also be registered to the service provider; Try using '{nameof(SchemaOptions.AddGraphType)}' " +

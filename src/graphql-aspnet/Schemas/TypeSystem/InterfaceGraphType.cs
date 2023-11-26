@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -32,23 +33,23 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="name">The name of the interface as it will appear in the schema.</param>
         /// <param name="internalName">The internal name of the interface as defined in source code.</param>
         /// <param name="concreteType">The concrete type representing this interface.</param>
-        /// <param name="route">The route path that identifies this interface.</param>
+        /// <param name="itemPath">The item path that identifies this interface.</param>
         /// <param name="directives">The directives to apply to this type
         /// when its added to a schema.</param>
         public InterfaceGraphType(
             string name,
             string internalName,
             Type concreteType,
-            SchemaItemPath route,
+            ItemPath itemPath,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
             this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.InterfaceNames = new HashSet<string>();
 
-            _fieldSet = new GraphFieldCollection(this);
+            _fieldSet = new GraphFieldCollection();
 
             this.Publish = true;
 
@@ -58,8 +59,37 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
+        public virtual IGraphType Clone(string typeName = null)
+        {
+            typeName = typeName?.Trim() ?? this.Name;
+            var itemPath = this.ItemPath.Clone().Parent.CreateChild(typeName);
+
+            var clonedItem = new InterfaceGraphType(
+                typeName,
+                this.InternalName,
+                this.ObjectType,
+                itemPath,
+                this.AppliedDirectives);
+
+            clonedItem.Description = this.Description;
+            clonedItem.Publish = this.Publish;
+
+            foreach (var item in this.InterfaceNames)
+                clonedItem.InterfaceNames.Add(item);
+
+            foreach (var field in this.Fields.Where(x => !(x is Introspection_TypeNameMetaField)))
+                clonedItem.Extend(field);
+
+            return clonedItem;
+        }
+
+        /// <inheritdoc />
         public IGraphField Extend(IGraphField newField)
         {
+            Validation.ThrowIfNull(newField, nameof(newField));
+            if (newField.Parent != this)
+                newField = newField.Clone(parent: this);
+
             return _fieldSet.AddField(newField);
         }
 
@@ -98,7 +128,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         /// <inheritdoc />
         public Type ObjectType { get; }

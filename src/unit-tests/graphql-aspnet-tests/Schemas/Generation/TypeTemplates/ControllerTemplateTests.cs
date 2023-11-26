@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
-    using GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ControllerTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using NUnit.Framework;
@@ -33,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual(SchemaItemPath.Empty, template.Route);
+            Assert.AreEqual(ItemPath.Empty, template.ItemPath);
         }
 
         [Test]
@@ -58,9 +57,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual(3, Enumerable.Count<IGraphFieldTemplate>(template.FieldTemplates));
             Assert.AreEqual(2, Enumerable.Count<IGraphFieldTemplate>(template.Actions));
             Assert.AreEqual(1, Enumerable.Count<IGraphFieldTemplate>(template.Extensions));
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[mutation]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[query]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.Path == $"[type]/TwoPropertyObject/Property3"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.ItemPath.Path == $"[mutation]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.ItemPath.Path == $"[query]/TwoMethodsDifferentRoots/{nameof(TwoMethodsDifferentRootsController.ActionMethodNoAttributes)}"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.ItemPath.Path == $"[type]/TwoPropertyObject/Property3"));
         }
 
         [Test]

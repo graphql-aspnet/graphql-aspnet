@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
+namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimeFieldDeclarations
 {
     using System.Linq;
     using GraphQL.AspNet.Attributes;
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
-            Assert.AreEqual("[type]/TwoPropertyObject/mytypeExt", typeExt.Route.Path);
+            Assert.AreEqual("[type]/TwoPropertyObject/mytypeExt", typeExt.ItemPath.Path);
             Assert.IsNull(typeExt.ReturnType);
             Assert.IsNull(typeExt.Resolver);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, typeExt.ExecutionMode);
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
-            Assert.AreEqual("[type]/TwoPropertyObject/mytypeExt", typeExt.Route.Path);
+            Assert.AreEqual("[type]/TwoPropertyObject/mytypeExt", typeExt.ItemPath.Path);
             Assert.IsNull(typeExt.ReturnType);
             Assert.IsNotNull(typeExt.Resolver);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, typeExt.ExecutionMode);
@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
-            Assert.AreEqual("[type]/TwoPropertyObject/mytypeExt", typeExt.Route.Path);
+            Assert.AreEqual("[type]/TwoPropertyObject/mytypeExt", typeExt.ItemPath.Path);
             Assert.IsNull(typeExt.ReturnType);
             Assert.IsNull(typeExt.Resolver);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, typeExt.ExecutionMode);
@@ -134,7 +134,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.RuntimetypeExtDeclarations
 
             Assert.AreEqual(1, options.RuntimeTemplates.Count());
             Assert.IsNotNull(options.RuntimeTemplates.FirstOrDefault(x => x == typeExt));
-            Assert.AreEqual("[type]/TwoPropertyObject/mytypeExt", typeExt.Route.Path);
+            Assert.AreEqual("[type]/TwoPropertyObject/mytypeExt", typeExt.ItemPath.Path);
             Assert.IsNull(typeExt.ReturnType);
             Assert.AreEqual(typeof(int), typeExt.Resolver.Method.ReturnType);
         }

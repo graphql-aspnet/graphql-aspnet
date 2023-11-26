@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema the route was registered for.</typeparam>
         /// <param name="routePath">The relative route path (e.g. '/graphql').</param>
-        void SchemaRouteRegistered<TSchema>(string routePath)
+        void SchemaUrlRouteRegistered<TSchema>(string routePath)
             where TSchema : class, ISchema;
 
         /// <summary>

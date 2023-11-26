@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(returnType);
                 this.TypeExpression = GraphTypeExpression
                     .FromType(returnType, this.DeclaredTypeWrappers ?? wrappers)
-                    .CloneTo(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
+                    .Clone(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
                 this.PossibleObjectTypes.Insert(0, this.ObjectType);
             }
@@ -117,11 +117,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 
             // a specialized redeclaration of this rule on the type extension to
             // better contextualize the message to be just the template value
-            if (this.Route == null || !this.Route.IsValid)
+            if (this.ItemPath == null || !this.ItemPath.IsValid)
             {
                 throw new GraphTypeDeclarationException(
                         $"The type extension '{this.InternalName}' declares an invalid field name of '{_typeAttrib.Template ?? "<null>"}'. " +
-                        $"Each segment of the route must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )",
+                        $"Each segment of the item path must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )",
                         this.ObjectType);
             }
 
@@ -129,17 +129,17 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override SchemaItemPath GenerateFieldPath()
+        protected override ItemPath GenerateFieldPath()
         {
             // extract the parent name from the global meta data about the type being extended
             var parentName = GraphTypeNames.ParseName(_typeAttrib.TypeToExtend, TypeKind.OBJECT);
 
-            // an object method cannot contain any route pathing or nesting like controller methods can
-            // before creating hte route, ensure that the declared name, by itself, is valid for graphql
+            // an object method cannot contain any pathing or nesting like controller methods can
+            // before creating the item path, ensure that the declared name, by itself, is valid for graphql
             var graphName = _typeAttrib.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();
 
-            return new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, parentName, graphName));
+            return new ItemPath(ItemPath.Join(ItemPathRoots.Types, parentName, graphName));
         }
 
         /// <inheritdoc />

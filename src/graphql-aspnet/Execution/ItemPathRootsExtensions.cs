@@ -11,27 +11,27 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// Extension methods for working with <see cref="SchemaItemCollections"/> enumeration.
+    /// Extension methods for working with <see cref="ItemPathRoots"/> enumeration.
     /// </summary>
-    internal static class GraphCollectionExtensions
+    internal static class ItemPathRootsExtensions
     {
         /// <summary>
-        /// Converts the given <see cref="SchemaItemCollections"/> value to
+        /// Converts the given <see cref="ItemPathRoots"/> value to
         /// its equivilant <see cref="GraphOperationType"/> value, if one exists.
         /// </summary>
         /// <param name="collectionItem">The collection item to convert.</param>
         /// <returns>GraphOperationType.</returns>
-        public static GraphOperationType ToGraphOperationType(this SchemaItemCollections collectionItem)
+        public static GraphOperationType ToGraphOperationType(this ItemPathRoots collectionItem)
         {
             switch (collectionItem)
             {
-                case SchemaItemCollections.Query:
+                case ItemPathRoots.Query:
                     return GraphOperationType.Query;
 
-                case SchemaItemCollections.Mutation:
+                case ItemPathRoots.Mutation:
                     return GraphOperationType.Mutation;
 
-                case SchemaItemCollections.Subscription:
+                case ItemPathRoots.Subscription:
                     return GraphOperationType.Subscription;
 
                 default:

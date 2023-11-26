@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.SubscriptionServer
     {
         private readonly object _syncLock = new object();
         private readonly Dictionary<string, ISubscription<TSchema>> _subsById;
-        private readonly Dictionary<SchemaItemPath, HashSet<ISubscription<TSchema>>> _subsByRoute;
+        private readonly Dictionary<ItemPath, HashSet<ISubscription<TSchema>>> _subsByRoute;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionCollection{TSchema}"/> class.
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.SubscriptionServer
         public SubscriptionCollection()
         {
             _subsById = new Dictionary<string, ISubscription<TSchema>>();
-            _subsByRoute = new Dictionary<SchemaItemPath, HashSet<ISubscription<TSchema>>>(SchemaItemPathComparer.Instance);
+            _subsByRoute = new Dictionary<ItemPath, HashSet<ISubscription<TSchema>>>(ItemPathComparer.Instance);
         }
 
         /// <summary>
@@ -57,12 +57,12 @@ namespace GraphQL.AspNet.SubscriptionServer
 
                 _subsById.Add(subscription.Id, subscription);
 
-                if (!_subsByRoute.ContainsKey(subscription.Route))
-                    _subsByRoute.Add(subscription.Route, new HashSet<ISubscription<TSchema>>());
+                if (!_subsByRoute.ContainsKey(subscription.ItemPath))
+                    _subsByRoute.Add(subscription.ItemPath, new HashSet<ISubscription<TSchema>>());
 
-                _subsByRoute[subscription.Route].Add(subscription);
+                _subsByRoute[subscription.ItemPath].Add(subscription);
 
-                return _subsByRoute[subscription.Route].Count;
+                return _subsByRoute[subscription.ItemPath].Count;
             }
         }
 
@@ -91,15 +91,15 @@ namespace GraphQL.AspNet.SubscriptionServer
                     _subsById.Remove(subscriptionId);
                 }
 
-                if (removedSub != null && _subsByRoute.ContainsKey(removedSub.Route))
+                if (removedSub != null && _subsByRoute.ContainsKey(removedSub.ItemPath))
                 {
-                    var hashSet = _subsByRoute[removedSub.Route];
+                    var hashSet = _subsByRoute[removedSub.ItemPath];
                     if (hashSet.Contains(removedSub))
                         hashSet.Remove(removedSub);
 
                     remaining = hashSet.Count;
                     if (remaining == 0)
-                        _subsByRoute.Remove(removedSub.Route);
+                        _subsByRoute.Remove(removedSub.ItemPath);
                 }
             }
 
@@ -109,37 +109,37 @@ namespace GraphQL.AspNet.SubscriptionServer
         /// <summary>
         /// Retrieves the total number of subscriptions registered for the given unique route.
         /// </summary>
-        /// <param name="route">The route to filter by.</param>
+        /// <param name="itemPath">The path to filter by.</param>
         /// <returns>System.Int32.</returns>
-        public int CountByRoute(SchemaItemPath route)
+        public int CountByPath(ItemPath itemPath)
         {
-            if (route == null || !route.IsValid)
+            if (itemPath == null || !itemPath.IsValid)
                 return 0;
 
             lock (_syncLock)
             {
-                if (!_subsByRoute.ContainsKey(route))
+                if (!_subsByRoute.ContainsKey(itemPath))
                     return 0;
 
-                return _subsByRoute[route].Count;
+                return _subsByRoute[itemPath].Count;
             }
         }
 
         /// <summary>
         /// Finds the set all known subscriptions for a given route and returns them.
         /// </summary>
-        /// <param name="route">The route.</param>
+        /// <param name="itemPath">The route.</param>
         /// <returns>IEnumerable&lt;ISubscription&lt;TSchema&gt;&gt;.</returns>
-        public IReadOnlyList<ISubscription<TSchema>> RetreiveByRoute(SchemaItemPath route)
+        public IReadOnlyList<ISubscription<TSchema>> RetreiveByItemPath(ItemPath itemPath)
         {
             List<ISubscription<TSchema>> subs = new List<ISubscription<TSchema>>();
-            if (route != null)
+            if (itemPath != null)
             {
                 lock (_syncLock)
                 {
-                    if (_subsByRoute.ContainsKey(route))
+                    if (_subsByRoute.ContainsKey(itemPath))
                     {
-                        subs.AddRange(_subsByRoute[route]);
+                        subs.AddRange(_subsByRoute[itemPath]);
                     }
                 }
             }

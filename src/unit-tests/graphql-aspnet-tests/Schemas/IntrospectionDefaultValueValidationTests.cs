@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var introspectedType = new IntrospectedType(graphType);
             var inputField = Substitute.For<IInputGraphField>();
-            inputField.Route.Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
+            inputField.ItemPath.Returns(new ItemPath(ItemPathRoots.Types, "inputobject", "field1"));
             inputField.TypeExpression.Returns(GraphTypeExpression.FromDeclaration(typeExpression));
 
             var introspectedField = new IntrospectedInputValueType(inputField, introspectedType, defaultValue);
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var introspectedType = new IntrospectedType(graphType);
             var argument = Substitute.For<IGraphArgument>();
-            argument.Route.Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
+            argument.ItemPath.Returns(new ItemPath(ItemPathRoots.Types, "inputobject", "field1"));
             argument.DefaultValue.Returns(defaultValue);
             argument.TypeExpression.Returns(GraphTypeExpression.FromDeclaration(typeExpression));
             argument.HasDefaultValue.Returns(hasDefaultValue);
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             var introspectedType = new IntrospectedType(graphType);
             var inputField = Substitute.For<IInputGraphField>();
-            inputField.Route.Returns(new SchemaItemPath(SchemaItemCollections.Types, "inputobject", "field1"));
+            inputField.ItemPath.Returns(new ItemPath(ItemPathRoots.Types, "inputobject", "field1"));
             inputField.TypeExpression.Returns(GraphTypeExpression.FromDeclaration(typeExpression));
 
             var introspectedField = new IntrospectedInputValueType(inputField, introspectedType);

@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var sub = Substitute.For<ISubscription>();
             sub.Id.Returns("sub1");
-            sub.Route.Returns(new SchemaItemPath("[subscription]/bobSub1"));
+            sub.ItemPath.Returns(new ItemPath("[subscription]/bobSub1"));
 
             var entry = new ClientProxySubscriptionCreatedLogEntry(client, sub);
 
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var sub = Substitute.For<ISubscription>();
             sub.Id.Returns("sub1");
-            sub.Route.Returns(new SchemaItemPath("[subscription]/bobSub1"));
+            sub.ItemPath.Returns(new ItemPath("[subscription]/bobSub1"));
 
             var entry = new ClientProxySubscriptionStoppedLogEntry(client, sub);
 
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var subs = new List<ISubscription>();
             subs.Add(sub);
 
-            var fieldPath = new SchemaItemPath("[subscription]/bob1");
+            var fieldPath = new ItemPath("[subscription]/bob1");
 
             var entry = new ClientProxySubscriptionEventReceived<GraphSchema>(
                 proxy,

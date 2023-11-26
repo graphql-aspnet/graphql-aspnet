@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
                         if (_policyProvider == null)
                         {
                             var result = SchemaItemSecurityChallengeResult.Fail(
-                                $"A named policy '{rule.PolicyName}' has been applied to the schema item '{schemaItem.Route}' but " +
+                                $"A named policy '{rule.PolicyName}' has been applied to the schema item '{schemaItem.ItemPath}' but " +
                                 $"no policy provider is configured that can handle it.");
 
                             return new CachedRequirements(
@@ -134,7 +134,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
                         if (policy == null)
                         {
                             var result = SchemaItemSecurityChallengeResult.Fail(
-                                $"The schema item '{schemaItem.Route}' named policy '{rule.PolicyName}' has been applied to the schema item '{schemaItem.Name}' but " +
+                                $"The schema item '{schemaItem.ItemPath}' named policy '{rule.PolicyName}' has been applied to the schema item '{schemaItem.Name}' but " +
                                 $"no policy provider is configured that can handle it.");
 
                             return new CachedRequirements(
@@ -180,7 +180,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
                 && !allowDefaultSchemeFallThrough)
             {
                 var result = SchemaItemSecurityChallengeResult.Fail(
-                    $"The schema item '{schemaItem.Route}' has mismatched required authentication schemes in its applied security groups. It contains " +
+                    $"The schema item '{schemaItem.ItemPath}' has mismatched required authentication schemes in its applied security groups. It contains " +
                     $"no scenarios where an authentication scheme can be used to authenticate a user to all possible required authorizations.");
 
                 return new CachedRequirements(

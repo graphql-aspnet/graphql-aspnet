@@ -41,17 +41,6 @@ namespace GraphQL.AspNet.Interfaces.Schema
         string SpecifiedByUrl { get; set; }
 
         /// <summary>
-        /// Clones this scalar instance to an exact copy with a new type name. This new type name.
-        /// </summary>
-        /// <param name="newName">The new name to assign to the scalar instance.</param>
-        /// <remarks>
-        /// This method is used during schema generation to generate a graph type named accoridng to the
-        /// schema's naming rules.
-        /// </remarks>
-        /// <returns>IScalarGraphType.</returns>
-        IScalarGraphType Clone(string newName);
-
-        /// <summary>
         /// Serializes the scalar from its object representation to a
         /// value that can be used in JSON serialziation. For most scalars this is
         /// a conversion to a valid string represnetation.

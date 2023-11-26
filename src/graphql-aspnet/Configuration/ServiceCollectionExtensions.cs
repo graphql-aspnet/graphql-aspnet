@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;

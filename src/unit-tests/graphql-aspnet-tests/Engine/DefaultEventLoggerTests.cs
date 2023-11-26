@@ -141,17 +141,17 @@ namespace GraphQL.AspNet.Tests.Engine
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphEventLogger x) => x.SchemaRouteRegistered<GraphSchema>(null),
+                    (DefaultGraphEventLogger x) => x.SchemaUrlRouteRegistered<GraphSchema>(null),
                     true,
                     typeof(SchemaRouteRegisteredLogEntry<GraphSchema>),
                     LogLevel.Debug,
-                    LogEventIds.SchemaRouteRegistered,
+                    LogEventIds.SchemaUrlRouteRegistered,
                 });
 
             _eventLoggerTestData.Add(
                 new object[]
                 {
-                    (DefaultGraphEventLogger x) => x.SchemaRouteRegistered<GraphSchema>(null),
+                    (DefaultGraphEventLogger x) => x.SchemaUrlRouteRegistered<GraphSchema>(null),
                     false,
                     null,
                     null,

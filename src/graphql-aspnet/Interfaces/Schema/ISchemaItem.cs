@@ -18,11 +18,11 @@ namespace GraphQL.AspNet.Interfaces.Schema
     public interface ISchemaItem : INamedItem
     {
         /// <summary>
-        /// Gets the unique route string assigned to this item
-        /// in the object graph.
+        /// Gets the unique path string assigned to this item
+        /// identifing it's unique location in an object graph.
         /// </summary>
-        /// <value>The route.</value>
-        SchemaItemPath Route { get; }
+        /// <value>The path object assigned to this schema item.</value>
+        ItemPath ItemPath { get; }
 
         /// <summary>
         /// Gets a collection of directives applied to this schema item

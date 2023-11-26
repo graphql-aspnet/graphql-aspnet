@@ -26,11 +26,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="fieldName">Name of the field in the type declaration..</param>
         /// <param name="typeExpression">The meta data about how this type field is implemented.</param>
-        /// <param name="route">The formal route to this field in the object graph.</param>
+        /// <param name="itemPath">The formal path to this field in the object graph.</param>
         /// <param name="internalFullName">The fully qualified name of the method this field respresents, as it was declared
         /// in C# code.</param>
-        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
+        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="mode">The execution mode of this field.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="securityPolicies">The security policies applied to this field.</param>
@@ -39,30 +39,30 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public SubscriptionMethodGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,
-            SchemaItemPath route,
+            ItemPath itemPath,
             string internalFullName,
-            Type objectType = null,
             Type declaredReturnType = null,
+            Type objectType = null,
             Execution.FieldResolutionMode mode = Execution.FieldResolutionMode.PerSourceItem,
             Interfaces.Execution.IGraphFieldResolver resolver = null,
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
             string eventName = null,
             IAppliedDirectiveCollection directives = null)
-            : base(fieldName, internalFullName, typeExpression, route, declaredReturnType, objectType, mode, resolver, securityPolicies, directives)
+            : base(fieldName, internalFullName, typeExpression, itemPath, declaredReturnType, objectType, mode, resolver, securityPolicies, directives)
         {
             this.EventName = eventName;
         }
 
         /// <inheritdoc />
-        protected override MethodGraphField CreateNewInstance(IGraphType parent)
+        protected override MethodGraphField CreateNewInstance()
         {
             return new SubscriptionMethodGraphField(
                 this.Name,
                 this.TypeExpression.Clone(),
-                parent.Route.CreateChild(this.Name),
+                this.ItemPath.Clone(),
                 this.InternalName,
-                this.ObjectType,
                 this.DeclaredReturnType,
+                this.ObjectType,
                 this.Mode,
                 this.Resolver,
                 this.SecurityGroups,

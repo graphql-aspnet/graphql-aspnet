@@ -7,15 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.TypeSystem
+namespace GraphQL.AspNet.Execution
 {
     using System;
 
     /// <summary>
-    /// A set of modifiers that can be assigned to individual arguments on graph fields to modify their behavior
+    /// A set of modifiers that can be assigned to individual parameters on methods to modify their behavior
     /// during execution.
     /// </summary>
-    public enum GraphArgumentModifiers
+    public enum ParameterModifiers
     {
         // implementation note, this used to be a [Flags] enum
         // kept numbering of previous usage to prevent clashing in other libraries.

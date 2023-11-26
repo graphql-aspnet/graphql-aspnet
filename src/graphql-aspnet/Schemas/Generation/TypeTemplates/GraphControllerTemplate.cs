@@ -37,12 +37,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public GraphControllerTemplate(Type controllerType)
             : base(controllerType)
         {
-            this.AllowedSchemaItemCollections = new HashSet<SchemaItemCollections>
+            this.AllowedSchemaItemCollections = new HashSet<ItemPathRoots>
             {
-                SchemaItemCollections.Query,
-                SchemaItemCollections.Mutation,
-                SchemaItemCollections.Subscription,
-                SchemaItemCollections.Types,
+                ItemPathRoots.Query,
+                ItemPathRoots.Mutation,
+                ItemPathRoots.Subscription,
+                ItemPathRoots.Types,
             };
         }
 
@@ -62,21 +62,21 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override SchemaItemPath GenerateFieldPath()
+        protected override ItemPath GenerateFieldPath()
         {
             var skipControllerLevelField = this.ObjectType.SingleAttributeOrDefault<GraphRootAttribute>();
             if (skipControllerLevelField != null)
-                return SchemaItemPath.Empty;
+                return ItemPath.Empty;
 
             string template = null;
-            var graphRoute = this.ObjectType.SingleAttributeOrDefault<GraphRouteAttribute>();
+            var itemPath = this.ObjectType.SingleAttributeOrDefault<GraphRouteAttribute>();
             var symanticName = this.ObjectType.Name.ReplaceLastInstanceOfCaseInvariant(Constants.CommonSuffix.CONTROLLER_SUFFIX, string.Empty);
 
-            // pull the route fragment from the controller level attribute, replacing any meta tags as appropriate
+            // pull the path fragment from the controller level attribute, replacing any meta tags as appropriate
             // if not found, default the name to the symantic name of the controller type itself (e.g. 'HumansController' becomes 'Humans')
-            if (graphRoute != null)
+            if (itemPath != null)
             {
-                template = graphRoute.Template?.Trim() ?? string.Empty;
+                template = itemPath.Template?.Trim() ?? string.Empty;
                 template = template.Replace(Constants.Routing.CONTOLLER_META_NAME, symanticName);
             }
 
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 template = symanticName;
             }
 
-            return new SchemaItemPath(template);
+            return new ItemPath(template);
         }
 
         /// <inheritdoc />
@@ -99,10 +99,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     $"is reserved for object types. To alter the naming scheme of a controller use '{nameof(GraphRouteAttribute)}' instead.");
             }
 
-            // ensure that root and a route path aren't defined (its one or the other)
+            // ensure that root and an item path aren't defined (its one or the other)
             var skipControllerLevelField = this.AttributeProvider.SingleAttributeOrDefault<GraphRootAttribute>();
-            var graphRoute = this.AttributeProvider.SingleAttributeOrDefault<GraphRouteAttribute>();
-            if (skipControllerLevelField != null && graphRoute != null)
+            var itemPath = this.AttributeProvider.SingleAttributeOrDefault<GraphRouteAttribute>();
+            if (skipControllerLevelField != null && itemPath != null)
             {
                 throw new GraphTypeDeclarationException(
                     $"The graph controller '{this.ObjectType.FriendlyName()}' defines a '{typeof(GraphRootAttribute).FriendlyName()}' and " +
@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         /// Gets operation types to which this object can declare a field.
         /// </summary>
         /// <value>The allowed operation types.</value>
-        protected override HashSet<SchemaItemCollections> AllowedSchemaItemCollections { get; }
+        protected override HashSet<ItemPathRoots> AllowedSchemaItemCollections { get; }
 
         /// <summary>
         /// Gets an enumeration of the extension methods this controller defines.

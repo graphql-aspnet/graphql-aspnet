@@ -41,10 +41,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
          : base(
                name,
                $"{nameof(VirtualObjectGraphType)}_{name}",
-               new SchemaItemPath(SchemaItemCollections.Types, name))
+               new ItemPath(ItemPathRoots.Types, name))
         {
             // add the __typename as a field for this virtual object
-            this.GraphFieldCollection.AddField(new Introspection_TypeNameMetaField(name));
+            this.Extend(new Introspection_TypeNameMetaField(name));
         }
 
         /// <inheritdoc />
@@ -54,9 +54,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public IGraphField Extend(IGraphField newField)
+        public override IGraphType Clone(string typeName = null)
         {
-            return this.GraphFieldCollection.AddField(newField);
+            typeName = typeName?.Trim() ?? this.Name;
+            return new VirtualObjectGraphType(typeName);
         }
 
         /// <inheritdoc />

@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
             SchemaOptions options, string pathTemplate)
             : base(
                   options,
-                  SchemaItemCollections.Subscription,
+                  ItemPathRoots.Subscription,
                   pathTemplate)
         {
         }

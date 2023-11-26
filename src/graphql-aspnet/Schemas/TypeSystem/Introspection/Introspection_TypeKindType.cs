@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                   Constants.ReservedNames.TYPE_KIND_ENUM,
                   nameof(Introspection_TypeKindType),
                   typeof(TypeKind),
-                  new GraphIntrospectionFieldPath(Constants.ReservedNames.TYPE_KIND_ENUM))
+                  new IntrospectedFieldPath(Constants.ReservedNames.TYPE_KIND_ENUM))
         {
             foreach (var value in Enum.GetValues(this.ObjectType))
             {
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                     name,
                     name,
                     description,
-                    this.Route.CreateChild(name),
+                    this.ItemPath.CreateChild(name),
                     value,
                     fi.Name);
 

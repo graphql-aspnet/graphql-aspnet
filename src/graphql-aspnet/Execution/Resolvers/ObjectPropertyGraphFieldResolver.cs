@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             {
                 context.Messages.Critical(
                     "No source data was provided to the field resolver " +
-                    $"for '{context.Request.Field.Route.Path}'. Unable to complete the request.",
+                    $"for '{context.Request.Field.ItemPath.Path}'. Unable to complete the request.",
                     Constants.ErrorCodes.INVALID_OBJECT,
                     context.Request.Origin);
 
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
                 {
                     context.Messages.Critical(
                         "The source data provided to the field resolver " +
-                        $"for '{context.Request.Field.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
+                        $"for '{context.Request.Field.ItemPath.Path}' could not be coerced into the expected source graph type. See exception for details.",
                         Constants.ErrorCodes.INVALID_OBJECT,
                         context.Request.Origin,
                         new GraphExecutionException(
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             {
                 context.Messages.Critical(
                     "The source data provided to the field resolver " +
-                    $"for '{context.Request.Field.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
+                    $"for '{context.Request.Field.ItemPath.Path}' could not be coerced into the expected source graph type. See exception for details.",
                     Constants.ErrorCodes.INVALID_OBJECT,
                     context.Request.Origin,
                     new GraphExecutionException(
@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
                 {
                     throw new GraphExecutionException(
                         $"No {nameof(IGraphQLFieldResolverIsolationManager)} was configured for the request. " +
-                        $"Unable to determine the isolation requirements for the resolver of field '{context.Request.InvocationContext.Field.Route.Path}'");
+                        $"Unable to determine the isolation requirements for the resolver of field '{context.Request.InvocationContext.Field.ItemPath.Path}'");
                 }
 
                 var shouldIsolate = isolationManager.ShouldIsolate(context.Schema, context.Request.Field.FieldSource);
@@ -126,11 +126,11 @@ namespace GraphQL.AspNet.Execution.Resolvers
                     {
                         context.Messages.Critical(
                             "The source data provided to the field resolver " +
-                            $"for '{context.Request.Field.Route.Path}' could not be coerced into the expected source graph type. See exception for details.",
+                            $"for '{context.Request.Field.ItemPath.Path}' could not be coerced into the expected source graph type. See exception for details.",
                             Constants.ErrorCodes.INVALID_OBJECT,
                             context.Request.Origin,
                             new GraphExecutionException(
-                                $"The method '{context.Request.Field.Route.Path}' is defined " +
+                                $"The method '{context.Request.Field.ItemPath.Path}' is defined " +
                                 $"as asyncronous but it did not return a {typeof(Task)}."));
                         invokeReturn = null;
                     }
@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             catch (Exception ex)
             {
                 context.Messages.Critical(
-                    $"An unknown error occured atttempting to resolve the field '{context.Request.Field.Route.Path}'. See exception for details.",
+                    $"An unknown error occured atttempting to resolve the field '{context.Request.Field.ItemPath.Path}'. See exception for details.",
                     Constants.ErrorCodes.UNHANDLED_EXCEPTION,
                     context.Request.Origin,
                     ex);

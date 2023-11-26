@@ -67,13 +67,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             Validation.ThrowIfNullOrReturn(graphType, nameof(graphType));
             fieldName = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
 
-            var fieldRoute = graphType.Route.CreateChild(fieldName);
+            var fieldPath = graphType.ItemPath.CreateChild(fieldName);
 
             var field = new MethodGraphField(
                 fieldName,
                 $"GraphQLExtendedField",
                 typeExpression,
-                fieldRoute,
+                fieldPath,
                 typeof(TReturn),
                 GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
                 FieldResolutionMode.PerSourceItem,

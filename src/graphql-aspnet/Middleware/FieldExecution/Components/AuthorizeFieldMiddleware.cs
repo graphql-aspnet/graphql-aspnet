@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 else
                 {
                     context.Messages.Critical(
-                        $"Access Denied to field {context.Field.Route.Path}",
+                        $"Access Denied to field {context.Field.ItemPath.Path}",
                         Constants.ErrorCodes.ACCESS_DENIED,
                         context.Request.Origin);
                 }

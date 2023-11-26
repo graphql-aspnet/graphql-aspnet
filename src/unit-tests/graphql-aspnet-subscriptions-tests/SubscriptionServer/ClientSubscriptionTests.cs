@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer
                 "abc123");
 
             Assert.IsTrue(sub.IsValid);
-            Assert.AreEqual("[subscription]/WatchObjects", sub.Route.Path);
+            Assert.AreEqual("[subscription]/WatchObjects", sub.ItemPath.Path);
             Assert.AreEqual("abc123", sub.Id);
             Assert.AreEqual(field, sub.Field);
             Assert.AreEqual(result.Client, sub.Client);

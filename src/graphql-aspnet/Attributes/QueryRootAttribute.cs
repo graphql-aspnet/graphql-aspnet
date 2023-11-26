@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Attributes
         /// <param name="returnType">The type of the object returned from this method. If this type implements
         /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type.</param>
         public QueryRootAttribute(string template, Type returnType)
-            : base(true, SchemaItemCollections.Query, template, returnType)
+            : base(true, ItemPathRoots.Query, template, returnType)
         {
         }
 
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Attributes
         public QueryRootAttribute(string template, Type returnType, params Type[] additionalTypes)
             : base(
                   true,
-                  SchemaItemCollections.Query,
+                  ItemPathRoots.Query,
                   template,
                   (new Type[] { returnType }).Concat(additionalTypes ?? Enumerable.Empty<Type>()).ToArray())
         {
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Attributes
         public QueryRootAttribute(string template, string unionTypeName, Type unionTypeA, params Type[] additionalUnionTypes)
             : base(
                 true,
-                SchemaItemCollections.Query,
+                ItemPathRoots.Query,
                 template,
                 unionTypeName,
                 (new Type[] { unionTypeA }).Concat(additionalUnionTypes ?? Enumerable.Empty<Type>()).ToArray())

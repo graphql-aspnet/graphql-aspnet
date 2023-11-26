@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ObjectTypeTests;
     using NUnit.Framework;
@@ -55,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.IsNotNull(template);
-            Assert.AreEqual("[type]/Input_SimpleObjectNoMethods", template.Route.Path);
+            Assert.AreEqual("[type]/Input_SimpleObjectNoMethods", template.ItemPath.Path);
             Assert.AreEqual(null, template.Description);
             Assert.AreEqual(typeof(SimpleObjectNoMethods), template.ObjectType);
             Assert.AreEqual(0, template.FieldTemplates.Count());
@@ -72,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             template.ValidateOrThrow();
 
             Assert.IsNotNull(template);
-            Assert.AreEqual("[type]/Input_SimpleStructNoMethods", template.Route.Path);
+            Assert.AreEqual("[type]/Input_SimpleStructNoMethods", template.ItemPath.Path);
             Assert.AreEqual(null, template.Description);
             Assert.AreEqual(typeof(SimpleStructNoMethods), template.ObjectType);
             Assert.AreEqual(0, template.FieldTemplates.Count());
@@ -175,7 +174,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new InputObjectGraphTypeTemplate(typeof(SchemaItemCollections));
+                var template = new InputObjectGraphTypeTemplate(typeof(ItemPathRoots));
             });
         }
 

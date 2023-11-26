@@ -65,6 +65,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var method1 = objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(TypeCreationItem.Method1));
 
             Assert.IsNotNull(method1);
+            Assert.AreEqual(objectGraphType, method1.Parent);
             CollectionAssert.AreEqual(new MetaGraphTypes[] { MetaGraphTypes.IsNotNull }, method1.TypeExpression.Wrappers); // double cant return as null
             Assert.AreEqual(Constants.ScalarNames.DOUBLE, method1.TypeExpression.TypeName);
             Assert.AreEqual(3, method1.Arguments.Count);
@@ -96,6 +97,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             Assert.IsNotNull(method2);
             Assert.IsEmpty(method2.TypeExpression.Wrappers);
             Assert.AreEqual(nameof(TwoPropertyObject), method2.TypeExpression.TypeName);
+            Assert.AreEqual(objectGraphType, method2.Parent);
 
             arg1 = method2.Arguments["arg1"];
             arg2 = method2.Arguments["arg2"];
@@ -115,6 +117,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             Assert.IsNotNull(prop1);
             Assert.IsEmpty(prop1.TypeExpression.Wrappers);
             Assert.AreEqual(Constants.ScalarNames.STRING, prop1.TypeExpression.TypeName);
+            Assert.AreEqual(objectGraphType, prop1.Parent);
         }
 
         [Test]

@@ -70,28 +70,27 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
             var directives = directiveTemplates.CreateAppliedDirectives();
 
-            var formatter = _config.DeclarationOptions.GraphNamingFormatter;
-            var name = formatter.FormatGraphTypeName(proxy.Name);
             var union = new UnionGraphType(
-                name,
+                proxy.Name,
                 proxy.InternalName,
                 (IUnionGraphTypeMapper)proxy,
-                new SchemaItemPath(SchemaItemCollections.Types, name),
+                new ItemPath(ItemPathRoots.Types, proxy.Name),
                 directives)
             {
                 Description = proxy.Description,
                 Publish = proxy.Publish,
             };
 
-            result.GraphType = union;
-
             // add dependencies to each type included in the union
             foreach (var type in proxy.Types)
-            {
-                union.AddPossibleGraphType(
-                    formatter.FormatGraphTypeName(GraphTypeNames.ParseName(type, TypeKind.OBJECT)),
-                    type);
-            }
+                union.AddPossibleGraphType(GraphTypeNames.ParseName(type, TypeKind.OBJECT), type);
+
+            union = _config
+                .DeclarationOptions?
+                .SchemaFormatStrategy?
+                .ApplyFormatting(_config, union) ?? union;
+
+            result.GraphType = union;
 
             // add dependencies for the directives declared on the union
             foreach (var d in directives.Where(x => x.DirectiveType != null))

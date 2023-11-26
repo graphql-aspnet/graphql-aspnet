@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     {
         private readonly object _rawDefaultValue;
         private readonly GraphTypeExpression _inputValueTypeExpression;
-        private readonly SchemaItemPath _inputValuePath;
+        private readonly ItemPath _inputValuePath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedInputValueType" /> class.
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             Validation.ThrowIfNull(argument, nameof(argument));
             _rawDefaultValue = argument.HasDefaultValue ? argument.DefaultValue : IntrospectionNoDefaultValue.Instance;
             _inputValueTypeExpression = argument.TypeExpression;
-            _inputValuePath = argument.Route;
+            _inputValuePath = argument.ItemPath;
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
             _rawDefaultValue = IntrospectionNoDefaultValue.Instance;
             _inputValueTypeExpression = inputField.TypeExpression;
-            _inputValuePath = inputField.Route;
+            _inputValuePath = inputField.ItemPath;
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
             _rawDefaultValue = rawDefaultValue;
             _inputValueTypeExpression = inputField.TypeExpression;
-            _inputValuePath = inputField.Route;
+            _inputValuePath = inputField.ItemPath;
         }
 
         /// <summary>

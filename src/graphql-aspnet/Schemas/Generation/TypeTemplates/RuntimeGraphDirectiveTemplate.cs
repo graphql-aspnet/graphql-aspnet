@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
 {
     using System.Collections.Generic;
     using System.Diagnostics;
-    using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     /// A "controller template" representing a single runtime configured field (e.g. minimal api).
     /// This template is never cached.
     /// </summary>
-    [DebuggerDisplay("{Route.Name} - RuntimeDirective")]
+    [DebuggerDisplay("{ItemPath.Name} - RuntimeDirective")]
     internal class RuntimeGraphDirectiveTemplate : GraphDirectiveTemplate
     {
         private readonly IMemberInfoProvider _fieldProvider;
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         protected override string DetermineDirectiveName()
         {
             if (_directiveDefinition != null)
-                return _directiveDefinition?.Route.Name;
+                return _directiveDefinition?.ItemPath.Name;
 
             return base.DetermineDirectiveName();
         }
@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_directiveDefinition?.Resolver?.Method == null)
             {
                 throw new GraphTypeDeclarationException(
-                $"Unable to templatize the runtime directive definition of '{_directiveDefinition?.Route.Path ?? "~null~"}' the resolver " +
+                $"Unable to templatize the runtime directive definition of '{_directiveDefinition?.ItemPath.Path ?? "~null~"}' the resolver " +
                     $"is not properly configured.");
             }
 

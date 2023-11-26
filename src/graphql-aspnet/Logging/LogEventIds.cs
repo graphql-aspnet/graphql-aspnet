@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Logging
         /// <summary>
         /// A log event indicating the runtime successfully registered an ASP.NET route to serve requests for a graph schema.
         /// </summary>
-        public static EventId SchemaRouteRegistered = new EventId(ROOT_GENERAL_EVENT_ID + 120, "GraphQL Schema Route Registered");
+        public static EventId SchemaUrlRouteRegistered = new EventId(ROOT_GENERAL_EVENT_ID + 120, "GraphQL Schema Route Registered");
 
         /// <summary>
         /// A log event indicating an unhandled exception was logged out of context of any other

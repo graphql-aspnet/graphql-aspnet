@@ -23,7 +23,6 @@ namespace GraphQL.AspNet.Schemas.Structural
     [DebuggerDisplay("Count = {Count}")]
     internal class InputGraphFieldCollection : IInputGraphFieldCollection
     {
-        private readonly IInputObjectGraphType _owner;
         private readonly Dictionary<string, IInputGraphField> _fields;
         private readonly List<IInputGraphField> _requiredFields;
         private readonly List<IInputGraphField> _nonNullableFields;
@@ -31,10 +30,8 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Initializes a new instance of the <see cref="InputGraphFieldCollection" /> class.
         /// </summary>
-        /// <param name="owner">The graphtype that owns this field collection.</param>
-        public InputGraphFieldCollection(IInputObjectGraphType owner)
+        public InputGraphFieldCollection()
         {
-            _owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
             _fields = new Dictionary<string, IInputGraphField>(StringComparer.Ordinal);
             _requiredFields = new List<IInputGraphField>();
             _nonNullableFields = new List<IInputGraphField>();
@@ -52,11 +49,10 @@ namespace GraphQL.AspNet.Schemas.Structural
             if (_fields.ContainsKey(field.Name))
             {
                 throw new GraphTypeDeclarationException(
-                    $"Duplicate field name detected. The input object type '{_owner.Name}' already " +
-                    $"declares a field named '{field.Name}'.");
+                    $"Duplicate field name detected. The collection already " +
+                    $"declares a field named '{field.Name}' (Path: {field.ItemPath}).");
             }
 
-            field.AssignParent(_owner);
             _fields.Add(field.Name, field);
             if (field.IsRequired)
                 _requiredFields.Add(field);
@@ -105,9 +101,6 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public int Count => _fields.Count;
-
-        /// <inheritdoc />
-        public IInputObjectGraphType Owner => _owner;
 
         /// <inheritdoc />
         public IReadOnlyList<IInputGraphField> RequiredFields => _requiredFields;

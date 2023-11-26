@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IGraphQLRuntimeFieldDefinition.</returns>
         public static IGraphQLRuntimeFieldGroupDefinition MapMutationGroup(this SchemaOptions schemaOptions, string template)
         {
-            return new RuntimeFieldGroupTemplate(schemaOptions, SchemaItemCollections.Mutation, template);
+            return new RuntimeFieldGroupTemplate(schemaOptions, ItemPathRoots.Mutation, template);
         }
 
         /// <summary>

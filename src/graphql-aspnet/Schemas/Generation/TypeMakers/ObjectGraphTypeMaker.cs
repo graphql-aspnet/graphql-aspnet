@@ -57,19 +57,27 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
 
             var result = new GraphTypeCreationResult();
 
-            var formatter = _config.DeclarationOptions.GraphNamingFormatter;
             var directives = template.CreateAppliedDirectives();
 
             var objectType = new ObjectGraphType(
-                formatter.FormatGraphTypeName(template.Name),
+                template.Name,
                 template.InternalName,
                 template.ObjectType,
-                template.Route,
+                template.ItemPath,
                 directives)
             {
                 Description = template.Description,
                 Publish = template.Publish,
             };
+
+            // add in declared interfaces by name
+            foreach (var iface in template.DeclaredInterfaces)
+                objectType.InterfaceNames.Add(GraphTypeNames.ParseName(iface, TypeKind.INTERFACE));
+
+            objectType = _config
+                .DeclarationOptions?
+                .SchemaFormatStrategy?
+                .ApplyFormatting(_config, objectType) ?? objectType;
 
             result.GraphType = objectType;
             result.ConcreteType = template.ObjectType;
@@ -93,12 +101,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                     $"The object graph type '{template.ObjectType.FriendlyName()}' defines 0 fields. " +
                     $"All object types must define at least one field.",
                     template.ObjectType);
-            }
-
-            // add in declared interfaces by name
-            foreach (var iface in template.DeclaredInterfaces)
-            {
-                objectType.InterfaceNames.Add(formatter.FormatGraphTypeName(GraphTypeNames.ParseName(iface, TypeKind.INTERFACE)));
             }
 
             return result;

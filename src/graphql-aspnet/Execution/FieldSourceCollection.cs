@@ -21,9 +21,9 @@ namespace GraphQL.AspNet.Execution
     /// A collection of objects supplied to a pipeline that can act as an input object for
     /// a <see cref="FieldDataItemContainer"/>.
     /// </summary>
-    public class FieldSourceCollection : IEnumerable<KeyValuePair<SchemaItemPath, object>>
+    public class FieldSourceCollection : IEnumerable<KeyValuePair<ItemPath, object>>
     {
-        private readonly Dictionary<SchemaItemPath, object> _actionSources;
+        private readonly Dictionary<ItemPath, object> _actionSources;
         private readonly GraphFieldSource _sourceTemplateTypes;
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Execution
         /// are allowed to define objects in this collection.</param>
         public FieldSourceCollection(GraphFieldSource sourcableTemplateTypes = GraphFieldSource.Action)
         {
-            _actionSources = new Dictionary<SchemaItemPath, object>(SchemaItemPathComparer.Instance);
+            _actionSources = new Dictionary<ItemPath, object>(ItemPathComparer.Instance);
             _sourceTemplateTypes = sourcableTemplateTypes;
         }
 
@@ -47,10 +47,10 @@ namespace GraphQL.AspNet.Execution
         {
             Validation.ThrowIfNull(field, nameof(field));
             result = null;
-            if (field == null || !_actionSources.ContainsKey(field.Route))
+            if (field == null || !_actionSources.ContainsKey(field.ItemPath))
                 return false;
 
-            result = _actionSources[field.Route];
+            result = _actionSources[field.ItemPath];
             return true;
         }
 
@@ -66,10 +66,10 @@ namespace GraphQL.AspNet.Execution
             {
                 lock (_actionSources)
                 {
-                    if (_actionSources.ContainsKey(field.Route))
-                        _actionSources[field.Route] = sourceData;
+                    if (_actionSources.ContainsKey(field.ItemPath))
+                        _actionSources[field.ItemPath] = sourceData;
                     else
-                        _actionSources.Add(field.Route, sourceData);
+                        _actionSources.Add(field.ItemPath, sourceData);
                 }
             }
         }
@@ -81,14 +81,14 @@ namespace GraphQL.AspNet.Execution
         /// <returns><c>true</c> if the specified field has a defined value; otherwise, <c>false</c>.</returns>
         public bool ContainsKey(IGraphField field)
         {
-            return field?.Route != null && _actionSources.ContainsKey(field.Route);
+            return field?.ItemPath != null && _actionSources.ContainsKey(field.ItemPath);
         }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<KeyValuePair<SchemaItemPath, object>> GetEnumerator()
+        public IEnumerator<KeyValuePair<ItemPath, object>> GetEnumerator()
         {
             return _actionSources.GetEnumerator();
         }

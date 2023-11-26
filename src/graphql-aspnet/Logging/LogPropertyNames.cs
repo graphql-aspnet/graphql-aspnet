@@ -250,7 +250,7 @@ namespace GraphQL.AspNet.Logging
         /// <summary>
         /// The route assigned to a schema type when it was registered with ASP.NET.
         /// </summary>
-        public const string SCHEMA_ROUTE_PATH = "route";
+        public const string SCHEMA_URL_ROUTE_PATH = "route";
 
         /// <summary>
         /// The unique path identifying the item, within the schema, the directive was applied to.

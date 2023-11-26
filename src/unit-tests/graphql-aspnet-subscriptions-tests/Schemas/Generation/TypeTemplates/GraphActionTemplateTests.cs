@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ActionTestData;
     using NSubstitute;
@@ -30,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         {
             var mockController = Substitute.For<IGraphControllerTemplate>();
             mockController.InternalName.Returns(typeof(TControllerType).Name);
-            mockController.Route.Returns(new SchemaItemPath("path0"));
+            mockController.ItemPath.Returns(new ItemPath("path0"));
             mockController.Name.Returns("path0");
             mockController.ObjectType.Returns(typeof(TControllerType));
 
@@ -52,14 +51,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             Assert.AreEqual("SubDescription", action.Description);
             Assert.AreEqual(typeof(TwoPropertyObject), action.SourceObjectType);
             Assert.AreEqual(typeof(OneMethodSubscriptionController), action.Parent.ObjectType);
-            Assert.AreEqual(SchemaItemCollections.Subscription, action.Route.RootCollection);
-            Assert.AreEqual("[subscription]/path0/path1", action.Route.Path);
+            Assert.AreEqual(ItemPathRoots.Subscription, action.ItemPath.Root);
+            Assert.AreEqual("[subscription]/path0/path1", action.ItemPath.Path);
             Assert.AreEqual($"{action.Parent.InternalName}.{nameof(OneMethodSubscriptionController.SingleMethod)}", action.InternalName);
             Assert.AreEqual(methodInfo.ReflectedType, metaData.ParentObjectType);
             Assert.AreEqual("path0", action.Parent.Name);
             Assert.AreEqual(methodInfo, action.Method);
             Assert.AreEqual(1, action.Arguments.Count);
-            Assert.IsFalse(action.Route.IsTopLevelField);
+            Assert.IsFalse(action.ItemPath.IsTopLevelField);
             Assert.IsFalse(action.IsAsyncField);
 
             Assert.AreEqual("SingleMethod", action.EventName);
@@ -78,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var action = this.CreateActionTemplate<SubscriptionMethodController>(nameof(SubscriptionMethodController.SingleMethod));
 
             Assert.AreEqual(1, action.Arguments.Count);
-            Assert.IsTrue(action.Arguments[0].ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            Assert.IsTrue(action.Arguments[0].ArgumentModifier.HasFlag(ParameterModifiers.ParentFieldResult));
         }
 
         [Test]
@@ -87,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             var action = this.CreateActionTemplate<SubscriptionMethodController>(nameof(SubscriptionMethodController.ExplicitSourceReference));
 
             Assert.AreEqual(1, action.Arguments.Count);
-            Assert.IsTrue(action.Arguments[0].ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            Assert.IsTrue(action.Arguments[0].ArgumentModifier.HasFlag(ParameterModifiers.ParentFieldResult));
         }
 
         [Test]
@@ -97,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             Assert.AreEqual(2, action.Arguments.Count);
 
-            var sourceDataParam = action.Arguments.SingleOrDefault(x => x.ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            var sourceDataParam = action.Arguments.SingleOrDefault(x => x.ArgumentModifier.HasFlag(ParameterModifiers.ParentFieldResult));
             Assert.IsNotNull(sourceDataParam);
             Assert.AreEqual(typeof(TwoPropertyObjectV2), sourceDataParam.DeclaredArgumentType);
         }
@@ -109,7 +108,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             Assert.AreEqual(2, action.Arguments.Count);
 
-            var sourceDataParam = action.Arguments.SingleOrDefault(x => x.ArgumentModifier.HasFlag(GraphArgumentModifiers.ParentFieldResult));
+            var sourceDataParam = action.Arguments.SingleOrDefault(x => x.ArgumentModifier.HasFlag(ParameterModifiers.ParentFieldResult));
             Assert.IsNotNull(sourceDataParam);
             Assert.AreEqual(typeof(TwoPropertyObjectV2), sourceDataParam.DeclaredArgumentType);
         }

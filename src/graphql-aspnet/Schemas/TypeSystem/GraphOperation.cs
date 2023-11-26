@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             : base(
                   Constants.ReservedNames.FindOperationTypeNameByType(operationType),
                   $"{nameof(GraphOperation)}.{Constants.ReservedNames.FindOperationTypeNameByType(operationType)}",
-                  new SchemaItemPath(SchemaItemCollections.Types, Constants.ReservedNames.FindOperationTypeNameByType(operationType)),
+                  new ItemPath(ItemPathRoots.Types, Constants.ReservedNames.FindOperationTypeNameByType(operationType)),
                   directives)
         {
             this.OperationType = operationType;
@@ -53,13 +53,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public GraphOperationType OperationType { get; }
+        public override IGraphType Clone(string typeName = null)
+        {
+            throw new NotSupportedException($"Graph Operation '{this.OperationType}' cannot be cloned");
+        }
 
         /// <inheritdoc />
-        public IGraphField Extend(IGraphField newField)
-        {
-            return this.GraphFieldCollection.AddField(newField);
-        }
+        public GraphOperationType OperationType { get; }
 
         /// <inheritdoc />
         public override bool IsVirtual => true;

@@ -53,8 +53,8 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// <summary>
         /// Gets a the canonical path on the graph where this item sits.
         /// </summary>
-        /// <value>The route.</value>
-        SchemaItemPath Route { get; }
+        /// <value>The schema item's path on a schema.</value>
+        ItemPath ItemPath { get; }
 
         /// <summary>
         /// Gets the singular concrete type this definition supplies to the object graph any Task or IEnumerable

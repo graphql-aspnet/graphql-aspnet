@@ -78,13 +78,13 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                         {
                             var authResult = authContext.Result ?? SchemaItemSecurityChallengeResult.Default();
 
-                            // fake the path elements from the field route. since we don't have a full resolution chain
+                            // fake the path elements from the field item path. since we don't have a full resolution chain
                             // when doing query level authorization (no indexers on potential child fields since
                             // nothing is actually resolved yet)
                             if (!authResult.Status.IsAuthorized())
                             {
                                 context.Messages.Critical(
-                                    $"Access Denied to {securePart.SecureItem.Route.Path}",
+                                    $"Access Denied to {securePart.SecureItem.ItemPath.Path}",
                                     Constants.ErrorCodes.ACCESS_DENIED,
                                     securePart.SourceLocation.AsOrigin());
                                 isAuthorized = false;

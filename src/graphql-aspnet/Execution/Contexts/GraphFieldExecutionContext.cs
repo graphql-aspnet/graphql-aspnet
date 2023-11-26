@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// <summary>
     /// A middleware context targeting the field execution pipeline.
     /// </summary>
-    [DebuggerDisplay("Field: {Field.Route.Path} (Mode = {Field.Mode})")]
+    [DebuggerDisplay("Field: {Field.ItemPath.Path} (Mode = {Field.Mode})")]
     public class GraphFieldExecutionContext : MiddlewareExecutionContextBase
     {
         /// <summary>

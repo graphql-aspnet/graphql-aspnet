@@ -58,15 +58,15 @@ namespace GraphQL.AspNet.Execution.Resolvers
 
                 if (controller == null)
                 {
-                    result = new RouteNotFoundGraphActionResult(
-                        $"The controller assigned to process the field '{context.Request.InvocationContext.Field.Route.Path}' " +
+                    result = new PathNotFoundGraphActionResult(
+                        $"The controller assigned to process the field '{context.Request.InvocationContext.Field.ItemPath.Path}' " +
                         "was not found.");
                 }
                 else if (isolationManager == null)
                 {
                     throw new GraphExecutionException(
                         $"No {nameof(IGraphQLFieldResolverIsolationManager)} was configured for the request. " +
-                        $"Unable to determine the isolation requirements for the resolver of field '{context.Request.InvocationContext.Field.Route.Path}'");
+                        $"Unable to determine the isolation requirements for the resolver of field '{context.Request.InvocationContext.Field.ItemPath.Path}'");
                 }
                 else
                 {

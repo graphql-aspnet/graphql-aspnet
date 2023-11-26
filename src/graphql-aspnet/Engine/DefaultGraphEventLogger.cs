@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <inheritdoc />
-        public virtual void SchemaRouteRegistered<TSchema>(string routePath)
+        public virtual void SchemaUrlRouteRegistered<TSchema>(string routePath)
             where TSchema : class, ISchema
         {
             if (!this.IsEnabled(LogLevel.Debug))

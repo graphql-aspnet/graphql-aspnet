@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     /// An internal implementation of the <see cref="IGraphQLRuntimeFieldGroupDefinition"/>
     /// used to generate new type extensions via a minimal api style of coding.
     /// </summary>
-    [DebuggerDisplay("{Route.Path}")]
+    [DebuggerDisplay("{ItemPath.Path}")]
     public class RuntimeTypeExtensionDefinition : RuntimeResolvedFieldDefinition, IGraphQLRuntimeTypeExtensionDefinition
     {
         /// <summary>
@@ -41,8 +41,8 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
             FieldResolutionMode resolutionMode)
             : base(
                   schemaOptions,
-                  SchemaItemCollections.Types,
-                  SchemaItemPath.Join(
+                  ItemPathRoots.Types,
+                  ItemPath.Join(
                         GraphTypeNames.ParseName(typeToExtend, TypeKind.OBJECT),
                         fieldName))
         {

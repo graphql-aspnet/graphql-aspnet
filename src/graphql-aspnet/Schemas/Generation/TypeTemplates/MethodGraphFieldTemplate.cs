@@ -50,15 +50,15 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override SchemaItemPath GenerateFieldPath()
+        protected override ItemPath GenerateFieldPath()
         {
-            // an object method cannot contain any route pathing or nesting like controller methods can
-            // before creating hte route, ensure that the declared name, by itself, is valid for graphql
+            // an object method cannot contain any pathing or nesting like controller methods can
+            // before creating the field path, ensure that the declared name, by itself, is valid for graphql
             var graphName = this.Method.SingleAttributeOrDefault<GraphFieldAttribute>()?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();
 
             GraphValidation.EnsureGraphNameOrThrow(this.InternalName, graphName);
-            return new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, graphName));
+            return new ItemPath(ItemPath.Join(this.Parent.ItemPath.Path, graphName));
         }
 
         /// <inheritdoc />

@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     /// A base class representing common functionality between all field templates based on
     /// C# methods.
     /// </summary>
-    [DebuggerDisplay("Route: {Route.Path}")]
+    [DebuggerDisplay("Path: {ItemPath.Path}")]
     public abstract class MethodGraphFieldTemplateBase : GraphFieldTemplateBase
     {
         private readonly List<GraphArgumentTemplate> _arguments;

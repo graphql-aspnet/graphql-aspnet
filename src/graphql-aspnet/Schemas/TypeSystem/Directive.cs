@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="internalName">The internal name of the directive as defined in the source code.</param>
         /// <param name="locations">The locations where this directive is valid.</param>
         /// <param name="directiveType">The concrete type of the directive.</param>
-        /// <param name="route">The route path that identifies this directive.</param>
+        /// <param name="itemPath">The that identifies this directive within the schema.</param>
         /// <param name="isRepeatable">if set to <c>true</c> the directive is repeatable
         /// at a target location.</param>
         /// <param name="resolver">The resolver used to process this instance.</param>
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string internalName,
             DirectiveLocation locations,
             Type directiveType,
-            SchemaItemPath route,
+            ItemPath itemPath,
             bool isRepeatable = false,
             IGraphDirectiveResolver resolver = null,
             IEnumerable<AppliedSecurityPolicyGroup> securityGroups = null)
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Locations = locations;
             this.Resolver = resolver;
             this.Publish = true;
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
             this.ObjectType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
 
@@ -66,6 +66,30 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public bool ValidateObject(object item)
         {
             return item == null || item.GetType() == this.ObjectType;
+        }
+
+        /// <inheritdoc />
+        public virtual IGraphType Clone(string typeName = null)
+        {
+            typeName = typeName?.Trim() ?? this.Name;
+
+            var clonedItem = new Directive(
+                typeName,
+                this.InternalName,
+                this.Locations,
+                this.ObjectType,
+                this.ItemPath.Parent.CreateChild(typeName),
+                this.IsRepeatable,
+                this.Resolver,
+                this.SecurityGroups);
+
+            clonedItem.Publish = this.Publish;
+            clonedItem.Description = this.Description;
+
+            foreach (var argument in this.Arguments)
+                clonedItem.Arguments.AddArgument(argument.Clone(clonedItem));
+
+            return clonedItem;
         }
 
         /// <inheritdoc />
@@ -96,7 +120,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         /// <inheritdoc />
         public Type ObjectType { get; }

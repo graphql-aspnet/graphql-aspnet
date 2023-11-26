@@ -183,7 +183,7 @@ namespace GraphQL.AspNet.Execution.Metrics
 
                 if (timeEntry.Key?.Request?.Field?.Mode == FieldResolutionMode.Batch)
                 {
-                    var parentName = timeEntry.Key?.Request?.Field?.Route?.Parent?.Name;
+                    var parentName = timeEntry.Key?.Request?.Field?.ItemPath?.Parent?.Name;
                     if (!string.IsNullOrWhiteSpace(parentName))
                         parentType = _schema.KnownTypes.FindGraphType(parentName);
                 }

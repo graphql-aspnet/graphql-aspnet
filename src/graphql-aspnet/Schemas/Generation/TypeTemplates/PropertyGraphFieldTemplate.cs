@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     /// An template describing a field on an OBJECT or INTERFACE graph type that
     /// is created from a C# object property.
     /// </summary>
-    [DebuggerDisplay("Route: {Route.Path}")]
+    [DebuggerDisplay("Path: {ItemPath.Path}")]
     public class PropertyGraphFieldTemplate : GraphFieldTemplateBase
     {
         /// <summary>
@@ -64,15 +64,15 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override SchemaItemPath GenerateFieldPath()
+        protected override ItemPath GenerateFieldPath()
         {
-            // A class property cannot contain any route pathing or nesting like controllers or actions.
-            // Before creating hte route, ensure that the declared name, by itself, is valid for graphql such that resultant
+            // A class property cannot contain any pathing or nesting like controllers or actions.
+            // Before creating the item path, ensure that the declared name, by itself, is valid for graphql such that resultant
             // global path for this property will also be correct.
             var graphName = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>()?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Property.Name).Trim();
 
-            return new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, graphName));
+            return new ItemPath(ItemPath.Join(this.Parent.ItemPath.Path, graphName));
         }
 
         /// <inheritdoc />

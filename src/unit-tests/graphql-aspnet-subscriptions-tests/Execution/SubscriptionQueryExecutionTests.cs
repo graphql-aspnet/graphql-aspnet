@@ -9,18 +9,17 @@
 
 namespace GraphQL.AspNet.Tests.Execution
 {
-    using System.Security.Cryptography;
+    using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Tests.Common.CommonHelpers;
-    using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Execution.SubscriptionQueryExecutionData;
-    using GraphQL.AspNet.Tests.Mocks;
-    using NuGet.Frameworks;
-    using NUnit.Framework;
-    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Common.CommonHelpers;
+    using GraphQL.AspNet.Tests.Execution.SubscriptionQueryExecutionData;
+    using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Mocks;
+    using NUnit.Framework;
 
     [TestFixture]
     public class SubscriptionQueryExecutionTests
@@ -33,7 +32,12 @@ namespace GraphQL.AspNet.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.RetrieveObject));
+            var graphType = server
+                .Schema
+                .KnownTypes
+                .Single(x => x.Name.ToLowerInvariant() == "subscription_subscriptiondata");
+
+            var field = ((IGraphFieldContainer)graphType).Fields["retrieveObject"];
 
             var sourceObject = new TwoPropertyObject()
             {
@@ -43,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { subscriptionData {  retrieveObject { property1 } } }")
-                .AddDefaultValue(template.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var result = await server.RenderResult(builder);
             var expectedOutput =
@@ -68,7 +72,12 @@ namespace GraphQL.AspNet.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.SkipEventMethod));
+            var graphType = server
+                .Schema
+                .KnownTypes
+                .Single(x => x.Name.ToLowerInvariant() == "subscription_subscriptiondata");
+
+            var field = ((IGraphFieldContainer)graphType).Fields["skipEventMethod"];
 
             var sourceObject = new TwoPropertyObject()
             {
@@ -78,7 +87,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { subscriptionData {  skipEventMethod { property1 } } }")
-                .AddDefaultValue(template.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var context = builder.Build();
             await server.ExecuteQuery(context);
@@ -94,7 +103,12 @@ namespace GraphQL.AspNet.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.SkipEventAndCompleteMethod));
+            var graphType = server
+                .Schema
+                .KnownTypes
+                .Single(x => x.Name.ToLowerInvariant() == "subscription_subscriptiondata");
+
+            var field = ((IGraphFieldContainer)graphType).Fields["skipEventAndCompleteMethod"];
 
             var sourceObject = new TwoPropertyObject()
             {
@@ -104,7 +118,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { subscriptionData {  skipEventAndCompleteMethod { property1 } } }")
-                .AddDefaultValue(template.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var context = builder.Build();
             await server.ExecuteQuery(context);
@@ -121,7 +135,12 @@ namespace GraphQL.AspNet.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.CompleteMethod));
+            var graphType = server
+                .Schema
+                .KnownTypes
+                .Single(x => x.Name.ToLowerInvariant() == "subscription_subscriptiondata");
+
+            var field = ((IGraphFieldContainer)graphType).Fields["completeMethod"];
 
             var sourceObject = new TwoPropertyObject()
             {
@@ -131,7 +150,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { subscriptionData {  completeMethod { property1 } } }")
-                .AddDefaultValue(template.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var expectedResult = @"
             {
@@ -215,7 +234,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { retrieveObject { property1 } }")
-                .AddDefaultValue(field.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var result = await server.RenderResult(builder);
             var expectedOutput =
@@ -258,7 +277,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("subscription  { retrieveObject { property1 } }")
-                .AddDefaultValue(field.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
             var result = await server.RenderResult(builder);
             var expectedOutput =

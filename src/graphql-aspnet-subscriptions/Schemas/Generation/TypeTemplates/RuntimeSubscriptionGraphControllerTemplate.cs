@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             if (_fieldDefinition?.Resolver?.Method == null)
             {
                 throw new GraphTypeDeclarationException(
-                $"Unable to templatize the runtime field definition of '{_fieldDefinition?.Route.Path ?? "~null~"}' the resolver " +
+                $"Unable to templatize the runtime field definition of '{_fieldDefinition?.ItemPath.Path ?? "~null~"}' the resolver " +
                     $"is not properly configured.");
             }
 

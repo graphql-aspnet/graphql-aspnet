@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
-    using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTest;
     using GraphQL.AspNet.Tests.Execution.TestData.RuntimeFieldTestData;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.AspNetCore.Http;

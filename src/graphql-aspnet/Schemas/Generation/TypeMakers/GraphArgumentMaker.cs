@@ -45,8 +45,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             template.Parse();
             template.ValidateOrThrow(false);
 
-            var formatter = _config.DeclarationOptions.GraphNamingFormatter;
-
             var directives = template.CreateAppliedDirectives();
 
             // all arguments are either leafs or input objects
@@ -67,25 +65,25 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 schemaTypeName = GraphTypeNames.ParseName(template.ObjectType, TypeKind.INPUT_OBJECT);
             }
 
-            // enforce non-renaming standards in the maker since the
-            // directly controls the formatter
-            if (GlobalTypes.CanBeRenamed(schemaTypeName))
-                schemaTypeName = formatter.FormatGraphTypeName(schemaTypeName);
-
-            var typeExpression = template.TypeExpression.CloneTo(schemaTypeName);
+            var typeExpression = template.TypeExpression.Clone(schemaTypeName);
 
             var argument = new GraphFieldArgument(
                 owner,
-                formatter.FormatFieldName(template.Name),
+                template.Name,
                 template.InternalName,
                 template.ParameterName,
                 typeExpression,
-                template.Route,
+                template.ItemPath,
                 template.ObjectType,
                 template.HasDefaultValue,
                 template.DefaultValue,
                 template.Description,
                 directives);
+
+            argument = _config
+                .DeclarationOptions?
+                .SchemaFormatStrategy?
+                .ApplyFormatting(_config, argument) ?? argument;
 
             var result = new GraphArgumentCreationResult();
             result.Argument = argument;

@@ -339,7 +339,7 @@ namespace GraphQL.AspNet.Schemas
         /// <returns><c>true</c> if not nullable, <c>false</c> otherwise.</returns>
         public static bool IsNotNullable(Type typeToCheck)
         {
-            // GraphId is the only "nullable" struct known to the system
+            Validation.ThrowIfNull(typeToCheck, nameof(typeToCheck));
             return typeToCheck.IsValueType && !typeToCheck.IsNullableOfT();
         }
     }

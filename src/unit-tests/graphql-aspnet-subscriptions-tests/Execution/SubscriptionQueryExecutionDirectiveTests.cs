@@ -9,11 +9,14 @@
 
 namespace GraphQL.AspNet.Tests.Execution
 {
+    using System.Linq;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Tests.Common.CommonHelpers;
-    using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData;
     using GraphQL.AspNet.Tests.Execution.SubscriptionQueryExecutionData;
+    using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Mocks;
     using NUnit.Framework;
 
@@ -28,6 +31,13 @@ namespace GraphQL.AspNet.Tests.Execution
                         .AddDirective<ToLowerDirective>()
                         .AddSubscriptionServer()
                         .Build();
+
+            var graphType = server
+                .Schema
+                .KnownTypes
+                .Single(x => x.Name.ToLowerInvariant() == "subscription_subscriptiondata");
+
+            var field = ((IGraphFieldContainer)graphType).Fields["retrieveObject"];
 
             var template = GraphQLTemplateHelper.CreateActionMethodTemplate<SubQueryController>(nameof(SubQueryController.RetrieveObject));
 
@@ -49,8 +59,9 @@ namespace GraphQL.AspNet.Tests.Execution
                                 }
                             }
                         }")
-                .AddDefaultValue(template.Route, sourceObject);
+                .AddDefaultValue(field.ItemPath, sourceObject);
 
+            var result1 = await server.ExecuteQuery(builder);
             var result = await server.RenderResult(builder);
             var expectedOutput =
                 @"{

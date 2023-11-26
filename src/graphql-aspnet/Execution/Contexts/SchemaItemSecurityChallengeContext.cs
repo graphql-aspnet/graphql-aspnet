@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A context for handling a security challenge of a single schema item
     /// issued through the authorization pipeline.
     /// </summary>
-    [DebuggerDisplay("Auth Context, Item: {SecureSchemaItem.Route.Path}")]
+    [DebuggerDisplay("Auth Context, Item: {SecureSchemaItem.ItemPath.Path}")]
     public class SchemaItemSecurityChallengeContext : MiddlewareExecutionContextBase
     {
         /// <summary>

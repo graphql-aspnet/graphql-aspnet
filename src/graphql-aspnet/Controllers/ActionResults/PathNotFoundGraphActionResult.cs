@@ -12,45 +12,44 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using System;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
-    /// An action result thrown when the requested route was not found or otherwise
-    /// not navigable.
+    /// An action result returned when the requested field on a type
+    /// was not found or was otherwise not navigable.
     /// </summary>
     /// <seealso cref="IGraphActionResult" />
-    public class RouteNotFoundGraphActionResult : IGraphActionResult
+    public class PathNotFoundGraphActionResult : IGraphActionResult
     {
         private readonly IGraphFieldResolverMetaData _invokeDef;
         private readonly Exception _thrownException;
         private readonly string _message;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RouteNotFoundGraphActionResult" /> class.
+        /// Initializes a new instance of the <see cref="PathNotFoundGraphActionResult" /> class.
         /// </summary>
-        /// <param name="invokedAction">The invoked action at the route location.</param>
+        /// <param name="targetResolver">The resolver that was being targeted at item path location.</param>
         /// <param name="thrownException">The thrown exception that occured when invoking the action, if any.</param>
-        public RouteNotFoundGraphActionResult(IGraphFieldResolverMetaData invokedAction, Exception thrownException = null)
+        public PathNotFoundGraphActionResult(IGraphFieldResolverMetaData targetResolver, Exception thrownException = null)
         {
-            _invokeDef = invokedAction;
+            _invokeDef = targetResolver;
             _thrownException = thrownException;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RouteNotFoundGraphActionResult"/> class.
+        /// Initializes a new instance of the <see cref="PathNotFoundGraphActionResult"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public RouteNotFoundGraphActionResult(string message)
+        public PathNotFoundGraphActionResult(string message)
         {
             _message = message;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RouteNotFoundGraphActionResult"/> class.
+        /// Initializes a new instance of the <see cref="PathNotFoundGraphActionResult"/> class.
         /// </summary>
-        public RouteNotFoundGraphActionResult()
+        public PathNotFoundGraphActionResult()
         {
         }
 
@@ -63,13 +62,13 @@ namespace GraphQL.AspNet.Controllers.ActionResults
             {
                 context.Messages.Critical(
                     _message,
-                    Constants.ErrorCodes.INVALID_ROUTE,
+                    Constants.ErrorCodes.INVALID_PATH,
                     context.Request.Origin);
 
                 return Task.CompletedTask;
             }
 
-            string fieldName = context.Route?.Path;
+            string fieldName = context.ItemPath?.Path;
             if (string.IsNullOrWhiteSpace(fieldName))
                 fieldName = "~Unknown~";
 
@@ -82,7 +81,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
 
                 context.Messages.Critical(
                     $"The field '{fieldName}' was not found or the resolver could not be invoked.",
-                    Constants.ErrorCodes.INVALID_ROUTE,
+                    Constants.ErrorCodes.INVALID_PATH,
                     context.Request.Origin,
                     exception);
             }
@@ -90,7 +89,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
             {
                 context.Messages.Critical(
                     $"The field '{fieldName}' was not routable or otherwise not available.",
-                    Constants.ErrorCodes.INVALID_ROUTE,
+                    Constants.ErrorCodes.INVALID_PATH,
                     context.Request.Origin,
                     _thrownException);
             }

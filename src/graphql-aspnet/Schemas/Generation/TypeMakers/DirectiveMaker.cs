@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -47,8 +48,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             template.Parse();
             template.ValidateOrThrow(false);
 
-            var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
-
             var securityGroups = new List<AppliedSecurityPolicyGroup>();
 
             if (template.SecurityPolicies?.Count > 0)
@@ -57,11 +56,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             var result = new GraphTypeCreationResult();
 
             var directive = new Directive(
-                formatter.FormatFieldName(template.Name),
+                template.Name,
                 template.InternalName,
                 template.Locations,
                 template.ObjectType,
-                template.Route,
+                template.ItemPath.Clone(),
                 template.IsRepeatable,
                 template.CreateResolver(),
                 securityGroups)
@@ -70,6 +69,12 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 Publish = template.Publish,
             };
 
+            directive = _schema
+                .Configuration?
+                .DeclarationOptions?
+                .SchemaFormatStrategy?
+                .ApplyFormatting(_schema.Configuration, directive) ?? directive;
+
             // all arguments are required to have the same signature via validation
             // can use any method to fill the arg field list
             foreach (var argTemplate in template.Arguments)
@@ -77,7 +82,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 if (GraphArgumentMaker.IsArgumentPartOfSchema(argTemplate, _schema))
                 {
                     var argumentResult = _argMaker.CreateArgument(directive, argTemplate);
-                    directive.Arguments.AddArgument(argumentResult.Argument);
+
+                    var argument = argumentResult.Argument.Clone(directive);
+                    directive.Arguments.AddArgument(argument);
 
                     result.MergeDependents(argumentResult);
                 }

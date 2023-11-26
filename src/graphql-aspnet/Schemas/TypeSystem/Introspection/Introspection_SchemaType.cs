@@ -33,45 +33,51 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
             // "__Schema" type definition
             // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
             // -------------------------------------------------------------------------
-            this.GraphFieldCollection.AddField<IntrospectedSchema, string>(
+            this.AddField<IntrospectedSchema, string>(
                 "description",
+                $"{this.InternalName}.{nameof(IntrospectedSchema.Description)}",
                 new GraphTypeExpression(Constants.ScalarNames.STRING, GraphTypeExpression.SingleItem),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "description"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "description"),
                 (its) => its.Description.AsCompletedTask(),
                 "A human-readable string describing this schema.");
 
-            this.GraphFieldCollection.AddField<IntrospectedSchema, IEnumerable<IntrospectedType>>(
+            this.AddField<IntrospectedSchema, IEnumerable<IntrospectedType>>(
                 "types",
+                $"{this.InternalName}.{nameof(IntrospectedSchema.KnownTypes)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, GraphTypeExpression.RequiredListRequiredItem),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "types"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "types"),
                 (its) => (its?.KnownTypes).Where(x => x.Publish).AsCompletedTask(),
                 "A complete collection of graph types declared by this schema.");
 
-            this.GraphFieldCollection.AddField<IntrospectedSchema, IntrospectedType>(
+            this.AddField<IntrospectedSchema, IntrospectedType>(
                 "queryType",
+                $"{this.InternalName}.{nameof(IntrospectedSchema.QueryType)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, MetaGraphTypes.IsNotNull),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "queryType"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "queryType"),
                 (its) => its.QueryType.AsCompletedTask(),
                 "The root query type of this schema.");
 
-            this.GraphFieldCollection.AddField<IntrospectedSchema, IntrospectedType>(
+            this.AddField<IntrospectedSchema, IntrospectedType>(
                 "mutationType",
+                $"{this.InternalName}.{nameof(IntrospectedSchema.MutationType)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "mutationType"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "mutationType"),
                 (its) => its.MutationType.AsCompletedTask(),
                 "The root mutation type of this schema.");
 
-            this.GraphFieldCollection.AddField<IntrospectedSchema, IntrospectedType>(
+            this.AddField<IntrospectedSchema, IntrospectedType>(
                 "subscriptionType",
+                $"{this.InternalName}.{nameof(IntrospectedSchema.SubscriptionType)}",
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "subscriptionType"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "subscriptionType"),
                 (its) => its.SubscriptionType.AsCompletedTask(),
                 "The root subscription type of this schema. Will be null if this server does not support subscriptions.");
 
-            this.GraphFieldCollection.AddField<IntrospectedSchema, IEnumerable<IntrospectedDirective>>(
+            this.AddField<IntrospectedSchema, IEnumerable<IntrospectedDirective>>(
                 "directives",
+                $"{this.InternalName}.{nameof(IntrospectedSchema.DeclaredDirectives)}",
                 new GraphTypeExpression(Constants.ReservedNames.DIRECTIVE_TYPE, GraphTypeExpression.RequiredListRequiredItem),
-                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "directives"),
+                new IntrospectedItemPath(ItemPathRoots.Types, this.Name, "directives"),
                 (its) => its.DeclaredDirectives.Where(x => x.Publish).AsCompletedTask(),
                 "A complete collection of the directives supported by this schema.");
         }

@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Schemas.Structural
                 name,
                 internalFullName,
                 typeExpression,
-                _owner.Route.CreateChild(name),
+                _owner.ItemPath.CreateChild(name),
                 concreteType,
                 false);
 
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Schemas.Structural
                 name,
                 internalFullName,
                 typeExpression,
-                _owner.Route.CreateChild(name),
+                _owner.ItemPath.CreateChild(name),
                 concreteType,
                 true,
                 defaultValue);

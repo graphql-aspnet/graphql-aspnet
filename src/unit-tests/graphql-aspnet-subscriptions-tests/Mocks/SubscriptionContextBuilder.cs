@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Mocks
         private readonly IUserSecurityContext _seceurityContext;
         private readonly IQueryExecutionRequest _mockRequest;
 
-        private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
+        private readonly List<KeyValuePair<ItemPath, object>> _sourceData;
 
         private IServiceProvider _serviceProvider;
         private IQueryExecutionMetrics _metrics;
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Mocks
             _mockRequest = Substitute.For<IQueryExecutionRequest>();
             _mockRequest.OperationName.Returns(string.Empty);
 
-            _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
+            _sourceData = new List<KeyValuePair<ItemPath, object>>();
 
             _mockRequest.ToDataPackage().Returns((x) =>
                 new AspNet.GraphQueryData()
@@ -130,9 +130,9 @@ namespace GraphQL.AspNet.Tests.Mocks
         /// <param name="path">The field path representing the action to accept the parameter.</param>
         /// <param name="sourceData">The source data.</param>
         /// <returns>SubscriptionContextBuilder.</returns>
-        public SubscriptionContextBuilder AddDefaultValue(SchemaItemPath path, object sourceData)
+        public SubscriptionContextBuilder AddDefaultValue(ItemPath path, object sourceData)
         {
-            _sourceData.Add(new KeyValuePair<SchemaItemPath, object>(path, sourceData));
+            _sourceData.Add(new KeyValuePair<ItemPath, object>(path, sourceData));
             return this;
         }
 
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Tests.Mocks
             {
                 var mockField = Substitute.For<IGraphField>();
                 mockField.FieldSource.Returns(GraphFieldSource.Action);
-                mockField.Route.Returns(kvp.Key);
+                mockField.ItemPath.Returns(kvp.Key);
                 context.DefaultFieldSources.AddSource(mockField, kvp.Value);
             }
 

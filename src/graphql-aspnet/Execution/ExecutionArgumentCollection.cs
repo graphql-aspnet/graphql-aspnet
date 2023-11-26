@@ -194,7 +194,7 @@ namespace GraphQL.AspNet.Execution
                     // doing custom extensions or implementations
                     // this prevents resolver execution with indeterminate or unexpected data
                     // as well as cryptic error messages related to object invocation
-                    var path = _resolutionContext?.Route.Path;
+                    var path = _resolutionContext?.ItemPath.Path;
                     throw new GraphExecutionException(
                         $"The parameter '{paramDef.InternalName}' for schema item '{path}' could not be resolved from the query document " +
                         "or variable collection and no default value was found.");
@@ -216,7 +216,7 @@ namespace GraphQL.AspNet.Execution
             if (_resolutionContext != null && _resolutionContext.Schema.Configuration.ExecutionOptions.ResolverParameterResolutionRule == Configuration.ResolverParameterResolutionRules.UseNullorDefault)
                 return this.CreateNullOrDefault(paramDef.ExpectedType);
 
-            var schemaItemName = _resolutionContext?.Route.Path
+            var schemaItemName = _resolutionContext?.ItemPath.Path
                 ?? paramDef.InternalName;
 
             // error unable to resolve correctly. *womp womp*

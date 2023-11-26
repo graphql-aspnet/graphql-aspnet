@@ -17,11 +17,14 @@ namespace GraphQL.AspNet.Interfaces.Schema
     public interface IGraphArgument : ITypedSchemaItem, IDefaultValueSchemaItem, ISchemaItem
     {
         /// <summary>
-        /// Clones this instance to a new argument.
+        /// Creates a shallow clone of this instance, replacing specific argument values if supplied.
         /// </summary>
-        /// <param name="parent">The parent item to assign the newly cloned argument to.</param>
+        /// <param name="parent">When not null, represents the new parent field that will own the new instance.</param>
+        /// <param name="argumentName">When not null, represents the new argument name to use for the cloned instance.</param>
+        /// <param name="typeExpression">When not null, represents the new type expression to use
+        /// for this field.</param>
         /// <returns>IGraphField.</returns>
-        IGraphArgument Clone(ISchemaItem parent);
+        IGraphArgument Clone(ISchemaItem parent = null, string argumentName = null, GraphTypeExpression typeExpression = null);
 
         /// <summary>
         /// Gets the type expression that represents the data of this argument (i.e. the '[SomeType!]'

@@ -51,22 +51,26 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             template.Parse();
             template.ValidateOrThrow(false);
 
-            var formatter = _config.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphTypeCreationResult();
 
             // gather directives
             var directives = template.CreateAppliedDirectives();
 
             var inputObjectType = new InputObjectGraphType(
-                formatter.FormatGraphTypeName(template.Name),
+                template.Name,
                 template.InternalName,
                 template.ObjectType,
-                template.Route,
+                template.ItemPath,
                 directives)
             {
                 Description = template.Description,
                 Publish = template.Publish,
             };
+
+            inputObjectType = _config
+                .DeclarationOptions?
+                .SchemaFormatStrategy?
+                .ApplyFormatting(_config, inputObjectType) ?? inputObjectType;
 
             // account for any potential type system directives
             result.AddDependentRange(template.RetrieveRequiredTypes());
@@ -81,7 +85,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             foreach (var fieldTemplate in fieldTemplates)
             {
                 var fieldResult = _fieldMaker.CreateField(fieldTemplate);
-                inputObjectType.AddField(fieldResult.Field);
+
+                var field = fieldResult.Field.Clone(inputObjectType);
+                inputObjectType.AddField(field);
 
                 result.MergeDependents(fieldResult);
             }

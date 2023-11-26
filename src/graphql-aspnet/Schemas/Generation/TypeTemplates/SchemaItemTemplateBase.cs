@@ -99,11 +99,11 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                     this.ObjectType);
             }
 
-            if (this.Route == null || !this.Route.IsValid)
+            if (this.ItemPath == null || !this.ItemPath.IsValid)
             {
                 throw new GraphTypeDeclarationException(
-                        $"The schema template item '{this.InternalName}' declares an invalid route of '{this.Route?.Raw ?? "<null>"}'. " +
-                        $"Each segment of the route must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )",
+                        $"The schema template item '{this.InternalName}' declares an invalid path of '{this.ItemPath?.Raw ?? "<null>"}'. " +
+                        $"Each segment of the item path must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )",
                         this.ObjectType);
             }
 
@@ -125,10 +125,10 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
         public virtual string Description { get; protected set; }
 
         /// <inheritdoc />
-        public virtual string Name => this.Route?.Name;
+        public virtual string Name => this.ItemPath?.Name;
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; protected set; }
+        public ItemPath ItemPath { get; protected set; }
 
         /// <inheritdoc />
         public string InternalName { get; protected set; }

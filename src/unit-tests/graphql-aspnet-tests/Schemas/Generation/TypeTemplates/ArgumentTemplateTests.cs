@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.DirectiveTestData;
     using GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates.ParameterTestData;
@@ -42,11 +41,11 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
             mockMethod.ObjectType.Returns(typeof(ParameterTestClass));
             mockMethod.Arguments.Returns(new List<IGraphArgumentTemplate>());
 
-            var route = new SchemaItemPath(SchemaItemPath.Join(
-                SchemaItemCollections.Query,
+            var route = new ItemPath(ItemPath.Join(
+                ItemPathRoots.Query,
                 nameof(ParameterTestClass),
                 nameof(ParameterTestClass.TestMethod)));
-            mockMethod.Route.Returns(route);
+            mockMethod.ItemPath.Returns(route);
 
             var argTemplate = new GraphArgumentTemplate(mockMethod, paramInfo);
             argTemplate.Parse();
@@ -299,14 +298,14 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
         public void FromGraphQLDeclaration_SetsParamModifierAppropriately()
         {
             var template = this.ExtractParameterTemplate("justFromGraphQLDeclaration", out var paramInfo);
-            Assert.AreEqual(GraphArgumentModifiers.ExplicitSchemaItem, template.ArgumentModifier);
+            Assert.AreEqual(ParameterModifiers.ExplicitSchemaItem, template.ArgumentModifier);
         }
 
         [Test]
         public void FromServiceDeclaration_SetsParamModifierAppropriately()
         {
             var template = this.ExtractParameterTemplate("justFromServicesDeclaration", out var paramInfo);
-            Assert.AreEqual(GraphArgumentModifiers.ExplicitInjected, template.ArgumentModifier);
+            Assert.AreEqual(ParameterModifiers.ExplicitInjected, template.ArgumentModifier);
         }
 
         [Test]

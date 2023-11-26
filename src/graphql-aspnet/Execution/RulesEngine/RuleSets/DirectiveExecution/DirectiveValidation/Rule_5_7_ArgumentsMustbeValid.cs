@@ -128,7 +128,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Direc
                 this.ValidationError(
                         context,
                         $"Invalid Directive Invocation. The directive '{context.Directive.Name}' " +
-                        $"requires that the argument '{suppliedArg.Name}' be coercable to type '{directiveArg.TypeExpression.CloneTo(argType.Name)}'. " +
+                        $"requires that the argument '{suppliedArg.Name}' be coercable to type '{directiveArg.TypeExpression.Clone(argType.Name)}'. " +
                         $"See exception for details.",
                         exception);
                 completedSuccessfully = false;
@@ -142,7 +142,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Direc
                 this.ValidationError(
                  context,
                  $"Invalid Directive Invocation. The argument value for '{directiveArg.Name}' on directive '{context.Directive.Name}' " +
-                 $"cannot be coerced to '{directiveArg.TypeExpression.CloneTo(argType.Name)}'");
+                 $"cannot be coerced to '{directiveArg.TypeExpression.Clone(argType.Name)}'");
                 completedSuccessfully = false;
             }
 

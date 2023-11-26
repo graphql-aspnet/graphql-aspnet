@@ -31,24 +31,46 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="name">The name of the graph type.</param>
         /// <param name="internalName">The internal name assigned to this graph type in source code.</param>
         /// <param name="objectType">Type of the object.</param>
-        /// <param name="route">The route path that identifies this object in the schema.</param>
+        /// <param name="itemPath">The item path that identifies this object in the schema.</param>
         /// <param name="directives">The directives to apply to this input
         /// object when its added to a schema.</param>
         public InputObjectGraphType(
             string name,
             string internalName,
             Type objectType,
-            SchemaItemPath route,
+            ItemPath itemPath,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
-            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
             this.Publish = true;
 
-            _graphFields = new InputGraphFieldCollection(this);
+            _graphFields = new InputGraphFieldCollection();
+        }
+
+        /// <inheritdoc />
+        public virtual IGraphType Clone(string typeName = null)
+        {
+            typeName = typeName?.Trim() ?? this.Name;
+            var itemPath = this.ItemPath.Clone().Parent.CreateChild(typeName);
+
+            var clonedItem = new InputObjectGraphType(
+                typeName,
+                this.InternalName,
+                this.ObjectType,
+                itemPath,
+                this.AppliedDirectives);
+
+            clonedItem.Description = this.Description;
+            clonedItem.Publish = this.Publish;
+
+            foreach (var field in this.Fields)
+                this.AddField(field.Clone(clonedItem));
+
+            return clonedItem;
         }
 
         /// <inheritdoc />
@@ -101,7 +123,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public SchemaItemPath Route { get; }
+        public ItemPath ItemPath { get; }
 
         /// <inheritdoc />
         public TypeKind Kind => TypeKind.INPUT_OBJECT;

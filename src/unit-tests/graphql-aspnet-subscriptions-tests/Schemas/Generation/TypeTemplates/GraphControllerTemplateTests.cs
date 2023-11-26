@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeTemplates
 
             Assert.AreEqual(1, template.FieldTemplates.Count());
             Assert.AreEqual(1, template.Actions.Count());
-            Assert.IsTrue(template.FieldTemplates.Any(x => x.Route.ToString() == $"[subscription]/SimpleSubscription/WidgetWatcher"));
+            Assert.IsTrue(template.FieldTemplates.Any(x => x.ItemPath.ToString() == $"[subscription]/SimpleSubscription/WidgetWatcher"));
         }
     }
 }

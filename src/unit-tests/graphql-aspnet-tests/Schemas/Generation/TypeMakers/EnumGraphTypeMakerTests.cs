@@ -86,8 +86,8 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
             var schema = new TestServerBuilder()
                 .AddGraphQL(o =>
                 {
-                    o.DeclarationOptions.GraphNamingFormatter =
-                        new GraphNameFormatter(enumValueStrategy: GraphNameFormatStrategy.NoChanges);
+                    o.DeclarationOptions.SchemaFormatStrategy =
+                        new GraphSchemaFormatStrategy(enumValueStrategy: GraphNameFormatStrategy.NoChanges);
                 })
                 .Build()
                 .Schema;
@@ -102,6 +102,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
 
             Assert.IsTrue(graphType is EnumGraphType);
             Assert.AreEqual(4, ((EnumGraphType)graphType).Values.Count);
+
+            foreach (var enumValue in graphType.Values)
+                Assert.AreEqual(graphType, enumValue.Value.Parent);
         }
 
         [Test]
@@ -152,9 +155,10 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         [TestCase(typeof(EnumWithValueOfFalseKeyword), "FALSE")]
         public void EnumValueIsKeyword_ButFormattingDoesNotMatchKeyword_WorksAsExpected(Type enumType, string enumValue)
         {
-            var schema = new GraphSchema();
+            var server = new TestServerBuilder()
+                .Build();
 
-            var maker = new EnumGraphTypeMaker(schema.Configuration);
+            var maker = new EnumGraphTypeMaker(server.Schema.Configuration);
             var template = GraphQLTemplateHelper.CreateGraphTypeTemplate(enumType, TypeKind.ENUM) as IGraphTypeTemplate;
 
             var graphType = maker.CreateGraphType(template).GraphType as IEnumGraphType;
@@ -170,7 +174,7 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         {
             var schema = new TestServerBuilder().AddGraphQL(o =>
             {
-                o.DeclarationOptions.GraphNamingFormatter = new GraphNameFormatter(GraphNameFormatStrategy.LowerCase);
+                o.DeclarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(GraphNameFormatStrategy.LowerCase);
             })
             .Build()
             .Schema;

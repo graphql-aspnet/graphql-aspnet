@@ -111,12 +111,12 @@ namespace GraphQL.AspNet.Controllers
             {
                 switch (ex)
                 {
-                    // catch any other invocation exceptions and treat them as an invalid route
+                    // catch any other invocation exceptions and treat them as an invalid resolver reference
                     // might happen if a method was declared differently than the actual call signature
                     case TargetException _:
                     case TargetParameterCountException _:
                         _schemaItemContext.Logger?.ActionMethodInvocationException(_resolverMetaData, this.Request, ex);
-                        return new RouteNotFoundGraphActionResult(_resolverMetaData, ex);
+                        return new PathNotFoundGraphActionResult(_resolverMetaData, ex);
 
                     default:
 

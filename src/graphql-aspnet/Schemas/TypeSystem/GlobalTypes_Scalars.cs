@@ -155,18 +155,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// as part of the introspection system. All other internal scalars can be renamed or "re-cased" to match any rules
         /// for a target schema.
         /// </remarks>
-        /// <param name="scalarName">Name of the scalar.</param>
+        /// <param name="typeName">The type name to look for.</param>
         /// <returns><c>true</c> the name can be reformatted, otherwise false.</returns>
-        public static bool CanBeRenamed(string scalarName)
+        public static bool CanBeRenamed(string typeName)
         {
             // meh, its not a built in scalar, doesnt really matter
-            if (scalarName == null)
+            if (typeName == null)
                 return true;
 
             // if the name represents a globally defined scalar
             // and if that scalar is declared as a fixed name
             // then don't allow it to be renamed named
-            if (_scalarsByName.TryGetValue(scalarName, out Type scalarType))
+            if (_scalarsByName.TryGetValue(typeName, out Type scalarType))
             {
                 return !_fixedNamedScalars.Contains(scalarType);
             }

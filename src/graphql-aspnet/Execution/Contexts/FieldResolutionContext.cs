@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         public object Result { get; set; }
 
         /// <inheritdoc />
-        public override SchemaItemPath Route => _fieldRequest?.Field.Route;
+        public override ItemPath ItemPath => _fieldRequest?.Field.ItemPath;
 
         /// <inheritdoc />
         public override IGraphArgumentCollection SchemaDefinedArguments => _fieldRequest.Field.Arguments;

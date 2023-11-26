@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
             // however, use the type name of the actual data object, not the graph type itself
             // we only want to check the type expression wrappers in this step
             var rootSourceType = GraphValidation.EliminateWrappersFromCoreType(dataObject.GetType());
-            var mangledTypeExpression = dataItemTypeExpression.CloneTo(rootSourceType.Name);
+            var mangledTypeExpression = dataItemTypeExpression.Clone(rootSourceType.Name);
 
             if (!mangledTypeExpression.Matches(dataObject))
             {
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
                 // Fake the type expression against the real graph type
                 // this step only validates the meta graph types the actual type may be different (but castable to the concrete
                 // type of the graphType). Don't confuse the user in this step.
-                actualExpression = actualExpression.CloneTo(expectedGraphType.Name);
+                actualExpression = actualExpression.Clone(expectedGraphType.Name);
 
                 // 6.4.3  section 4 & 5
                 this.ValidationError(

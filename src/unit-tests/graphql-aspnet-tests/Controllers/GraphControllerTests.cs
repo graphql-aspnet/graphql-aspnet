@@ -278,7 +278,7 @@ namespace GraphQL.AspNet.Tests.Controllers
                         ""notFoundResult""
                         ],
                         ""extensions"": {
-                        ""code"": ""INVALID_ROUTE"",
+                        ""code"": ""INVALID_PATH"",
                         ""timestamp"": ""1900-01-01T00:00:00.000+00:00"",
                         ""severity"": ""CRITICAL""
                         }
