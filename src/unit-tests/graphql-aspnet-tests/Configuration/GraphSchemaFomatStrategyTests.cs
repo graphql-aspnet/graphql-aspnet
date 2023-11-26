@@ -230,18 +230,19 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.AreEqual(expectedTypeExpression, arg1.TypeExpression.ToString());
         }
 
-        [TestCase(NFS.Default, typeof(WidgetList), "tripleListProp", "[[[String]]]")]
-        [TestCase(NFS.NonNullStrings, typeof(WidgetList), "tripleListProp", "[[[String!]]]")]
-        [TestCase(NFS.NonNullLists, typeof(WidgetList), "tripleListProp", "[[[String]!]!]!")]
-        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, typeof(WidgetList), "tripleListProp", "[[[String!]!]!]!")]
+        [TestCase(NFS.Default, "tripleListProp", "[[[String]]]")]
+        [TestCase(NFS.NonNullStrings, "tripleListProp", "[[[String!]]]")]
+        [TestCase(NFS.NonNullReferenceTypes, "tripleListProp", "[[[String]]]")]
+        [TestCase(NFS.NonNullLists, "tripleListProp", "[[[String]!]!]!")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings,  "tripleListProp", "[[[String!]!]!]!")]
 
-        [TestCase(NFS.Default, typeof(WidgetList), "tripleListPropFixed", "[[[String]]]")]
-        [TestCase(NFS.NonNullStrings, typeof(WidgetList), "tripleListPropFixed", "[[[String]]]")]
-        [TestCase(NFS.NonNullLists, typeof(WidgetList), "tripleListPropFixed", "[[[String]]]")]
-        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, typeof(WidgetList), "tripleListPropFixed", "[[[String]]]")]
-        public void Integration_Controllers_FieldTypeExpressionListNullabilityTests(
+        [TestCase(NFS.Default, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullStrings, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullLists, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullReferenceTypes, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, "tripleListPropFixed", "[[[String]]]")]
+        public void Integration_Objects_FieldTypeExpressionListNullabilityTests(
             NFS strategy,
-            Type concreteType,
             string fieldName,
             string expectedTypeExpression)
         {
@@ -251,15 +252,71 @@ namespace GraphQL.AspNet.Tests.Configuration
             var server = new TestServerBuilder()
                 .AddGraphQL(o =>
                 {
-                    o.AddType(concreteType);
+                    o.AddType<WidgetList>();
                     o.DeclarationOptions.SchemaFormatStrategy = formatter;
                 })
                 .Build();
 
-            var graphType = server.Schema.KnownTypes.FindGraphType(concreteType) as IGraphFieldContainer;
+            var graphType = server.Schema.KnownTypes.FindGraphType(typeof(WidgetList)) as IGraphFieldContainer;
             var field = graphType.Fields[fieldName];
 
             Assert.AreEqual(expectedTypeExpression, field.TypeExpression.ToString());
+        }
+
+        [TestCase(NFS.Default, "intArgument", "[Int!]")]
+        [TestCase(NFS.NonNullStrings, "intArgument", "[Int!]")]
+        [TestCase(NFS.NonNullLists, "intArgument", "[Int!]!")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, "intArgument", "[Int!]!")]
+
+        [TestCase(NFS.Default, "intArgumentFixed", "[Int!]")]
+        [TestCase(NFS.NonNullStrings, "intArgumentFixed", "[Int!]")]
+        [TestCase(NFS.NonNullLists, "intArgumentFixed", "[Int!]")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, "intArgumentFixed", "[Int!]")]
+
+        [TestCase(NFS.Default, "stringArgument", "[String]")]
+        [TestCase(NFS.NonNullStrings, "stringArgument", "[String!]")]
+        [TestCase(NFS.NonNullLists, "stringArgument", "[String]!")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, "stringArgument", "[String!]!")]
+
+        [TestCase(NFS.Default, "stringArgumentFixed", "[String]")]
+        [TestCase(NFS.NonNullStrings, "stringArgumentFixed", "[String]")]
+        [TestCase(NFS.NonNullLists, "stringArgumentFixed", "[String]")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, "stringArgumentFixed", "[String]")]
+
+        [TestCase(NFS.Default, "inputObjectArgument", "[Input_Widget]")]
+        [TestCase(NFS.NonNullStrings, "inputObjectArgument", "[Input_Widget]")]
+        [TestCase(NFS.NonNullReferenceTypes, "inputObjectArgument", "[Input_Widget!]")]
+        [TestCase(NFS.NonNullLists, "inputObjectArgument", "[Input_Widget]!")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, "inputObjectArgument", "[Input_Widget]!")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullReferenceTypes, "inputObjectArgument", "[Input_Widget!]!")]
+
+        [TestCase(NFS.Default, "inputObjectArgumentFixed", "[Input_Widget]")]
+        [TestCase(NFS.NonNullStrings, "inputObjectArgumentFixed", "[Input_Widget]")]
+        [TestCase(NFS.NonNullReferenceTypes, "inputObjectArgumentFixed", "[Input_Widget]")]
+        [TestCase(NFS.NonNullLists, "inputObjectArgumentFixed", "[Input_Widget]")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, "inputObjectArgumentFixed", "[Input_Widget]")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullReferenceTypes, "inputObjectArgumentFixed", "[Input_Widget]")]
+        public void Integration_Controllers_FieldTypeExpressionListNullabilityTests(
+            NFS strategy,
+            string fieldName,
+            string expectedTypeExpression)
+        {
+            var formatter = new GraphSchemaFormatStrategy();
+            formatter.NullabilityStrategy = strategy;
+
+            var server = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.AddController<WidgetListController>();
+                    o.DeclarationOptions.SchemaFormatStrategy = formatter;
+                })
+                .Build();
+
+            var graphType = server.Schema.KnownTypes.FindGraphType("Query") as IGraphFieldContainer;
+            var field = graphType.Fields[fieldName];
+            var arg1 = field.Arguments["arg1"];
+
+            Assert.AreEqual(expectedTypeExpression, arg1.TypeExpression.ToString());
         }
     }
 }

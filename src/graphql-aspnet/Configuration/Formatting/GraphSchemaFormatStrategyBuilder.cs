@@ -13,23 +13,23 @@ namespace GraphQL.AspNet.Configuration.Formatting
     /// A builder class to formulate a <see cref="GraphSchemaFormatStrategy"/>
     /// with various options.
     /// </summary>
-    public class SchemaFormatStrategyBuilder
+    public class GraphSchemaFormatStrategyBuilder
     {
         /// <summary>
         /// Starts a new strategy builder instance.
         /// </summary>
         /// <returns>SchemaFormatStrategyBuilder.</returns>
-        public static SchemaFormatStrategyBuilder Create()
+        public static GraphSchemaFormatStrategyBuilder Create()
         {
-            return new SchemaFormatStrategyBuilder();
+            return new GraphSchemaFormatStrategyBuilder();
         }
 
         private readonly GraphSchemaFormatStrategy _format;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SchemaFormatStrategyBuilder"/> class.
+        /// Initializes a new instance of the <see cref="GraphSchemaFormatStrategyBuilder"/> class.
         /// </summary>
-        public SchemaFormatStrategyBuilder()
+        public GraphSchemaFormatStrategyBuilder()
         {
             _format = new GraphSchemaFormatStrategy();
         }
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// per argument basis.
         /// </summary>
         /// <returns>SchemaFormatStrategyBuilder.</returns>
-        public SchemaFormatStrategyBuilder WithRequiredStrings()
+        public GraphSchemaFormatStrategyBuilder WithRequiredStrings()
         {
             if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullStrings))
                 _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullStrings;
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// per argument basis.
         /// </summary>
         /// <returns>SchemaFormatStrategyBuilder.</returns>
-        public SchemaFormatStrategyBuilder WithRequiredLists()
+        public GraphSchemaFormatStrategyBuilder WithRequiredLists()
         {
             if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullLists))
                 _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullLists;
@@ -68,11 +68,53 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// per argument basis.
         /// </summary>
         /// <returns>SchemaFormatStrategyBuilder.</returns>
-        public SchemaFormatStrategyBuilder WithRequiredObjects()
+        public GraphSchemaFormatStrategyBuilder WithRequiredObjects()
         {
             if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullReferenceTypes))
                 _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullReferenceTypes;
 
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the formating of graph type names (object, interfaces etc.) to the supplied built in strategy.
+        /// </summary>
+        /// <remarks>
+        /// DEFAULT: ProperCase
+        /// </remarks>
+        /// <param name="strategy">The strategy to employ for graph type names.</param>
+        /// <returns>GraphSchemaFormatStrategyBuilder.</returns>
+        public GraphSchemaFormatStrategyBuilder WithGraphTypeNameFormat(GraphNameFormatStrategy strategy)
+        {
+            _format.GraphTypeNameStrategy = strategy;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the formating of field names to the supplied built in strategy.
+        /// </summary>
+        /// <remarks>
+        /// DEFAULT: camelCase
+        /// </remarks>
+        /// <param name="strategy">The strategy to employ for field names.</param>
+        /// <returns>GraphSchemaFormatStrategyBuilder.</returns>
+        public GraphSchemaFormatStrategyBuilder WithFieldNameFormat(GraphNameFormatStrategy strategy)
+        {
+            _format.FieldNameStrategy = strategy;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the formating of enum values to the supplied built in strategy.
+        /// </summary>
+        /// <remarks>
+        /// Default: UPPER CASE
+        /// </remarks>
+        /// <param name="strategy">The strategy to employ for graph type names.</param>
+        /// <returns>GraphSchemaFormatStrategyBuilder.</returns>
+        public GraphSchemaFormatStrategyBuilder WithEnumValueFormat(GraphNameFormatStrategy strategy)
+        {
+            _format.EnumValueStrategy = strategy;
             return this;
         }
 

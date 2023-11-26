@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
            GraphNameFormatStrategy enumValueStrategy = GraphNameFormatStrategy.UpperCase)
         {
             this.NullabilityStrategy = nullabilityStrategy;
-            this.TypeNameStrategy = typeNameStrategy;
+            this.GraphTypeNameStrategy = typeNameStrategy;
             this.FieldNameStrategy = fieldNameStrategy;
             this.EnumValueStrategy = enumValueStrategy;
         }
@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
             if (!GlobalTypes.CanBeRenamed(name))
                 return name;
 
-            return this.FormatName(name, TypeNameStrategy);
+            return this.FormatName(name, GraphTypeNameStrategy);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         protected virtual IGraphField FormatGraphField(ISchemaConfiguration configuration, IGraphField graphField)
         {
             if (!graphField.TypeExpression.IsFixed)
-                graphField = this.ApplyNullabilityStrategy(graphField);
+                graphField = this.ApplyTypeExpressionNullabilityStrategy(graphField);
 
             var formattedName = this.FormatFieldName(graphField.Name);
             var typeExpression = graphField.TypeExpression;
@@ -259,7 +259,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         protected virtual IGraphArgument FormatArgument(ISchemaConfiguration configuration, IGraphArgument argument)
         {
             if (!argument.TypeExpression.IsFixed)
-                argument = this.ApplyNullabilityStrategy(argument);
+                argument = this.ApplyTypeExpressionNullabilityStrategy(argument);
 
             var formattedName = this.FormatFieldName(argument.Name);
             var typeExpression = argument.TypeExpression;
@@ -275,7 +275,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// </summary>
         /// <param name="graphField">The graph field to update.</param>
         /// <returns>IGraphField.</returns>
-        protected virtual IGraphField ApplyNullabilityStrategy(IGraphField graphField)
+        protected virtual IGraphField ApplyTypeExpressionNullabilityStrategy(IGraphField graphField)
         {
             GraphTypeExpressionNullabilityStrategies strat = GraphTypeExpressionNullabilityStrategies.None;
             var shouldBeNonNullType = this.NullabilityStrategy
@@ -311,7 +311,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// </summary>
         /// <param name="argument">The argument to update.</param>
         /// <returns>IGraphField.</returns>
-        protected virtual IGraphArgument ApplyNullabilityStrategy(IGraphArgument argument)
+        protected virtual IGraphArgument ApplyTypeExpressionNullabilityStrategy(IGraphArgument argument)
         {
             GraphTypeExpressionNullabilityStrategies strat = GraphTypeExpressionNullabilityStrategies.None;
 
@@ -378,7 +378,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// Gets or sets the name format strategy to use for graph type names.
         /// </summary>
         /// <value>The type name strategy.</value>
-        public GraphNameFormatStrategy TypeNameStrategy { get; set; }
+        public GraphNameFormatStrategy GraphTypeNameStrategy { get; set; }
 
         /// <summary>
         /// Gets or sets the name format strategy to use for field names.
@@ -391,7 +391,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// </summary>
         /// <remarks>
         /// The parent enum graph type, which owns an enum value, is named via
-        /// the <see cref="TypeNameStrategy"/>.
+        /// the <see cref="GraphTypeNameStrategy"/>.
         /// </remarks>
         /// <value>The enum value name strategy.</value>
         public GraphNameFormatStrategy EnumValueStrategy { get; set; }
