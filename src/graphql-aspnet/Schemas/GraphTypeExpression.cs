@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using Microsoft.AspNetCore.Localization;
 
     /// <summary>
     /// A declaration of the usage of a single graph type (with appropriate wrappers).
@@ -55,6 +56,13 @@ namespace GraphQL.AspNet.Schemas
         /// <returns>The new type expression wrapped in the provided value.</returns>
         public GraphTypeExpression WrapExpression(MetaGraphTypes wrapper)
         {
+            if (this.IsFixed)
+            {
+                throw new InvalidOperationException(
+                    "Fixed expressions are immutable " +
+                    "and cannot be altered");
+            }
+
             var newArray = new MetaGraphTypes[Wrappers.Length + 1];
             this.Wrappers.CopyTo(newArray, 1);
             newArray[0] = wrapper;
@@ -193,14 +201,22 @@ namespace GraphQL.AspNet.Schemas
         /// <returns>GraphTypeExpression.</returns>
         public GraphTypeExpression Clone()
         {
-            return new GraphTypeExpression(this.TypeName, this.Wrappers);
+            var instance = new GraphTypeExpression(this.TypeName, this.Wrappers);
+            instance.IsFixed = this.IsFixed;
+
+            return instance;
         }
 
         /// <summary>
         /// Clones this instance into a new copy of itself.
         /// </summary>
+        /// <remarks>
+        /// Applying a new nullability strategy on a fixed type expression may cause the
+        /// clone to become unfixed.
+        /// </remarks>
         /// <param name="nullabilityStrategy">The nullability strategy to apply to the
-        /// cloned instance.</param>
+        /// cloned instance. If no changes are applied to the expression, and the expression
+        /// is fixed, it will retain its fixed flag.</param>
         /// <returns>GraphTypeExpression.</returns>
         public GraphTypeExpression Clone(GraphTypeExpressionNullabilityStrategies nullabilityStrategy)
         {
@@ -210,9 +226,14 @@ namespace GraphQL.AspNet.Schemas
         /// <summary>
         /// Clones this expression but with a new, core graph type name.
         /// </summary>
+        /// <remarks>
+        /// Applying a new nullability strategy on a fixed type expression may cause the
+        /// clone to become unfixed.
+        /// </remarks>
         /// <param name="graphTypeName">A new graph type name to apply to the cloned instance.</param>
         /// <param name="nullabilityStrategy">The nullability strategy to apply to the
-        /// cloned instance.</param>
+        /// cloned instance. If no changes are applied to the expression, and the expression
+        /// is fixed, it will retain its fixed flag.</param>
         /// <returns>GraphTypeExpression.</returns>
         public GraphTypeExpression Clone(string graphTypeName, GraphTypeExpressionNullabilityStrategies nullabilityStrategy = GraphTypeExpressionNullabilityStrategies.None)
         {
@@ -258,7 +279,12 @@ namespace GraphQL.AspNet.Schemas
                 }
             }
 
-            return new GraphTypeExpression(graphTypeName, wrappers);
+            // the cloned instance is only fixed if this instance is fixed
+            // and no structural changes were made
+            var clone = new GraphTypeExpression(graphTypeName, wrappers);
+            clone.IsFixed = this.IsFixed && wrappers.SequenceEqual(this.Wrappers);
+
+            return clone;
         }
 
         /// <summary>
@@ -330,6 +356,20 @@ namespace GraphQL.AspNet.Schemas
                                      (this.Wrappers.Length > 1 && this.Wrappers[1] == MetaGraphTypes.IsList);
 
         /// <summary>
+        /// <para>
+        /// Gets a value indicating whether this instance is fixed in place and
+        /// defined by developer developer code. Fixed instances cannot be further wrapped
+        /// or have their nullability settings changed.
+        /// </para>
+        /// <para>
+        /// >Non-Fixed instances represent type expressions interpreted
+        /// from source code.
+        /// </para>
+        /// </summary>
+        /// <value><c>true</c> if this instance is customized by the developer; otherwise, <c>false</c>.</value>
+        public bool IsFixed { get; private set; }
+
+        /// <summary>
         /// Determines whether the specified <see cref="GraphTypeExpression" /> is equal to this instance.
         /// </summary>
         /// <param name="expression">The expression to compare with the current instance.</param>
@@ -396,6 +436,17 @@ namespace GraphQL.AspNet.Schemas
             }
 
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// Converts the type expression to a fixed instance.
+        /// </summary>
+        /// <returns>GraphTypeExpression.</returns>
+        public GraphTypeExpression ToFixed()
+        {
+            var expression = this.Clone();
+            expression.IsFixed = true;
+            return expression;
         }
     }
 }

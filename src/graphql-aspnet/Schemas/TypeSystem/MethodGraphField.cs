@@ -106,8 +106,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             foreach (var argument in this.Arguments)
                 clonedItem.Arguments.AddArgument(argument.Clone(clonedItem));
 
-            this.UpdateResolver(this.Resolver, this.Mode);
-
             return clonedItem;
         }
 

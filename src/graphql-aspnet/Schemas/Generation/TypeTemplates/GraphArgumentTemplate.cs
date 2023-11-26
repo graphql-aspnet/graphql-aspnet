@@ -135,6 +135,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.TypeExpression = GraphTypeExpression.FromType(this.DeclaredArgumentType, this.DeclaredTypeWrappers);
             this.TypeExpression = this.TypeExpression.Clone(Constants.Other.DEFAULT_TYPE_EXPRESSION_TYPE_NAME);
 
+            if (this.IsCustomTypeExpression)
+                this.TypeExpression = this.TypeExpression.ToFixed();
+
             // perform any inspections and logic to determine
             // how this argument performs within the application.
             var fromServicesAttrib = this.Parameter.SingleAttributeOfTypeOrDefault<FromServicesAttribute>();

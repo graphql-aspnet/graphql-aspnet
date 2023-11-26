@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// An representation of a field on an object graph type that maps to no concrete structure in the application. Typically used
     /// for nesting controller actions on lengthy path templates.
     /// </summary>
-    [DebuggerDisplay("Virtual Field: {Route.Path}")]
+    [DebuggerDisplay("Virtual Field: {ItemPath.Path}")]
     public class VirtualGraphField : IGraphField, IGraphItemDependencies
     {
         private static readonly IList<DependentType> REQUIRED_TYPES;
@@ -45,12 +45,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <summary>
         /// Initializes a new instance of the <see cref="VirtualGraphField" /> class.
         /// </summary>
-        /// <param name="parent">The parent graph type that owns this field.</param>
         /// <param name="fieldName">Name of the field in the object graph.</param>
         /// <param name="itemPath">The path segment that represents this virtual field.</param>
         /// <param name="parentTypeName">The type name to use for the virtual type that owns this field.</param>
         public VirtualGraphField(
-            ISchemaItem parent,
             string fieldName,
             ItemPath itemPath,
             string parentTypeName)
@@ -58,7 +56,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             Validation.ThrowIfNull(itemPath, nameof(itemPath));
             parentTypeName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentTypeName, nameof(parentTypeName));
 
-            this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
 
@@ -96,10 +93,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             fieldName = fieldName?.Trim() ?? this.Name;
             typeExpression = typeExpression ?? this.TypeExpression;
 
+            var itemPath = this.ItemPath;
+            itemPath = parent?.ItemPath.CreateChild(fieldName) ?? itemPath;
+
             var clonedItem = new VirtualGraphField(
-                parent,
                 fieldName,
-                parent.ItemPath.CreateChild(fieldName),
+                itemPath,
                 typeExpression.TypeName);
 
             clonedItem.Description = this.Description;
@@ -108,6 +107,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             clonedItem.DeprecationReason = this.DeprecationReason;
             clonedItem.IsDeprecated = this.IsDeprecated;
             clonedItem.Complexity = this.Complexity;
+            clonedItem.Parent = parent;
 
             // clone over the arguments
             foreach (var argument in this.Arguments)
@@ -131,9 +131,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <summary>
-        /// Gets the tracked copy of the graph type that represents this virtual field.
+        /// Gets the tracked copy of the graph type that this virtual field will
+        /// always return.
         /// </summary>
-        /// <value>The type of the associated graph.</value>
+        /// <value>The object graph type this virutal field will return when resolved.</value>
         public IObjectGraphType AssociatedGraphType { get; }
 
         /// <inheritdoc />

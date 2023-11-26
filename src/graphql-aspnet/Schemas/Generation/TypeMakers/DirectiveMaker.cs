@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 template.InternalName,
                 template.Locations,
                 template.ObjectType,
-                template.ItemPath,
+                template.ItemPath.Clone(),
                 template.IsRepeatable,
                 template.CreateResolver(),
                 securityGroups)

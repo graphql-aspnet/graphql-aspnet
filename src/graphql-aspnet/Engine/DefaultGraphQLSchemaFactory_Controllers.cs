@@ -102,7 +102,12 @@ namespace GraphQL.AspNet.Engine
             for (var i = 0; i < pathSegments.Count; i++)
             {
                 var segment = pathSegments[i];
-                var formattedName = this.Schema.Configuration.DeclarationOptions.SchemaFormatStrategy.FormatFieldName(segment.Name);
+                var formattedName = this.Schema
+                    .Configuration
+                    .DeclarationOptions
+                    .SchemaFormatStrategy
+                    .FormatFieldName(segment.Name);
+
                 if (parentType.Fields.ContainsKey(formattedName))
                 {
                     var field = parentType[formattedName];
@@ -147,7 +152,8 @@ namespace GraphQL.AspNet.Engine
         }
 
         /// <summary>
-        /// Performs an out-of-band append of a new graph field to a parent. Accounts for type updates in this schema ONLY.
+        /// Performs an out-of-band append of a new graph field to a parent and
+        /// returns the virtual type the would returns.
         /// </summary>
         /// <param name="parentType">the parent type to add the new field to.</param>
         /// <param name="fieldName">Name of the field.</param>
@@ -161,7 +167,6 @@ namespace GraphQL.AspNet.Engine
             ISchemaItemTemplate definition = null)
         {
             var childField = new VirtualGraphField(
-                parentType,
                 fieldName,
                 path,
                 this.MakeSafeTypeNameFromItemPath(path))
@@ -171,11 +176,32 @@ namespace GraphQL.AspNet.Engine
                 Description = definition?.Description ?? string.Empty,
             };
 
-            parentType.Extend(childField);
-            this.Schema.KnownTypes.EnsureGraphType(childField.AssociatedGraphType);
-            this.EnsureDependents(childField);
+            // configure the field for the schema
+            // and add it to its appropriate parent
+            childField = this.Schema
+                .Configuration
+                .DeclarationOptions
+                .SchemaFormatStrategy?
+                .ApplyFormatting(
+                        this.Schema.Configuration,
+                        childField) ?? childField;
 
-            return childField.AssociatedGraphType;
+            parentType.Extend(childField);
+
+            // ensure the new graph type that this virtual field will
+            // return is part of the schema
+            var graphType = childField.AssociatedGraphType;
+            graphType = this.Schema
+                .Configuration
+                .DeclarationOptions
+                .SchemaFormatStrategy?
+                .ApplyFormatting(
+                        this.Schema.Configuration,
+                        graphType) ?? graphType;
+
+            this.Schema.KnownTypes.EnsureGraphType(graphType);
+            this.EnsureDependents(childField);
+            return graphType;
         }
 
         /// <summary>
@@ -228,6 +254,14 @@ namespace GraphQL.AspNet.Engine
 
             if (fieldResult != null)
             {
+                var field = this.Schema
+                    .Configuration
+                    .DeclarationOptions
+                    .SchemaFormatStrategy?
+                    .ApplyFormatting(
+                            this.Schema.Configuration,
+                            fieldResult.Field) ?? fieldResult.Field;
+
                 if (parentType.Fields.ContainsKey(fieldResult.Field.Name))
                 {
                     throw new GraphTypeDeclarationException(
@@ -235,7 +269,7 @@ namespace GraphQL.AspNet.Engine
                         $"The action method '{action.InternalName}' cannot be added to the graph type with the same name.");
                 }
 
-                parentType.Extend(fieldResult.Field);
+                parentType.Extend(field);
                 this.EnsureDependents(fieldResult);
             }
         }

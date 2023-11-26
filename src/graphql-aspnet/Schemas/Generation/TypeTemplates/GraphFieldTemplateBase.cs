@@ -167,6 +167,9 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
                 }
             }
 
+            if (this.IsCustomTypeExpression)
+                typeExpression = typeExpression.ToFixed();
+
             this.ObjectType = objectType;
             this.TypeExpression = typeExpression;
 

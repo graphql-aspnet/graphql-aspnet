@@ -9,9 +9,12 @@
 
 namespace GraphQL.AspNet.Configuration.Formatting
 {
+    using System;
+    using System.IO;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -20,33 +23,37 @@ namespace GraphQL.AspNet.Configuration.Formatting
     /// </summary>
     public class GraphSchemaFormatStrategy
     {
-        private readonly GraphNameFormatStrategy _typeNameStrategy;
-        private readonly GraphNameFormatStrategy _fieldNameStrategy;
-        private readonly GraphNameFormatStrategy _enumValueStrategy;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaFormatStrategy"/> class.
         /// </summary>
         /// <param name="singleStrategy">A single format strategy to use for all naming formats.</param>
         public GraphSchemaFormatStrategy(GraphNameFormatStrategy singleStrategy)
-            : this(singleStrategy, singleStrategy, singleStrategy)
+            : this(
+                  NullabilityFormatStrategy.Default,
+                  singleStrategy,
+                  singleStrategy,
+                  singleStrategy)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSchemaFormatStrategy"/> class.
+        /// Initializes a new instance of the <see cref="GraphSchemaFormatStrategy" /> class.
         /// </summary>
+        /// <param name="nullabilityStrategy">The strategy used to augment nullability
+        /// checks on type expressions for fields and arguments.</param>
         /// <param name="typeNameStrategy">The format strategy to use for graph type names.</param>
         /// <param name="fieldNameStrategy">The format strategy to use for field names.</param>
         /// <param name="enumValueStrategy">The format strategy to use for enum values.</param>
         public GraphSchemaFormatStrategy(
+           NullabilityFormatStrategy nullabilityStrategy = NullabilityFormatStrategy.Default,
            GraphNameFormatStrategy typeNameStrategy = GraphNameFormatStrategy.ProperCase,
            GraphNameFormatStrategy fieldNameStrategy = GraphNameFormatStrategy.CamelCase,
            GraphNameFormatStrategy enumValueStrategy = GraphNameFormatStrategy.UpperCase)
         {
-            _typeNameStrategy = typeNameStrategy;
-            _fieldNameStrategy = fieldNameStrategy;
-            _enumValueStrategy = enumValueStrategy;
+            this.NullabilityStrategy = nullabilityStrategy;
+            this.TypeNameStrategy = typeNameStrategy;
+            this.FieldNameStrategy = fieldNameStrategy;
+            this.EnumValueStrategy = enumValueStrategy;
         }
 
         /// <summary>
@@ -112,7 +119,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <returns>System.String.</returns>
         public virtual string FormatFieldName(string name)
         {
-            return this.FormatName(name, _fieldNameStrategy);
+            return this.FormatName(name, FieldNameStrategy);
         }
 
         /// <summary>
@@ -122,7 +129,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <returns>System.String.</returns>
         public virtual string FormatEnumValueName(string name)
         {
-            return this.FormatName(name, _enumValueStrategy);
+            return this.FormatName(name, EnumValueStrategy);
         }
 
         /// <summary>
@@ -137,7 +144,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
             if (!GlobalTypes.CanBeRenamed(name))
                 return name;
 
-            return this.FormatName(name, _typeNameStrategy);
+            return this.FormatName(name, TypeNameStrategy);
         }
 
         /// <summary>
@@ -216,6 +223,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
             var formattedName = this.FormatFieldName(inputGraphField.Name);
 
             var typeExpression = inputGraphField.TypeExpression;
+
             typeExpression = typeExpression.Clone(this.FormatGraphTypeName(typeExpression.TypeName));
 
             return inputGraphField.Clone(fieldName: formattedName, typeExpression: typeExpression);
@@ -231,10 +239,12 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <returns>IGraphField.</returns>
         protected virtual IGraphField FormatGraphField(ISchemaConfiguration configuration, IGraphField graphField)
         {
+            if (!graphField.TypeExpression.IsFixed)
+                graphField = this.ApplyNullabilityStrategy(graphField);
+
             var formattedName = this.FormatFieldName(graphField.Name);
             var typeExpression = graphField.TypeExpression;
             typeExpression = typeExpression.Clone(this.FormatGraphTypeName(typeExpression.TypeName));
-
             return graphField.Clone(fieldName: formattedName, typeExpression: typeExpression);
         }
 
@@ -248,12 +258,81 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <returns>IGraphField.</returns>
         protected virtual IGraphArgument FormatArgument(ISchemaConfiguration configuration, IGraphArgument argument)
         {
-            var formattedName = this.FormatFieldName(argument.Name);
+            if (!argument.TypeExpression.IsFixed)
+                argument = this.ApplyNullabilityStrategy(argument);
 
+            var formattedName = this.FormatFieldName(argument.Name);
             var typeExpression = argument.TypeExpression;
             typeExpression = typeExpression.Clone(this.FormatGraphTypeName(typeExpression.TypeName));
 
             return argument.Clone(argumentName: formattedName, typeExpression: typeExpression);
+        }
+
+        /// <summary>
+        /// For the given field applies an appropriate nullability strategy
+        /// according to the rules of this instance and returns a new instance
+        /// of the field.
+        /// </summary>
+        /// <param name="graphField">The graph field to update.</param>
+        /// <returns>IGraphField.</returns>
+        protected virtual IGraphField ApplyNullabilityStrategy(IGraphField graphField)
+        {
+            GraphTypeExpressionNullabilityStrategies strat = GraphTypeExpressionNullabilityStrategies.None;
+            var shouldBeNonNullType = this.NullabilityStrategy
+                        .HasFlag(NullabilityFormatStrategy.NonNullTemplates)
+                && graphField.IsVirtual;
+
+            shouldBeNonNullType = shouldBeNonNullType ||
+                (this.NullabilityStrategy
+                        .HasFlag(NullabilityFormatStrategy.NonNullStrings)
+                && graphField.ObjectType == typeof(string));
+
+            shouldBeNonNullType = shouldBeNonNullType ||
+                (this.NullabilityStrategy
+                        .HasFlag(NullabilityFormatStrategy.NonNullReferenceTypes)
+                && !graphField.IsVirtual
+                && graphField.ObjectType != typeof(string)
+                && !graphField.ObjectType.IsValueType);
+
+            if (shouldBeNonNullType)
+                strat = strat | GraphTypeExpressionNullabilityStrategies.NonNullType;
+
+            if (this.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullLists))
+                strat = strat | GraphTypeExpressionNullabilityStrategies.NonNullLists;
+
+            var newTypeExpression = graphField.TypeExpression.Clone(strat);
+            return graphField.Clone(typeExpression: newTypeExpression);
+        }
+
+        /// <summary>
+        /// For the given argument applies an appropriate nullability strategy
+        /// according to the rules of this instance and returns a new instance
+        /// of the argument.
+        /// </summary>
+        /// <param name="argument">The argument to update.</param>
+        /// <returns>IGraphField.</returns>
+        protected virtual IGraphArgument ApplyNullabilityStrategy(IGraphArgument argument)
+        {
+            GraphTypeExpressionNullabilityStrategies strat = GraphTypeExpressionNullabilityStrategies.None;
+
+            var shouldBeNonNullType = this.NullabilityStrategy
+                        .HasFlag(NullabilityFormatStrategy.NonNullStrings)
+                && argument.ObjectType == typeof(string);
+
+            shouldBeNonNullType = shouldBeNonNullType ||
+                (this.NullabilityStrategy
+                        .HasFlag(NullabilityFormatStrategy.NonNullReferenceTypes)
+                && argument.ObjectType != typeof(string)
+                && !argument.ObjectType.IsValueType);
+
+            if (shouldBeNonNullType)
+                strat = strat | GraphTypeExpressionNullabilityStrategies.NonNullType;
+
+            if (this.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullLists))
+                strat = strat | GraphTypeExpressionNullabilityStrategies.NonNullLists;
+
+            var newTypeExpression = argument.TypeExpression.Clone(strat);
+            return argument.Clone(typeExpression: newTypeExpression);
         }
 
         /// <summary>
@@ -287,5 +366,34 @@ namespace GraphQL.AspNet.Configuration.Formatting
                     return name;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the bitwise flags that make up the nullability strategy
+        /// to apply to field and argument type expressions.
+        /// </summary>
+        /// <value>The nullability strategy.</value>
+        public NullabilityFormatStrategy NullabilityStrategy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name format strategy to use for graph type names.
+        /// </summary>
+        /// <value>The type name strategy.</value>
+        public GraphNameFormatStrategy TypeNameStrategy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name format strategy to use for field names.
+        /// </summary>
+        /// <value>The field strategy.</value>
+        public GraphNameFormatStrategy FieldNameStrategy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name format strategy to use for enum values.
+        /// </summary>
+        /// <remarks>
+        /// The parent enum graph type, which owns an enum value, is named via
+        /// the <see cref="TypeNameStrategy"/>.
+        /// </remarks>
+        /// <value>The enum value name strategy.</value>
+        public GraphNameFormatStrategy EnumValueStrategy { get; set; }
     }
 }
