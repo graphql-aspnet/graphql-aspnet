@@ -1,4 +1,4 @@
-// *************************************************************
+﻿// *************************************************************
 // project:  graphql-aspnet
 // --
 // repo: https://github.com/graphql-aspnet
@@ -20,9 +20,6 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Mocks;
     using NUnit.Framework;
-    using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     [TestFixture]
     public class SubscriptionQueryExecutionTests
