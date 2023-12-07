@@ -28,22 +28,43 @@ namespace GraphQL.AspNet.Configuration
     /// </summary>
     public static class GraphQLSchemaBuilderExtensions
     {
-        private static readonly Dictionary<Type, ISchemaInjector> SCHEMA_REGISTRATIONS;
+        private static readonly Dictionary<IServiceCollection, ISchemaInjectorCollection> SCHEMA_REGISTRATIONS;
 
         /// <summary>
         /// Initializes static members of the <see cref="GraphQLSchemaBuilderExtensions"/> class.
         /// </summary>
         static GraphQLSchemaBuilderExtensions()
         {
-            SCHEMA_REGISTRATIONS = new Dictionary<Type, ISchemaInjector>();
+            SCHEMA_REGISTRATIONS = new Dictionary<IServiceCollection, ISchemaInjectorCollection>();
         }
 
         /// <summary>
         /// Helper method to null out the schema registration references. Useful in testing and after setup is complete there is no
         /// need to keep the reference chain in tact.
         /// </summary>
+        /// <param name="serviceCollection">The service collection to clear.</param>
+        public static void Clear(IServiceCollection serviceCollection)
+        {
+            if (!SCHEMA_REGISTRATIONS.TryGetValue(serviceCollection, out var value))
+            {
+                return;
+            }
+
+            value.Clear();
+            SCHEMA_REGISTRATIONS.Remove(serviceCollection);
+        }
+
+        /// <summary>
+        /// Helper method to null out all schema injector collections. Useful in testing and after setup is complete there is no
+        /// need to keep the reference chain in tact.
+        /// </summary>
         public static void Clear()
         {
+            foreach (var collection in SCHEMA_REGISTRATIONS.Values)
+            {
+                collection.Clear();
+            }
+
             SCHEMA_REGISTRATIONS.Clear();
         }
 
@@ -75,7 +96,8 @@ namespace GraphQL.AspNet.Configuration
             where TSchema : class, ISchema
         {
             Validation.ThrowIfNull(serviceCollection, nameof(serviceCollection));
-            if (SCHEMA_REGISTRATIONS.ContainsKey(typeof(TSchema)))
+            var injectorCollection = GetSchemaInjectorCollection(serviceCollection);
+            if (injectorCollection.ContainsKey(typeof(TSchema)))
             {
                 throw new GraphTypeDeclarationException(
                     $"The schema type {typeof(TSchema).FriendlyName()} has already been registered. " +
@@ -84,7 +106,7 @@ namespace GraphQL.AspNet.Configuration
 
             var schemaOptions = new SchemaOptions<TSchema>(serviceCollection);
             var injector = new GraphQLSchemaInjector<TSchema>(schemaOptions, options);
-            SCHEMA_REGISTRATIONS.Add(typeof(TSchema), injector);
+            injectorCollection.Add(typeof(TSchema), injector);
 
             injector.ConfigureServices();
             return injector.SchemaBuilder;
@@ -111,12 +133,13 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="app">The application being constructed.</param>
         public static void UseGraphQL(this IApplicationBuilder app)
         {
-            foreach (var injector in SCHEMA_REGISTRATIONS.Values)
+            var injectorCollection = app.ApplicationServices.GetRequiredService<ISchemaInjectorCollection>();
+            foreach (var injector in injectorCollection.Values)
             {
                 injector.UseSchema(app);
             }
 
-            Clear();
+            Clear(injectorCollection.ServiceCollection);
         }
 
         /// <summary>
@@ -133,12 +156,36 @@ namespace GraphQL.AspNet.Configuration
         /// graphql runtime.</param>
         public static void UseGraphQL(this IServiceProvider serviceProvider)
         {
-            foreach (var injector in SCHEMA_REGISTRATIONS.Values)
+            var injectorCollection = serviceProvider.GetRequiredService<ISchemaInjectorCollection>();
+            foreach (var injector in injectorCollection.Values)
             {
                 injector.UseSchema(serviceProvider);
             }
 
-            Clear();
+            Clear(injectorCollection.ServiceCollection);
+        }
+
+        /// <summary>
+        /// Get or create schema injector collection for the service collection.
+        /// </summary>
+        /// <param name="serviceCollection">The service collection to create schema injector collection for</param>
+        /// <returns>Existing or new schema injector collection</returns>
+        private static ISchemaInjectorCollection GetSchemaInjectorCollection(IServiceCollection serviceCollection)
+        {
+            if (SCHEMA_REGISTRATIONS.TryGetValue(serviceCollection, out var value))
+            {
+                return value;
+            }
+
+            var injectorCollection = new SchemaInjectorCollection()
+            {
+                ServiceCollection = serviceCollection,
+            };
+            serviceCollection.AddSingleton<ISchemaInjectorCollection>(injectorCollection);
+            value = injectorCollection;
+            SCHEMA_REGISTRATIONS.Add(serviceCollection, value);
+
+            return value;
         }
     }
 }
