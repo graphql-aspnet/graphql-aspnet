@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Configuration
 {
+    using System;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -322,6 +323,35 @@ namespace GraphQL.AspNet.Tests.Configuration
             var descriptor = serverBuilder.SchemaOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(CandleController));
 
             Assert.AreEqual(ServiceLifetime.Singleton, descriptor.Lifetime);
+        }
+
+        [Test]
+        public void AddGraphQL_UseGraphQL_SameSchema()
+        {
+            var service1Collection = new ServiceCollection();
+            var service2Collection = new ServiceCollection();
+
+            service1Collection.AddGraphQL<CandleSchema>(options =>
+            {
+                options.AddGraphType<Candle>();
+            });
+            service2Collection.AddGraphQL<CandleSchema>(options =>
+            {
+                options.AddGraphType<Candle>();
+            });
+
+            var sp1 = service1Collection.BuildServiceProvider();
+            var sp2 = service2Collection.BuildServiceProvider();
+            sp1.UseGraphQL();
+            sp2.UseGraphQL();
+
+            var schema1 = sp1.GetService(typeof(CandleSchema)) as ISchema;
+            var schema2 = sp2.GetService(typeof(CandleSchema)) as ISchema;
+            Assert.IsNotNull(schema1);
+            Assert.IsNotNull(schema2);
+
+            Assert.IsTrue(schema1.KnownTypes.Contains(typeof(Candle)));
+            Assert.IsTrue(schema2.KnownTypes.Contains(typeof(Candle)));
         }
     }
 }
