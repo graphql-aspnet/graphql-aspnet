@@ -76,10 +76,22 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
             if (fields.Count < 2)
                 return true;
 
+            // must compare every field to every other field
+            // inside the field set O(n^2) time  :(
+            // take a short cut if some fields are not in a state
+            // that warrants complete validation
             for (var i = 0; i < fields.Count - 1; i++)
             {
+                if (!this.ShouldBeValidatedForRule(fields[i]))
+                    continue;
+
                 for (var j = i + 1; j < fields.Count; j++)
                 {
+                    // don't attempt to perform a validation unless both
+                    // fields are correct and validatable
+                    if (!this.ShouldBeValidatedForRule(fields[j]))
+                        continue;
+
                     var passedValidation = this.ValidateFieldPair(
                         context,
                         ownerField,
@@ -227,6 +239,21 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
         }
 
         /// <summary>
+        /// Determines whether the field document part should be validated against this rule. Field
+        /// document parts may not qualify for validation if other errors may exist within them.
+        /// </summary>
+        /// <param name="fieldToCheck">The field to check.</param>
+        /// <returns><c>true</c> if the document parts can be checked for co-existance; otherwise, <c>false</c>.</returns>
+        private bool ShouldBeValidatedForRule(IFieldDocumentPart fieldToCheck)
+        {
+            IGraphType graphType = null;
+            if (fieldToCheck.Parent is IFieldSelectionSetDocumentPart fsdl)
+                graphType = fsdl.GraphType;
+
+            return graphType != null;
+        }
+
+        /// <summary>
         /// Inspects both fields to see if any target graph type restrctions exist (such as with fragmetn spreads)
         /// such that the fields could not be included in the same object resolution. For example if the existing field targets a
         /// Dog object and the new field targets a Cat object the fields will never be resolved together for a given object and thus
@@ -246,10 +273,22 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
             if (rightField.Parent is IFieldSelectionSetDocumentPart fsdr)
                 rightSourceGraphType = fsdr.GraphType;
 
-            // this rule does not apply when a graph type is not located or correctly
-            // scoped. Other rules (5.5.1.2 for instance) will catch this
-            if (leftSourceGraphType == null || rightSourceGraphType == null)
-                return true;
+            // last ditch safety check: neither should be null at this point.
+            if (leftSourceGraphType == null)
+            {
+                throw new GraphExecutionException(
+                    $"Attempting to resolve specification rule {this.RuleNumber} resulted in " +
+                    "an invalid graph type comparrison. Unable to determine the target graph type of the " +
+                    $"existing field aliased as '{leftField.Alias.ToString()}'. Query was aborted.");
+            }
+
+            if (rightSourceGraphType == null)
+            {
+                throw new GraphExecutionException(
+                    $"Attempting to resolve specification rule {this.RuleNumber} resulted in " +
+                    "an invalid graph type comparrison. Unable to determine the target graph type of the " +
+                    $"new field aliased as '{rightField.Alias.ToString()}'. Query was aborted.");
+            }
 
             // if the source graph types of either field "could" overlap at some point
             // then the two fields cannot safely co-exist.
