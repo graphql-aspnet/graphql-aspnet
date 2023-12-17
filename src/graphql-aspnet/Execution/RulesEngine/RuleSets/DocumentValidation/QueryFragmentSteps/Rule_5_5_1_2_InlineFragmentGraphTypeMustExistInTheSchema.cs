@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
             {
                 this.ValidationError(
                     context,
-                    $"No known graph type was found for the target fragment.");
+                    $"No known graph type was found for the target fragment (Target: {fragment.TargetGraphTypeName}).");
 
                 return false;
             }

@@ -246,22 +246,10 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
             if (rightField.Parent is IFieldSelectionSetDocumentPart fsdr)
                 rightSourceGraphType = fsdr.GraphType;
 
-            // neither should be null at this point
-            if (leftSourceGraphType == null)
-            {
-                throw new GraphExecutionException(
-                    $"Attempting to resolve specification rule {this.RuleNumber} resulted in " +
-                    "an invalid graph type comparrison. Unable to determine the target graph type of the " +
-                    $"existing field aliased as '{leftField.Alias.ToString()}'. Query was aborted.");
-            }
-
-            if (rightSourceGraphType == null)
-            {
-                throw new GraphExecutionException(
-                    $"Attempting to resolve specification rule {this.RuleNumber} resulted in " +
-                    "an invalid graph type comparrison. Unable to determine the target graph type of the " +
-                    $"new field aliased as '{rightField.Alias.ToString()}'. Query was aborted.");
-            }
+            // this rule does not apply when a graph type is not located or correctly
+            // scoped. Other rules (5.5.1.2 for instance) will catch this
+            if (leftSourceGraphType == null || rightSourceGraphType == null)
+                return true;
 
             // if the source graph types of either field "could" overlap at some point
             // then the two fields cannot safely co-exist.
