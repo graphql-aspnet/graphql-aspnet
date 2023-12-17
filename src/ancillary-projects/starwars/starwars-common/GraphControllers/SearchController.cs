@@ -55,6 +55,8 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
             results.AddRange(ships);
             results.AddRange(droids);
 
+            results = results.Distinct().ToList();
+
             return this.Ok(results);
         }
     }

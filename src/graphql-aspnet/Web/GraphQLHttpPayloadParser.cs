@@ -87,20 +87,18 @@ namespace GraphQL.AspNet.Web
                 throw new HttpContextParsingException(errorMessage: ERROR_USE_POST);
 
             // ------------------------------
-            // Step 1: POST Body processing
+            // Step 1: Request Body processing
             // ------------------------------
-            // First attempt to decode the post body when applicable
-            if (this.IsPostRequest)
+            // A get or post request may have a body containing the query to process
+            // postman will send a request body by default for GET based graphql requests
+            try
             {
-                try
-                {
-                    queryData = await this.DecodePostBodyAsync();
-                }
-                catch (JsonException ex)
-                {
-                    var message = string.Format(ERROR_POST_SERIALIZATION_ISSUE_FORMAT, ex.Message);
-                    throw new HttpContextParsingException(errorMessage: message);
-                }
+                queryData = await this.DecodeRequestBodyAsync();
+            }
+            catch (JsonException ex)
+            {
+                var message = string.Format(ERROR_POST_SERIALIZATION_ISSUE_FORMAT, ex.Message);
+                throw new HttpContextParsingException(errorMessage: message);
             }
 
             // ------------------------------
@@ -154,32 +152,47 @@ namespace GraphQL.AspNet.Web
         }
 
         /// <summary>
-        /// Attempts to deserialize the POST body of the httpcontext
+        /// Attempts to deserialize the body of the request
         /// into a <see cref="GraphQueryData" /> object that can be processed by the GraphQL runtime.
         /// </summary>
         /// <returns>GraphQueryData.</returns>
-        protected virtual async Task<GraphQueryData> DecodePostBodyAsync()
+        protected virtual async Task<GraphQueryData> DecodeRequestBodyAsync()
         {
+            if (this.HttpContext.Request?.Body == null)
+                return new GraphQueryData();
+
+            // extract the body
+            using var reader = new StreamReader(this.HttpContext.Request.Body, Encoding.UTF8, true, 1024, true);
+            var bodyData = await reader.ReadToEndAsync();
+
+            if (bodyData.Length == 0)
+                return new GraphQueryData();
+
             // if the content-type is set to graphql, treat
-            // the whole body as the query string
+            // the whole body as the query string and not a json body
             // -----
             // See: https://graphql.org/learn/serving-over-http/#http-methods-headers-and-body
             // -----
             if (this.IsGraphQLBody)
             {
-                using var reader = new StreamReader(this.HttpContext.Request.Body, Encoding.UTF8, true, 1024, true);
-                var query = await reader.ReadToEndAsync();
                 return new GraphQueryData()
                 {
-                    Query = query,
+                    Query = bodyData,
                 };
             }
 
-            return await JsonSerializer.DeserializeAsync<GraphQueryData>(
-                this.HttpContext.Request.Body,
-                _options,
-                this.HttpContext.RequestAborted)
-                .ConfigureAwait(false);
+            return JsonSerializer.Deserialize<GraphQueryData>(bodyData, _options);
+        }
+
+        /// <summary>
+        /// Attempts to deserialize the POST body of the httpcontext
+        /// into a <see cref="GraphQueryData" /> object that can be processed by the GraphQL runtime.
+        /// </summary>
+        /// <returns>GraphQueryData.</returns>
+        [Obsolete($"Use or override {nameof(DecodeRequestBodyAsync)} instead.")]
+        protected virtual Task<GraphQueryData> DecodePostBodyAsync()
+        {
+            return this.DecodeRequestBodyAsync();
         }
 
         /// <summary>
