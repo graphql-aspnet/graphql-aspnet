@@ -353,5 +353,25 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.IsTrue(schema1.KnownTypes.Contains(typeof(Candle)));
             Assert.IsTrue(schema2.KnownTypes.Contains(typeof(Candle)));
         }
+
+        [Test]
+        public void AddGraphQL_AttemptingToInitializeSchemaASecondTime_ThrowsException()
+        {
+            var service1Collection = new ServiceCollection();
+            var service2Collection = new ServiceCollection();
+
+            service1Collection.AddGraphQL<CandleSchema>(options =>
+            {
+                options.AddGraphType<Candle>();
+            });
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                service1Collection.AddGraphQL<CandleSchema>(options =>
+                {
+                    options.AddGraphType<Candle>();
+                });
+            });
+        }
     }
 }

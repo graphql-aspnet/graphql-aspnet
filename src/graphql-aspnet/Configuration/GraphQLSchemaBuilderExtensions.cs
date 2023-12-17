@@ -45,13 +45,16 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="serviceCollection">The service collection to clear.</param>
         public static void Clear(IServiceCollection serviceCollection)
         {
-            if (!SCHEMA_REGISTRATIONS.TryGetValue(serviceCollection, out var value))
+            lock (SCHEMA_REGISTRATIONS)
             {
-                return;
-            }
+                if (!SCHEMA_REGISTRATIONS.TryGetValue(serviceCollection, out var value))
+                {
+                    return;
+                }
 
-            value.Clear();
-            SCHEMA_REGISTRATIONS.Remove(serviceCollection);
+                value.Clear();
+                SCHEMA_REGISTRATIONS.Remove(serviceCollection);
+            }
         }
 
         /// <summary>
@@ -60,12 +63,15 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         public static void Clear()
         {
-            foreach (var collection in SCHEMA_REGISTRATIONS.Values)
+            lock (SCHEMA_REGISTRATIONS)
             {
-                collection.Clear();
-            }
+                foreach (var injectorCollection in SCHEMA_REGISTRATIONS.Values)
+                {
+                    injectorCollection.Clear();
+                }
 
-            SCHEMA_REGISTRATIONS.Clear();
+                SCHEMA_REGISTRATIONS.Clear();
+            }
         }
 
         /// <summary>
@@ -96,7 +102,7 @@ namespace GraphQL.AspNet.Configuration
             where TSchema : class, ISchema
         {
             Validation.ThrowIfNull(serviceCollection, nameof(serviceCollection));
-            var injectorCollection = GetSchemaInjectorCollection(serviceCollection);
+            var injectorCollection = GetOrAddSchemaInjectorCollection(serviceCollection);
             if (injectorCollection.ContainsKey(typeof(TSchema)))
             {
                 throw new GraphTypeDeclarationException(
@@ -166,24 +172,26 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Get or create schema injector collection for the service collection.
+        /// Get or create a schema injector collection for the service collection being harnessed.
         /// </summary>
         /// <param name="serviceCollection">The service collection to create schema injector collection for</param>
         /// <returns>Existing or new schema injector collection</returns>
-        private static ISchemaInjectorCollection GetSchemaInjectorCollection(IServiceCollection serviceCollection)
+        private static ISchemaInjectorCollection GetOrAddSchemaInjectorCollection(IServiceCollection serviceCollection)
         {
             if (SCHEMA_REGISTRATIONS.TryGetValue(serviceCollection, out var value))
-            {
                 return value;
-            }
 
-            var injectorCollection = new SchemaInjectorCollection()
+            lock (SCHEMA_REGISTRATIONS)
             {
-                ServiceCollection = serviceCollection,
-            };
-            serviceCollection.AddSingleton<ISchemaInjectorCollection>(injectorCollection);
-            value = injectorCollection;
-            SCHEMA_REGISTRATIONS.Add(serviceCollection, value);
+                if (SCHEMA_REGISTRATIONS.TryGetValue(serviceCollection, out value))
+                    return value;
+
+                var injectorCollection = new SchemaInjectorCollection(serviceCollection);
+
+                serviceCollection.AddSingleton<ISchemaInjectorCollection>(injectorCollection);
+                value = injectorCollection;
+                SCHEMA_REGISTRATIONS.Add(serviceCollection, value);
+            }
 
             return value;
         }
