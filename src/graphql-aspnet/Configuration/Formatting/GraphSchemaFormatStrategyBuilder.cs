@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Configuration.Formatting
 {
-    using System;
-
     /// <summary>
     /// A builder class to formulate a <see cref="GraphSchemaFormatStrategy"/>
     /// with various options.
@@ -44,8 +42,34 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <returns>SchemaFormatStrategyBuilder.</returns>
         public GraphSchemaFormatStrategyBuilder WithRequiredStrings()
         {
-            if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullStrings))
-                _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullStrings;
+            return this.WithRequiredInputStrings()
+                        .WithRequiredOutputStrings();
+        }
+
+        /// <summary>
+        /// Sets a rule such that all string scalar on inbound data items (e.g. field arguments and INPUT_OBJECT types)
+        /// will be declared as "not null" by default for all generated graph types.This can be overriden on a per field or
+        /// per argument basis.
+        /// </summary>
+        /// <returns>GraphSchemaFormatStrategyBuilder.</returns>
+        public GraphSchemaFormatStrategyBuilder WithRequiredInputStrings()
+        {
+            if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullInputStrings))
+                _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullInputStrings;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a rule such that all string scalar fields on outbound data items (e.g. INTERFACE and OBJECT types)
+        /// will be declared as "not null" by default for all generated graph types.This can be overriden on a per field or
+        /// per argument basis.
+        /// </summary>
+        /// <returns>GraphSchemaFormatStrategyBuilder.</returns>
+        public GraphSchemaFormatStrategyBuilder WithRequiredOutputStrings()
+        {
+            if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullOutputStrings))
+                _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullOutputStrings;
 
             return this;
         }

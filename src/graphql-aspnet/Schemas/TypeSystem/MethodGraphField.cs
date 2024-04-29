@@ -77,7 +77,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc/>
-        public virtual IGraphField Clone(ISchemaItem parent = null, string fieldName = null, GraphTypeExpression typeExpression = null)
+        public virtual IGraphField Clone(
+            ISchemaItem parent = null,
+            string fieldName = null,
+            GraphTypeExpression typeExpression = null)
         {
             parent = parent ?? this.Parent;
             fieldName = fieldName?.Trim() ?? this.Name;

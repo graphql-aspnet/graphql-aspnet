@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Configuration.Formatting
 {
-    using System;
-    using System.IO;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -220,10 +218,13 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <returns>IInputGraphField.</returns>
         protected virtual IInputGraphField FormatInputGraphField(ISchemaConfiguration configuration, IInputGraphField inputGraphField)
         {
+            if (!inputGraphField.TypeExpression.IsFixed)
+            {
+                inputGraphField = this.ApplyTypeExpressionNullabilityStrategy(inputGraphField);
+            }
+
             var formattedName = this.FormatFieldName(inputGraphField.Name);
-
             var typeExpression = inputGraphField.TypeExpression;
-
             typeExpression = typeExpression.Clone(this.FormatGraphTypeName(typeExpression.TypeName));
 
             return inputGraphField.Clone(fieldName: formattedName, typeExpression: typeExpression);
@@ -245,6 +246,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
             var formattedName = this.FormatFieldName(graphField.Name);
             var typeExpression = graphField.TypeExpression;
             typeExpression = typeExpression.Clone(this.FormatGraphTypeName(typeExpression.TypeName));
+
             return graphField.Clone(fieldName: formattedName, typeExpression: typeExpression);
         }
 
@@ -284,7 +286,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
 
             shouldBeNonNullType = shouldBeNonNullType ||
                 (this.NullabilityStrategy
-                        .HasFlag(NullabilityFormatStrategy.NonNullStrings)
+                        .HasFlag(NullabilityFormatStrategy.NonNullOutputStrings)
                 && graphField.ObjectType == typeof(string));
 
             shouldBeNonNullType = shouldBeNonNullType ||
@@ -305,6 +307,46 @@ namespace GraphQL.AspNet.Configuration.Formatting
         }
 
         /// <summary>
+        /// For the given field, applies an appropriate nullability strategy
+        /// according to the rules of this instance and returns a new instance
+        /// of the field.
+        /// </summary>
+        /// <param name="inputGraphField">The graph field to update.</param>
+        /// <returns>IGraphField.</returns>
+        protected virtual IInputGraphField ApplyTypeExpressionNullabilityStrategy(IInputGraphField inputGraphField)
+        {
+            GraphTypeExpressionNullabilityStrategies strat = GraphTypeExpressionNullabilityStrategies.None;
+
+            var shouldTypeBeNonNull = this.NullabilityStrategy
+                        .HasFlag(NullabilityFormatStrategy.NonNullInputStrings)
+                && inputGraphField.ObjectType == typeof(string);
+
+            shouldTypeBeNonNull = shouldTypeBeNonNull ||
+                (this.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullReferenceTypes)
+                && inputGraphField.ObjectType != typeof(string)
+                && !inputGraphField.ObjectType.IsValueType);
+
+            if (shouldTypeBeNonNull)
+                strat = strat | GraphTypeExpressionNullabilityStrategies.NonNullType;
+
+            if (this.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullLists))
+                strat = strat | GraphTypeExpressionNullabilityStrategies.NonNullLists;
+
+            var newTypeExpression = inputGraphField.TypeExpression.Clone(strat);
+            inputGraphField = inputGraphField.Clone(typeExpression: newTypeExpression);
+
+            if (!newTypeExpression.IsNullable && inputGraphField.HasDefaultValue && inputGraphField.DefaultValue is null)
+            {
+                // when the field, as a whole, becomes non-nullable and has a default value of null
+                // the field must become "required" without a default value because of the rules
+                // of the schema
+                inputGraphField = inputGraphField.Clone(defaultValueOptions: DefaultValueCloneOptions.MakeRequired);
+            }
+
+            return inputGraphField;
+        }
+
+        /// <summary>
         /// For the given argument applies an appropriate nullability strategy
         /// according to the rules of this instance and returns a new instance
         /// of the argument.
@@ -316,7 +358,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
             GraphTypeExpressionNullabilityStrategies strat = GraphTypeExpressionNullabilityStrategies.None;
 
             var shouldBeNonNullType = this.NullabilityStrategy
-                        .HasFlag(NullabilityFormatStrategy.NonNullStrings)
+                        .HasFlag(NullabilityFormatStrategy.NonNullInputStrings)
                 && argument.ObjectType == typeof(string);
 
             shouldBeNonNullType = shouldBeNonNullType ||
@@ -332,7 +374,17 @@ namespace GraphQL.AspNet.Configuration.Formatting
                 strat = strat | GraphTypeExpressionNullabilityStrategies.NonNullLists;
 
             var newTypeExpression = argument.TypeExpression.Clone(strat);
-            return argument.Clone(typeExpression: newTypeExpression);
+            argument = argument.Clone(typeExpression: newTypeExpression);
+
+            if (!newTypeExpression.IsNullable && argument.HasDefaultValue && argument.DefaultValue is null)
+            {
+                // when the input argument, as a whole, becomes non-nullable and has a default value of null
+                // the field must become "required" without a default value because of the rules
+                // of the schema
+                argument = argument.Clone(defaultValueOptions: DefaultValueCloneOptions.MakeRequired);
+            }
+
+            return argument;
         }
 
         /// <summary>

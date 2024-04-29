@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Schema
 {
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An argument/input value that can be applied to a field.
@@ -23,8 +24,16 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// <param name="argumentName">When not null, represents the new argument name to use for the cloned instance.</param>
         /// <param name="typeExpression">When not null, represents the new type expression to use
         /// for this field.</param>
+        /// <param name="defaultValueOptions">A value indicating what to do with field requirements
+        /// and default values in the cloned field.</param>
+        /// <param name="newDefaultValue">The new default value if so requested to be applied.</param>
         /// <returns>IGraphField.</returns>
-        IGraphArgument Clone(ISchemaItem parent = null, string argumentName = null, GraphTypeExpression typeExpression = null);
+        IGraphArgument Clone(
+            ISchemaItem parent = null,
+            string argumentName = null,
+            GraphTypeExpression typeExpression = null,
+            DefaultValueCloneOptions defaultValueOptions = DefaultValueCloneOptions.None,
+            object newDefaultValue = null);
 
         /// <summary>
         /// Gets the type expression that represents the data of this argument (i.e. the '[SomeType!]'

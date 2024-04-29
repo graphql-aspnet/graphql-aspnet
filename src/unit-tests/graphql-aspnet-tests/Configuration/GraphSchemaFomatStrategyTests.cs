@@ -10,10 +10,9 @@
 namespace GraphQL.AspNet.Tests.Configuration
 {
     using System;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Tests.Common.CommonHelpers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Configuration.FormatStrategyTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
@@ -46,6 +45,8 @@ namespace GraphQL.AspNet.Tests.Configuration
         // string type, not fixed, object graph type
         [TestCase(NFS.None, typeof(Widget), "stringProp", "String")]
         [TestCase(NFS.NonNullStrings, typeof(Widget), "stringProp", "String!")]
+        [TestCase(NFS.NonNullInputStrings, typeof(Widget), "stringProp", "String")]
+        [TestCase(NFS.NonNullOutputStrings, typeof(Widget), "stringProp", "String!")]
         [TestCase(NFS.NonNullLists, typeof(Widget), "stringProp", "String")]
         [TestCase(NFS.NonNullTemplates, typeof(Widget), "stringProp", "String")]
         [TestCase(NFS.NonNullReferenceTypes, typeof(Widget), "stringProp", "String")]
@@ -53,6 +54,8 @@ namespace GraphQL.AspNet.Tests.Configuration
         // string, fixed, object graph type
         [TestCase(NFS.None, typeof(Widget), "fixedStringProp", "String")]
         [TestCase(NFS.NonNullStrings, typeof(Widget), "fixedStringProp", "String")]
+        [TestCase(NFS.NonNullInputStrings, typeof(Widget), "fixedStringProp", "String")]
+        [TestCase(NFS.NonNullOutputStrings, typeof(Widget), "fixedStringProp", "String")]
         [TestCase(NFS.NonNullLists, typeof(Widget), "fixedStringProp", "String")]
         [TestCase(NFS.NonNullTemplates, typeof(Widget), "fixedStringProp", "String")]
         [TestCase(NFS.NonNullReferenceTypes, typeof(Widget), "fixedStringProp", "String")]
@@ -95,6 +98,8 @@ namespace GraphQL.AspNet.Tests.Configuration
         // string type, not fixed, interface graph type
         [TestCase(NFS.None, typeof(IWidgetInterface), "stringProp", "String")]
         [TestCase(NFS.NonNullStrings, typeof(IWidgetInterface), "stringProp", "String!")]
+        [TestCase(NFS.NonNullInputStrings, typeof(IWidgetInterface), "stringProp", "String")]
+        [TestCase(NFS.NonNullOutputStrings, typeof(IWidgetInterface), "stringProp", "String!")]
         [TestCase(NFS.NonNullLists, typeof(IWidgetInterface), "stringProp", "String")]
         [TestCase(NFS.NonNullTemplates, typeof(IWidgetInterface), "stringProp", "String")]
         [TestCase(NFS.NonNullReferenceTypes, typeof(IWidgetInterface), "stringProp", "String")]
@@ -102,6 +107,8 @@ namespace GraphQL.AspNet.Tests.Configuration
         // string, fixed, interface graph type
         [TestCase(NFS.None, typeof(IWidgetInterface), "fixedStringProp", "String")]
         [TestCase(NFS.NonNullStrings, typeof(IWidgetInterface), "fixedStringProp", "String")]
+        [TestCase(NFS.NonNullInputStrings, typeof(IWidgetInterface), "fixedStringProp", "String")]
+        [TestCase(NFS.NonNullOutputStrings, typeof(IWidgetInterface), "fixedStringProp", "String")]
         [TestCase(NFS.NonNullLists, typeof(IWidgetInterface), "fixedStringProp", "String")]
         [TestCase(NFS.NonNullTemplates, typeof(IWidgetInterface), "fixedStringProp", "String")]
         [TestCase(NFS.NonNullReferenceTypes, typeof(IWidgetInterface), "fixedStringProp", "String")]
@@ -146,6 +153,8 @@ namespace GraphQL.AspNet.Tests.Configuration
         [TestCase(NFS.None, "Query_Widgets", "path1", "Query_Widgets_Path1")]
         [TestCase(NFS.NonNullTemplates, "Query_Widgets", "path1", "Query_Widgets_Path1!")]
         [TestCase(NFS.NonNullStrings, "Query_Widgets", "path1", "Query_Widgets_Path1")]
+        [TestCase(NFS.NonNullInputStrings, "Query_Widgets", "path1", "Query_Widgets_Path1")]
+        [TestCase(NFS.NonNullOutputStrings, "Query_Widgets", "path1", "Query_Widgets_Path1")]
         [TestCase(NFS.NonNullLists, "Query_Widgets", "path1", "Query_Widgets_Path1")]
         [TestCase(NFS.NonNullReferenceTypes, "Query_Widgets", "path1", "Query_Widgets_Path1")]
 
@@ -153,9 +162,10 @@ namespace GraphQL.AspNet.Tests.Configuration
         [TestCase(NFS.None, "Query_Widgets_Path1", "path2", "Query_Widgets_Path1_Path2")]
         [TestCase(NFS.NonNullTemplates, "Query_Widgets_Path1", "path2", "Query_Widgets_Path1_Path2!")]
         [TestCase(NFS.NonNullStrings, "Query_Widgets_Path1", "path2", "Query_Widgets_Path1_Path2")]
+        [TestCase(NFS.NonNullInputStrings, "Query_Widgets_Path1", "path2", "Query_Widgets_Path1_Path2")]
         [TestCase(NFS.NonNullLists, "Query_Widgets_Path1", "path2", "Query_Widgets_Path1_Path2")]
         [TestCase(NFS.NonNullReferenceTypes, "Query_Widgets_Path1", "path2", "Query_Widgets_Path1_Path2")]
-        public void Integration_Controllers_FieldTypeExpressionNullabilityTests(
+        public void VirtualFields_FieldTypeExpressionNullabilityTests(
             NFS strategy,
             string graphTypeName,
             string fieldName,
@@ -181,21 +191,29 @@ namespace GraphQL.AspNet.Tests.Configuration
         [TestCase(NFS.None, "intArgument", "Int!")]
         [TestCase(NFS.NonNullTemplates, "intArgument", "Int!")]
         [TestCase(NFS.NonNullStrings, "intArgument", "Int!")]
+        [TestCase(NFS.NonNullInputStrings, "intArgument", "Int!")]
+        [TestCase(NFS.NonNullOutputStrings, "intArgument", "Int!")]
         [TestCase(NFS.NonNullReferenceTypes, "intArgument", "Int!")]
 
         [TestCase(NFS.None, "intArgumentFixed", "Int!")]
         [TestCase(NFS.NonNullTemplates, "intArgumentFixed", "Int!")]
         [TestCase(NFS.NonNullStrings, "intArgumentFixed", "Int!")]
+        [TestCase(NFS.NonNullInputStrings, "intArgumentFixed", "Int!")]
+        [TestCase(NFS.NonNullOutputStrings, "intArgumentFixed", "Int!")]
         [TestCase(NFS.NonNullReferenceTypes, "intArgumentFixed", "Int!")]
 
         [TestCase(NFS.None, "stringArgument", "String")]
         [TestCase(NFS.NonNullTemplates, "stringArgument", "String")]
         [TestCase(NFS.NonNullStrings, "stringArgument", "String!")]
+        [TestCase(NFS.NonNullInputStrings, "stringArgument", "String!")]
+        [TestCase(NFS.NonNullOutputStrings, "stringArgument", "String")]
         [TestCase(NFS.NonNullReferenceTypes, "stringArgument", "String")]
 
         [TestCase(NFS.None, "stringArgumentFixed", "String")]
         [TestCase(NFS.NonNullTemplates, "stringArgumentFixed", "String")]
         [TestCase(NFS.NonNullStrings, "stringArgumentFixed", "String")]
+        [TestCase(NFS.NonNullInputStrings, "stringArgumentFixed", "String")]
+        [TestCase(NFS.NonNullOutputStrings, "stringArgumentFixed", "String")]
         [TestCase(NFS.NonNullReferenceTypes, "stringArgumentFixed", "String")]
 
         [TestCase(NFS.None, "inputObjectArgument", "Input_Widget")]
@@ -207,7 +225,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         [TestCase(NFS.NonNullTemplates, "inputObjectArgumentFixed", "Input_Widget")]
         [TestCase(NFS.NonNullStrings, "inputObjectArgumentFixed", "Input_Widget")]
         [TestCase(NFS.NonNullReferenceTypes, "inputObjectArgumentFixed", "Input_Widget")]
-        public void Integration_ArgumentTypeExpressionNullabilityTests(
+        public void Integration_FieldArgumentTypeExpressionNullabilityTests(
                 NFS strategy,
                 string fieldName,
                 string expectedTypeExpression)
@@ -230,19 +248,40 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.AreEqual(expectedTypeExpression, arg1.TypeExpression.ToString());
         }
 
-        [TestCase(NFS.None, "tripleListProp", "[[[String]]]")]
-        [TestCase(NFS.NonNullStrings, "tripleListProp", "[[[String!]]]")]
-        [TestCase(NFS.NonNullReferenceTypes, "tripleListProp", "[[[String]]]")]
-        [TestCase(NFS.NonNullLists, "tripleListProp", "[[[String]!]!]!")]
-        [TestCase(NFS.NonNullLists | NFS.NonNullStrings,  "tripleListProp", "[[[String!]!]!]!")]
+        [TestCase(NFS.None, TypeKind.OBJECT, "tripleListProp", "[[[String]]]")]
+        [TestCase(NFS.NonNullStrings, TypeKind.OBJECT, "tripleListProp", "[[[String!]]]")]
+        [TestCase(NFS.NonNullInputStrings, TypeKind.OBJECT, "tripleListProp", "[[[String]]]")]
+        [TestCase(NFS.NonNullOutputStrings, TypeKind.OBJECT, "tripleListProp", "[[[String!]]]")]
+        [TestCase(NFS.NonNullReferenceTypes, TypeKind.OBJECT, "tripleListProp", "[[[String]]]")]
+        [TestCase(NFS.NonNullLists, TypeKind.OBJECT, "tripleListProp", "[[[String]!]!]!")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, TypeKind.OBJECT, "tripleListProp", "[[[String!]!]!]!")]
 
-        [TestCase(NFS.None, "tripleListPropFixed", "[[[String]]]")]
-        [TestCase(NFS.NonNullStrings, "tripleListPropFixed", "[[[String]]]")]
-        [TestCase(NFS.NonNullLists, "tripleListPropFixed", "[[[String]]]")]
-        [TestCase(NFS.NonNullReferenceTypes, "tripleListPropFixed", "[[[String]]]")]
-        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.None, TypeKind.OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullStrings, TypeKind.OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullInputStrings, TypeKind.OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullOutputStrings, TypeKind.OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullLists, TypeKind.OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullReferenceTypes, TypeKind.OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, TypeKind.OBJECT, "tripleListPropFixed", "[[[String]]]")]
+
+        [TestCase(NFS.None, TypeKind.INPUT_OBJECT, "tripleListProp", "[[[String]]]")]
+        [TestCase(NFS.NonNullStrings, TypeKind.INPUT_OBJECT, "tripleListProp", "[[[String!]]]")]
+        [TestCase(NFS.NonNullInputStrings, TypeKind.INPUT_OBJECT, "tripleListProp", "[[[String!]]]")]
+        [TestCase(NFS.NonNullOutputStrings, TypeKind.INPUT_OBJECT, "tripleListProp", "[[[String]]]")]
+        [TestCase(NFS.NonNullReferenceTypes, TypeKind.INPUT_OBJECT, "tripleListProp", "[[[String]]]")]
+        [TestCase(NFS.NonNullLists, TypeKind.INPUT_OBJECT, "tripleListProp", "[[[String]!]!]!")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, TypeKind.INPUT_OBJECT, "tripleListProp", "[[[String!]!]!]!")]
+
+        [TestCase(NFS.None, TypeKind.INPUT_OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullStrings, TypeKind.INPUT_OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullInputStrings, TypeKind.INPUT_OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullOutputStrings, TypeKind.INPUT_OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullLists, TypeKind.INPUT_OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullReferenceTypes, TypeKind.INPUT_OBJECT, "tripleListPropFixed", "[[[String]]]")]
+        [TestCase(NFS.NonNullLists | NFS.NonNullStrings, TypeKind.INPUT_OBJECT, "tripleListPropFixed", "[[[String]]]")]
         public void Integration_Objects_FieldTypeExpressionListNullabilityTests(
             NFS strategy,
+            TypeKind typeKind,
             string fieldName,
             string expectedTypeExpression)
         {
@@ -252,15 +291,23 @@ namespace GraphQL.AspNet.Tests.Configuration
             var server = new TestServerBuilder()
                 .AddGraphQL(o =>
                 {
-                    o.AddType<WidgetList>();
+                    o.AddType<WidgetList>(typeKind);
                     o.DeclarationOptions.SchemaFormatStrategy = formatter;
                 })
                 .Build();
 
-            var graphType = server.Schema.KnownTypes.FindGraphType(typeof(WidgetList)) as IGraphFieldContainer;
-            var field = graphType.Fields[fieldName];
-
-            Assert.AreEqual(expectedTypeExpression, field.TypeExpression.ToString());
+            if (typeKind == TypeKind.OBJECT)
+            {
+                var graphType = server.Schema.KnownTypes.FindGraphType(typeof(WidgetList)) as IGraphFieldContainer;
+                var field = graphType.Fields[fieldName];
+                Assert.AreEqual(expectedTypeExpression, field.TypeExpression.ToString());
+            }
+            else if (typeKind == TypeKind.INPUT_OBJECT)
+            {
+                var graphType = server.Schema.KnownTypes.FindGraphType(typeof(WidgetList)) as IInputObjectGraphType;
+                var field = graphType.Fields[fieldName];
+                Assert.AreEqual(expectedTypeExpression, field.TypeExpression.ToString());
+            }
         }
 
         [TestCase(NFS.None, "intArgument", "[Int!]")]
@@ -275,11 +322,15 @@ namespace GraphQL.AspNet.Tests.Configuration
 
         [TestCase(NFS.None, "stringArgument", "[String]")]
         [TestCase(NFS.NonNullStrings, "stringArgument", "[String!]")]
+        [TestCase(NFS.NonNullInputStrings, "stringArgument", "[String!]")]
+        [TestCase(NFS.NonNullOutputStrings, "stringArgument", "[String]")]
         [TestCase(NFS.NonNullLists, "stringArgument", "[String]!")]
         [TestCase(NFS.NonNullLists | NFS.NonNullStrings, "stringArgument", "[String!]!")]
 
         [TestCase(NFS.None, "stringArgumentFixed", "[String]")]
         [TestCase(NFS.NonNullStrings, "stringArgumentFixed", "[String]")]
+        [TestCase(NFS.NonNullInputStrings, "stringArgumentFixed", "[String]")]
+        [TestCase(NFS.NonNullOutputStrings, "stringArgumentFixed", "[String]")]
         [TestCase(NFS.NonNullLists, "stringArgumentFixed", "[String]")]
         [TestCase(NFS.NonNullLists | NFS.NonNullStrings, "stringArgumentFixed", "[String]")]
 
@@ -317,6 +368,51 @@ namespace GraphQL.AspNet.Tests.Configuration
             var arg1 = field.Arguments["arg1"];
 
             Assert.AreEqual(expectedTypeExpression, arg1.TypeExpression.ToString());
+        }
+
+        [Test]
+        public void InputObject_NullableField_WithNonNullDefault_DefaultIsRetained_WhenFieldMadeNonNull()
+        {
+            var formatter = new GraphSchemaFormatStrategy();
+            formatter.NullabilityStrategy = NFS.NonNullInputStrings;
+
+            var server = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.AddType<WidgetWithDefaultValue>(TypeKind.INPUT_OBJECT);
+                    o.DeclarationOptions.SchemaFormatStrategy = formatter;
+                })
+                .Build();
+
+            var graphType = server.Schema.KnownTypes.FindGraphType($"Input_{nameof(WidgetWithDefaultValue)}") as IInputObjectGraphType;
+            var field = graphType.Fields["stringProp"];
+
+            Assert.AreEqual("String!", field.TypeExpression.ToString());
+            Assert.IsTrue(field.HasDefaultValue);
+            Assert.AreEqual("default 1", field.DefaultValue.ToString());
+        }
+
+        [Test]
+        public void FieldArgument_WithNonNullDefault_DefaultIsRetained_WhenFieldMadeNonNull()
+        {
+            var formatter = new GraphSchemaFormatStrategy();
+            formatter.NullabilityStrategy = NFS.NonNullInputStrings;
+
+            var server = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.AddController<WidgetControllerWithDefaultValue>();
+                    o.DeclarationOptions.SchemaFormatStrategy = formatter;
+                })
+                .Build();
+
+            var graphType = server.Schema.KnownTypes.FindGraphType("Query") as IGraphFieldContainer;
+            var field = graphType.Fields["retrieveRootWidget"];
+            var arg1 = field.Arguments["arg1"];
+
+            Assert.AreEqual("String!", arg1.TypeExpression.ToString());
+            Assert.IsTrue(arg1.HasDefaultValue);
+            Assert.AreEqual("default 1", arg1.DefaultValue.ToString());
         }
     }
 }

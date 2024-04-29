@@ -73,7 +73,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public IGraphArgument Clone(ISchemaItem parent = null, string argumentName = null, GraphTypeExpression typeExpression = null)
+        public IGraphArgument Clone(
+            ISchemaItem parent = null,
+            string argumentName = null,
+            GraphTypeExpression typeExpression = null,
+            DefaultValueCloneOptions defaultValueOptions = DefaultValueCloneOptions.None,
+            object newDefaultValue = null)
         {
             parent = parent ?? this.Parent;
 
@@ -81,6 +86,25 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             var parentPath = parent?.ItemPath ?? this.ItemPath.Parent;
             var itemPath = parentPath.CreateChild(argumentName);
+
+            var hasDefaultValue = this.HasDefaultValue;
+            var defaultValue = this.DefaultValue;
+
+            switch (defaultValueOptions)
+            {
+                case DefaultValueCloneOptions.None:
+                    break;
+
+                case DefaultValueCloneOptions.MakeRequired:
+                    defaultValue = null;
+                    hasDefaultValue = false;
+                    break;
+
+                case DefaultValueCloneOptions.UpdateDefaultValue:
+                    defaultValue = newDefaultValue;
+                    hasDefaultValue = true;
+                    break;
+            }
 
             var clonedItem = new GraphFieldArgument(
                 parent,
@@ -90,8 +114,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 typeExpression ?? this.TypeExpression.Clone(),
                 itemPath,
                 this.ObjectType,
-                this.HasDefaultValue,
-                this.DefaultValue,
+                hasDefaultValue,
+                defaultValue,
                 this.Description,
                 this.AppliedDirectives);
 

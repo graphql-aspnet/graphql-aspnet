@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Schema
 {
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A field of data on an INPUT_OBJECT graph type.
@@ -23,8 +24,16 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// <param name="fieldName">When not null, represents the new field name to use for the cloned value.</param>
         /// <param name="typeExpression">When not null, represents the new type expression to use
         /// for this field.</param>
-        /// <returns>IGraphField.</returns>
-        IInputGraphField Clone(ISchemaItem parent = null, string fieldName = null, GraphTypeExpression typeExpression = null);
+        /// <param name="defaultValueOptions">A value indicating what to do with field requirements
+        /// and default values in the cloned field.</param>
+        /// <param name="newDefaultValue">The new default value if so requested to be applied.</param>
+        /// <returns>IInputGraphField.</returns>
+        IInputGraphField Clone(
+            ISchemaItem parent = null,
+            string fieldName = null,
+            GraphTypeExpression typeExpression = null,
+            DefaultValueCloneOptions defaultValueOptions = DefaultValueCloneOptions.None,
+            object newDefaultValue = null);
 
         /// <summary>
         /// Gets the unaltered name of the property that defines this input field in source code.
