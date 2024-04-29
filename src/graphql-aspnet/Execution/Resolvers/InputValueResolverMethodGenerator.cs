@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
         public IInputValueResolver CreateResolver(GraphTypeExpression typeExpression)
         {
             // used for variable definitions
-            return this.CreateResolver(typeExpression, null);
+            return this.CreateResolverInternal(typeExpression, null);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
         /// <returns>IQueryInputValueResolver.</returns>
         public IInputValueResolver CreateResolver(IInputGraphField field)
         {
-            return this.CreateResolver(field.TypeExpression, field);
+            return this.CreateResolverInternal(field.TypeExpression, field);
         }
 
         /// <summary>
@@ -68,10 +68,10 @@ namespace GraphQL.AspNet.Execution.Resolvers
         /// <returns>IQueryInputValueResolver.</returns>
         public IInputValueResolver CreateResolver(IGraphArgument argument)
         {
-            return this.CreateResolver(argument.TypeExpression, argument);
+            return this.CreateResolverInternal(argument.TypeExpression, argument);
         }
 
-        private IInputValueResolver CreateResolver(GraphTypeExpression typeExpression, IDefaultValueSchemaItem defaultValueProvider)
+        private IInputValueResolver CreateResolverInternal(GraphTypeExpression typeExpression, IDefaultValueSchemaItem defaultValueProvider)
         {
             Validation.ThrowIfNull(typeExpression, nameof(typeExpression));
 
@@ -79,11 +79,17 @@ namespace GraphQL.AspNet.Execution.Resolvers
             if (graphType == null)
                 return null;
 
-            return this.CreateResolver(graphType, typeExpression, defaultValueProvider);
+            return this.CreateResolverInternal(graphType, typeExpression, defaultValueProvider);
         }
 
-        private IInputValueResolver CreateResolver(IGraphType graphType, GraphTypeExpression expression, IDefaultValueSchemaItem defaultValueProvider)
+        private IInputValueResolver CreateResolverInternal(IGraphType graphType, GraphTypeExpression expression, IDefaultValueSchemaItem defaultValueProvider, Dictionary<IInputObjectGraphType, IInputValueResolver> trackedComplexResolvers = null)
         {
+            // keep a list of complex value resolvers that were generated in this run
+            // to prevent infinite loops for self referencing objects
+            // all instnaces where a complex object needs to be resolved will use
+            // the same referenced resolver, scoped to this single argument that is being generated
+            trackedComplexResolvers = trackedComplexResolvers ?? new Dictionary<IInputObjectGraphType, IInputValueResolver>();
+
             // extract the core resolver for the input type being processed
             IInputValueResolver coreResolver = null;
             Type coreType = null;
@@ -101,7 +107,7 @@ namespace GraphQL.AspNet.Execution.Resolvers
             else if (graphType is IInputObjectGraphType inputType)
             {
                 coreType = _schema.KnownTypes.FindConcreteType(inputType);
-                coreResolver = this.CreateInputObjectResolver(inputType, coreType, defaultValueProvider);
+                coreResolver = this.CreateInputObjectResolver(inputType, coreType, defaultValueProvider, trackedComplexResolvers);
             }
 
             // wrap any list wrappers around core resolver according to the type expression
@@ -117,23 +123,22 @@ namespace GraphQL.AspNet.Execution.Resolvers
             return coreResolver;
         }
 
-        private IInputValueResolver CreateInputObjectResolver(IInputObjectGraphType inputType, Type type, IDefaultValueSchemaItem defaultValueProvider)
+        private IInputValueResolver CreateInputObjectResolver(
+            IInputObjectGraphType inputType,
+            Type type,
+            IDefaultValueSchemaItem defaultValueProvider,
+            Dictionary<IInputObjectGraphType, IInputValueResolver> trackedComplexResolvers)
         {
+            if (trackedComplexResolvers.TryGetValue(inputType, out var alreadyBuiltResolver))
+                return alreadyBuiltResolver;
+
             var inputObjectResolver = new InputObjectValueResolver(inputType, type, _schema, defaultValueProvider);
+            trackedComplexResolvers.Add(inputType, inputObjectResolver);
 
             foreach (var field in inputType.Fields)
             {
-                IInputValueResolver childResolver;
-                if (field.TypeExpression.TypeName == inputType.Name)
-                {
-                    childResolver = inputObjectResolver;
-                }
-                else
-                {
-                    var graphType = _schema.KnownTypes.FindGraphType(field.TypeExpression.TypeName);
-                    childResolver = this.CreateResolver(graphType, field.TypeExpression, field);
-                }
-
+                var graphType = _schema.KnownTypes.FindGraphType(field.TypeExpression.TypeName);
+                var childResolver = this.CreateResolverInternal(graphType, field.TypeExpression, field, trackedComplexResolvers);
                 inputObjectResolver.AddFieldResolver(field.Name, childResolver);
             }
 

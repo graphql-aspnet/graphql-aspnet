@@ -197,7 +197,7 @@ dotnet_naming_style.begins_with_i.word_separator =
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
 
 
-
-
 [*.{cs,vb}]
 dotnet_style_prefer_compound_assignment=true:suggestion
+
+file_header_template = *************************************************************\n project:  graphql-aspnet\n --\n repo: https://github.com/graphql-aspnet\n docs: https://graphql-aspnet.github.io\n --\n License:  MIT\n *************************************************************

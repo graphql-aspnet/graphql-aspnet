@@ -45,5 +45,50 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task Self_Referencing_Nested_List_Input()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<SelfReferencingInputObjectController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                .Build();
+
+            // totalPeople exists on  base controller
+            // totalEmployees exists on  the added EmployeeController
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                    countNestings(item: 
+                        {
+                            name: ""root"",
+                            children: [
+                                {
+                                    name: ""child1"",
+                                    children: [
+                                        { name: ""child1.1""},
+                                        {name: ""child1.2""}
+                                    ]
+                                },
+                                {name: ""child2""}
+                            ]
+                        })
+                 }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""countNestings"" :  5
+                    }
+                }";
+
+            var result = await server.ExecuteQuery(builder);
+            Assert.AreEqual(0, result.Messages.Count);
+
+            var renderedResult = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, renderedResult);
+        }
     }
 }
