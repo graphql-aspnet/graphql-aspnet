@@ -23,14 +23,24 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
     {
         public static readonly List<object> QueriesToFail;
         public static readonly List<object> QueriesToPass;
+        private static bool _rejectFurtherQueries;
 
-        private static void AddQueryFailure(string ruleNumberToBreak, string query)
+        private static void AddQueryFailure(string ruleNumberToBreak, string query, bool isolateAndStopOthers = false)
         {
+            if (_rejectFurtherQueries)
+                return;
+
+            if (isolateAndStopOthers)
+                QueriesToFail.Clear();
+
             QueriesToFail.Add(new object[] { ruleNumberToBreak, query });
+            _rejectFurtherQueries = _rejectFurtherQueries || isolateAndStopOthers;
         }
 
         private static void AddQuerySuccess(string relatedRule, string query)
         {
+            // relatedRule is not used added to make it clear what is being tested against
+            // when setting up tests
             QueriesToPass.Add(new object[] { query });
         }
 
@@ -153,6 +163,14 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
 
             // inlined fragments must have a declared target type (invalid type bob)
             AddQueryFailure("5.5.1.2", "query Operation1{ peopleMover(id: 5) { ... on Bob  { id } } } ");
+
+            // inlined fragments must have a declared target type of the correct case(invalid case on Escalator)
+            AddQueryFailure("5.5.1.2", "query Operation1{ peopleMover(id: 5) { ... on EscalaTor { id name } } } ");
+
+            // inlined fragments must have a declared target type of the correct case(invalid case on Escalator)
+            // special test for multiple inline fragments that may result in a need to merge
+            // this should trigger on fragment type checking (5.5.1.2), not on fragment mergability (5.3.2)
+            AddQueryFailure("5.5.1.2", "query Operation1{ peopleMover(id: 5) { ... on Elevator {id name} ... on EscalaTor { id name } } } ");
 
             // all declared target types of a fragment must be Union, interface or object on named fragment
             // frag 1 declars a target of the string scalar
@@ -368,6 +386,8 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
 
             var ruleBroke = message.MetaData["Rule"];
             Assert.AreEqual(expectedRuleError, ruleBroke.ToString());
+            if (_rejectFurtherQueries)
+                Assert.Inconclusive("Query executed in isolation. cannot determine status of others");
         }
 
         [TestCaseSource(nameof(QueriesToPass))]
