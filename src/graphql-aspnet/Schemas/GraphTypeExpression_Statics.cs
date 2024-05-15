@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Internal;
@@ -154,10 +155,11 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <param name="typeToCheck">The complete type specification to check.</param>
         /// <param name="typeWrappers">An optional set of wrappers to use as a set of overrides on the type provided.</param>
+        /// <param name="nullability">An optional nullability from the property or method in question.</param>
         /// <returns>GraphFieldOptions.</returns>
-        public static GraphTypeExpression FromType(Type typeToCheck, MetaGraphTypes[] typeWrappers = null)
+        public static GraphTypeExpression FromType(Type typeToCheck, MetaGraphTypes[] typeWrappers = null, NullabilityInfo nullability = null)
         {
-            return FromType(typeToCheck, TypeKind.OBJECT, typeWrappers);
+            return FromType(typeToCheck, TypeKind.OBJECT, typeWrappers, nullability);
         }
 
         /// <summary>
@@ -167,11 +169,12 @@ namespace GraphQL.AspNet.Schemas
         /// <param name="typeKind">An explicit typekind to use when determining the name of the <paramref name="typeToCheck"/>
         /// that will be included in the expression.</param>
         /// <param name="typeWrappers">An optional set of wrappers to use as a set of overrides on the type provided.</param>
+        /// <param name="nullability">An optional nullability from the property or method in question.</param>
         /// <returns>GraphFieldOptions.</returns>
-        public static GraphTypeExpression FromType(Type typeToCheck, TypeKind typeKind, MetaGraphTypes[] typeWrappers = null)
+        public static GraphTypeExpression FromType(Type typeToCheck, TypeKind typeKind, MetaGraphTypes[] typeWrappers = null, NullabilityInfo nullability = null)
         {
             var name = GraphTypeNames.ParseName(typeToCheck, typeKind);
-            return FromType(typeToCheck, name, typeWrappers);
+            return FromType(typeToCheck, name, typeWrappers, nullability);
         }
 
         /// <summary>
@@ -181,8 +184,9 @@ namespace GraphQL.AspNet.Schemas
         /// <param name="typeName">An explicit typename to use in the type expression. This value
         /// will override any name gleaned from <paramref name="typeToCheck"/>. </param>
         /// <param name="typeWrappers">An optional set of wrappers to use as a set of overrides on the type provided.</param>
+        /// <param name="nullability">An optional nullability from the property or method in question.</param>
         /// <returns>GraphFieldOptions.</returns>
-        public static GraphTypeExpression FromType(Type typeToCheck, string typeName, MetaGraphTypes[] typeWrappers = null)
+        public static GraphTypeExpression FromType(Type typeToCheck, string typeName, MetaGraphTypes[] typeWrappers = null, NullabilityInfo nullability = null)
         {
             Validation.ThrowIfNull(typeToCheck, nameof(typeToCheck));
             typeName = Validation.ThrowIfNullWhiteSpaceOrReturn(typeName, nameof(typeName));
@@ -198,6 +202,11 @@ namespace GraphQL.AspNet.Schemas
                 eliminateNullableT: false);
 
             var wrappers = new List<MetaGraphTypes>();
+            if (GraphValidation.IsNotNullable(typeToCheck, nullability))
+            {
+                wrappers.Add(MetaGraphTypes.IsNotNull);
+            }
+
             if (GraphValidation.IsValidListType(typeToCheck))
             {
                 // auto generated type expressions will always allow for a nullable list (since class references can be null)
@@ -217,14 +226,11 @@ namespace GraphQL.AspNet.Schemas
                     typeToCheck = unwrappedType;
                 }
 
+                // NOTE Nullability info of elements inside the list, is not available by reflection
                 if (GraphValidation.IsNotNullable(typeToCheck))
                 {
                     wrappers.Add(MetaGraphTypes.IsNotNull);
                 }
-            }
-            else if (GraphValidation.IsNotNullable(typeToCheck))
-            {
-                wrappers.Add(MetaGraphTypes.IsNotNull);
             }
 
             return new GraphTypeExpression(typeName, wrappers);

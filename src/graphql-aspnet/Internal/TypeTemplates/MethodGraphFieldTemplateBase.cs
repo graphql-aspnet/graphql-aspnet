@@ -99,6 +99,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
+        protected override NullabilityInfo NullabilityInfo =>
+            new NullabilityInfoContext().Create(this.Method.ReturnParameter);
+
+        /// <inheritdoc />
         public override string InternalFullName => $"{this.Parent?.InternalFullName}.{this.Method.Name}";
 
         /// <inheritdoc />

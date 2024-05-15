@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
 
             var objectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
-            var typeExpression = GraphTypeExpression.FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers);
+            var typeExpression = GraphTypeExpression.FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers, this.NullabilityInfo);
             typeExpression = typeExpression.CloneTo(GraphTypeNames.ParseName(objectType, this.Parent.Kind));
 
             // ------------------------------------
@@ -333,6 +333,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <returns>GraphRoutePath.</returns>
         protected abstract SchemaItemPath GenerateFieldPath();
+
+        ///
+        protected abstract NullabilityInfo NullabilityInfo { get; }
 
         /// <summary>
         /// Type extensions used as batch methods required a speceial input and output signature for the runtime

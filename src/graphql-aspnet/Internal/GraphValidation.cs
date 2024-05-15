@@ -363,11 +363,13 @@ namespace GraphQL.AspNet.Internal
         /// Checks if the concrete type MUST be provided on the object graph or if it can be represented with 'null'.
         /// </summary>
         /// <param name="typeToCheck">The type to check.</param>
+        /// <param name="nullability">Nullability information from the property or method in question.</param>
         /// <returns><c>true</c> if not nullable, <c>false</c> otherwise.</returns>
-        public static bool IsNotNullable(Type typeToCheck)
+        public static bool IsNotNullable(Type typeToCheck, NullabilityInfo nullability = null)
         {
             // GraphId is the only "nullable" struct known to the system
-            return typeToCheck.IsValueType && !typeToCheck.IsNullableOfT();
+            return typeToCheck.IsValueType && !typeToCheck.IsNullableOfT() ||
+                nullability?.WriteState is NullabilityState.NotNull;
         }
     }
 }

@@ -98,6 +98,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
+        protected override NullabilityInfo NullabilityInfo =>
+            new NullabilityInfoContext().Create(this.Property);
+
+        /// <inheritdoc />
         public override Type DeclaredReturnType => this.Property.PropertyType;
 
         /// <inheritdoc />
