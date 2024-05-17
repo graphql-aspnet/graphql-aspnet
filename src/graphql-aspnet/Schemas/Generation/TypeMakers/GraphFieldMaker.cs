@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             field = _config
                 .DeclarationOptions
                 .SchemaFormatStrategy?
-                .ApplyFormatting(_config, field) ?? field;
+                .ApplySchemaItemRules(_config, field) ?? field;
 
             field.Description = template.Description;
             field.Complexity = template.Complexity;
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             field = _config
                 .DeclarationOptions
                 .SchemaFormatStrategy?
-                .ApplyFormatting(_config, field) ?? field;
+                .ApplySchemaItemRules(_config, field) ?? field;
 
             result.AddDependentRange(template.RetrieveRequiredTypes());
 

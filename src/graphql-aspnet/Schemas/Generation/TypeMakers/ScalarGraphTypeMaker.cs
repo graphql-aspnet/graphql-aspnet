@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             scalarType = _config
                 .DeclarationOptions?
                 .SchemaFormatStrategy?
-                .ApplyFormatting(_config, scalarType) ?? scalarType;
+                .ApplySchemaItemRules(_config, scalarType) ?? scalarType;
 
             var result = new GraphTypeCreationResult()
             {

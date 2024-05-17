@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -49,10 +48,10 @@ namespace GraphQL.AspNet.Interfaces.Configuration
 
         /// <summary>
         /// Gets an instance of a format strategy object that will apply custom
-        /// formats and other updates to a newly created schema item just before its added to a schema.
+        /// formats and other rules to a newly created schema item just before its added to a schema.
         /// </summary>
         /// <value>The schema item formatter.</value>
-        GraphSchemaFormatStrategy SchemaFormatStrategy { get; }
+        ISchemaFormatStrategy SchemaFormatStrategy { get; }
 
         /// <summary>
         /// Gets the set of operation types that can be registered to this schema.

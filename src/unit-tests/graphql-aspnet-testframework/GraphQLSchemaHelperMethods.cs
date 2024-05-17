@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Framework
         {
             var declarationOptions = new SchemaDeclarationConfiguration();
             declarationOptions.Merge(schema.Configuration.DeclarationOptions);
-            declarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(GraphNameFormatStrategy.NoChanges);
+            declarationOptions.SchemaFormatStrategy = new SchemaFormatStrategy(SchemaItemNameFormatOptions.NoChanges);
 
             var config = new SchemaConfiguration(
                 declarationOptions,

@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
     /// A set of internally supported name formatting options for various names and values created
     /// for a schema.
     /// </summary>
-    public enum GraphNameFormatStrategy
+    public enum SchemaItemNameFormatOptions
     {
         ProperCase,
         CamelCase,

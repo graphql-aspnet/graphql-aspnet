@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
     /// A bitwise set of format strategies that can be applied out of the box.
     /// </summary>
     [Flags]
-    public enum NullabilityFormatStrategy
+    public enum TypeExpressionNullabilityFormatRules
     {
         /// <summary>
         /// No changes are made to the nullability of different fields. They are used as provided in
@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// in reducing null-handling noise in various client side code generators. Intermediate graph
         /// types will never be null but may be expressed as "nullable" in the schema if this is not set.
         /// </summary>
-        NonNullTemplates = 1,
+        NonNullIntermediateTypes = 1,
 
         /// <summary>
         /// All lists, in any type expression, be that as input arguments
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
 
         /// <summary>
         /// The schema will treat all class reference types, in any type expression, as being non-nullable by
-        /// default.
+        /// default. This option DOES NOT include the <see cref="string" /> type.
         /// </summary>
         NonNullReferenceTypes = 16,
 
@@ -67,6 +67,6 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// the source code. All strings and reference types passed to an argument or returned
         /// from a field are considered nullable unless otherwise overriden.
         /// </summary>
-        Default = NonNullTemplates,
+        Default = NonNullIntermediateTypes,
     }
 }

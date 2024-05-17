@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             builder.AddGraphQL(o =>
             {
-                o.DeclarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(fieldNameStrategy: GraphNameFormatStrategy.UpperCase);
+                o.DeclarationOptions.SchemaFormatStrategy = new SchemaFormatStrategy(fieldNameStrategy: SchemaItemNameFormatOptions.UpperCase);
             });
 
             var server = builder.Build();
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             builder.AddGraphQL(o =>
             {
-                o.DeclarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(enumValueStrategy: GraphNameFormatStrategy.LowerCase);
+                o.DeclarationOptions.SchemaFormatStrategy = new SchemaFormatStrategy(enumValueStrategy: SchemaItemNameFormatOptions.LowerCase);
             });
 
             var server = builder.Build();
@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             builder.AddGraphQL(o =>
             {
-                o.DeclarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(typeNameStrategy: GraphNameFormatStrategy.CamelCase);
+                o.DeclarationOptions.SchemaFormatStrategy = new SchemaFormatStrategy(typeNameStrategy: SchemaItemNameFormatOptions.CamelCase);
             });
 
             var server = builder.Build();

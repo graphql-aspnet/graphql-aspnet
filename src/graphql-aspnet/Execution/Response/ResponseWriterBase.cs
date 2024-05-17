@@ -14,11 +14,12 @@ namespace GraphQL.AspNet.Execution.Response
     using System.Text.Json;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Configuration.Formatting;
+    using GraphQL.AspNet.Execution.Source;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Execution.Response;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A class containing many shared methods for writing all or part of a <see cref="IQueryExecutionResult"/>
@@ -248,7 +249,7 @@ namespace GraphQL.AspNet.Execution.Response
             }
 
             if (value.GetType().IsEnum)
-                value = this.Formatter.FormatEnumValueName(value.ToString());
+                value = this.Formatter.FormatSchemaItemName(value.ToString(), NameFormatCategory.EnumValue);
 
             switch (value)
             {
@@ -374,7 +375,7 @@ namespace GraphQL.AspNet.Execution.Response
         /// Gets the formatter used when writing graph names to the stream.
         /// </summary>
         /// <value>The name formatter.</value>
-        protected virtual GraphSchemaFormatStrategy Formatter { get; }
+        protected virtual ISchemaFormatStrategy Formatter { get; }
 
         /// <summary>
         /// Gets a set of settings to use whenever the serializer needs to be directly invoked.

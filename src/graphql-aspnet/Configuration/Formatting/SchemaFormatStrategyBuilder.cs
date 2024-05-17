@@ -9,29 +9,31 @@
 
 namespace GraphQL.AspNet.Configuration.Formatting
 {
+    using GraphQL.AspNet.Interfaces.Configuration;
+
     /// <summary>
-    /// A builder class to formulate a <see cref="GraphSchemaFormatStrategy"/>
+    /// A builder class to formulate a <see cref="SchemaFormatStrategy"/>
     /// with various options.
     /// </summary>
-    public class GraphSchemaFormatStrategyBuilder
+    public class SchemaFormatStrategyBuilder
     {
         /// <summary>
         /// Starts a new strategy builder instance.
         /// </summary>
         /// <returns>SchemaFormatStrategyBuilder.</returns>
-        public static GraphSchemaFormatStrategyBuilder Create()
+        public static SchemaFormatStrategyBuilder Create()
         {
-            return new GraphSchemaFormatStrategyBuilder();
+            return new SchemaFormatStrategyBuilder();
         }
 
-        private readonly GraphSchemaFormatStrategy _format;
+        private readonly SchemaFormatStrategy _format;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSchemaFormatStrategyBuilder"/> class.
+        /// Initializes a new instance of the <see cref="SchemaFormatStrategyBuilder"/> class.
         /// </summary>
-        public GraphSchemaFormatStrategyBuilder()
+        public SchemaFormatStrategyBuilder()
         {
-            _format = new GraphSchemaFormatStrategy();
+            _format = new SchemaFormatStrategy();
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// per argument basis.
         /// </summary>
         /// <returns>SchemaFormatStrategyBuilder.</returns>
-        public GraphSchemaFormatStrategyBuilder WithRequiredStrings()
+        public SchemaFormatStrategyBuilder WithRequiredStrings()
         {
             return this.WithRequiredInputStrings()
                         .WithRequiredOutputStrings();
@@ -52,10 +54,10 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// per argument basis.
         /// </summary>
         /// <returns>GraphSchemaFormatStrategyBuilder.</returns>
-        public GraphSchemaFormatStrategyBuilder WithRequiredInputStrings()
+        public SchemaFormatStrategyBuilder WithRequiredInputStrings()
         {
-            if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullInputStrings))
-                _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullInputStrings;
+            if (!_format.NullabilityStrategy.HasFlag(TypeExpressionNullabilityFormatRules.NonNullInputStrings))
+                _format.NullabilityStrategy = _format.NullabilityStrategy | TypeExpressionNullabilityFormatRules.NonNullInputStrings;
 
             return this;
         }
@@ -66,10 +68,10 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// per argument basis.
         /// </summary>
         /// <returns>GraphSchemaFormatStrategyBuilder.</returns>
-        public GraphSchemaFormatStrategyBuilder WithRequiredOutputStrings()
+        public SchemaFormatStrategyBuilder WithRequiredOutputStrings()
         {
-            if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullOutputStrings))
-                _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullOutputStrings;
+            if (!_format.NullabilityStrategy.HasFlag(TypeExpressionNullabilityFormatRules.NonNullOutputStrings))
+                _format.NullabilityStrategy = _format.NullabilityStrategy | TypeExpressionNullabilityFormatRules.NonNullOutputStrings;
 
             return this;
         }
@@ -80,10 +82,10 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// per argument basis.
         /// </summary>
         /// <returns>SchemaFormatStrategyBuilder.</returns>
-        public GraphSchemaFormatStrategyBuilder WithRequiredLists()
+        public SchemaFormatStrategyBuilder WithRequiredLists()
         {
-            if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullLists))
-                _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullLists;
+            if (!_format.NullabilityStrategy.HasFlag(TypeExpressionNullabilityFormatRules.NonNullLists))
+                _format.NullabilityStrategy = _format.NullabilityStrategy | TypeExpressionNullabilityFormatRules.NonNullLists;
 
             return this;
         }
@@ -94,10 +96,10 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// per argument basis.
         /// </summary>
         /// <returns>SchemaFormatStrategyBuilder.</returns>
-        public GraphSchemaFormatStrategyBuilder WithRequiredObjects()
+        public SchemaFormatStrategyBuilder WithRequiredObjects()
         {
-            if (!_format.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullReferenceTypes))
-                _format.NullabilityStrategy = _format.NullabilityStrategy | NullabilityFormatStrategy.NonNullReferenceTypes;
+            if (!_format.NullabilityStrategy.HasFlag(TypeExpressionNullabilityFormatRules.NonNullReferenceTypes))
+                _format.NullabilityStrategy = _format.NullabilityStrategy | TypeExpressionNullabilityFormatRules.NonNullReferenceTypes;
 
             return this;
         }
@@ -108,9 +110,9 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// as nullable.
         /// </summary>
         /// <returns>SchemaFormatStrategyBuilder.</returns>
-        public GraphSchemaFormatStrategyBuilder ClearNullabilityRules()
+        public SchemaFormatStrategyBuilder ClearNullabilityRules()
         {
-            _format.NullabilityStrategy = NullabilityFormatStrategy.None;
+            _format.NullabilityStrategy = TypeExpressionNullabilityFormatRules.None;
             return this;
         }
 
@@ -122,7 +124,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// </remarks>
         /// <param name="strategy">The strategy to employ for graph type names.</param>
         /// <returns>GraphSchemaFormatStrategyBuilder.</returns>
-        public GraphSchemaFormatStrategyBuilder WithGraphTypeNameFormat(GraphNameFormatStrategy strategy)
+        public SchemaFormatStrategyBuilder WithGraphTypeNameFormat(SchemaItemNameFormatOptions strategy)
         {
             _format.GraphTypeNameStrategy = strategy;
             return this;
@@ -136,7 +138,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// </remarks>
         /// <param name="strategy">The strategy to employ for field names.</param>
         /// <returns>GraphSchemaFormatStrategyBuilder.</returns>
-        public GraphSchemaFormatStrategyBuilder WithFieldNameFormat(GraphNameFormatStrategy strategy)
+        public SchemaFormatStrategyBuilder WithFieldNameFormat(SchemaItemNameFormatOptions strategy)
         {
             _format.FieldNameStrategy = strategy;
             return this;
@@ -150,7 +152,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// </remarks>
         /// <param name="strategy">The strategy to employ for graph type names.</param>
         /// <returns>GraphSchemaFormatStrategyBuilder.</returns>
-        public GraphSchemaFormatStrategyBuilder WithEnumValueFormat(GraphNameFormatStrategy strategy)
+        public SchemaFormatStrategyBuilder WithEnumValueFormat(SchemaItemNameFormatOptions strategy)
         {
             _format.EnumValueStrategy = strategy;
             return this;
@@ -160,7 +162,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// Returns the format strategy instance being built.
         /// </summary>
         /// <returns>GraphSchemaFormatStrategy.</returns>
-        public GraphSchemaFormatStrategy Build()
+        public ISchemaFormatStrategy Build()
         {
             return _format;
         }

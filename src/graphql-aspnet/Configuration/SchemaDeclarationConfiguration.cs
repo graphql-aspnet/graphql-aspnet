@@ -46,7 +46,6 @@ namespace GraphQL.AspNet.Configuration
             this.DisableIntrospection = config.DisableIntrospection;
             this.FieldDeclarationRequirements = config.FieldDeclarationRequirements;
             this.SchemaFormatStrategy = config.SchemaFormatStrategy;
-
             this.ArgumentBindingRule = config.ArgumentBindingRule;
 
             if (config.AllowedOperations != null)
@@ -66,7 +65,7 @@ namespace GraphQL.AspNet.Configuration
         public TemplateDeclarationRequirements FieldDeclarationRequirements { get; set; } = TemplateDeclarationRequirements.Default;
 
         /// <inheritdoc />
-        public GraphSchemaFormatStrategy SchemaFormatStrategy { get; set; } = new GraphSchemaFormatStrategy();
+        public ISchemaFormatStrategy SchemaFormatStrategy { get; set; } = new SchemaFormatStrategy();
 
         /// <inheritdoc />
         public HashSet<GraphOperationType> AllowedOperations { get; }

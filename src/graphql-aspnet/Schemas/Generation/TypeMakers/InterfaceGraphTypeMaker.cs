@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             interfaceType = _config
                 .DeclarationOptions?
                 .SchemaFormatStrategy?
-                .ApplyFormatting(_config, interfaceType) ?? interfaceType;
+                .ApplySchemaItemRules(_config, interfaceType) ?? interfaceType;
 
             // account for any potential type system directives
             result.AddDependentRange(template.RetrieveRequiredTypes());

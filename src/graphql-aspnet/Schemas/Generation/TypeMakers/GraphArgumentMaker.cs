@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             argument = _config
                 .DeclarationOptions?
                 .SchemaFormatStrategy?
-                .ApplyFormatting(_config, argument) ?? argument;
+                .ApplySchemaItemRules(_config, argument) ?? argument;
 
             var result = new GraphArgumentCreationResult();
             result.Argument = argument;

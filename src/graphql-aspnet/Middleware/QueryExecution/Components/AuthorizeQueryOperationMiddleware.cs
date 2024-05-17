@@ -61,6 +61,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             var authTasks = new List<Task>();
             bool isAuthorized = true;
+
             for (var i = 0; i < context.Operation.SecureItems.Count; i++)
             {
                 var securePart = context.Operation.SecureItems[i];

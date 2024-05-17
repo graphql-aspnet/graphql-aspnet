@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Engine
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
@@ -106,7 +107,7 @@ namespace GraphQL.AspNet.Engine
                     .Configuration
                     .DeclarationOptions
                     .SchemaFormatStrategy
-                    .FormatFieldName(segment.Name);
+                    .FormatSchemaItemName(segment.Name, NameFormatCategory.Field);
 
                 if (parentType.Fields.ContainsKey(formattedName))
                 {
@@ -182,7 +183,7 @@ namespace GraphQL.AspNet.Engine
                 .Configuration
                 .DeclarationOptions
                 .SchemaFormatStrategy?
-                .ApplyFormatting(
+                .ApplySchemaItemRules(
                         this.Schema.Configuration,
                         childField) ?? childField;
 
@@ -195,7 +196,7 @@ namespace GraphQL.AspNet.Engine
                 .Configuration
                 .DeclarationOptions
                 .SchemaFormatStrategy?
-                .ApplyFormatting(
+                .ApplySchemaItemRules(
                         this.Schema.Configuration,
                         graphType) ?? graphType;
 
@@ -230,7 +231,7 @@ namespace GraphQL.AspNet.Engine
                         break;
 
                     default:
-                        segments.Add(this.Schema.Configuration.DeclarationOptions.SchemaFormatStrategy.FormatGraphTypeName(pathSegmentName));
+                        segments.Add(this.Schema.Configuration.DeclarationOptions.SchemaFormatStrategy.FormatSchemaItemName(pathSegmentName, NameFormatCategory.GraphType));
                         break;
                 }
             }
@@ -258,7 +259,7 @@ namespace GraphQL.AspNet.Engine
                     .Configuration
                     .DeclarationOptions
                     .SchemaFormatStrategy?
-                    .ApplyFormatting(
+                    .ApplySchemaItemRules(
                             this.Schema.Configuration,
                             fieldResult.Field) ?? fieldResult.Field;
 

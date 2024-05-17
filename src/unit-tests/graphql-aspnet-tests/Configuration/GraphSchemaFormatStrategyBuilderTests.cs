@@ -18,100 +18,100 @@ namespace GraphQL.AspNet.Tests.Configuration
         [Test]
         public void EnsureDefaults()
         {
-            var strat = GraphSchemaFormatStrategyBuilder
+            var strat = (SchemaFormatStrategy)SchemaFormatStrategyBuilder
                 .Create()
                 .Build();
 
-            Assert.AreEqual(GraphNameFormatStrategy.ProperCase, strat.GraphTypeNameStrategy);
-            Assert.AreEqual(GraphNameFormatStrategy.CamelCase, strat.FieldNameStrategy);
-            Assert.AreEqual(GraphNameFormatStrategy.UpperCase, strat.EnumValueStrategy);
-            Assert.AreEqual(NullabilityFormatStrategy.Default, strat.NullabilityStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.ProperCase, strat.GraphTypeNameStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.CamelCase, strat.FieldNameStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.UpperCase, strat.EnumValueStrategy);
+            Assert.AreEqual(TypeExpressionNullabilityFormatRules.Default, strat.NullabilityStrategy);
         }
 
         [Test]
         public void WithGraphTypeNameFormat_UpdatesOnlyTypeNameStrategy()
         {
-            var strat = GraphSchemaFormatStrategyBuilder
+            var strat = (SchemaFormatStrategy)SchemaFormatStrategyBuilder
                 .Create()
-                .WithGraphTypeNameFormat(GraphNameFormatStrategy.NoChanges)
+                .WithGraphTypeNameFormat(SchemaItemNameFormatOptions.NoChanges)
                 .Build();
 
-            Assert.AreEqual(GraphNameFormatStrategy.NoChanges, strat.GraphTypeNameStrategy);
-            Assert.AreEqual(GraphNameFormatStrategy.CamelCase, strat.FieldNameStrategy);
-            Assert.AreEqual(GraphNameFormatStrategy.UpperCase, strat.EnumValueStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.NoChanges, strat.GraphTypeNameStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.CamelCase, strat.FieldNameStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.UpperCase, strat.EnumValueStrategy);
         }
 
         [Test]
         public void WithFieldNameFormat_UpdatesOnlyFieldNameStrategy()
         {
-            var strat = GraphSchemaFormatStrategyBuilder
+            var strat = (SchemaFormatStrategy)SchemaFormatStrategyBuilder
                 .Create()
-                .WithFieldNameFormat(GraphNameFormatStrategy.NoChanges)
+                .WithFieldNameFormat(SchemaItemNameFormatOptions.NoChanges)
                 .Build();
 
-            Assert.AreEqual(GraphNameFormatStrategy.ProperCase, strat.GraphTypeNameStrategy);
-            Assert.AreEqual(GraphNameFormatStrategy.NoChanges, strat.FieldNameStrategy);
-            Assert.AreEqual(GraphNameFormatStrategy.UpperCase, strat.EnumValueStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.ProperCase, strat.GraphTypeNameStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.NoChanges, strat.FieldNameStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.UpperCase, strat.EnumValueStrategy);
         }
 
         [Test]
         public void WithEnumValueFormat_UpdatesOnlyEnumValueStrategy()
         {
-            var strat = GraphSchemaFormatStrategyBuilder
+            var strat = (SchemaFormatStrategy)SchemaFormatStrategyBuilder
                 .Create()
-                .WithEnumValueFormat(GraphNameFormatStrategy.NoChanges)
+                .WithEnumValueFormat(SchemaItemNameFormatOptions.NoChanges)
                 .Build();
 
-            Assert.AreEqual(GraphNameFormatStrategy.ProperCase, strat.GraphTypeNameStrategy);
-            Assert.AreEqual(GraphNameFormatStrategy.CamelCase, strat.FieldNameStrategy);
-            Assert.AreEqual(GraphNameFormatStrategy.NoChanges, strat.EnumValueStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.ProperCase, strat.GraphTypeNameStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.CamelCase, strat.FieldNameStrategy);
+            Assert.AreEqual(SchemaItemNameFormatOptions.NoChanges, strat.EnumValueStrategy);
         }
 
         [Test]
         public void ClearNullabilityRules_UpdatesNullabilityStrategy()
         {
-            var strat = GraphSchemaFormatStrategyBuilder
+            var strat = (SchemaFormatStrategy)SchemaFormatStrategyBuilder
                 .Create()
                 .ClearNullabilityRules()
                 .Build();
 
-            Assert.AreEqual(NullabilityFormatStrategy.None, strat.NullabilityStrategy);
+            Assert.AreEqual(TypeExpressionNullabilityFormatRules.None, strat.NullabilityStrategy);
         }
 
         [Test]
         public void WithRequiredObjects_UpdatesNullabilityStrategy()
         {
-            var strat = GraphSchemaFormatStrategyBuilder
+            var strat = (SchemaFormatStrategy)SchemaFormatStrategyBuilder
                 .Create()
                 .WithRequiredObjects()
                 .Build();
 
-            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullTemplates));
-            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullReferenceTypes));
+            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(TypeExpressionNullabilityFormatRules.NonNullIntermediateTypes));
+            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(TypeExpressionNullabilityFormatRules.NonNullReferenceTypes));
         }
 
         [Test]
         public void WithRequiredStrings_UpdatesNullabilityStrategy()
         {
-            var strat = GraphSchemaFormatStrategyBuilder
+            var strat = (SchemaFormatStrategy)SchemaFormatStrategyBuilder
                 .Create()
                 .WithRequiredStrings()
                 .Build();
 
-            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullTemplates));
-            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullStrings));
+            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(TypeExpressionNullabilityFormatRules.NonNullIntermediateTypes));
+            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(TypeExpressionNullabilityFormatRules.NonNullStrings));
         }
 
         [Test]
         public void WithRequiredLists_UpdatesNullabilityStrategy()
         {
-            var strat = GraphSchemaFormatStrategyBuilder
+            var strat = (SchemaFormatStrategy)SchemaFormatStrategyBuilder
                 .Create()
                 .WithRequiredLists()
                 .Build();
 
-            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullTemplates));
-            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(NullabilityFormatStrategy.NonNullLists));
+            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(TypeExpressionNullabilityFormatRules.NonNullIntermediateTypes));
+            Assert.IsTrue(strat.NullabilityStrategy.HasFlag(TypeExpressionNullabilityFormatRules.NonNullLists));
         }
     }
 }

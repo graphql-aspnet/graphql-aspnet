@@ -42,36 +42,36 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         }
 
         // fixed name scalars will never be renamed
-        [TestCase(typeof(int), GraphNameFormatStrategy.UpperCase, "Int")]
-        [TestCase(typeof(int), GraphNameFormatStrategy.LowerCase, "Int")]
-        [TestCase(typeof(int), GraphNameFormatStrategy.ProperCase, "Int")]
-        [TestCase(typeof(float), GraphNameFormatStrategy.UpperCase, "Float")]
-        [TestCase(typeof(float), GraphNameFormatStrategy.LowerCase, "Float")]
-        [TestCase(typeof(float), GraphNameFormatStrategy.ProperCase, "Float")]
-        [TestCase(typeof(string), GraphNameFormatStrategy.UpperCase, "String")]
-        [TestCase(typeof(string), GraphNameFormatStrategy.LowerCase, "String")]
-        [TestCase(typeof(string), GraphNameFormatStrategy.ProperCase, "String")]
-        [TestCase(typeof(bool), GraphNameFormatStrategy.UpperCase, "Boolean")]
-        [TestCase(typeof(bool), GraphNameFormatStrategy.LowerCase, "Boolean")]
-        [TestCase(typeof(bool), GraphNameFormatStrategy.ProperCase, "Boolean")]
-        [TestCase(typeof(GraphId), GraphNameFormatStrategy.UpperCase, "ID")]
-        [TestCase(typeof(GraphId), GraphNameFormatStrategy.LowerCase, "ID")]
-        [TestCase(typeof(GraphId), GraphNameFormatStrategy.ProperCase, "ID")]
+        [TestCase(typeof(int), SchemaItemNameFormatOptions.UpperCase, "Int")]
+        [TestCase(typeof(int), SchemaItemNameFormatOptions.LowerCase, "Int")]
+        [TestCase(typeof(int), SchemaItemNameFormatOptions.ProperCase, "Int")]
+        [TestCase(typeof(float), SchemaItemNameFormatOptions.UpperCase, "Float")]
+        [TestCase(typeof(float), SchemaItemNameFormatOptions.LowerCase, "Float")]
+        [TestCase(typeof(float), SchemaItemNameFormatOptions.ProperCase, "Float")]
+        [TestCase(typeof(string), SchemaItemNameFormatOptions.UpperCase, "String")]
+        [TestCase(typeof(string), SchemaItemNameFormatOptions.LowerCase, "String")]
+        [TestCase(typeof(string), SchemaItemNameFormatOptions.ProperCase, "String")]
+        [TestCase(typeof(bool), SchemaItemNameFormatOptions.UpperCase, "Boolean")]
+        [TestCase(typeof(bool), SchemaItemNameFormatOptions.LowerCase, "Boolean")]
+        [TestCase(typeof(bool), SchemaItemNameFormatOptions.ProperCase, "Boolean")]
+        [TestCase(typeof(GraphId), SchemaItemNameFormatOptions.UpperCase, "ID")]
+        [TestCase(typeof(GraphId), SchemaItemNameFormatOptions.LowerCase, "ID")]
+        [TestCase(typeof(GraphId), SchemaItemNameFormatOptions.ProperCase, "ID")]
 
         // non-fixed scalars will rename themselves
-        [TestCase(typeof(decimal), GraphNameFormatStrategy.UpperCase, "DECIMAL")]
-        [TestCase(typeof(decimal), GraphNameFormatStrategy.LowerCase, "decimal")]
-        [TestCase(typeof(decimal), GraphNameFormatStrategy.ProperCase, "Decimal")]
-        [TestCase(typeof(Uri), GraphNameFormatStrategy.UpperCase, "URI")]
-        [TestCase(typeof(Uri), GraphNameFormatStrategy.LowerCase, "uri")]
-        [TestCase(typeof(Uri), GraphNameFormatStrategy.ProperCase, "Uri")]
-        public void BuiltInScalar_ObeysNamingRulesOfConfig(Type builtInScalarType, GraphNameFormatStrategy strategy, string expectedName)
+        [TestCase(typeof(decimal), SchemaItemNameFormatOptions.UpperCase, "DECIMAL")]
+        [TestCase(typeof(decimal), SchemaItemNameFormatOptions.LowerCase, "decimal")]
+        [TestCase(typeof(decimal), SchemaItemNameFormatOptions.ProperCase, "Decimal")]
+        [TestCase(typeof(Uri), SchemaItemNameFormatOptions.UpperCase, "URI")]
+        [TestCase(typeof(Uri), SchemaItemNameFormatOptions.LowerCase, "uri")]
+        [TestCase(typeof(Uri), SchemaItemNameFormatOptions.ProperCase, "Uri")]
+        public void BuiltInScalar_ObeysNamingRulesOfConfig(Type builtInScalarType, SchemaItemNameFormatOptions strategy, string expectedName)
         {
             var server = new TestServerBuilder()
                 .AddGraphQL(o =>
                 {
                     o.DeclarationOptions.SchemaFormatStrategy
-                        = new GraphSchemaFormatStrategy(strategy);
+                        = new SchemaFormatStrategy(strategy);
                 })
                 .Build();
 

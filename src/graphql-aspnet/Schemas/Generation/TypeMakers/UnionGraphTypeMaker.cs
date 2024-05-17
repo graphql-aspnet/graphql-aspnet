@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             union = _config
                 .DeclarationOptions?
                 .SchemaFormatStrategy?
-                .ApplyFormatting(_config, union) ?? union;
+                .ApplySchemaItemRules(_config, union) ?? union;
 
             result.GraphType = union;
 
