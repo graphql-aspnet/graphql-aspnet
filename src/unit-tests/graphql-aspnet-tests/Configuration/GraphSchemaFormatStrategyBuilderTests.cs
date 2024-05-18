@@ -115,3 +115,6 @@ namespace GraphQL.AspNet.Tests.Configuration
         }
     }
 }
+
+// Change everything on the formatters over to rules
+// figure out how to get rid of the name formatter (probably not possible)

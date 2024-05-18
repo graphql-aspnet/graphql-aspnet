@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Execution.Response
     using System.Text.Json;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -98,7 +97,7 @@ namespace GraphQL.AspNet.Execution.Response
 
             var timestamp = this.TimeLocalizer?.Invoke(message.TimeStamp) ?? message.TimeStamp;
             this.WriteLeaf(writer, "timestamp", timestamp);
-            this.WriteLeaf(writer, "severity", message.Severity);
+            this.WriteLeaf(writer, "severity", message.Severity.ToString().ToUpperInvariant());
 
             if (message.MetaData != null && message.MetaData.Count > 0)
             {
@@ -249,7 +248,7 @@ namespace GraphQL.AspNet.Execution.Response
             }
 
             if (value.GetType().IsEnum)
-                value = this.Formatter.FormatSchemaItemName(value.ToString(), NameFormatCategory.EnumValue);
+                value = value.ToString();
 
             switch (value)
             {
@@ -313,7 +312,6 @@ namespace GraphQL.AspNet.Execution.Response
                     writer.WriteNumberValue(ush);
                     break;
 
-#if NET6_0_OR_GREATER
                 case DateOnly dateOnly:
                     this.WritePreEncodedStringValue(writer, dateOnly.ToRfc3339String());
                     break;
@@ -321,7 +319,6 @@ namespace GraphQL.AspNet.Execution.Response
                 case TimeOnly timeOnly:
                     this.WritePreEncodedStringValue(writer, timeOnly.ToRfc3339String());
                     break;
-#endif
 
                 default:
                     if (convertUnsupportedToString)

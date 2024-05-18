@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Configuration
 {
-    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
@@ -46,14 +45,5 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// <returns>The updated or altered schema item instance that was formatted.</returns>
         T ApplySchemaItemRules<T>(ISchemaConfiguration configuration, T schemaItem)
             where T : ISchemaItem;
-
-        /// <summary>
-        /// Formats the provided string as if it were the name of an entity
-        /// according to the rules of the schema.
-        /// </summary>
-        /// <param name="name">The name to format.</param>
-        /// <param name="target">The target schema item entity type.</param>
-        /// <returns>A formatted string.</returns>
-        string FormatSchemaItemName(string name, NameFormatCategory target);
     }
 }

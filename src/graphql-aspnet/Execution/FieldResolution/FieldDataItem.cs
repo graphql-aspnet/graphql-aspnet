@@ -17,9 +17,9 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Response;
+    using GraphQL.AspNet.Execution.Source;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
@@ -417,7 +417,24 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             {
                 var type = resultData.GetType();
                 var graphType = this.Schema.KnownTypes.FindGraphType(type);
-                if (graphType is IScalarGraphType sgt)
+
+                if (graphType is IEnumGraphType egt)
+                {
+                    // convert the enum to its appropriate label
+                    // from the graph type
+                    var enumValue = egt.Values.FindByEnumValue(resultData);
+                    if (enumValue == null)
+                    {
+                        throw new GraphExecutionException(
+                            $"The data value of '{resultData}' " +
+                            $"was expected to be of enum graph type '{egt.Name}' but could not be " +
+                            $"found as a valid enum value registered with the schema.",
+                            this.FieldContext.FieldDocumentPart.Origin);
+                    }
+
+                    resultData = enumValue.Name;
+                }
+                else if (graphType is IScalarGraphType sgt)
                 {
                     resultData = sgt.Serialize(resultData);
                 }

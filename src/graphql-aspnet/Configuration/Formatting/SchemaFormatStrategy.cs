@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Configuration.Formatting
 {
-    using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -86,33 +85,6 @@ namespace GraphQL.AspNet.Configuration.Formatting
             return schemaItem;
         }
 
-        /// <inheritdoc />
-        public string FormatSchemaItemName(string name, NameFormatCategory target)
-        {
-            switch (target)
-            {
-                case NameFormatCategory.GraphType:
-
-                    // enforce non-renaming standards. this is not overrideable a child object.
-                    if (!GlobalTypes.CanBeRenamed(name))
-                        return name;
-
-                    return this.FormatGraphTypeName(name);
-
-                case NameFormatCategory.Field:
-                    return this.FormatFieldName(name);
-
-                case NameFormatCategory.EnumValue:
-                    return this.FormatEnumValueName(name);
-
-                case NameFormatCategory.Directive:
-                    return this.FormatDirectiveName(name);
-
-                default:
-                    throw new InvalidOperationException($"Unknown {nameof(NameFormatCategory)} target: '{target}'");
-            }
-        }
-
         /// <summary>
         /// Formats the directive name to be how it will appear in a query, excluding the '@'
         /// symbol.
@@ -151,6 +123,9 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <returns>System.String.</returns>
         protected virtual string FormatGraphTypeName(string name)
         {
+            if (!GlobalTypes.CanBeRenamed(name))
+                return name;
+
             return this.FormatName(name, this.GraphTypeNameStrategy);
         }
 
@@ -178,7 +153,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <returns>IDirective.</returns>
         protected virtual IEnumValue FormatEnumValue(ISchemaConfiguration configuration, IEnumValue enumValue)
         {
-            var formattedName = this.FormatSchemaItemName(enumValue.Name, NameFormatCategory.EnumValue);
+            var formattedName = this.FormatEnumValueName(enumValue.Name);
             return enumValue.Clone(valueName: formattedName);
         }
 
@@ -193,7 +168,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         protected virtual IDirective FormatDirective(ISchemaConfiguration configuration, IDirective directive)
         {
             // directives are referenced as fields
-            var formattedName = this.FormatSchemaItemName(directive.Name, NameFormatCategory.Field);
+            var formattedName = this.FormatFieldName(directive.Name);
             return (IDirective)directive.Clone(formattedName);
         }
 
@@ -207,13 +182,18 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <returns>IGraphType.</returns>
         protected virtual IGraphType FormatGraphType(ISchemaConfiguration configuration, IGraphType graphType)
         {
-            if (graphType is IScalarGraphType scalarType)
+            // ensure all path segments of the virtual type are
+            // named according to the rules of this schema
+            if (graphType is VirtualObjectGraphType virtualType)
             {
-                if (!GlobalTypes.CanBeRenamed(scalarType.Name))
-                    return graphType;
+                var newName = VirtualObjectGraphType.MakeSafeTypeNameFromItemPath(
+                    virtualType.ItemPathTemplate,
+                    this.FormatGraphTypeName);
+
+                return virtualType.Clone(newName);
             }
 
-            var formattedName = this.FormatSchemaItemName(graphType.Name, NameFormatCategory.GraphType);
+            var formattedName = this.FormatGraphTypeName(graphType.Name);
             return graphType.Clone(formattedName);
         }
 
@@ -230,9 +210,9 @@ namespace GraphQL.AspNet.Configuration.Formatting
             if (!inputGraphField.TypeExpression.IsFixed)
                 inputGraphField = this.ApplyTypeExpressionNullabilityRules(inputGraphField);
 
-            var formattedName = this.FormatSchemaItemName(inputGraphField.Name, NameFormatCategory.Field);
+            var formattedName = this.FormatFieldName(inputGraphField.Name);
             var typeExpression = inputGraphField.TypeExpression;
-            typeExpression = typeExpression.Clone(this.FormatSchemaItemName(typeExpression.TypeName, NameFormatCategory.GraphType));
+            typeExpression = typeExpression.Clone(this.FormatGraphTypeName(typeExpression.TypeName));
 
             return inputGraphField.Clone(fieldName: formattedName, typeExpression: typeExpression);
         }
@@ -250,9 +230,9 @@ namespace GraphQL.AspNet.Configuration.Formatting
             if (!graphField.TypeExpression.IsFixed)
                 graphField = this.ApplyTypeExpressionNullabilityRules(graphField);
 
-            var formattedName = this.FormatSchemaItemName(graphField.Name, NameFormatCategory.Field);
+            var formattedName = this.FormatFieldName(graphField.Name);
             var typeExpression = graphField.TypeExpression;
-            typeExpression = typeExpression.Clone(this.FormatSchemaItemName(typeExpression.TypeName, NameFormatCategory.GraphType));
+            typeExpression = typeExpression.Clone(this.FormatGraphTypeName(typeExpression.TypeName));
 
             return graphField.Clone(fieldName: formattedName, typeExpression: typeExpression);
         }
@@ -270,9 +250,9 @@ namespace GraphQL.AspNet.Configuration.Formatting
             if (!argument.TypeExpression.IsFixed)
                 argument = this.ApplyTypeExpressionNullabilityRules(argument);
 
-            var formattedName = this.FormatSchemaItemName(argument.Name, NameFormatCategory.Field);
+            var formattedName = this.FormatFieldName(argument.Name);
             var typeExpression = argument.TypeExpression;
-            typeExpression = typeExpression.Clone(this.FormatSchemaItemName(typeExpression.TypeName, NameFormatCategory.GraphType));
+            typeExpression = typeExpression.Clone(this.FormatGraphTypeName(typeExpression.TypeName));
 
             return argument.Clone(argumentName: formattedName, typeExpression: typeExpression);
         }

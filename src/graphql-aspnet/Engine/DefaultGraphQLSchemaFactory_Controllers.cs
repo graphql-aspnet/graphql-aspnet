@@ -10,13 +10,12 @@
 namespace GraphQL.AspNet.Engine
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Generation.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -103,16 +102,23 @@ namespace GraphQL.AspNet.Engine
             for (var i = 0; i < pathSegments.Count; i++)
             {
                 var segment = pathSegments[i];
-                var formattedName = this.Schema
-                    .Configuration
-                    .DeclarationOptions
-                    .SchemaFormatStrategy
-                    .FormatSchemaItemName(segment.Name, NameFormatCategory.Field);
 
-                if (parentType.Fields.ContainsKey(formattedName))
+                (var virtualField, var virtualFieldGaphType) = this.CreateVirtualField(
+                    parentType,
+                    segment.Name,
+                    segment,
+                    i == 0 ? action.Parent : null);
+
+                // its possible this field and its graph type already exist because its
+                // been referenced in path segments elsewhere on this controller.
+                // If this is the case reference the already added version on the schema
+                // then perform checks to ensure that the value in the schema matches expectations
+                // for this newly created virtual field.
+                // Once verified just use the existing field and continue down the tree.
+                if (parentType.Fields.ContainsKey(virtualField.Name))
                 {
-                    var field = parentType[formattedName];
-                    var foundType = Schema.KnownTypes.FindGraphType(field.TypeExpression.TypeName);
+                    var existingChildField = parentType[virtualField.Name];
+                    var foundType = Schema.KnownTypes.FindGraphType(existingChildField.TypeExpression.TypeName);
 
                     var ogt = foundType as IObjectGraphType;
                     if (ogt != null)
@@ -125,7 +131,7 @@ namespace GraphQL.AspNet.Engine
 
                         throw new GraphTypeDeclarationException(
                             $"The action '{action.ItemPath}' attempted to nest itself under the {foundType.Kind} graph type '{foundType.Name}', which is returned by " +
-                            $"the path '{field.ItemPath}'.  Actions can only be added to virtual graph types created by their parent controller.");
+                            $"the path '{existingChildField.ItemPath}'.  Actions can only be added to virtual graph types created by their parent controller.");
                     }
 
                     if (foundType != null)
@@ -137,40 +143,53 @@ namespace GraphQL.AspNet.Engine
                     else
                     {
                         throw new GraphTypeDeclarationException(
-                            $"The action '{action.ItemPath.Path}' attempted to nest itself under the field '{field.ItemPath}' but no graph type was found " +
+                            $"The action '{action.ItemPath.Path}' attempted to nest itself under the field '{existingChildField.ItemPath}' but no graph type was found " +
                             "that matches its type.");
                     }
                 }
 
-                parentType = this.CreateVirtualFieldOnParent(
-                    parentType,
-                    formattedName,
-                    segment,
-                    i == 0 ? action.Parent : null);
+                // field doesn't already exist on the schema
+                // add it and continue down the tree
+                parentType.Extend(virtualField);
+                this.Schema.KnownTypes.EnsureGraphType(virtualFieldGaphType);
+                this.EnsureDependents(virtualField);
+                parentType = virtualFieldGaphType;
             }
 
             return parentType;
         }
 
         /// <summary>
-        /// Performs an out-of-band append of a new graph field to a parent and
-        /// returns the virtual type the would returns.
+        /// Generates a fully qualified field and an associated graph type that can be added to
+        /// the schema to represent a segment in a field path definition added by the developer.
         /// </summary>
         /// <param name="parentType">the parent type to add the new field to.</param>
         /// <param name="fieldName">Name of the field.</param>
-        /// <param name="path">The path segment to represent the new field.</param>
+        /// <param name="pathTemplate">The path segment to represent the new field.</param>
         /// <param name="definition">The definition item from which graph attributes should be used, if any. Attributes will be set to an empty string if not supplied.</param>
-        /// <returns>The type associated with the field added to the parent type.</returns>
-        protected virtual IObjectGraphType CreateVirtualFieldOnParent(
+        /// <returns>A reference to the new field and the graph type created to represent the fields returned value.</returns>
+        protected virtual (VirtualGraphField VirtualField, IObjectGraphType VirtualFieldGraphType) CreateVirtualField(
             IObjectGraphType parentType,
             string fieldName,
-            ItemPath path,
+            ItemPath pathTemplate,
             ISchemaItemTemplate definition = null)
         {
+            var returnedGraphType = VirtualObjectGraphType.FromControllerFieldPathTemplate(pathTemplate);
+
+            returnedGraphType = this.Schema
+                .Configuration
+                .DeclarationOptions
+                .SchemaFormatStrategy?
+                .ApplySchemaItemRules(
+                        this.Schema.Configuration,
+                        returnedGraphType) ?? returnedGraphType;
+
+            var typeExpression = GraphTypeExpression.FromDeclaration(returnedGraphType.Name);
+
             var childField = new VirtualGraphField(
                 fieldName,
-                path,
-                this.MakeSafeTypeNameFromItemPath(path))
+                pathTemplate,
+                typeExpression)
             {
                 IsDepreciated = false,
                 DepreciationReason = string.Empty,
@@ -187,57 +206,7 @@ namespace GraphQL.AspNet.Engine
                         this.Schema.Configuration,
                         childField) ?? childField;
 
-            parentType.Extend(childField);
-
-            // ensure the new graph type that this virtual field will
-            // return is part of the schema
-            var graphType = childField.AssociatedGraphType;
-            graphType = this.Schema
-                .Configuration
-                .DeclarationOptions
-                .SchemaFormatStrategy?
-                .ApplySchemaItemRules(
-                        this.Schema.Configuration,
-                        graphType) ?? graphType;
-
-            this.Schema.KnownTypes.EnsureGraphType(graphType);
-            this.EnsureDependents(childField);
-            return graphType;
-        }
-
-        /// <summary>
-        /// Makes the unique route being used for this virtual field type safe, removing special control characters
-        /// but retaining its uniqueness.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>System.String.</returns>
-        protected virtual string MakeSafeTypeNameFromItemPath(ItemPath path)
-        {
-            var segments = new List<string>();
-            foreach (var pathSegmentName in path)
-            {
-                switch (pathSegmentName)
-                {
-                    case Constants.Routing.QUERY_ROOT:
-                        segments.Add(Constants.ReservedNames.QUERY_TYPE_NAME);
-                        break;
-
-                    case Constants.Routing.MUTATION_ROOT:
-                        segments.Add(Constants.ReservedNames.MUTATION_TYPE_NAME);
-                        break;
-
-                    case Constants.Routing.SUBSCRIPTION_ROOT:
-                        segments.Add(Constants.ReservedNames.SUBSCRIPTION_TYPE_NAME);
-                        break;
-
-                    default:
-                        segments.Add(this.Schema.Configuration.DeclarationOptions.SchemaFormatStrategy.FormatSchemaItemName(pathSegmentName, NameFormatCategory.GraphType));
-                        break;
-                }
-            }
-
-            segments.Reverse();
-            return string.Join("_", segments);
+            return (childField, returnedGraphType);
         }
 
         /// <summary>
