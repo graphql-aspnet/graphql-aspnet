@@ -18,8 +18,4 @@
     <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Configuration\Formatting\FormatRules\" />
-  </ItemGroup>
-
 </Project>

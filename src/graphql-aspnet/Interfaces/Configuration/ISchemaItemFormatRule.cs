@@ -20,10 +20,10 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// <summary>
         /// Executes this rule against the target schema item
         /// </summary>
-        /// <typeparam name="T">The actual type of the schema item being processed.</typeparam>
+        /// <typeparam name="TSchemaItemType">The actual type of the schema item being processed.</typeparam>
         /// <param name="schemaItem">The schema item.</param>
         /// <returns>The original schema item or a modified version of the schema item.</returns>
-        public T Execute<T>(T schemaItem)
-            where T : ISchemaItem;
+        public TSchemaItemType Execute<TSchemaItemType>(TSchemaItemType schemaItem)
+            where TSchemaItemType : ISchemaItem;
     }
 }

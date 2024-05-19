@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Directives.Global
         /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
         public IGraphActionResult Execute(
-            [FromGraphQL("if")]
+            [FromGraphQL("if", TypeExpression = "Type!")]
             [Description("When true, the field or fragment is included in the query results.")]
             bool ifArgument)
         {

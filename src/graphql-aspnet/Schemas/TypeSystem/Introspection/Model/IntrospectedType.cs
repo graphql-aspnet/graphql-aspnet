@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;

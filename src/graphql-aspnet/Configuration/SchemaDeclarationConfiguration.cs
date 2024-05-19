@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Configuration
 {
     using System.Collections.Generic;
     using System.Diagnostics;
-    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -32,6 +31,7 @@ namespace GraphQL.AspNet.Configuration
             this.AllowedOperations.Add(GraphOperationType.Query);
             this.AllowedOperations.Add(GraphOperationType.Mutation);
             this.ArgumentBindingRule = SchemaArgumentBindingRules.ParametersPreferQueryResolution;
+            this.SchemaFormatStrategy = Formatting.SchemaFormatStrategy.CreateEmpty();
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Configuration
         public TemplateDeclarationRequirements FieldDeclarationRequirements { get; set; } = TemplateDeclarationRequirements.Default;
 
         /// <inheritdoc />
-        public ISchemaFormatStrategy SchemaFormatStrategy { get; set; } = new SchemaFormatStrategy();
+        public ISchemaFormatStrategy SchemaFormatStrategy { get; set; }
 
         /// <inheritdoc />
         public HashSet<GraphOperationType> AllowedOperations { get; }

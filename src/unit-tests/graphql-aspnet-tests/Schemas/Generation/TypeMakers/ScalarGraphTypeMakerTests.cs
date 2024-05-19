@@ -42,36 +42,36 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         }
 
         // fixed name scalars will never be renamed
-        [TestCase(typeof(int), SchemaItemNameFormatOptions.UpperCase, "Int")]
-        [TestCase(typeof(int), SchemaItemNameFormatOptions.LowerCase, "Int")]
-        [TestCase(typeof(int), SchemaItemNameFormatOptions.ProperCase, "Int")]
-        [TestCase(typeof(float), SchemaItemNameFormatOptions.UpperCase, "Float")]
-        [TestCase(typeof(float), SchemaItemNameFormatOptions.LowerCase, "Float")]
-        [TestCase(typeof(float), SchemaItemNameFormatOptions.ProperCase, "Float")]
-        [TestCase(typeof(string), SchemaItemNameFormatOptions.UpperCase, "String")]
-        [TestCase(typeof(string), SchemaItemNameFormatOptions.LowerCase, "String")]
-        [TestCase(typeof(string), SchemaItemNameFormatOptions.ProperCase, "String")]
-        [TestCase(typeof(bool), SchemaItemNameFormatOptions.UpperCase, "Boolean")]
-        [TestCase(typeof(bool), SchemaItemNameFormatOptions.LowerCase, "Boolean")]
-        [TestCase(typeof(bool), SchemaItemNameFormatOptions.ProperCase, "Boolean")]
-        [TestCase(typeof(GraphId), SchemaItemNameFormatOptions.UpperCase, "ID")]
-        [TestCase(typeof(GraphId), SchemaItemNameFormatOptions.LowerCase, "ID")]
-        [TestCase(typeof(GraphId), SchemaItemNameFormatOptions.ProperCase, "ID")]
+        [TestCase(typeof(int), TextFormatOptions.UpperCase, "Int")]
+        [TestCase(typeof(int), TextFormatOptions.LowerCase, "Int")]
+        [TestCase(typeof(int), TextFormatOptions.ProperCase, "Int")]
+        [TestCase(typeof(float), TextFormatOptions.UpperCase, "Float")]
+        [TestCase(typeof(float), TextFormatOptions.LowerCase, "Float")]
+        [TestCase(typeof(float), TextFormatOptions.ProperCase, "Float")]
+        [TestCase(typeof(string), TextFormatOptions.UpperCase, "String")]
+        [TestCase(typeof(string), TextFormatOptions.LowerCase, "String")]
+        [TestCase(typeof(string), TextFormatOptions.ProperCase, "String")]
+        [TestCase(typeof(bool), TextFormatOptions.UpperCase, "Boolean")]
+        [TestCase(typeof(bool), TextFormatOptions.LowerCase, "Boolean")]
+        [TestCase(typeof(bool), TextFormatOptions.ProperCase, "Boolean")]
+        [TestCase(typeof(GraphId), TextFormatOptions.UpperCase, "ID")]
+        [TestCase(typeof(GraphId), TextFormatOptions.LowerCase, "ID")]
+        [TestCase(typeof(GraphId), TextFormatOptions.ProperCase, "ID")]
 
         // non-fixed scalars will rename themselves
-        [TestCase(typeof(decimal), SchemaItemNameFormatOptions.UpperCase, "DECIMAL")]
-        [TestCase(typeof(decimal), SchemaItemNameFormatOptions.LowerCase, "decimal")]
-        [TestCase(typeof(decimal), SchemaItemNameFormatOptions.ProperCase, "Decimal")]
-        [TestCase(typeof(Uri), SchemaItemNameFormatOptions.UpperCase, "URI")]
-        [TestCase(typeof(Uri), SchemaItemNameFormatOptions.LowerCase, "uri")]
-        [TestCase(typeof(Uri), SchemaItemNameFormatOptions.ProperCase, "Uri")]
-        public void BuiltInScalar_ObeysNamingRulesOfConfig(Type builtInScalarType, SchemaItemNameFormatOptions strategy, string expectedName)
+        [TestCase(typeof(decimal), TextFormatOptions.UpperCase, "DECIMAL")]
+        [TestCase(typeof(decimal), TextFormatOptions.LowerCase, "decimal")]
+        [TestCase(typeof(decimal), TextFormatOptions.ProperCase, "Decimal")]
+        [TestCase(typeof(Uri), TextFormatOptions.UpperCase, "URI")]
+        [TestCase(typeof(Uri), TextFormatOptions.LowerCase, "uri")]
+        [TestCase(typeof(Uri), TextFormatOptions.ProperCase, "Uri")]
+        public void BuiltInScalar_ObeysNamingRulesOfConfig(Type builtInScalarType, TextFormatOptions nameFormat, string expectedName)
         {
             var server = new TestServerBuilder()
                 .AddGraphQL(o =>
                 {
                     o.DeclarationOptions.SchemaFormatStrategy
-                        = new SchemaFormatStrategy(strategy);
+                        = SchemaFormatStrategy.CreateEmpty(nameFormat);
                 })
                 .Build();
 

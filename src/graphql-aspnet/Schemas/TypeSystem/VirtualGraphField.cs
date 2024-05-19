@@ -73,6 +73,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Publish = true;
             this.IsDeprecated = false;
             this.DeprecationReason = null;
+
+            this.TypeExpression = this.TypeExpression.ToFixed();
         }
 
         /// <inheritdoc />
