@@ -28,7 +28,9 @@ namespace GraphQL.AspNet.Tests.Framework
         {
             var declarationOptions = new SchemaDeclarationConfiguration();
             declarationOptions.Merge(schema.Configuration.DeclarationOptions);
-            declarationOptions.SchemaFormatStrategy = SchemaFormatStrategy.CreateEmpty(TextFormatOptions.NoChanges);
+            declarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(TextFormatOptions.NoChanges, applyDefaultRules: false)
+                    .Build();
 
             var config = new SchemaConfiguration(
                 declarationOptions,

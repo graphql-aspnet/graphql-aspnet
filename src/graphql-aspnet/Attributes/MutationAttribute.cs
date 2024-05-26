@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Attributes
 {
     using System;
     using System.Linq;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
 
@@ -101,15 +100,15 @@ namespace GraphQL.AspNet.Attributes
         /// </summary>
         /// <param name="template">The template naming scheme to use to generate a graph field from this method.</param>
         /// <param name="unionTypeName">Name of the union type.</param>
-        /// <param name="unionTypeA">The first of two required types to include in the union.</param>
+        /// <param name="firstUnionType">The first of two required types to include in the union.</param>
         /// <param name="additionalUnionTypes">Any additional union types.</param>
-        public MutationAttribute(string template, string unionTypeName, Type unionTypeA, params Type[] additionalUnionTypes)
+        public MutationAttribute(string template, string unionTypeName, Type firstUnionType, params Type[] additionalUnionTypes)
             : base(
                 false,
                 ItemPathRoots.Mutation,
                 template,
                 unionTypeName,
-                (new Type[] { unionTypeA }).Concat(additionalUnionTypes ?? Enumerable.Empty<Type>()).ToArray())
+                (new Type[] { firstUnionType }).Concat(additionalUnionTypes ?? Enumerable.Empty<Type>()).ToArray())
         {
         }
     }

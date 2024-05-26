@@ -105,7 +105,11 @@ namespace GraphQL.AspNet.Tests.Framework
 
             if (_initialSetup.HasFlag(TestOptions.UseCodeDeclaredNames))
             {
-                options.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategy.CreateEmpty(TextFormatOptions.NoChanges);
+                // use create empty here to be backwards compatiable with
+                // the original implementation of intermeidate types from v1x
+                options.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(TextFormatOptions.NoChanges, applyDefaultRules: false)
+                    .Build();
             }
 
             if (_initialSetup.HasFlag(TestOptions.IncludeExceptions))

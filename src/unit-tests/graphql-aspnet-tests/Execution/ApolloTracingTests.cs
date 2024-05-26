@@ -94,7 +94,9 @@ namespace GraphQL.AspNet.Tests.Execution
                 o.ResponseOptions.ExposeMetrics = true;
 
                 // don't apply any formatting to intermediate objects, just name changes
-                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategy.CreateEmpty();
+                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(applyDefaultRules: false)
+                    .Build();
             });
 
             var server = serverBuilder.Build();
@@ -206,7 +208,9 @@ namespace GraphQL.AspNet.Tests.Execution
             serverBuilder.AddGraphQL(o =>
             {
                 o.ResponseOptions.ExposeMetrics = true;
-                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategy.CreateEmpty();
+                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(applyDefaultRules: false)
+                    .Build();
             });
 
             var batchService = Substitute.For<IBatchCounterService>();
@@ -351,7 +355,9 @@ namespace GraphQL.AspNet.Tests.Execution
             serverBuilder.AddGraphQL(o =>
             {
                 o.ResponseOptions.ExposeMetrics = true;
-                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategy.CreateEmpty();
+                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(applyDefaultRules: false)
+                    .Build();
             });
 
             var batchService = Substitute.For<IBatchCounterService>();

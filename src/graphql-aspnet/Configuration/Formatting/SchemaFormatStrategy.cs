@@ -20,51 +20,6 @@ namespace GraphQL.AspNet.Configuration.Formatting
     /// </summary>
     public class SchemaFormatStrategy : ISchemaFormatStrategy
     {
-        /// <summary>
-        /// Creates a format strategy with all internal default rules. All name format rules
-        /// will be overriden with the given format option.
-        /// </summary>
-        /// <param name="formatOption">The single format option to use for all generated names.</param>
-        /// <returns>SchemaFormatStrategy.</returns>
-        public static ISchemaFormatStrategy CreateEmpty(TextFormatOptions formatOption)
-        {
-            return CreateEmpty(formatOption, formatOption, formatOption, formatOption, formatOption);
-        }
-
-        /// <summary>
-        /// Creates a format strategy with all internal default rules. Name format overrides
-        /// can be applied if needed.
-        /// </summary>
-        /// <param name="typeNameFormat">The name format to use for graph type names.</param>
-        /// <param name="fieldNameFormat">The name format to use for fields.</param>
-        /// <param name="enumValueNameFormat">The name format to use for enum values.</param>
-        /// <param name="argumentNameFormat">The name format to use for arguments on fields and directives.</param>
-        /// <param name="directiveNameFormat">The name format to use for directive type names.</param>
-        /// <returns>SchemaFormatStrategy.</returns>
-        public static ISchemaFormatStrategy CreateEmpty(
-            TextFormatOptions? typeNameFormat = TextFormatOptions.ProperCase,
-            TextFormatOptions? fieldNameFormat = TextFormatOptions.CamelCase,
-            TextFormatOptions? enumValueNameFormat = TextFormatOptions.UpperCase,
-            TextFormatOptions? argumentNameFormat = TextFormatOptions.CamelCase,
-            TextFormatOptions? directiveNameFormat = TextFormatOptions.CamelCase)
-        {
-            var builder = new SchemaFormatStrategyBuilder()
-                .Clear();
-
-            if (typeNameFormat.HasValue)
-                builder = builder.WithGraphTypeNameFormat(typeNameFormat.Value);
-            if (fieldNameFormat.HasValue)
-                builder = builder.WithFieldNameFormat(fieldNameFormat.Value);
-            if (enumValueNameFormat.HasValue)
-                builder = builder.WithEnumValueFormat(enumValueNameFormat.Value);
-            if (directiveNameFormat.HasValue)
-                builder = builder.WithDirectiveNameFormat(directiveNameFormat.Value);
-            if (argumentNameFormat.HasValue)
-                builder = builder.WithFieldArgumentNameFormat(argumentNameFormat.Value);
-
-            return builder.Build();
-        }
-
         private List<ISchemaItemFormatRule> _formatRules;
 
         /// <summary>
