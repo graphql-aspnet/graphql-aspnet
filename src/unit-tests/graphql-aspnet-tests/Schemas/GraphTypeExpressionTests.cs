@@ -205,7 +205,9 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase(typeof(IEnumerable<TwoPropertyObject>), "[TwoPropertyObject]", null)]
         [TestCase(typeof(TwoPropertyObject[]), "[TwoPropertyObject]", null)]
         [TestCase(typeof(int[][]), "[[Int!]]", null)]
+        [TestCase(typeof(int?[][]), "[[Int]]", null)]
         [TestCase(typeof(string[]), "[String]", null)]
+        [TestCase(typeof(string[]), "[String!]!", new MGT[] { MGT.IsNotNull, MGT.IsList, MGT.IsNotNull })]
         [TestCase(typeof(KeyValuePair<string, int>), "KeyValuePair_string_int_!", null)]
         [TestCase(typeof(KeyValuePair<string[], int[][]>), "KeyValuePair_string___int_____!", null)]
         [TestCase(typeof(KeyValuePair<string, int[]>), "KeyValuePair_string_int___!", null)]
@@ -219,9 +221,9 @@ namespace GraphQL.AspNet.Tests.Schemas
         public void GenerateTypeExpression(
             Type type,
             string expectedExpression,
-            MGT[] wrappers)
+            MGT[] overridingWrappers)
         {
-            var typeExpression = GraphTypeExpression.FromType(type, wrappers);
+            var typeExpression = GraphTypeExpression.FromType(type, overridingWrappers);
             Assert.AreEqual(expectedExpression, typeExpression.ToString());
         }
 

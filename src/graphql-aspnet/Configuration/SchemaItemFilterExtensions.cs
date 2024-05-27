@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Configuration
         /// (i.e. an item that starts with '__').
         /// </summary>
         /// <param name="item">The item to inspect.</param>
-        /// <returns><c>true</c> if the specified item is system level data; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the specified item an internal system level item; otherwise, <c>false</c>.</returns>
         public static bool IsSystemItem(this ISchemaItem item)
         {
             // name regex matches on valid "user supplied names" any schema items
@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Determines whether the given schema item is a field on an OBJECT or INPUT_OBJECT graph type.
+        /// Determines whether the given schema item is a field on an OBJECT, INTERFACE or INPUT_OBJECT graph type.
         /// </summary>
         /// <param name="schemaItem">The schema item to inspect.</param>
         /// <param name="graphTypeName">the name of the graph type that owns the field.</param>

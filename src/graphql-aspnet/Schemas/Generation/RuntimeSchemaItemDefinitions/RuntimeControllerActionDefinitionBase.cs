@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Schema.RuntimeDefinitions;
     using GraphQL.AspNet.Schemas.Structural;
 
@@ -37,7 +38,7 @@ namespace GraphQL.AspNet.Schemas.Generation.RuntimeSchemaItemDefinitions
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeControllerActionDefinitionBase" /> class.
         /// </summary>
-        /// <param name="options">The schema options where this field item
+        /// <param name="options">The schema options that define the future <see cref="ISchema"/> where this field item
         /// is being defined.</param>
         /// <param name="path">The full item path to use for this schema item.</param>
         protected RuntimeControllerActionDefinitionBase(
