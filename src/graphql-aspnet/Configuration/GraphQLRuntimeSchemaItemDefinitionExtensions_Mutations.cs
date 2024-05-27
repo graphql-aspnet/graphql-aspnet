@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// Extension methods for configuring minimal API methods as fields on the graph.
+    /// Extension methods for configuring minimal API methods as fields on the schema.
     /// </summary>
     public static partial class GraphQLRuntimeSchemaItemDefinitionExtensions
     {

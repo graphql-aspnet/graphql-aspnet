@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Schemas;
@@ -91,6 +92,11 @@ namespace GraphQL.AspNet.Tests.Execution
             serverBuilder.AddGraphQL(o =>
             {
                 o.ResponseOptions.ExposeMetrics = true;
+
+                // don't apply any formatting to intermediate objects, just name changes
+                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(applyDefaultRules: false)
+                    .Build();
             });
 
             var server = serverBuilder.Build();
@@ -138,7 +144,7 @@ namespace GraphQL.AspNet.Tests.Execution
                                                 ""path"": [""simple""],
                                                 ""fieldName"": ""simple"",
                                                 ""parentType"" : ""Query"",
-                                                ""returnType"": ""Query_Simple!"",
+                                                ""returnType"": ""Query_Simple"",
                                                 ""startOffset"": [simpleStartOffset],
                                                 ""duration"": [simpleDuration]
                                             },
@@ -178,7 +184,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 .Replace("[Property1Offset]", property1.StartOffsetNanoseconds.ToString())
                 .Replace("[Property1Duration]", property1.DurationNanoSeconds.ToString());
 
-            CommonAssertions.AreEqualJsonStrings(expectedResult, result);
+            CommonAssertions.AreEqualJsonStrings(expectedResult, result, "Results did not match");
         }
 
         [Test]
@@ -202,6 +208,9 @@ namespace GraphQL.AspNet.Tests.Execution
             serverBuilder.AddGraphQL(o =>
             {
                 o.ResponseOptions.ExposeMetrics = true;
+                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(applyDefaultRules: false)
+                    .Build();
             });
 
             var batchService = Substitute.For<IBatchCounterService>();
@@ -258,7 +267,7 @@ namespace GraphQL.AspNet.Tests.Execution
 				            ""path"": [ ""batch""],
 				            ""parentType"": ""Query"",
 				            ""fieldName"": ""batch"",
-				            ""returnType"": ""Query_Batch!"",
+				            ""returnType"": ""Query_Batch"",
 				            ""startOffset"": ""<anyValue>"",
 				            ""duration"": ""<anyValue>""
 			              },
@@ -346,6 +355,9 @@ namespace GraphQL.AspNet.Tests.Execution
             serverBuilder.AddGraphQL(o =>
             {
                 o.ResponseOptions.ExposeMetrics = true;
+                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(applyDefaultRules: false)
+                    .Build();
             });
 
             var batchService = Substitute.For<IBatchCounterService>();
@@ -429,7 +441,7 @@ namespace GraphQL.AspNet.Tests.Execution
                         ""path"": [""batch""],
                         ""parentType"": ""Query"",
                         ""fieldName"": ""batch"",
-                        ""returnType"": ""Query_Batch!"",
+                        ""returnType"": ""Query_Batch"",
                         ""startOffset"": ""<anyValue>"",
                         ""duration"": ""<anyValue>""
                       },

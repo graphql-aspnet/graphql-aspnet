@@ -22,6 +22,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("Field: {ItemPath.Path}")]
     public class InputGraphField : IInputGraphField
     {
+        private readonly bool _declaredIsRequired;
+
         // *******************************************
         // implementation note:
         //
@@ -83,12 +85,32 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual IInputGraphField Clone(
             ISchemaItem parent = null,
             string fieldName = null,
-            GraphTypeExpression typeExpression = null)
+            GraphTypeExpression typeExpression = null,
+            DefaultValueCloneOptions defaultValueOptions = DefaultValueCloneOptions.None,
+            object newDefaultValue = null)
         {
             parent = parent ?? this.Parent;
             var itemPath = parent?.ItemPath.CreateChild(this.ItemPath.Name) ?? this.ItemPath.Clone();
 
             fieldName = fieldName?.Trim() ?? this.Name;
+
+            var declareIsRequired = _declaredIsRequired;
+            var defaultValue = this.DefaultValue;
+
+            switch (defaultValueOptions)
+            {
+                case DefaultValueCloneOptions.None:
+                    break;
+
+                case DefaultValueCloneOptions.MakeRequired:
+                    declareIsRequired = true;
+                    defaultValue = null;
+                    break;
+
+                case DefaultValueCloneOptions.UpdateDefaultValue:
+                    defaultValue = newDefaultValue;
+                    break;
+            }
 
             var clonedItem = new InputGraphField(
                 fieldName,
@@ -98,8 +120,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.ObjectType,
                 this.DeclaredName,
                 this.DeclaredReturnType,
-                _declaredIsRequired,
-                this.DefaultValue,
+                declareIsRequired,
+                defaultValue,
                 this.AppliedDirectives);
 
             clonedItem.Parent = parent;
@@ -126,8 +148,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
-
-        private readonly bool _declaredIsRequired;
 
         /// <inheritdoc />
         public string Name { get; }

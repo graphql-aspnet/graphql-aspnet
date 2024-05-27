@@ -22,19 +22,19 @@ namespace GraphQL.AspNet.Tests.Configuration.FormatStrategyTestData
         }
 
         [QueryRoot]
-        public Widget IntArgumentFixed([FromGraphQL(TypeExpression = "[Type!]")]List<int> arg1)
+        public Widget IntArgumentFixed([FromGraphQL(TypeExpression = "[Type!]")] List<int> arg1)
         {
             return new Widget();
         }
 
         [QueryRoot]
-        public Widget StringArgument(List<string> arg1)
+        public Widget StringListArgument(List<string> arg1)
         {
             return new Widget();
         }
 
         [QueryRoot]
-        public Widget StringArgumentFixed([FromGraphQL(TypeExpression = "[Type]")] List<string> arg1)
+        public Widget StringListArgumentFixed([FromGraphQL(TypeExpression = "[Type]")] List<string> arg1)
         {
             return new Widget();
         }
@@ -49,6 +49,30 @@ namespace GraphQL.AspNet.Tests.Configuration.FormatStrategyTestData
         public Widget InputObjectArgumentFixed([FromGraphQL(TypeExpression = "[Type]")] List<Widget> arg1)
         {
             return new Widget();
+        }
+
+        [QueryRoot]
+        public Widget WidgetField()
+        {
+            return null;
+        }
+
+        [QueryRoot(TypeExpression = "Type")]
+        public Widget WidgetFieldFixed()
+        {
+            return null;
+        }
+
+        [QueryRoot]
+        public List<string> ReturnedStringList()
+        {
+            return null;
+        }
+
+        [QueryRoot(TypeExpression = "[Type]")]
+        public List<string> ReturnedStringListFixed()
+        {
+            return null;
         }
     }
 }

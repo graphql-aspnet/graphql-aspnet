@@ -13,6 +13,18 @@ namespace GraphQL.AspNet.Tests.Configuration.FormatStrategyTestData
 
     public class Widget
     {
+        [GraphField]
+        public string ArgItem(string arg1)
+        {
+            return string.Empty;
+        }
+
+        [GraphField]
+        public string FixedArgItem([FromGraphQL(TypeExpression = "Type")] string arg1)
+        {
+            return string.Empty;
+        }
+
         public int IntProp { get; set; }
 
         [GraphField(TypeExpression = "Type")]

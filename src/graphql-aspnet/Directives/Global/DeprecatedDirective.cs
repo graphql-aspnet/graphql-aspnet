@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Directives.Global
         /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.FIELD_DEFINITION | DirectiveLocation.ENUM_VALUE)]
         public IGraphActionResult Execute(
-            [FromGraphQL("reason")]
+            [FromGraphQL("reason", TypeExpression = "Type")]
             [Description("An optional human-friendly reason explaining why the schema item is being deprecated.")]
             string reason = "No longer supported")
         {

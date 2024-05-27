@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             graphType = _config
                 .DeclarationOptions?
                 .SchemaFormatStrategy?
-                .ApplyFormatting(_config, graphType) ?? graphType;
+                .ApplySchemaItemRules(_config, graphType) ?? graphType;
 
             var result = new GraphTypeCreationResult()
             {
@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 valueOption = _config
                     .DeclarationOptions?
                     .SchemaFormatStrategy?
-                    .ApplyFormatting(_config, valueOption) ?? valueOption;
+                    .ApplySchemaItemRules(_config, valueOption) ?? valueOption;
 
                 if (Constants.QueryLanguage.IsReservedKeyword(valueOption.Name))
                 {

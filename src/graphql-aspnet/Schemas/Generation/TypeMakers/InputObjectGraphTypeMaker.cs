@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             inputObjectType = _config
                 .DeclarationOptions?
                 .SchemaFormatStrategy?
-                .ApplyFormatting(_config, inputObjectType) ?? inputObjectType;
+                .ApplySchemaItemRules(_config, inputObjectType) ?? inputObjectType;
 
             // account for any potential type system directives
             result.AddDependentRange(template.RetrieveRequiredTypes());

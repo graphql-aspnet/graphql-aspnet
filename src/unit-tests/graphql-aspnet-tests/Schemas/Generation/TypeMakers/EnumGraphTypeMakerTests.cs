@@ -87,7 +87,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
                 .AddGraphQL(o =>
                 {
                     o.DeclarationOptions.SchemaFormatStrategy =
-                        new GraphSchemaFormatStrategy(enumValueStrategy: GraphNameFormatStrategy.NoChanges);
+                        SchemaFormatStrategyBuilder
+                            .Create(enumValueNameFormat: TextFormatOptions.NoChanges, applyDefaultRules: false)
+                            .Build();
                 })
                 .Build()
                 .Schema;
@@ -174,7 +176,9 @@ namespace GraphQL.AspNet.Tests.Schemas.Generation.TypeMakers
         {
             var schema = new TestServerBuilder().AddGraphQL(o =>
             {
-                o.DeclarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(GraphNameFormatStrategy.LowerCase);
+                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(TextFormatOptions.LowerCase, applyDefaultRules: false)
+                    .Build();
             })
             .Build()
             .Schema;

@@ -13,7 +13,8 @@ namespace GraphQL.AspNet.Controllers
 
     /// <summary>
     /// A special controller instance for executing runtime configured controller
-    /// actions (e.g. minimal api defined fields and type exensions).
+    /// actions (e.g. minimal api defined fields and type exensions). This class can only be
+    /// instantiated by the library runtime.
     /// </summary>
     [GraphRoot]
     internal sealed class RuntimeFieldExecutionController : GraphController

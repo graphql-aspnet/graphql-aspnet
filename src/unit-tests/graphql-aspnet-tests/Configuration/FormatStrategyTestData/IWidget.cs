@@ -11,8 +11,14 @@ namespace GraphQL.AspNet.Tests.Configuration.FormatStrategyTestData
 {
     using GraphQL.AspNet.Attributes;
 
-    public interface IWidgetInterface
+    public interface IWidget
     {
+        [GraphField]
+        string ArgItem(string arg1);
+
+        [GraphField]
+        string FixedArgItem([FromGraphQL(TypeExpression = "Type")] string arg1);
+
         int IntProp { get; set; }
 
         [GraphField(TypeExpression = "Type")]
@@ -26,9 +32,9 @@ namespace GraphQL.AspNet.Tests.Configuration.FormatStrategyTestData
         [GraphField(TypeExpression = "Type")]
         string FixedStringProp { get; set; }
 
-        IWidgetInterface ReferenceProp { get; set; }
+        IWidget ReferenceProp { get; set; }
 
         [GraphField(TypeExpression = "Type")]
-        IWidgetInterface FixedReferenceProp { get; set; }
+        IWidget FixedReferenceProp { get; set; }
     }
 }

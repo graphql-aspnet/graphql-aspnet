@@ -9,11 +9,9 @@
 
 namespace GraphQL.AspNet.Tests.Framework
 {
-    using System;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// Methods for quickly configuring schema related things during testing.
@@ -30,7 +28,9 @@ namespace GraphQL.AspNet.Tests.Framework
         {
             var declarationOptions = new SchemaDeclarationConfiguration();
             declarationOptions.Merge(schema.Configuration.DeclarationOptions);
-            declarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(GraphNameFormatStrategy.NoChanges);
+            declarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(TextFormatOptions.NoChanges, applyDefaultRules: false)
+                    .Build();
 
             var config = new SchemaConfiguration(
                 declarationOptions,

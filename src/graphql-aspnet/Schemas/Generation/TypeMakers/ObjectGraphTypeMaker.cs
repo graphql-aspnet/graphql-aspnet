@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
             objectType = _config
                 .DeclarationOptions?
                 .SchemaFormatStrategy?
-                .ApplyFormatting(_config, objectType) ?? objectType;
+                .ApplySchemaItemRules(_config, objectType) ?? objectType;
 
             result.GraphType = objectType;
             result.ConcreteType = template.ObjectType;

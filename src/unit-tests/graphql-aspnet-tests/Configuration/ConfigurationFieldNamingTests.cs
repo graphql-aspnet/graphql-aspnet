@@ -52,13 +52,15 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             builder.AddGraphQL(o =>
             {
-                o.DeclarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(fieldNameStrategy: GraphNameFormatStrategy.UpperCase);
+                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(fieldNameFormat: TextFormatOptions.UpperCase, applyDefaultRules: false)
+                    .Build();
             });
 
             var server = builder.Build();
 
             var queryBuilder = server.CreateQueryContextBuilder();
-            queryBuilder.AddQueryText("{ RETRIEVEFAN(NAME: \"bob\"){ ID, NAME, FANSPEED} }");
+            queryBuilder.AddQueryText("{ RETRIEVEFAN(name: \"bob\"){ ID, NAME, FANSPEED} }");
 
             var result = await server.RenderResult(queryBuilder).ConfigureAwait(false);
 
@@ -84,7 +86,9 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             builder.AddGraphQL(o =>
             {
-                o.DeclarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(enumValueStrategy: GraphNameFormatStrategy.LowerCase);
+                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                .Create(enumValueNameFormat: TextFormatOptions.LowerCase, applyDefaultRules: false)
+                .Build();
             });
 
             var server = builder.Build();
@@ -116,7 +120,9 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             builder.AddGraphQL(o =>
             {
-                o.DeclarationOptions.SchemaFormatStrategy = new GraphSchemaFormatStrategy(typeNameStrategy: GraphNameFormatStrategy.CamelCase);
+                o.DeclarationOptions.SchemaFormatStrategy = SchemaFormatStrategyBuilder
+                    .Create(typeNameFormat: TextFormatOptions.CamelCase, applyDefaultRules: false)
+                    .Build();
             });
 
             var server = builder.Build();

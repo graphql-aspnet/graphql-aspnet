@@ -22,7 +22,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Resolvers;
-    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Internal;
@@ -76,7 +75,6 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeTemplates
             this.DeclaredType = this.Method.ReturnType;
             this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredType);
             this.TypeExpression = new GraphTypeExpression(this.ObjectType.FriendlyName());
-
             this.Description = this.AttributeProvider.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.IsAsyncField = Validation.IsCastable<Task>(this.Method.ReturnType);
             this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();

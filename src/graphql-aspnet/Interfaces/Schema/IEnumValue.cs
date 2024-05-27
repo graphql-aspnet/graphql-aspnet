@@ -29,15 +29,20 @@ namespace GraphQL.AspNet.Interfaces.Schema
         IEnumGraphType Parent { get; }
 
         /// <summary>
-        /// Gets the declared numerical value of the enum.
+        /// Gets the declared numerical value of the enum, as its defined in source code.
         /// </summary>
-        /// <value>The value of the neum.</value>
+        /// <value>The assigned value of the enum.</value>
         object DeclaredValue { get; }
 
         /// <summary>
         /// Gets the declared label applied to the enum value by .NET.
         /// (e.g. 'Value1' for the enum value <c>MyEnum.Value1</c>).
         /// </summary>
+        /// <remarks>
+        /// The casing on this value will match the enum label in source code and may be
+        /// different than the name <see cref="INamedItem.Name"/> value which will match
+        /// the rules of the target schema.
+        /// </remarks>
         /// <value>The declared label in source code.</value>
         string DeclaredLabel { get; }
     }

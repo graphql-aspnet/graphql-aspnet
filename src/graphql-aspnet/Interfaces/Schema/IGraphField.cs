@@ -28,7 +28,10 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// <param name="typeExpression">When not null, represents the new type expression to use
         /// for this field.</param>
         /// <returns>IGraphField.</returns>
-        IGraphField Clone(ISchemaItem parent = null, string fieldName = null, GraphTypeExpression typeExpression = null);
+        IGraphField Clone(
+            ISchemaItem parent = null,
+            string fieldName = null,
+            GraphTypeExpression typeExpression = null);
 
         /// <summary>
         /// Updates the field resolver used by this graph field.

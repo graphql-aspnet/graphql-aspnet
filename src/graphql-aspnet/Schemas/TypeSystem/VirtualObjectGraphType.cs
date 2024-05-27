@@ -10,9 +10,10 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
@@ -34,17 +35,31 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         // metadata of a controller.
 
         /// <summary>
+        /// Constructs a virtual type from the path template extracted from a controller action method.
+        /// </summary>
+        /// <param name="pathTemplate">The path template base this virtual type off of.</param>
+        /// <returns>VirtualObjectGraphType.</returns>
+        public static VirtualObjectGraphType FromControllerFieldPathTemplate(ItemPath pathTemplate)
+        {
+            var tempName = MakeSafeTypeNameFromItemPath(pathTemplate);
+            return new VirtualObjectGraphType(tempName, pathTemplate);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="VirtualObjectGraphType" /> class.
         /// </summary>
-        /// <param name="name">The name to assign to this type.</param>
-        public VirtualObjectGraphType(string name)
+        /// <param name="typeName">The formal name to assign to the type.</param>
+        /// <param name="pathTemplate">The path template that generated this virutal graph type.</param>
+        private VirtualObjectGraphType(string typeName, ItemPath pathTemplate)
          : base(
-               name,
-               $"{nameof(VirtualObjectGraphType)}_{name}",
-               new ItemPath(ItemPathRoots.Types, name))
+               typeName,
+               $"{nameof(VirtualObjectGraphType)}_{typeName}",
+               new ItemPath(ItemPathRoots.Types, typeName))
         {
+            this.ItemPathTemplate = Validation.ThrowIfNullOrReturn(pathTemplate, nameof(pathTemplate));
+
             // add the __typename as a field for this virtual object
-            this.Extend(new Introspection_TypeNameMetaField(name));
+            this.Extend(new Introspection_TypeNameMetaField(typeName));
         }
 
         /// <inheritdoc />
@@ -57,13 +72,66 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public override IGraphType Clone(string typeName = null)
         {
             typeName = typeName?.Trim() ?? this.Name;
-            return new VirtualObjectGraphType(typeName);
+            return new VirtualObjectGraphType(
+                typeName,
+                this.ItemPathTemplate);
         }
 
         /// <inheritdoc />
         public override bool IsVirtual => true;
 
+        /// <summary>
+        /// Gets the raw path template that was used to define this virtual type.
+        /// </summary>
+        /// <value>The item path template.</value>
+        public ItemPath ItemPathTemplate { get; private set; }
+
         /// <inheritdoc />
         public Type ObjectType => typeof(VirtualObjectGraphType);
+
+        /// <summary>
+        /// Converts a route path into a unique graph type, removing special control characters
+        /// but retaining its uniqueness.
+        /// </summary>
+        /// <param name="path">The path to convert.</param>
+        /// <param name="segmentNameFormatter">An optional formatter that will apply
+        /// special casing to a path segment before its added to the name.</param>
+        /// <returns>System.String.</returns>
+        public static string MakeSafeTypeNameFromItemPath(
+            ItemPath path,
+            Func<string, string> segmentNameFormatter = null)
+        {
+            Validation.ThrowIfNull(path, nameof(path));
+
+            var segments = new List<string>();
+            foreach (var pathSegmentName in path)
+            {
+                switch (pathSegmentName)
+                {
+                    case Constants.Routing.QUERY_ROOT:
+                        segments.Add(Constants.ReservedNames.QUERY_TYPE_NAME);
+                        break;
+
+                    case Constants.Routing.MUTATION_ROOT:
+                        segments.Add(Constants.ReservedNames.MUTATION_TYPE_NAME);
+                        break;
+
+                    case Constants.Routing.SUBSCRIPTION_ROOT:
+                        segments.Add(Constants.ReservedNames.SUBSCRIPTION_TYPE_NAME);
+                        break;
+
+                    default:
+                        var segmentName = pathSegmentName;
+                        if (segmentNameFormatter != null)
+                            segmentName = segmentNameFormatter(pathSegmentName);
+
+                        segments.Add(segmentName);
+                        break;
+                }
+            }
+
+            segments.Reverse();
+            return string.Join("_", segments);
+        }
     }
 }

@@ -15,37 +15,13 @@ namespace GraphQL.AspNet.Tests.Configuration.FormatStrategyTestData
     public class WidgetArgumentController : GraphController
     {
         [QueryRoot]
-        public Widget IntArgument(int arg1)
+        public Widget WithArgument(string arg1)
         {
             return new Widget();
         }
 
-        [QueryRoot]
-        public Widget IntArgumentFixed([FromGraphQL(TypeExpression = "Type!")] int arg1)
-        {
-            return new Widget();
-        }
-
-        [QueryRoot]
-        public Widget StringArgument(string arg1)
-        {
-            return new Widget();
-        }
-
-        [QueryRoot]
-        public Widget StringArgumentFixed([FromGraphQL(TypeExpression = "Type")] string arg1)
-        {
-            return new Widget();
-        }
-
-        [QueryRoot]
-        public Widget InputObjectArgument(Widget arg1)
-        {
-            return new Widget();
-        }
-
-        [QueryRoot]
-        public Widget InputObjectArgumentFixed([FromGraphQL(TypeExpression = "Type")] Widget arg1)
+        [QueryRoot(TypeExpression = "Type")]
+        public Widget WithArgumentFixed([FromGraphQL(TypeExpression = "Type")] string arg1)
         {
             return new Widget();
         }

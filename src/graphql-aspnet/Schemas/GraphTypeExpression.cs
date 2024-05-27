@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using Microsoft.AspNetCore.Localization;
 
     /// <summary>
     /// A declaration of the usage of a single graph type (with appropriate wrappers).
@@ -362,8 +361,8 @@ namespace GraphQL.AspNet.Schemas
         /// or have their nullability settings changed.
         /// </para>
         /// <para>
-        /// >Non-Fixed instances represent type expressions interpreted
-        /// from source code.
+        /// Non-Fixed instances represent type expressions interpreted
+        /// from source code. Fixed instances represent those defined via explicit attribution.
         /// </para>
         /// </summary>
         /// <value><c>true</c> if this instance is customized by the developer; otherwise, <c>false</c>.</value>

@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Schemas.Generation.TypeMakers
                 .Configuration?
                 .DeclarationOptions?
                 .SchemaFormatStrategy?
-                .ApplyFormatting(_schema.Configuration, directive) ?? directive;
+                .ApplySchemaItemRules(_schema.Configuration, directive) ?? directive;
 
             // all arguments are required to have the same signature via validation
             // can use any method to fill the arg field list

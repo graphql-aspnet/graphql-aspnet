@@ -47,20 +47,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="fieldName">Name of the field in the object graph.</param>
         /// <param name="itemPath">The path segment that represents this virtual field.</param>
-        /// <param name="parentTypeName">The type name to use for the virtual type that owns this field.</param>
+        /// <param name="typeExpression">The type expression declared for this field.</param>
         public VirtualGraphField(
             string fieldName,
             ItemPath itemPath,
-            string parentTypeName)
+            GraphTypeExpression typeExpression)
         {
             Validation.ThrowIfNull(itemPath, nameof(itemPath));
-            parentTypeName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentTypeName, nameof(parentTypeName));
 
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.ItemPath = Validation.ThrowIfNullOrReturn(itemPath, nameof(itemPath));
 
-            this.AssociatedGraphType = new VirtualObjectGraphType(parentTypeName);
-            this.TypeExpression = new GraphTypeExpression(parentTypeName);
+            this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.Arguments = new GraphFieldArgumentCollection(this);
             this.Resolver = new GraphControllerVirtualFieldResolver(new VirtualResolvedObject(this.TypeExpression.TypeName));
             this.InternalName = $"VirtualField_{this.Name}";
@@ -75,6 +73,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Publish = true;
             this.IsDeprecated = false;
             this.DeprecationReason = null;
+
+            this.TypeExpression = this.TypeExpression.ToFixed();
         }
 
         /// <inheritdoc />
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             var clonedItem = new VirtualGraphField(
                 fieldName,
                 itemPath,
-                typeExpression.TypeName);
+                typeExpression);
 
             clonedItem.Description = this.Description;
             clonedItem.TypeExpression = typeExpression.Clone();
@@ -129,13 +129,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             return false;
         }
-
-        /// <summary>
-        /// Gets the tracked copy of the graph type that this virtual field will
-        /// always return.
-        /// </summary>
-        /// <value>The object graph type this virutal field will return when resolved.</value>
-        public IObjectGraphType AssociatedGraphType { get; }
 
         /// <inheritdoc />
         public IGraphFieldResolver Resolver { get; }

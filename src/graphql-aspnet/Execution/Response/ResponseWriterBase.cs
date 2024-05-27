@@ -15,10 +15,10 @@ namespace GraphQL.AspNet.Execution.Response
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Source;
-    using GraphQL.AspNet.Configuration.Formatting;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Execution.Response;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A class containing many shared methods for writing all or part of a <see cref="IQueryExecutionResult"/>
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Execution.Response
 
             var timestamp = this.TimeLocalizer?.Invoke(message.TimeStamp) ?? message.TimeStamp;
             this.WriteLeaf(writer, "timestamp", timestamp);
-            this.WriteLeaf(writer, "severity", message.Severity);
+            this.WriteLeaf(writer, "severity", message.Severity.ToString().ToUpperInvariant());
 
             if (message.MetaData != null && message.MetaData.Count > 0)
             {
@@ -248,7 +248,7 @@ namespace GraphQL.AspNet.Execution.Response
             }
 
             if (value.GetType().IsEnum)
-                value = this.Formatter.FormatEnumValueName(value.ToString());
+                value = value.ToString();
 
             switch (value)
             {
@@ -312,7 +312,6 @@ namespace GraphQL.AspNet.Execution.Response
                     writer.WriteNumberValue(ush);
                     break;
 
-#if NET6_0_OR_GREATER
                 case DateOnly dateOnly:
                     this.WritePreEncodedStringValue(writer, dateOnly.ToRfc3339String());
                     break;
@@ -320,7 +319,6 @@ namespace GraphQL.AspNet.Execution.Response
                 case TimeOnly timeOnly:
                     this.WritePreEncodedStringValue(writer, timeOnly.ToRfc3339String());
                     break;
-#endif
 
                 default:
                     if (convertUnsupportedToString)
@@ -374,7 +372,7 @@ namespace GraphQL.AspNet.Execution.Response
         /// Gets the formatter used when writing graph names to the stream.
         /// </summary>
         /// <value>The name formatter.</value>
-        protected virtual GraphSchemaFormatStrategy Formatter { get; }
+        protected virtual ISchemaFormatStrategy Formatter { get; }
 
         /// <summary>
         /// Gets a set of settings to use whenever the serializer needs to be directly invoked.
