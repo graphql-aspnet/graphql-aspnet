@@ -16,11 +16,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
 
-    /// <summary>
-    /// A collection of messages produced while completing a requested graph operation. Messages generated
-    /// by the runtime or by custom code on field requests are aggregated and inspected for severity levels to
-    /// deteremine if processing should cease or when a response needs to be sent to the requestor.
-    /// </summary>
+    /// <inheritdoc cref="IGraphMessageCollection"/>
     [DebuggerDisplay("Count = {Count}, Severity = {Severity}")]
     [DebuggerTypeProxy(typeof(GraphMessageCollectionDebugProxy))]
     [DebuggerStepThrough]

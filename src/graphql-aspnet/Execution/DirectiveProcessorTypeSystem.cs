@@ -15,12 +15,12 @@ namespace GraphQL.AspNet.Execution
     using System.Threading;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Logging;

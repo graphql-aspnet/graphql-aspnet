@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Execution
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Execution.Source;
-    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
     /// A default, concrete implementation of a <see cref="IGraphMessage"/> used
@@ -76,6 +76,9 @@ namespace GraphQL.AspNet.Execution
             return graphMessage;
         }
 
+        private string _message;
+        private string _code;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphExecutionMessage" /> class.
         /// </summary>
@@ -92,58 +95,41 @@ namespace GraphQL.AspNet.Execution
             Exception exception = null)
         {
             this.Origin = origin;
-            this.Code = code?.Trim() ?? "-unknown-";
-            this.Message = message?.Trim();
+            this.Code = code;
+            this.Message = message;
             this.Severity = severity;
             this.Exception = exception;
             this.TimeStamp = DateTimeOffset.UtcNow;
             this.MetaData = new Dictionary<string, object>();
         }
 
-        /// <summary>
-        /// Gets the time stamp when this message was created.
-        /// </summary>
-        /// <value>The time stamp.</value>
+        /// <inheritdoc />
         public DateTimeOffset TimeStamp { get; }
 
-        /// <summary>
-        /// Gets the origin in the provided source text, if any, this message relates to.
-        /// This value is returned as part of a query response.
-        /// </summary>
-        /// <value>The location.</value>
+        /// <inheritdoc />
         public SourceOrigin Origin { get; }
 
-        /// <summary>
-        /// Gets an error code identifying this error. This value is returned as part of a query response.
-        /// </summary>
-        /// <value>The code.</value>
-        public string Code { get; }
+        /// <inheritdoc />
+        public string Code
+        {
+            get => _code;
+            set => _code = value?.Trim() ?? Constants.ErrorCodes.DEFAULT;
+        }
 
-        /// <summary>
-        /// Gets a human-friendly message that conveys details about the error tht occured. This value is
-        /// returned as part of a query response.
-        /// </summary>
-        /// <value>The message.</value>
-        public string Message { get; }
+        /// <inheritdoc />
+        public string Message
+        {
+            get => _message;
+            set => _message = value?.Trim();
+        }
 
-        /// <summary>
-        /// Gets an (optional) exception that may have occured to generate the error. The exception
-        /// is only conveyed to the requestor if the request is configured to expose exceptions.
-        /// </summary>
-        /// <value>The exception.</value>
-        public Exception Exception { get; }
+        /// <inheritdoc />
+        public Exception Exception { get; set; }
 
-        /// <summary>
-        /// Gets the severity of this message that was generated.
-        /// </summary>
-        /// <value>The severity.</value>
+        /// <inheritdoc />
         public GraphMessageSeverity Severity { get; }
 
-        /// <summary>
-        /// Gets additional metadata defined for this message. This data will be added as key/value pairs
-        /// when the message is rendered to an graph output.
-        /// </summary>
-        /// <value>The meta data.</value>
+        /// <inheritdoc />
         public IDictionary<string, object> MetaData { get; }
     }
 }

@@ -11,14 +11,18 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
     /// A collection of messages produced while completing a requested graph operation. Messages generated
     /// by the runtime or by custom code on field requests are aggregated and inspected for severity levels to
     /// deteremine if processing should cease or when a response needs to be sent to the request.
     /// </summary>
+    /// <remarks>
+    /// Once added, the core identity of a message (e.g. <see cref="IGraphMessage.Severity"/> , <see cref="IGraphMessage.Origin"/> etc.) cannot be changed.
+    /// However, user facing values such as the <see cref="IGraphMessage.Message"/> or <see cref="IGraphMessage.Code"/> can be updated at will.
+    /// </remarks>
     public interface IGraphMessageCollection : IReadOnlyList<IGraphMessage>
     {
         /// <summary>
