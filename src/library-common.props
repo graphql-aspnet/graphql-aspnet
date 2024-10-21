@@ -55,7 +55,7 @@
     <PackageReference Include="System.Collections.Immutable" Version="1.6.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Caching" Version="4.6.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
 
     <!-- Transitive package increments to account for MS reported vulnerabilities -->
     <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
