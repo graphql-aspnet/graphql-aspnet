@@ -16,10 +16,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
+
+    using OrderedDictionaryOfStringAndType = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model.IntrospectedType>;
 
     /// <summary>
     /// A model object containing data for the '__Schema' type.
@@ -28,7 +29,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     public sealed class IntrospectedSchema : IntrospectedItem, ISchemaItem
     {
         private readonly ISchema _schema;
-        private OrderedDictionary<string, IntrospectedType> _typeList;
+        private OrderedDictionaryOfStringAndType _typeList;
         private List<IntrospectedDirective> _directiveList;
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             : base(schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _typeList = new OrderedDictionary<string, IntrospectedType>();
+            _typeList = new OrderedDictionaryOfStringAndType();
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         private void RebuildIntrospectedTypeList()
         {
             _typeList.Clear();
-            _typeList = new OrderedDictionary<string, IntrospectedType>();
+            _typeList = new OrderedDictionaryOfStringAndType();
 
             // build in a two pass approach
             // -----------------------------------------

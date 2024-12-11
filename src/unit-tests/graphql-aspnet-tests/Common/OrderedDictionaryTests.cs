@@ -16,13 +16,15 @@ namespace GraphQL.AspNet.Tests.Common
     using System.Linq;
     using GraphQL.AspNet.Common.Generics;
     using NUnit.Framework;
+    using OrderedDictionaryOfStringAndInt = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, int>;
+    using OrderedDictionaryOfStringAndString = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, string>;
 
     [TestFixture]
     public class OrderedDictionaryTests
     {
-        private OrderedDictionary<string, string> GetAlphabetDictionary(IEqualityComparer<string> comparer = null)
+        private OrderedDictionaryOfStringAndString GetAlphabetDictionary(IEqualityComparer<string> comparer = null)
         {
-            OrderedDictionary<string, string> alphabet = new OrderedDictionary<string, string>(comparer);
+            OrderedDictionaryOfStringAndString alphabet = new OrderedDictionaryOfStringAndString(comparer);
             for (var a = Convert.ToInt32('a'); a <= Convert.ToInt32('z'); a++)
             {
                 var c = Convert.ToChar(a);
@@ -57,11 +59,11 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void Constructor_FromOtherDictionary()
         {
-            var od = new OrderedDictionary<string, string>();
+            var od = new OrderedDictionaryOfStringAndString();
             od.Add("key1", "value1");
             od.Add("key2", "value2");
 
-            var od2 = new OrderedDictionary<string, string>(od);
+            var od2 = new OrderedDictionaryOfStringAndString(od);
             Assert.AreEqual(2, od2.Count);
             Assert.AreEqual("value1", od2["key1"]);
             Assert.AreEqual("value2", od2["key2"]);
@@ -70,12 +72,12 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void Constructor_FromOtherDictionary_CaseInsensitive()
         {
-            var od = new OrderedDictionary<string, string>();
+            var od = new OrderedDictionaryOfStringAndString();
             od.Add("key1", "value1");
             od.Add("key2", "value2");
             Assert.IsFalse(od.ContainsKey("KEY1"));
 
-            var od2 = new OrderedDictionary<string, string>(od, StringComparer.InvariantCultureIgnoreCase);
+            var od2 = new OrderedDictionaryOfStringAndString(od, StringComparer.InvariantCultureIgnoreCase);
             Assert.AreEqual(2, od2.Count);
             Assert.AreEqual("value1", od2["KEY1"]);
             Assert.AreEqual("value2", od2["KEY2"]);
@@ -84,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void Browser_PropertyCheck()
         {
-            var dic = new OrderedDictionary<string, int>();
+            var dic = new OrderedDictionaryOfStringAndInt();
             dic.Add("key1", 1);
             dic.Add("key2", 2);
 
@@ -110,7 +112,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void DuplicateAdd_ThrowsError()
         {
-            var dic = new OrderedDictionary<string, int>();
+            var dic = new OrderedDictionaryOfStringAndInt();
             dic.Add("key1", 1);
 
             Assert.Throws<ArgumentException>(() => { dic.Add("key1", 1); });
@@ -119,7 +121,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void ICollectionKVP_CastingCheck()
         {
-            var dic = new OrderedDictionary<string, int>();
+            var dic = new OrderedDictionaryOfStringAndInt();
 
             var kvp = new KeyValuePair<string, int>("key1", 3);
             var col = dic as ICollection<KeyValuePair<string, int>>;
@@ -149,7 +151,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void IDicionaryKVP_CastingCheck()
         {
-            var od = new OrderedDictionary<string, string>() as IDictionary<string, string>;
+            var od = new OrderedDictionaryOfStringAndString() as IDictionary<string, string>;
             Assert.AreEqual(0, od.Count);
 
             od.Add("foo", "bar");
@@ -182,7 +184,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void IOrderedDictionary_CastingCheck()
         {
-            var od = new OrderedDictionary<string, string>() as IOrderedDictionary;
+            var od = new OrderedDictionaryOfStringAndString() as IOrderedDictionary;
             Assert.AreEqual(0, od.Count);
 
             // IOrderedDictionary.Insert
@@ -252,7 +254,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void Add()
         {
-            var od = new OrderedDictionary<string, string>();
+            var od = new OrderedDictionaryOfStringAndString();
             Assert.AreEqual(0, od.Count);
             Assert.AreEqual(-1, od.IndexOf("foo"));
 
@@ -268,7 +270,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void Remove()
         {
-            var od = new OrderedDictionary<string, string>();
+            var od = new OrderedDictionaryOfStringAndString();
 
             od.Add("foo", "bar");
             Assert.AreEqual(1, od.Count);
@@ -280,7 +282,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void RemoveAt()
         {
-            var od = new OrderedDictionary<string, string>();
+            var od = new OrderedDictionaryOfStringAndString();
 
             od.Add("foo", "bar");
             Assert.AreEqual(1, od.Count);
@@ -585,7 +587,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void DictionaryEnumerator_Reset_YieldsFirstItemAgain()
         {
-            var dic = new OrderedDictionary<string, string>();
+            var dic = new OrderedDictionaryOfStringAndString();
             dic.Add("a", "string1");
             dic.Add("b", "string2");
 
@@ -604,7 +606,7 @@ namespace GraphQL.AspNet.Tests.Common
         [Test]
         public void DictionaryEnumerator_PropertyCheck()
         {
-            var dic = new OrderedDictionary<string, string>();
+            var dic = new OrderedDictionaryOfStringAndString();
             dic.Add("a", "string1");
             dic.Add("b", "string2");
 
