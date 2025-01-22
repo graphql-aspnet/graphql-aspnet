@@ -11,8 +11,9 @@ namespace GraphQL.AspNet.Execution.Response
 {
     using System.Collections.Generic;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.Execution.Response;
+
+    using OrderedDictionaryOfStringAndQueryResponseItem = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Interfaces.Execution.Response.IQueryResponseItem>;
 
     /// <summary>
     /// A collection of keyed items included as a result to a graphql query.
@@ -20,14 +21,14 @@ namespace GraphQL.AspNet.Execution.Response
     [DebuggerDisplay("Count = {Fields.Count}")]
     internal class ResponseFieldSet : IQueryResponseFieldSet
     {
-        private readonly OrderedDictionary<string, IQueryResponseItem> _dictionary;
+        private readonly OrderedDictionaryOfStringAndQueryResponseItem _dictionary;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponseFieldSet"/> class.
         /// </summary>
         public ResponseFieldSet()
         {
-            _dictionary = new OrderedDictionary<string, IQueryResponseItem>();
+            _dictionary = new OrderedDictionaryOfStringAndQueryResponseItem();
         }
 
         /// <summary>

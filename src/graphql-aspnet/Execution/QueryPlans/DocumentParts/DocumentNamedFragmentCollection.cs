@@ -13,8 +13,9 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
+
+    using OrderedDictionaryOfStringAndNamedFragment = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts.INamedFragmentDocumentPart>;
 
     /// <summary>
     /// An indexed collection of named fragments contained within a query document.
@@ -22,7 +23,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
     [DebuggerDisplay("Count = {Count}")]
     internal class DocumentNamedFragmentCollection : INamedFragmentCollectionDocumentPart
     {
-        private OrderedDictionary<string, INamedFragmentDocumentPart> _fragments;
+        private OrderedDictionaryOfStringAndNamedFragment _fragments;
 
         // its possible that a document declares more than one named fragment with the same
         // name. Keep track of the duplicates for document validation reporting.
@@ -35,7 +36,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.DocumentParts
         public DocumentNamedFragmentCollection(IDocumentPart parent)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
-            _fragments = new OrderedDictionary<string, INamedFragmentDocumentPart>();
+            _fragments = new OrderedDictionaryOfStringAndNamedFragment();
         }
 
         /// <summary>

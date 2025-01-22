@@ -37,8 +37,8 @@ jobs:
         name: Install .NET
         with:
           dotnet-version: |
-            6.x
             8.x
+            9.x
 
       # ---------------------------------------
       # Configure the build environment

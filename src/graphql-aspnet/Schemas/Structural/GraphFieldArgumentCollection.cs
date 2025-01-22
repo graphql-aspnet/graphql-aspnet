@@ -14,9 +14,10 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
+
+    using OrderedDictionaryOfStringAndGraphArgument = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Interfaces.Schema.IGraphArgument>;
 
     /// <summary>
     /// A collection of allowed arguments defined for a <see cref="IGraphField"/> or <see cref="IDirective"/>.
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     internal class GraphFieldArgumentCollection : IGraphArgumentCollection
     {
         private readonly ISchemaItem _owner;
-        private readonly OrderedDictionary<string, IGraphArgument> _arguments;
+        private readonly OrderedDictionaryOfStringAndGraphArgument _arguments;
         private IGraphArgument _sourceArgument;
 
         /// <summary>
@@ -36,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public GraphFieldArgumentCollection(ISchemaItem owner)
         {
             _owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
-            _arguments = new OrderedDictionary<string, IGraphArgument>(StringComparer.Ordinal);
+            _arguments = new OrderedDictionaryOfStringAndGraphArgument(StringComparer.Ordinal);
         }
 
         /// <inheritdoc />

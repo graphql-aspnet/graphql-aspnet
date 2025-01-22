@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Web.WebSockets
             if (_httpContext.Request.Headers.ContainsKey(SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER))
             {
                 var protocolHeaders = _httpContext.Request.Headers[SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER];
-                return string.Join(",", protocolHeaders);
+                return string.Join(",", protocolHeaders.ToArray());
             }
 
             return string.Empty;
