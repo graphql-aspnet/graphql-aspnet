@@ -25,12 +25,13 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
         /// <param name="connection">The connection.</param>
         /// <param name="type">The type of message to check for.</param>
         /// <param name="dequeue">if true, the message is removed from the queue.</param>
-        internal static void AssertGraphqlWsLegacyResponse(
+        /// <returns>The raw string data (usually json formatted) of the message data recevied by the connection proxy </returns>
+        internal static string AssertGraphqlWsLegacyResponse(
             this MockClientConnection connection,
             GraphqlWsLegacyMessageType type,
             bool dequeue = true)
         {
-            connection.AssertGraphqlWsLegacyResponse(type, null, false, null, false, dequeue);
+            return connection.AssertGraphqlWsLegacyResponse(type, null, false, null, false, dequeue);
         }
 
         /// <summary>
@@ -40,13 +41,14 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
         /// <param name="type">The type of message to check for.</param>
         /// <param name="id">The id returned by the server, if supplied.</param>
         /// <param name="dequeue">if true, the message is removed from the queue.</param>
-        internal static void AssertGraphqlWsLegacyResponse(
+        /// <returns>The raw string data (usually json formatted) of the message data recevied by the connection proxy </returns>
+        internal static string AssertGraphqlWsLegacyResponse(
             this MockClientConnection connection,
             GraphqlWsLegacyMessageType type,
             string id,
             bool dequeue = true)
         {
-            connection.AssertGraphqlWsLegacyResponse(type, id, true, null, false, dequeue);
+            return connection.AssertGraphqlWsLegacyResponse(type, id, true, null, false, dequeue);
         }
 
         /// <summary>
@@ -58,17 +60,18 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
         /// <param name="id">The expected identifier of the subscription that rendered the data.</param>
         /// <param name="expectedPayloadJson">The expected payload of the message, converted to a json string.</param>
         /// <param name="dequeue">if set to <c>true</c> if the message should be removed from the queue.</param>
-        internal static void AssertGraphqlWsLegacyResponse(
+        /// <returns>The raw string data (usually json formatted) of the message data recevied by the connection proxy </returns>
+        internal static string AssertGraphqlWsLegacyResponse(
             this MockClientConnection connection,
             GraphqlWsLegacyMessageType type,
             string id,
             string expectedPayloadJson,
             bool dequeue = true)
         {
-            connection.AssertGraphqlWsLegacyResponse(type, id, true, expectedPayloadJson, true, dequeue);
+            return connection.AssertGraphqlWsLegacyResponse(type, id, true, expectedPayloadJson, true, dequeue);
         }
 
-        private static void AssertGraphqlWsLegacyResponse(
+        private static string AssertGraphqlWsLegacyResponse(
             this MockClientConnection connection,
             GraphqlWsLegacyMessageType type,
             string id,
@@ -81,14 +84,14 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
                 Assert.Fail("No messages queued.");
 
             var message = dequeue ? connection.DequeueNextReceivedMessage() : connection.PeekNextReceivedMessage();
-            var str = Encoding.UTF8.GetString(message.Data);
+            var rawData = Encoding.UTF8.GetString(message.Data);
 
             var options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;
             options.AllowTrailingCommas = true;
             options.Converters.Add(new GraphqlWsLegacyResponseMessageConverter());
 
-            var convertedMessage = JsonSerializer.Deserialize<GraphqlWsLegacyResponseMessage>(str, options);
+            var convertedMessage = JsonSerializer.Deserialize<GraphqlWsLegacyResponseMessage>(rawData, options);
 
             Assert.IsNotNull(convertedMessage, "Could not deserialized response message");
             Assert.AreEqual(type, convertedMessage.Type, $"Expected message type of {type.ToString()} but got {convertedMessage.Type.ToString()}");
@@ -103,6 +106,8 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
 
             if (compareId)
                 Assert.AreEqual(id, convertedMessage.Id);
+
+            return rawData;
         }
     }
 }

@@ -90,7 +90,8 @@ namespace GraphQL.AspNet.Common
             }
             finally
             {
-                _semaphore.Release();
+                if (!_disposed)
+                    _semaphore.Release();
             }
         }
 
@@ -121,7 +122,8 @@ namespace GraphQL.AspNet.Common
             finally
             {
                 this.IsRunning = false;
-                _semaphore.Release();
+                if (!_disposed)
+                    _semaphore.Release();
             }
         }
 

@@ -746,5 +746,23 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlTransportWs
             connection.AssertServerClosedConnection((ConnectionCloseStatus)GqltwsConstants.CustomCloseEventIds.InvalidMessageType);
             graphqlWsClient.Dispose();
         }
+
+        [Test]
+        public async Task SendConnectionInitMessage_RespondsWithCorrectAckMessage()
+        {
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
+            (var socketClient, var client, var router) = this.CreateConnection();
+
+            socketClient.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            socketClient.QueueConnectionClosedByClient();
+
+            await client.StartConnectionAsync();
+
+            var rawMessageData = socketClient.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
+            socketClient.AssertClientClosedConnection();
+
+            var expectedData = "{ \"type\": \"connection_ack\" }";
+            CommonAssertions.AreEqualJsonStrings(expectedData, rawMessageData);
+        }
     }
 }

@@ -501,5 +501,23 @@ namespace GraphQL.AspNet.Tests.SubscriptionServer.Protocols.GraphqlWsLegacy
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.ERROR);
             socketClient.AssertClientClosedConnection();
         }
+
+        [Test]
+        public async Task SendConnectionInitMessage_RespondsWithCorrectAckMessage()
+        {
+            using var restorePoint = new GraphQLGlobalSubscriptionRestorePoint();
+            (var socketClient, var client, var router) = this.CreateConnection();
+
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
+            socketClient.QueueConnectionClosedByClient();
+
+            await client.StartConnectionAsync();
+
+            var rawMessageData = socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
+            socketClient.AssertClientClosedConnection();
+
+            var expectedData = "{ \"type\": \"connection_ack\" }";
+            CommonAssertions.AreEqualJsonStrings(expectedData, rawMessageData);
+        }
     }
 }

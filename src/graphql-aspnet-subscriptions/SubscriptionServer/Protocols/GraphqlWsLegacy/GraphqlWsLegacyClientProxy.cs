@@ -93,6 +93,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
             _serializeOptions.Converters.Add(new GraphqlWsLegacyServerDataMessageConverter(schema, responseWriter));
             _serializeOptions.Converters.Add(new GraphqlWsLegacyServerCompleteMessageConverter());
             _serializeOptions.Converters.Add(new GraphqlWsLegacyServerErrorMessageConverter(schema));
+            _serializeOptions.Converters.Add(new GraphqlWsLegacyMessageConverter());
         }
 
         /// <inheritdoc />
@@ -305,7 +306,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlWsLegacy
         /// <inheritdoc />
         protected override async Task ExecuteKeepAliveAsync(CancellationToken cancelToken = default)
         {
-            await this.SendMessageAsync(new GraphqlWsLegacyKeepAliveOperationMessage());
+            await this.SendMessageAsync(new GraphqlWsLegacyKeepAliveOperationMessage(), cancelToken);
         }
 
         /// <inheritdoc />

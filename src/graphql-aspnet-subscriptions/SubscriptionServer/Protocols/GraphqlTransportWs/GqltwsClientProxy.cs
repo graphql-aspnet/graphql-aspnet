@@ -94,6 +94,7 @@ namespace GraphQL.AspNet.SubscriptionServer.Protocols.GraphqlTransportWs
             _serializerOptions.Converters.Add(new GqltwsServerDataMessageConverter(schema, responseWriter));
             _serializerOptions.Converters.Add(new GqltwsServerCompleteMessageConverter());
             _serializerOptions.Converters.Add(new GqltwsServerErrorMessageConverter(schema));
+            _serializerOptions.Converters.Add(new GqltwsMessageConverter());
         }
 
         /// <summary>
