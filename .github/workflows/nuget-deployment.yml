@@ -77,7 +77,7 @@ jobs:
       # ---------------------------------------        
       # Save Artifacts for later debugging
       # ---------------------------------------
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: Save Artifacts        
         with:
            name: generated-nuget-packages
