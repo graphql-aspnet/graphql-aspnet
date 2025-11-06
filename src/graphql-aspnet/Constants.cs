@@ -90,7 +90,7 @@ namespace GraphQL.AspNet
 
         /// <summary>
         /// Gets a collection of globally known directives that will be added to all schema's by default.
-        /// This is the @skip, @include and @deprecated directives required by graphql.
+        /// This is the @skip, @include, @deprecated, @specifiedBy and @oneOf directives required by graphql.
         /// </summary>
         /// <value>The global directives.</value>
         public static IReadOnlyList<Type> GlobalDirectives { get; } = new List<Type>()
@@ -99,6 +99,7 @@ namespace GraphQL.AspNet
             typeof(IncludeDirective),
             typeof(DeprecatedDirective),
             typeof(SpecifiedByDirective),
+            typeof(OneOfDirective),
         };
 
         /// <summary>
@@ -282,6 +283,7 @@ namespace GraphQL.AspNet
             public const string INCLUDE_DIRECTIVE = "include";
             public const string DEPRECATED_DIRECTIVE = "deprecated";
             public const string SPECIFIED_BY_DIRECTIVE = "specifiedBy";
+            public const string ONEOF_DIRECTIVE = "oneOf";
 
             // type names for top level operation types
             public const string QUERY_TYPE_NAME = "Query";

@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         protected virtual void ParseTemplateDefinition()
         {
-            this.AppliedDirectives = this.ParseAppliedDiretives();
+            this.AppliedDirectives = this.ParseAppliedDirectives();
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// be applied to the created schema item.
         /// </summary>
         /// <returns>IEnumerable&lt;IAppliedDirectiveTemplate&gt;.</returns>
-        protected virtual IEnumerable<IAppliedDirectiveTemplate> ParseAppliedDiretives()
+        protected virtual IEnumerable<IAppliedDirectiveTemplate> ParseAppliedDirectives()
         {
             return this.ExtractAppliedDirectiveTemplates();
         }
@@ -71,14 +71,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public virtual IEnumerable<DependentType> RetrieveRequiredTypes()
         {
-            if (this.AppliedDirectives != null)
+            if (this.AppliedDirectives is not null)
             {
                 return this.AppliedDirectives
-                    .Where(x => x.DirectiveType != null)
+                    .Where(x => x.DirectiveType is not null)
                     .Select(x => new DependentType(x.DirectiveType, TypeKind.DIRECTIVE));
             }
 
-            return Enumerable.Empty<DependentType>();
+            return [];
         }
 
         /// <inheritdoc />

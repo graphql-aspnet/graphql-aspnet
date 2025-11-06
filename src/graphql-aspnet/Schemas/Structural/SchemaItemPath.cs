@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaItemPath"/> class.
         /// </summary>
-        /// <param name="fullPath">The full path.</param>
+        /// <param name="fullPath">The full path pointing to the schema item (e.g. '/path/to/schema/item').</param>
         public SchemaItemPath(string fullPath)
         {
             this.Raw = fullPath;
@@ -166,7 +166,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Validates that the given route fragment is valid and usable.
         /// </summary>
-        /// <param name="fragment">The fragment.</param>
+        /// <param name="fragment">The fragment to validate.</param>
         /// <returns>System.Boolean.</returns>
         protected virtual bool ValidateFragment(string fragment)
         {
@@ -194,7 +194,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
-        /// Gets the raw string provided to this instance.
+        /// Gets the raw string originally provided to this instance.
         /// </summary>
         /// <value>The raw path.</value>
         public string Raw { get; }
@@ -364,7 +364,6 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Clones this instance.
         /// </summary>
-        /// <returns>SchemaItemPath.</returns>
         public SchemaItemPath Clone()
         {
             return new SchemaItemPath(this.Path);
@@ -376,7 +375,6 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="pathSegments">The path segments to append
         /// to the current path.</param>
-        /// <returns>SchemaItemPath.</returns>
         public virtual SchemaItemPath CreateChild(params string[] pathSegments)
         {
             var list = new List<string>();
@@ -392,7 +390,6 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="pathSegments">The path segments to prepend
         /// to the current path.</param>
-        /// <returns>SchemaItemPath.</returns>
         public SchemaItemPath ReParent(params string[] pathSegments)
         {
             var list = new List<string>();

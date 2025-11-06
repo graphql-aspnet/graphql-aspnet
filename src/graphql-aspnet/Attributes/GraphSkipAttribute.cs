@@ -16,7 +16,8 @@ namespace GraphQL.AspNet.Attributes
     /// to graphql that it should be ignored. This attribute has priority over all other
     /// attributes.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method
+    [AttributeUsage(AttributeTargets.Parameter
+        | AttributeTargets.Method
         | AttributeTargets.Property
         | AttributeTargets.Field
         | AttributeTargets.Enum

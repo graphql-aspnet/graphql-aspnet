@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 // class objects MUST declare a default constructor
                 // so it can be used in a 'new T()' operation when generating
                 // input params
-                var constructor = objectType.GetConstructor(new Type[0]);
+                var constructor = objectType.GetConstructor([]);
                 if (constructor == null || !constructor.IsPublic)
                 {
                     rejectionReason =

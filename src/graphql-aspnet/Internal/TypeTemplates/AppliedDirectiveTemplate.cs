@@ -90,7 +90,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 return nti.Name;
             if (_owner is INamedItem ni)
                 return ni.Name;
-
             if (_owner != null)
                 return _owner.ToString();
 
