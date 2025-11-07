@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
-    using InputGraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Interfaces.Internal.IInputGraphFieldTemplate>;
+    using InputGraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, Interfaces.Internal.IInputGraphFieldTemplate>;
 
     /// <summary>
     /// An graph type template describing an INPUT_OBJECT graph type.
@@ -36,15 +37,42 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         private IEnumerable<string> _duplicateNames;
         private List<IInputGraphFieldTemplate> _invalidFields;
         private InputGraphFieldCollection _fields;
+        private readonly bool _isInputUnionType;
+
+        private static Type UnwrapGraphInputUnion(Type objectType)
+        {
+            // skip anything that isnt an input union
+            if (objectType is null || !Validation.IsCastable<GraphInputUnion>(objectType))
+                return objectType;
+
+            // if the input union is not GraphInputUnion<T> just let it go through.
+            // graph skips will be used accordingly and properties will be pulled as expected
+            if (!objectType.IsGenericType || objectType.GetGenericTypeDefinition() != typeof(GraphInputUnion<>))
+                return objectType;
+
+            // should always be 1 arg, just a "lets be sure" safety check in case something changes in the future
+            var args = objectType.GetGenericArguments();
+            if (args.Length != 1)
+            {
+                throw new GraphTypeDeclarationException($"The type {objectType.FriendlyName()} cannot be used as an " +
+                                                        $"input object.");
+            }
+
+            return args[0];
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputObjectGraphTypeTemplate"/> class.
         /// </summary>
         /// <param name="objectType">Type of the object.</param>
         public InputObjectGraphTypeTemplate(Type objectType)
-            : base(objectType)
+            : base(UnwrapGraphInputUnion(objectType))
         {
             _fields = new InputGraphFieldCollection();
+
+            var resultType = UnwrapGraphInputUnion(objectType);
+            _isInputUnionType = resultType != objectType || Validation.IsCastable<GraphInputUnion>(resultType);
+            objectType = resultType;
 
             // customize the error message on the thrown exception for some helpful hints.
             string rejectionReason = null;
@@ -85,7 +113,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             else if (objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
             {
                 // since KeyValuePair<,> is pretty common
-                // and a specific error message for the type
+                // add a specific error message for the type
                 rejectionReason =
                     $"The type '{objectType.FriendlyName()}' cannot be used as an {nameof(TypeKind.INPUT_OBJECT)} graph type. '{typeof(KeyValuePair<,>).FriendlyName()}' does not " +
                     $"declare public setters for its Key and Value properties.";
@@ -148,6 +176,34 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 _fields.Add(field.Route.Path, field);
             }
+        }
+
+        /// <inheritdoc />
+        protected override IEnumerable<IAppliedDirectiveTemplate> ParseAppliedDirectives()
+        {
+            // if the user declared their type as GraphInputUnion
+            // ensure that the oneOf directive template is applied to the class
+            // this is a feature of GraphInputUnion that we have to account for in business code
+            // since, when using the generic version, the user has no way to supply the appropriate attributes
+            // nor should they be forced to double declare.
+            var foundDirectives = base.ParseAppliedDirectives()?.ToList();
+
+            if (_isInputUnionType)
+            {
+                // it is possible that they did add [OneOf] to their custom object inheriting from
+                // GraphInputUnion, if this happens we dont need to reapply it.
+                foundDirectives = foundDirectives ?? [];
+                if (foundDirectives.All(x => x.DirectiveType != typeof(OneOfDirective)))
+                {
+                    foundDirectives.Add(new AppliedDirectiveTemplate(
+                        this,
+                        typeof(OneOfDirective),
+                        [TypeKind.INPUT_OBJECT],
+                        []));
+                }
+            }
+
+            return foundDirectives;
         }
 
         private bool CanBeInputField(PropertyInfo propInfo)

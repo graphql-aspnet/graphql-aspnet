@@ -43,8 +43,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var oneOfTemplate = template.AppliedDirectives.FirstOrDefault();
             Assert.That(oneOfTemplate, Is.Not.Null);
             Assert.That(oneOfTemplate.DirectiveType, Is.EqualTo(typeof(OneOfDirective)));
-            Assert.That(template.ObjectType, Is.EqualTo(typeof(SimpleObjectOneProp)));
             Assert.That(oneOfTemplate.Arguments.Length, Is.EqualTo(0));
+
+            Assert.That(template.ObjectType, Is.EqualTo(typeof(SimpleObjectOneProp)));
         }
 
         [Test]

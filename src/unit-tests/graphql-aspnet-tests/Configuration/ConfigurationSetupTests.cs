@@ -103,8 +103,8 @@ namespace GraphQL.AspNet.Tests.Configuration
             sp.UseGraphQL();
 
             // FanController, FanItem, FanSpeed,
-            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective
-            Assert.AreEqual(7, GraphQLProviders.TemplateProvider.Count);
+            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective, oneOfDirective
+            Assert.AreEqual(8, GraphQLProviders.TemplateProvider.Count);
         }
 
         [Test]
@@ -121,8 +121,8 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             // virtualResolvedObject, candleController, candle, waxType,
             // customerController, customer,
-            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective
-            Assert.AreEqual(10, GraphQLProviders.TemplateProvider.Count);
+            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective, oneOfDirective
+            Assert.AreEqual(11, GraphQLProviders.TemplateProvider.Count);
 
             var sp = serviceCollection.BuildServiceProvider();
             sp.UseGraphQL();
@@ -136,9 +136,9 @@ namespace GraphQL.AspNet.Tests.Configuration
             // 3 scalars: int, string, boolean (from introspection)
             // 1 operation type: queryType
             // 8 introspection types
-            // 4 built in directives (skip, include, deprecated, specifiedBy)
+            // 5 built in directives (skip, include, deprecated, specifiedBy, oneOf)
             // 1 built in, required graph type (VirtualResolveOdbject)
-            Assert.AreEqual(22, schema.KnownTypes.Count);
+            Assert.AreEqual(23, schema.KnownTypes.Count);
         }
 
         [Test]
@@ -155,8 +155,8 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             // virtualResolvedObject, candleController, candle, waxType,
             // customerController, customer,
-            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective
-            Assert.AreEqual(10, GraphQLProviders.TemplateProvider.Count);
+            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective, oneOfDirective
+            Assert.AreEqual(11, GraphQLProviders.TemplateProvider.Count);
 
             var sp = serviceCollection.BuildServiceProvider();
             var schema = sp.GetService(typeof(CandleSchema)) as ISchema;
@@ -168,9 +168,9 @@ namespace GraphQL.AspNet.Tests.Configuration
             // 3 scalars: int, string, boolean (from introspection)
             // 1 operation type: queryType
             // 8 introspection types
-            // 4 built in directives (skip, include, deprecated, specifiedBy)
+            // 5 built in directives (skip, include, deprecated, specifiedBy, oneOf)
             // 1 built in, required graph type (VirtualResolvedObject)
-            Assert.AreEqual(22, schema.KnownTypes.Count);
+            Assert.AreEqual(23, schema.KnownTypes.Count);
         }
 
         [Test]
@@ -187,8 +187,8 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             // virtualResolvedObject, candleController, candle,
             // waxType,
-            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective
-            Assert.AreEqual(8, GraphQLProviders.TemplateProvider.Count);
+            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective, oneOfDirective
+            Assert.AreEqual(9, GraphQLProviders.TemplateProvider.Count);
 
             var sp = serviceCollection.BuildServiceProvider();
             var schema = sp.GetService(typeof(GraphSchema)) as ISchema;
@@ -199,9 +199,9 @@ namespace GraphQL.AspNet.Tests.Configuration
             // 3 scalars: int, string, boolean (from introspection)
             // 1 operation type: queryType
             // 8 introspection types
-            // 4 built in directives (skip, include, deprecated,specifiedByDirective)
+            // 5 built in directives (skip, include, deprecated, specifiedBy, oneOf)
             // 1 built in, required graph type (VirtualResolveOdbject)
-            Assert.AreEqual(20, schema.KnownTypes.Count);
+            Assert.AreEqual(21, schema.KnownTypes.Count);
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(Candle)));
             Assert.IsTrue(schema.KnownTypes.Contains($"{Constants.ReservedNames.QUERY_TYPE_NAME}_Candles"));
         }
@@ -219,8 +219,8 @@ namespace GraphQL.AspNet.Tests.Configuration
             provider.UseGraphQL();
 
             // sample1Directive,
-            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective
-            Assert.AreEqual(5, GraphQLProviders.TemplateProvider.Count);
+            // skipDirective, includeDirective, deprecatedDirective, specifiedByDirective, oneOfDirective
+            Assert.AreEqual(6, GraphQLProviders.TemplateProvider.Count);
             var schema = provider.GetService(typeof(GraphSchema)) as GraphSchema;
 
             Assert.IsNotNull(schema);

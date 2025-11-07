@@ -14,6 +14,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -44,6 +47,22 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                         x.DeclaringType != typeof(ValueType))
               .Cast<MemberInfo>()
               .Concat(this.ObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance));
+        }
+
+        /// <inheritdoc />
+        public override void ValidateOrThrow(bool validateChildren = true)
+        {
+            base.ValidateOrThrow(validateChildren);
+
+            // graph input unions are special types that can ONLY be used as
+            // input objects (not standard objects)
+            if (Validation.IsCastable<GraphInputUnion>(this.ObjectType))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"Invalid type declaration. The type '{this.InternalFullName}' is a {typeof(GraphInputUnion).FriendlyName()} and cannot " +
+                    $"be used as a standard OBJECT type.",
+                    this.ObjectType);
+            }
         }
 
         /// <inheritdoc />

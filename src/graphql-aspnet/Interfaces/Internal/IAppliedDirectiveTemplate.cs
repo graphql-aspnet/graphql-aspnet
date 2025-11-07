@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
 {
     using System;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A template containing the necessary information to create an apply
@@ -28,6 +29,13 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// or throws an exception.
         /// </summary>
         void ValidateOrThrow();
+
+        /// <summary>
+        /// Determines if, for a given type kind, can the directive on this template be applied to said type kind.
+        /// </summary>
+        /// <param name="typeKind">The type kind to check.</param>
+        /// <returns><c>true</c> if the directive can be applied, otherwise <c>false</c>.</returns>
+        bool CanBeApplied(TypeKind typeKind);
 
         /// <summary>
         /// Creates an instance of <see cref="IAppliedDirectiveTemplate"/>
