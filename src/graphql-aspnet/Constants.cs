@@ -153,6 +153,12 @@ namespace GraphQL.AspNet
             /// The prefix applied, by default, to any class used as an INPUT_OBJECT.
             /// </summary>
             public const string INPUT_OBJECT_NAME_PREFIX = "Input_";
+
+            /// <summary>
+            /// The prefix applied, by default, to any class used as an INPUT_OBJECT with the
+            /// '@oneOf' directive applied.
+            /// </summary>
+            public const string INPUT_OBJECT_UNION_NAME_PREFIX = "Oneof_";
         }
 
         /// <summary>

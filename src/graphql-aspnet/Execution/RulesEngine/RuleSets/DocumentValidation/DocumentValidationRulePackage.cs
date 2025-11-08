@@ -10,9 +10,9 @@
 namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
 {
     using System.Collections.Generic;
-    using System.Linq;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSetSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSteps;
@@ -22,14 +22,14 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputValueSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
-    /// A rule package for doing a wholistic validation pass at parsed query document before the final
+    /// A rule package for doing a holistic validation pass at a parsed query document before the final
     /// <see cref="IQueryDocument"/> is generated. Performs deeper validations (such as no unused variables) across
     /// the fully parsed operations.
     /// </summary>
-    internal sealed class DocumentValidationRulePackage : IRulePackage<DocumentValidationContext>
+    public sealed class DocumentValidationRulePackage : IRulePackage<DocumentValidationContext>
     {
         /// <summary>
         /// Gets the singleton instance of this rule package.
@@ -60,6 +60,26 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
         }
 
         /// <summary>
+        /// Allow for addition of custom validation rules for a given document part. Rules added via this method
+        /// will be executed against the document part in the order they are supplied and AFTER all baseline rules
+        /// are executed.
+        /// </summary>
+        /// <param name="documentPart">The document part targetd by the rule</param>
+        /// <param name="rule">The rule to be invoked.</param>
+        public void AddCustomRule(DocumentPartType documentPart, IRuleStep<DocumentValidationContext> rule)
+        {
+            Validation.ThrowIfNull(rule, nameof(rule));
+
+            if (!_stepCollection.TryGetValue(documentPart, out var steps))
+            {
+                steps = [];
+                _stepCollection.Add(documentPart, steps);
+            }
+
+            steps.Add(rule);
+        }
+
+        /// <summary>
         /// Fetches the rules that should be executed, in order, for the given context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -67,10 +87,10 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
         public IEnumerable<IRuleStep<DocumentValidationContext>> FetchRules(DocumentValidationContext context)
         {
             var type = context?.ActivePart?.PartType ?? DocumentPartType.Unknown;
-            if (!_stepCollection.ContainsKey(type))
-                return Enumerable.Empty<IRuleStep<DocumentValidationContext>>();
+            if (!_stepCollection.TryGetValue(type, out var rules))
+                return [];
 
-            return _stepCollection[type];
+            return rules;
         }
 
         private void BuildDocumentSteps()

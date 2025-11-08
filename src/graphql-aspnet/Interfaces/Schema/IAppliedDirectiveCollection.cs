@@ -9,6 +9,7 @@
 namespace GraphQL.AspNet.Interfaces.Schema
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Directives;
 
     /// <summary>
     /// A collection of directives that have been applied to a schema
@@ -22,6 +23,14 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// <param name="newParent">The new parent.</param>
         /// <returns>AppliedDirectiveCollection.</returns>
         IAppliedDirectiveCollection Clone(ISchemaItem newParent);
+
+        /// <summary>
+        /// Performs a test to see if a directive of the given type is included in
+        /// the list of applied directives. This method only indicates if a directive was included at least once.
+        /// </summary>
+        /// <typeparam name="TDirectiveType">The type of directive to check for.</typeparam>
+        bool Includes<TDirectiveType>()
+            where TDirectiveType : GraphDirective;
 
         /// <summary>
         /// Adds a new directive application to this collection.

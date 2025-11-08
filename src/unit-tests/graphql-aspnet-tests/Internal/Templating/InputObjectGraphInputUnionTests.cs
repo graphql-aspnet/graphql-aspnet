@@ -32,44 +32,5 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.That(oneOfTemplate.DirectiveType, Is.EqualTo(typeof(OneOfDirective)));
             Assert.That(oneOfTemplate.Arguments.Length, Is.EqualTo(0));
         }
-
-        [Test]
-        public void InputObjectTemplate_WhenIsGraphInputUnion_UnWrapsBaseType_AndHasAppliedDirectiveAdded()
-        {
-            var template = new InputObjectGraphTypeTemplate(typeof(GraphInputUnion<SimpleObjectOneProp>));
-            template.Parse();
-            template.ValidateOrThrow();
-
-            var oneOfTemplate = template.AppliedDirectives.FirstOrDefault();
-            Assert.That(oneOfTemplate, Is.Not.Null);
-            Assert.That(oneOfTemplate.DirectiveType, Is.EqualTo(typeof(OneOfDirective)));
-            Assert.That(oneOfTemplate.Arguments.Length, Is.EqualTo(0));
-
-            Assert.That(template.ObjectType, Is.EqualTo(typeof(SimpleObjectOneProp)));
-        }
-
-        [Test]
-        public void ObjectTemplate_WhenObjectInheritsFromGraphUnionType_ThrowsException()
-        {
-            var template = new ObjectGraphTypeTemplate(typeof(SimpleObjectFromGraphInputUnion));
-            template.Parse();
-
-            Assert.Throws<GraphTypeDeclarationException>(() =>
-            {
-                template.ValidateOrThrow();
-            });
-        }
-
-        [Test]
-        public void ObjectTemplate_WhenObjectIsGraphInputUnion_ThrowsException()
-        {
-            var template = new ObjectGraphTypeTemplate(typeof(GraphInputUnion<SimpleObjectOneProp>));
-            template.Parse();
-
-            Assert.Throws<GraphTypeDeclarationException>(() =>
-            {
-                template.ValidateOrThrow();
-            });
-        }
     }
 }

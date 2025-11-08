@@ -50,22 +50,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public override void ValidateOrThrow(bool validateChildren = true)
-        {
-            base.ValidateOrThrow(validateChildren);
-
-            // graph input unions are special types that can ONLY be used as
-            // input objects (not standard objects)
-            if (Validation.IsCastable<GraphInputUnion>(this.ObjectType))
-            {
-                throw new GraphTypeDeclarationException(
-                    $"Invalid type declaration. The type '{this.InternalFullName}' is a {typeof(GraphInputUnion).FriendlyName()} and cannot " +
-                    $"be used as a standard OBJECT type.",
-                    this.ObjectType);
-            }
-        }
-
-        /// <inheritdoc />
         public override TypeKind Kind => TypeKind.OBJECT;
     }
 }

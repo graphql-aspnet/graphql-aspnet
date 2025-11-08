@@ -9,10 +9,12 @@
 
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
@@ -22,6 +24,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     public class AppliedDirectiveCollection : IAppliedDirectiveCollection
     {
         private HashSet<IAppliedDirective> _appliedDirectives;
+        private HashSet<Type> _includedDirectiveTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppliedDirectiveCollection"/> class.
@@ -29,6 +32,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public AppliedDirectiveCollection()
         {
             _appliedDirectives = new HashSet<IAppliedDirective>(AppliedDirectiveEqualityComparer.Instance);
+            _includedDirectiveTypes = [];
         }
 
         /// <summary>
@@ -52,10 +56,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
+        public bool Includes<TDirectiveType>()
+            where TDirectiveType : GraphDirective
+        {
+            return _includedDirectiveTypes.Contains(typeof(TDirectiveType));
+        }
+
+        /// <inheritdoc />
         public void Add(IAppliedDirective directive)
         {
             Validation.ThrowIfNull(directive, nameof(directive));
             _appliedDirectives.Add(directive);
+            if (directive.DirectiveType is not null)
+                _includedDirectiveTypes.Add(directive.DirectiveType);
         }
 
         /// <inheritdoc />

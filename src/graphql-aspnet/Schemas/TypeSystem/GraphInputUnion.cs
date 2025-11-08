@@ -12,14 +12,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Attributes;
 
     /// <summary>
-    /// A base type that defines an object as an input union (e.g. a '@oneOf') type. Inherting from this
-    /// class provides access to extra metadata and value extraction methods at runtime. See documentation for details.
+    /// A base class that defines commonly used coding conventions for extracting the singular supplied
+    /// value from an input union and defining useful defaults.
     /// </summary>
-    /// <remarks>
-    /// Classes that inherit from this type CANNOT be used as regular OBJECT types, only as INPUT OBJECT types.
-    /// </remarks>
     public abstract class GraphInputUnion
     {
+        // Note: ValueOrDefault() is an extension method so as to properly expose the runtime type
+        // of the object that extended this class.
+
         /// <summary>
         /// Gets or sets the field name of the supplied value on the query, as its defined in the graph schema.
         /// </summary>
