@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
             BUILDERS.Add(SyntaxNodeType.VariableCollection, VariableCollectionNodeBuilder.Instance);
             BUILDERS.Add(SyntaxNodeType.FieldCollection, FieldCollectionNodeBuilder.Instance);
             BUILDERS.Add(SyntaxNodeType.InputValue, InputValueNodeBuilder.Instance);
-            BUILDERS.Add(SyntaxNodeType.InputItem, InputItemNodeBuilder.Instance);
+            BUILDERS.Add(SyntaxNodeType.InputArgument, InputItemNodeBuilder.Instance);
             BUILDERS.Add(SyntaxNodeType.InputItemCollection, InputItemCollectionNodeBuilder.Instance);
             BUILDERS.Add(SyntaxNodeType.Directive, DirectiveNodeBuilder.Instance);
         }

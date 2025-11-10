@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction
             steps.Add(new InputArgument_B_AssignInputArgumentForDirective());
             steps.Add(new InputArgument_C_AssignFieldForInputObject());
 
-            _stepCollection.Add(SyntaxNodeType.InputItem, steps);
+            _stepCollection.Add(SyntaxNodeType.InputArgument, steps);
         }
 
         private void BuildInputValueSteps()

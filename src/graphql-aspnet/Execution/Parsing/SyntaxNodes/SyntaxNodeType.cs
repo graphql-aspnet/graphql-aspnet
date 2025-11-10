@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         Field,
 
         InputItemCollection,
-        InputItem,
+        InputArgument,
         InputValue,
 
         VariableValue,

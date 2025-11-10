@@ -7,23 +7,21 @@
 //  License:  MIT
 //  *************************************************************
 
-namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.OneOfDirectiveSteps
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.VariableDataValidation.OneOfDirectiveSteps
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.VariableDataValidation.Common;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
-    /// Ensures that for an object literal supplied to an input object argument, when that object type declares the
-    /// '@oneOf' directive, that only one field value was supplied on the document and that it was non-null.
+    /// A validation step that inspects a variable usage document part and ensures the coerced value matches
+    /// the rules for @oneOf directives.
     /// </summary>
-    internal class Rule_3_10_1_VariableDeclarationChecks : DocumentPartValidationRuleStep<IOperationDocumentPart>
+    internal class Rule_3_10_1_InputFieldVariable : VariableValidationRuleStep<IInputValueDocumentPart>
     {
         /// <inheritdoc />
-        public override bool Execute(DocumentValidationContext context)
+        public override bool Execute(VariableDataValidationContext context)
         {
-            var operation = (IOperationDocumentPart)context.ActivePart;
-
             return true;
         }
 

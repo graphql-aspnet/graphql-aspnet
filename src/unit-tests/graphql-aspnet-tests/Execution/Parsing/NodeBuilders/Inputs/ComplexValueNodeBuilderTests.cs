@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
                     new SynNodeTestCase(
                         SyntaxNodeType.InputItemCollection,
                         new SynNodeTestCase(
-                            SyntaxNodeType.InputItem,
+                            SyntaxNodeType.InputArgument,
                             "test",
                             new SynNodeTestCase(
                                 SyntaxNodeType.ScalarValue,
@@ -95,56 +95,56 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
                   new SynNodeTestCase(
                       SyntaxNodeType.InputItemCollection,
                       new SynNodeTestCase(
-                          SyntaxNodeType.InputItem,
+                          SyntaxNodeType.InputArgument,
                           "childArg1",
                           new SynNodeTestCase(
                               SyntaxNodeType.ScalarValue,
                               "\"bob\"",
                               ScalarValueType.String)),
                       new SynNodeTestCase(
-                          SyntaxNodeType.InputItem,
+                          SyntaxNodeType.InputArgument,
                           "childArg2",
                           new SynNodeTestCase(
                               SyntaxNodeType.ComplexValue,
                               new SynNodeTestCase(
                                   SyntaxNodeType.InputItemCollection,
                                   new SynNodeTestCase(
-                                      SyntaxNodeType.InputItem,
+                                      SyntaxNodeType.InputArgument,
                                       "firstName",
                                       new SynNodeTestCase(
                                           SyntaxNodeType.ScalarValue,
                                           "\"jane\"",
                                           ScalarValueType.String)),
                                   new SynNodeTestCase(
-                                      SyntaxNodeType.InputItem,
+                                      SyntaxNodeType.InputArgument,
                                       "lastName",
                                       new SynNodeTestCase(
                                           SyntaxNodeType.ScalarValue,
                                           "\"doe\"",
                                           ScalarValueType.String)),
                                   new SynNodeTestCase(
-                                      SyntaxNodeType.InputItem,
+                                      SyntaxNodeType.InputArgument,
                                       "address",
                                       new SynNodeTestCase(
                                           SyntaxNodeType.ComplexValue,
                                           new SynNodeTestCase(
                                               SyntaxNodeType.InputItemCollection,
                                               new SynNodeTestCase(
-                                                  SyntaxNodeType.InputItem,
+                                                  SyntaxNodeType.InputArgument,
                                                   "city",
                                                   new SynNodeTestCase(
                                                       SyntaxNodeType.ScalarValue,
                                                       "\"JanesVille\"",
                                                       ScalarValueType.String)),
                                               new SynNodeTestCase(
-                                                  SyntaxNodeType.InputItem,
+                                                  SyntaxNodeType.InputArgument,
                                                   "Zip",
                                                   new SynNodeTestCase(
                                                       SyntaxNodeType.ScalarValue,
                                                       "12345",
                                                       ScalarValueType.Number)))))))),
                       new SynNodeTestCase(
-                          SyntaxNodeType.InputItem,
+                          SyntaxNodeType.InputArgument,
                           "childArg3",
                           new SynNodeTestCase(
                               SyntaxNodeType.EnumValue,

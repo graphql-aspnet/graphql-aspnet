@@ -260,14 +260,14 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders
                     new SynNodeTestCase(
                         SyntaxNodeType.InputItemCollection,
                         new SynNodeTestCase(
-                            SyntaxNodeType.InputItem,
+                            SyntaxNodeType.InputArgument,
                             "id",
                             new SynNodeTestCase(
                                 SyntaxNodeType.ScalarValue,
                                 "\"bob\"",
                                 ScalarValueType.String)),
                         new SynNodeTestCase(
-                            SyntaxNodeType.InputItem,
+                            SyntaxNodeType.InputArgument,
                             "age",
                             new SynNodeTestCase(
                                 SyntaxNodeType.ScalarValue,

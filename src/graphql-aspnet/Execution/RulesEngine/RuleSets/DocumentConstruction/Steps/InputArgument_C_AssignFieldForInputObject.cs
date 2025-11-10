@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
         /// Initializes a new instance of the <see cref="InputArgument_C_AssignFieldForInputObject"/> class.
         /// </summary>
         public InputArgument_C_AssignFieldForInputObject()
-            : base(SyntaxNodeType.InputItem)
+            : base(SyntaxNodeType.InputArgument)
         {
         }
 

@@ -122,14 +122,14 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
                       new SynNodeTestCase(
                           SyntaxNodeType.InputItemCollection,
                           new SynNodeTestCase(
-                              SyntaxNodeType.InputItem,
+                              SyntaxNodeType.InputArgument,
                               "arg1",
                               new SynNodeTestCase(
                                   SyntaxNodeType.ScalarValue,
                                   "123",
                                   ScalarValueType.Number)),
                           new SynNodeTestCase(
-                              SyntaxNodeType.InputItem,
+                              SyntaxNodeType.InputArgument,
                               "arg2",
                               new SynNodeTestCase(
                                   SyntaxNodeType.ListValue,
@@ -146,14 +146,14 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
                       new SynNodeTestCase(
                           SyntaxNodeType.InputItemCollection,
                           new SynNodeTestCase(
-                              SyntaxNodeType.InputItem,
+                              SyntaxNodeType.InputArgument,
                               "arg1",
                               new SynNodeTestCase(
                                   SyntaxNodeType.ScalarValue,
                                   "345",
                                   ScalarValueType.Number)),
                           new SynNodeTestCase(
-                              SyntaxNodeType.InputItem,
+                              SyntaxNodeType.InputArgument,
                               "arg2",
                               new SynNodeTestCase(
                                   SyntaxNodeType.ListValue,
@@ -170,14 +170,14 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
                       new SynNodeTestCase(
                           SyntaxNodeType.InputItemCollection,
                           new SynNodeTestCase(
-                              SyntaxNodeType.InputItem,
+                              SyntaxNodeType.InputArgument,
                               "arg3",
                               new SynNodeTestCase(
                                   SyntaxNodeType.ScalarValue,
                                   "812",
                                   ScalarValueType.Number)),
                           new SynNodeTestCase(
-                              SyntaxNodeType.InputItem,
+                              SyntaxNodeType.InputArgument,
                               "arg2",
                               new SynNodeTestCase(
                                   SyntaxNodeType.ListValue,
@@ -218,14 +218,14 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
                       new SynNodeTestCase(
                           SyntaxNodeType.InputItemCollection,
                           new SynNodeTestCase(
-                              SyntaxNodeType.InputItem,
+                              SyntaxNodeType.InputArgument,
                               "arg1",
                               new SynNodeTestCase(
                                   SyntaxNodeType.ScalarValue,
                                   "123",
                                   ScalarValueType.Number)),
                           new SynNodeTestCase(
-                              SyntaxNodeType.InputItem,
+                              SyntaxNodeType.InputArgument,
                               "arg2",
                               new SynNodeTestCase(
                                   SyntaxNodeType.ListValue,

@@ -14,6 +14,8 @@ namespace GraphQL.AspNet.Directives.Global
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.OneOfDirectiveSteps;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.VariableDataValidation;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.VariableDataValidation.OneOfDirectiveSteps;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -45,17 +47,33 @@ namespace GraphQL.AspNet.Directives.Global
                 {
                     _isGlobalValidationRuleSetUpdated = true;
 
-                    // inject the global rules to validate oneof input objects
-                    // when supplied as an object literal
+                    // validate input arguments (which can be INPUT OBJECTs)
+                    // to ensure they conform to @oneOf requirements
                     DocumentValidationRulePackage.Instance.AddCustomRule(
                         DocumentPartType.Argument,
-                        new Rule_3_10_1_LiteralValueChecks());
+                        new Rule_3_10_1_InputArguments());
 
-                    // when supplied as a complete variable reference
-                    // or field value as a variable referencxe
+                    // for every field that might be declared on an input argument
+                    // (e.g. the argument is a INPUT_OBJECT and one of its declared fields is itself an input union)
+                    // make sure that it conforms to the @oneOf requirements, this is naturally recursive.
                     DocumentValidationRulePackage.Instance.AddCustomRule(
-                        DocumentPartType.Operation,
-                        new Rule_3_10_1_VariableDeclarationChecks());
+                        DocumentPartType.InputField,
+                        new Rule_3_10_1_InputFields());
+
+                    // When an input argument's value is a variable reference
+                    // we need to validate the supplied variable value after its resolved to ensure
+                    // the variable data only supplied a single field etc.
+                    VariableDataValidationRulePackage.Instance.AddCustomRule(
+                        DocumentPartType.Argument,
+                        new Rule_3_10_1_InputArgumentVariable());
+
+                    // If a field of an input argument is a variable reference
+                    // we need to validate the supplied value after its resolved to ensure
+                    // the variable data only supplied an object with a single field to the target etc.
+                    // (this is recursive)
+                    VariableDataValidationRulePackage.Instance.AddCustomRule(
+                        DocumentPartType.InputField,
+                        new Rule_3_10_1_InputFieldVariable());
                 }
             }
 
