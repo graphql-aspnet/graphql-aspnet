@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [TestCase(typeof(ValidOneOfObjectWithStringProp))]
         [TestCase(typeof(ValidOneOfObjectWithNullableIntProp))]
         [TestCase(typeof(ValidOneOfTemplateWithNullableStructField))]
+        [TestCase(typeof(ValidObjectFromGraphInputUnion))]
         public void ValidOneOfTemplate_ShouldParseOneOfAppliedDirective(Type typeToCheck)
         {
             var template = new InputObjectGraphTypeTemplate(typeof(ValidOneOfObjectWithStringProp));
@@ -53,6 +54,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [TestCase(typeof(ValidOneOfObjectWithStringProp))]
         [TestCase(typeof(ValidOneOfObjectWithNullableIntProp))]
         [TestCase(typeof(ValidOneOfTemplateWithNullableStructField))]
+        [TestCase(typeof(ValidObjectFromGraphInputUnion))]
         [TestCase(typeof(InvalidOneOfTemplateWithNonNullFieldType))]
         [TestCase(typeof(InvalidOneOfTemplateNonNullTypeExpression))]
         [TestCase(typeof(InvalidOneOfTemplateDefaultValueOnNullableField))]

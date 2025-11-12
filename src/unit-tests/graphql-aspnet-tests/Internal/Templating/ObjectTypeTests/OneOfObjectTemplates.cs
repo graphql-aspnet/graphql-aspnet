@@ -12,6 +12,7 @@
 namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
 {
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     public struct MyStruct
     {
@@ -100,6 +101,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
     public class ValidOneOfTemplateWithNullableStructField
     {
         public MyStruct? Prop2 { get; set; }
+    }
+
+    public class ValidObjectFromGraphInputUnion : GraphInputUnion
+    {
+        public string Prop1 { get; set; }
     }
 
     public class SimpleObjectWithStringProp
