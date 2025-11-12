@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -214,7 +215,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.ObjectType);
             }
 
-            if (_invalidFields != null && _invalidFields.Count > 0)
+            if (_invalidFields is { Count: > 0 })
             {
                 var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalFullName} ({x.Route.RootCollection.ToString()})'"));
                 throw new GraphTypeDeclarationException(
@@ -225,10 +226,54 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.ObjectType);
             }
 
+            this.ValidateOneOfOrThrow();
+
             if (validateChildren)
             {
                 foreach (var field in this.FieldTemplates.Values)
                     field.ValidateOrThrow(validateChildren);
+            }
+        }
+
+        /// <summary>
+        /// Validates @oneOf template requirements, if applicable and throws an exception when invalid.
+        /// </summary>
+        protected virtual void ValidateOneOfOrThrow()
+        {
+            // only applicable to @oneOf unions
+            var oneOfDirectiveTemplate = this.AppliedDirectives.FirstOrDefault(x => x.DirectiveType == typeof(OneOfDirective));
+            if (oneOfDirectiveTemplate is null)
+                return;
+
+            var instance = InstanceFactory.CreateInstance(this.ObjectType);
+            var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(this.ObjectType);
+
+            if (instance is null || propGetters is null)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"Unable to validate '{this.InternalName}'. The templating engine was unable to create an instance of the input object " +
+                    $"to validate default values related to @oneOf directive requirements.");
+            }
+
+            var nonNullableFields = new List<IInputGraphFieldTemplate>(_fields.Count);
+            foreach (var field in this.FieldTemplates.Values)
+            {
+                if (field.TypeExpression.IsNonNullable)
+                    nonNullableFields.Add(field);
+
+                var value = propGetters[field.InternalName].Invoke(ref instance);
+                if (value is not null)
+                    nonNullableFields.Add(field);
+            }
+
+            if (nonNullableFields.Count > 0)
+            {
+                var fieldNames = string.Join("\n", nonNullableFields.Select(x => $"Field: '{x.InternalFullName}'"));
+                throw new GraphTypeDeclarationException(
+                    $"Invalid input field declaration.  The type '{this.InternalFullName}' is declared as an input union (@oneOf directive) " +
+                    $"and as a requirement all fields must be nullable. The following fields are 'not nullable' by way of type expression or " +
+                    $"object type declaration. \n---------\n " + fieldNames,
+                    this.ObjectType);
             }
         }
 
