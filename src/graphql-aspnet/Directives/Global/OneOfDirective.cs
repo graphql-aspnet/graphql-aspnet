@@ -60,20 +60,12 @@ namespace GraphQL.AspNet.Directives.Global
                         DocumentPartType.InputField,
                         new Rule_3_10_1_InputFields());
 
-                    // When an input argument's value is a variable reference
+                    // When an input argument's value or an input object's field value is a variable reference
                     // we need to validate the supplied variable value after its resolved to ensure
-                    // the variable data only supplied a single field etc.
+                    // the variable data is valid for @oneOf rules in context where its used.
                     VariableDataValidationRulePackage.Instance.AddCustomRule(
-                        DocumentPartType.Argument,
-                        new Rule_3_10_1_InputArgumentVariable());
-
-                    // If a field of an input argument is a variable reference
-                    // we need to validate the supplied value after its resolved to ensure
-                    // the variable data only supplied an object with a single field to the target etc.
-                    // (this is recursive)
-                    VariableDataValidationRulePackage.Instance.AddCustomRule(
-                        DocumentPartType.InputField,
-                        new Rule_3_10_1_InputFieldVariable());
+                        DocumentPartType.SuppliedValue,
+                        new Rule_3_10_1_VariableUsages());
                 }
             }
 

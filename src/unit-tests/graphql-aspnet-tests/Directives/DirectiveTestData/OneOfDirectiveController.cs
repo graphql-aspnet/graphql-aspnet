@@ -20,6 +20,9 @@ namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
         [QueryRoot(typeof(string))]
         public IGraphActionResult SubmitSingleValue(InputUnionWithOneOfDirective input)
         {
+            if (input is null)
+                return this.Ok("success");
+
             if (input.Prop1 is not null && !input.Prop2.HasValue)
                 return this.Ok("success");
 
@@ -52,6 +55,25 @@ namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
                 : this.Error("Query Succeeded, but shouldn't have. @oneOf for list elements was not validated correctly");
         }
 
+        [QueryRoot(typeof(string))]
+        public IGraphActionResult SubmitSingleValueWithChildUnion(InputObjectWithChildUnion input)
+        {
+            if (input is null)
+                return this.Ok("success");
+
+            var child = input.Child;
+            if (child is null)
+                return this.Ok("success");
+
+            if (child.Prop1 is not null && !child.Prop2.HasValue)
+                return this.Ok("success");
+
+            if (child.Prop1 is null && child.Prop2.HasValue)
+                return this.Ok("success");
+
+            return this.Error("Query Succeeded, but shouldn't have. @oneOf was not validated correctly");
+        }
+
         [OneOf]
         [GraphType(InputName = "MyInputUnion")]
         public class InputUnionWithOneOfDirective
@@ -59,6 +81,15 @@ namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
             public string Prop1 { get; set; }
 
             public int? Prop2 { get; set; }
+        }
+
+
+        [GraphType(InputName = "ChildUnionType")]
+        public class InputObjectWithChildUnion
+        {
+            public string Prop0 { get; set; }
+
+            public InputUnionWithOneOfDirective Child { get; set; }
         }
     }
 }

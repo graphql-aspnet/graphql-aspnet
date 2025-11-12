@@ -57,5 +57,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution
         {
             return _ruleSet;
         }
+
+        /// <inheritdoc />
+        public bool HasAnyRules => _ruleSet.Count > 0;
     }
 }

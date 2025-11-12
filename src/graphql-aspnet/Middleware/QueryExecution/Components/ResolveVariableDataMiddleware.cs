@@ -78,11 +78,16 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 {
                     var variableDataProcessor = new VariableDataValidationRuleProcessor();
                     var validationContext = new VariableDataValidationContext(
+                        _schema,
                         context.QueryDocument,
                         context.Operation,
-                        context.ResolvedVariables);
+                        context.ResolvedVariables,
+                        context.Messages);
 
                     variableDataProcessor.Execute(validationContext);
+
+                    if (!context.Messages.IsSucessful)
+                        context.Cancel();
                 }
             }
 

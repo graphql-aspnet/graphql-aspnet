@@ -61,5 +61,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution
         {
             return _ruleSet;
         }
+
+        /// <inheritdoc />
+        public bool HasAnyRules => _ruleSet.Count > 0;
     }
 }

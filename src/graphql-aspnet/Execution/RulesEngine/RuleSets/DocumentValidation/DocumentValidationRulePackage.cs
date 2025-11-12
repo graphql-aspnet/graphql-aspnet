@@ -218,5 +218,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
 
             _stepCollection.Add(DocumentPartType.InputField, steps);
         }
+
+        /// <inheritdoc />
+        public bool HasAnyRules => _stepCollection.Count > 0;
     }
 }

@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.VariableDataValidation
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
@@ -62,12 +61,14 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.VariableDataValidation
         /// <inheritdoc />
         public IEnumerable<IRuleStep<VariableDataValidationContext>> FetchRules(VariableDataValidationContext context)
         {
-            if (context.ActivePart is IVariableUsageDocumentPart vudp)
-            {
-            }
+            if (_stepCollection.TryGetValue(context.DocumentPartType, out var steps))
+                return steps;
 
             // nothing else applicable right now
             return [];
         }
+
+        /// <inheritdoc />
+        public bool HasAnyRules => _stepCollection.Count > 0;
     }
 }
