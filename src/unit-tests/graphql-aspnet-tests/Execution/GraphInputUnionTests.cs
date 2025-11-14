@@ -64,6 +64,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 Prop1 = 15,
             };
 
+            // int vs. long
             Assert.Throws<InvalidOperationException>(() => obj.ValueOrDefault(x => x.Prop1, 41L));
         }
 
@@ -78,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 },
             };
 
-            // object vs long
+            // class vs long
             Assert.Throws<InvalidOperationException>(() => obj.ValueOrDefault(x => x.Prop1, 41L));
         }
     }
