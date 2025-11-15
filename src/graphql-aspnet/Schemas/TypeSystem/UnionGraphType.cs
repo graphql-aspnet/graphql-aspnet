@@ -106,6 +106,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
+        /// <summary>
+        /// <b>-DO NOT USE-</b><br />
+        /// Schema Coordinate values are undefined for unions.
+        /// </summary>
+        public string SchemaCoordinate => string.Empty;
+
         /// <inheritdoc />
         public SchemaItemPath Route { get; }
     }
