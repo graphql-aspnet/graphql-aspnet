@@ -31,6 +31,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         // by definition (rule 5.6.4) a field is required if it is non-null and does not have a default value.
         // which is to say that all nullable fields are "not required" by the schema definition
         // *******************************************
+        private IGraphType _parent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputGraphField" /> class.
@@ -75,39 +76,25 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public void AssignParent(IGraphType parent)
+        public virtual void AssignParent(IGraphType parent)
         {
-            Validation.ThrowIfNull(parent, nameof(parent));
-            this.Parent = parent;
-            this.UpdateSchemaCoordinateName();
-        }
-
-        /// <summary>
-        /// Inspects the current metadata of this input field and correctly formats a new <see cref="SchemaCoordinate" />
-        /// that represents this field's place in the schema.
-        /// </summary>
-        protected virtual void UpdateSchemaCoordinateName()
-        {
-            if (this.Parent is null)
-            {
-                this.SchemaCoordinate = null;
-                return;
-            }
-
-            this.SchemaCoordinate = $"{this.Parent.SchemaCoordinate}.{this.Name}";
+            _parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
+            this.SchemaCoordinate = _parent is ISchemaCoordinateItem coordItem
+                ? $"{coordItem.SchemaCoordinate}.{this.Name}"
+                : $"UNKNOWN.{this.Name}";
         }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IGraphFieldBase.ObjectType" />
         public Type ObjectType { get; }
 
         /// <inheritdoc />
         public Type DeclaredReturnType { get; }
 
         /// <inheritdoc />
-        public ISchemaItem Parent { get; private set; }
+        public ISchemaItem Parent => _parent;
 
         /// <inheritdoc />
         public string SchemaCoordinate { get; protected set; }

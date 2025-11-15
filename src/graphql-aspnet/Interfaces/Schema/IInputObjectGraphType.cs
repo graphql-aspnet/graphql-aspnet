@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
     /// <summary>
     /// A representation of a complex object type known to a schema, used in an "input" scenario.
     /// </summary>
-    public interface IInputObjectGraphType : IGraphType, ITypedSchemaItem
+    public interface IInputObjectGraphType : IGraphType, ITypedSchemaItem, ISchemaCoordinateItem
     {
         /// <summary>
         /// Gets a collection of fields made available by this interface.

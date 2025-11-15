@@ -73,6 +73,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Description = description?.Trim();
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
+
+            this.SchemaCoordinate = this.Parent is ISchemaCoordinateItem coordItem
+                ? $"{coordItem.SchemaCoordinate}({this.Name}:)"
+                : $"UNKNOWN({this.Name}:)";
         }
 
         /// <inheritdoc />
@@ -96,6 +100,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public string Name { get; set; }
+
+        /// <inheritdoc />
+        public string SchemaCoordinate { get; }
 
         /// <inheritdoc />
         public string Description { get; set; }

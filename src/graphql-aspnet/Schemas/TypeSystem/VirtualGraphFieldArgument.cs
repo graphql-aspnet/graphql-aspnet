@@ -61,12 +61,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.DefaultValue = defaultValue;
 
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
+
+            this.SchemaCoordinate = this.Parent is ISchemaCoordinateItem coordItem
+                ? $"{coordItem.SchemaCoordinate}({this.Name}:)"
+                : $"UNKNOWN({this.Name}:)";
         }
 
         /// <inheritdoc />
         public IGraphArgument Clone(ISchemaItem parent)
         {
-            throw new NotImplementedException("Virtual graph arguments cannot be cloned");
+            throw new NotSupportedException("Virtual graph arguments cannot be cloned");
         }
 
         /// <inheritdoc />
@@ -77,6 +81,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public string Name { get; set; }
+
+        /// <inheritdoc />
+        public string SchemaCoordinate { get; }
 
         /// <inheritdoc />
         public string Description { get; set; }

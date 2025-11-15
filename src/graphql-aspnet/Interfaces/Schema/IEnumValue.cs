@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
     /// <summary>
     /// An interface describing data to fully populate an enumeration item into the object graph.
     /// </summary>
-    public interface IEnumValue : ISchemaItem, IDeprecatable
+    public interface IEnumValue : ISchemaItem, IDeprecatable, ISchemaCoordinateItem
     {
         /// <summary>
         /// Gets the parent enum graph type that owns this value.

@@ -29,11 +29,5 @@ namespace GraphQL.AspNet.Interfaces.Schema
         /// </summary>
         /// <value>The directives.</value>
         IAppliedDirectiveCollection AppliedDirectives { get; }
-
-        /// <summary>
-        /// Gets the formal schema coordinate value applied to this schema item. This value uniquely identifies the
-        /// schema item in a consistant manner according to the official specification.
-        /// </summary>
-        string SchemaCoordinate { get; }
     }
 }

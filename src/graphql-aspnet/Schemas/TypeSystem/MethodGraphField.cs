@@ -82,8 +82,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <inheritdoc/>
         public void AssignParent(IGraphType parent)
         {
-            Validation.ThrowIfNull(parent, nameof(parent));
-            _parent = parent;
+            _parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
+            this.SchemaCoordinate = _parent is ISchemaCoordinateItem coordItem
+                ? $"{coordItem.SchemaCoordinate}.{this.Name}"
+                : $"UNKNOWN.{this.Name}";
         }
 
         /// <inheritdoc/>
@@ -155,21 +157,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.Resolver,
                 this.SecurityGroups,
                 this.AppliedDirectives);
-        }
-
-        /// <summary>
-        /// Inspects the current metadata of this input field and correctly formats a new <see cref="SchemaCoordinate" />
-        /// that represents this field's place in the schema.
-        /// </summary>
-        protected virtual void UpdateSchemaCoordinateName()
-        {
-            if (this.Parent is null)
-            {
-                this.SchemaCoordinate = null;
-                return;
-            }
-
-            this.SchemaCoordinate = $"{this.Parent.SchemaCoordinate}.{this.Name}";
         }
 
         /// <inheritdoc/>
