@@ -172,13 +172,16 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
             string parentType = "targeting the same graph type";
             if (leftField.Parent is IFieldSelectionSetDocumentPart fss)
             {
-                parentType = $"for graph type {fss.GraphType.Name}";
+                if (fss.GraphType is ISchemaCoordinateItem sci)
+                    parentType = $"for graph type {sci.SchemaCoordinate}";
+                else
+                    parentType = $"for graph type {fss.GraphType.Name}";
             }
 
             this.ValidationError(
                 context,
                 leftField.SourceLocation,
-                $"The selection set for field '{ownerField.Alias}' contains multiple fields " +
+                $"The aliased selection set for field '{ownerField.Field.SchemaCoordinate}' contains multiple fields " +
                 $"named '{leftField.Alias}', {parentType}, that do not have " +
                 "identical signatures. Fields with the same output name for " +
                 "a given type must have identicial signatures " +

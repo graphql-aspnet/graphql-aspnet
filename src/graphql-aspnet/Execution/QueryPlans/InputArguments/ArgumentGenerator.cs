@@ -11,8 +11,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.QueryPlans.DocumentParts.SuppliedValues;
     using GraphQL.AspNet.Execution.Source;
@@ -62,7 +60,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
                     // However, the pipeline can be changed by the developer so we must
                     // account for it
                     throw new GraphExecutionException(
-                        $"Unable to generate an expected argument '{argumentDefinition.Name}' for field '{argumentDefinition.Parent.Name}' during field resolution. " +
+                        $"Unable to generate an expected argument '{argumentDefinition.SchemaCoordinate}' during field resolution. " +
                         $"The argument is marked as required but was not supplied on the generated query document. " +
                         $"This may be due to a pipeline configuration issue as this error should have be caught during query validation " +
                         $"but wasn't.");

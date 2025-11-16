@@ -51,8 +51,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Direc
                 {
                     this.ValidationError(
                         context,
-                        $"Invalid Directive Invocation. The supplied argument named '{suppliedArg.Name}' does not " +
-                        $"match any known argument on the directive '{directive.Name}'.");
+                        $"Invalid Directive Invocation. The supplied argument '{suppliedArg.Name}' does not " +
+                        $"match any known argument on the directive '{directive.SchemaCoordinate}'.");
 
                     completedSuccessfully = false;
                     continue;
@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Direc
                 var args = string.Join(", ", untouchedArgs.Select(x => $"'{x.Name}'"));
                 this.ValidationError(
                         context,
-                        $"Invalid Directive Invocation. The directive '{directive.Name}' " +
+                        $"Invalid Directive Invocation. The directive '{directive.SchemaCoordinate}' " +
                         $"declares some required arguments that were not provided. Missing arguments: {args}.");
 
                 completedSuccessfully = false;
@@ -103,8 +103,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Direc
                 {
                     this.ValidationError(
                             context,
-                            $"Invalid Directive Invocation. The directive '@{context.Directive.Name}' " +
-                            $"requires that the value for argument '{suppliedArg.Name}' is not null.");
+                            $"Invalid Directive Invocation. The value for argument " +
+                            $"'{directiveArg.SchemaCoordinate}' must not be null.");
                     completedSuccessfully = false;
                 }
 
@@ -122,13 +122,13 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Direc
 
                 var exception = new GraphExecutionException(
                     $"The supplied argument type '{coreSuppliedType?.FriendlyName()}' cannot be " +
-                    $"cast to the expected type '{directiveArg.ObjectType.FriendlyName()}' for directive '{context.Directive.Name}', parameter: '{directiveArg.ParameterName}'.",
+                    $"cast to the expected type '{directiveArg.ObjectType.FriendlyName()}' for argument '{directiveArg.SchemaCoordinate}',  parameter: '{directiveArg.ParameterName}'.",
                     context.Request.Origin);
 
                 this.ValidationError(
                         context,
-                        $"Invalid Directive Invocation. The directive '{context.Directive.Name}' " +
-                        $"requires that the argument '{suppliedArg.Name}' be coercable to type '{directiveArg.TypeExpression.CloneTo(argType.Name)}'. " +
+                        $"Invalid Directive Invocation. The argument '{suppliedArg.Argument.SchemaCoordinate}' must " +
+                        $"be coercable to type '{directiveArg.TypeExpression.CloneTo(argType.Name)}'. " +
                         $"See exception for details.",
                         exception);
                 completedSuccessfully = false;
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Direc
 
                 this.ValidationError(
                  context,
-                 $"Invalid Directive Invocation. The argument value for '{directiveArg.Name}' on directive '{context.Directive.Name}' " +
+                 $"Invalid Directive Invocation. The argument value for '{directiveArg.SchemaCoordinate}' " +
                  $"cannot be coerced to '{directiveArg.TypeExpression.CloneTo(argType.Name)}'");
                 completedSuccessfully = false;
             }

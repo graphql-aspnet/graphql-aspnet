@@ -51,6 +51,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             if (Constants.QueryLanguage.IsReservedKeyword(this.Name))
             {
+                // can't use schema coordinate here, this check involves setting up for what will become
+                // the schema coordinate
                 throw new GraphTypeDeclarationException($"The enum value '{this.Name}' is invalid for " +
                     $"graph type '{this.Parent.Name}'. {this.Name} is a reserved keyword.");
             }

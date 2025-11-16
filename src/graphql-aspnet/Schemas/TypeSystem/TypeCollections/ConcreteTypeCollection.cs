@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 if (!GraphQLProviders.ScalarProvider.IsScalar(concreteType))
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The scalar '{graphType.Name}' attempted to associate itself to a concrete type of {concreteType.FriendlyName()}. " +
+                        $"The scalar '{graphType.NameOrCoordinate()}' attempted to associate itself to a concrete type of {concreteType.FriendlyName()}. " +
                         "Scalars cannot be associated with non scalar concrete types.");
                 }
             }
@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             {
                 throw new GraphTypeDeclarationException(
                     $"The concrete type '{concreteType.FriendlyName()}' is already associated with the graph type '{foundGraphType.Name}' it " +
-                    $"cannot be reassigned to graph type '{graphType.Name}'");
+                    $"cannot be reassigned to graph type '{graphType.NameOrCoordinate()}'");
             }
 
             if (!_concreteTypesByGraphType.TryGetValue(graphType, out var currentType))
@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             else if (concreteType != currentType)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The graph type '{graphType.Name}' is already associated with type '{currentType.FriendlyName(true)}' it " +
+                    $"The graph type '{graphType.NameOrCoordinate()}' is already associated with type '{currentType.FriendlyName(true)}' it " +
                     $"cannot be reassigned to '{concreteType.FriendlyName(true)}'");
             }
 
@@ -180,7 +180,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 if (associatedType == null || GraphQLProviders.ScalarProvider.RetrieveScalarName(associatedType) != graphType.Name)
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The scalar type '{graphType.Name}' cannot be added and associated to the concrete type '{associatedType?.FriendlyName() ?? "-null-"}' it is not an approved scalar type.");
+                        $"The scalar type '{graphType.NameOrCoordinate()}' cannot be added and associated to the concrete type '{associatedType?.FriendlyName() ?? "-null-"}' it is not an approved scalar type.");
                 }
             }
 
@@ -190,7 +190,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 if (associatedType == null || !associatedType.IsEnum)
                 {
                     throw new GraphTypeDeclarationException(
-                        $"The enum type '{graphType.Name}' cannot be added and associated to the concrete type '{associatedType?.FriendlyName() ?? "-null-"}' it is not a valid enum.");
+                        $"The enum type '{graphType.NameOrCoordinate()}' cannot be added and associated to the concrete type '{associatedType?.FriendlyName() ?? "-null-"}' it is not a valid enum.");
                 }
             }
             else if (associatedType != null && associatedType.IsEnum)
@@ -203,7 +203,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             if (graphType.Kind == TypeKind.DIRECTIVE && (associatedType == null || !Validation.IsCastable<GraphDirective>(associatedType)))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive type '{graphType.Name}' cannnot be associated to the concrete type '{associatedType.FriendlyName()}'. Directive graph types " +
+                    $"The directive type '{graphType.NameOrCoordinate()}' cannnot be associated to the concrete type '{associatedType.FriendlyName()}'. Directive graph types " +
                     $"can only be associated with concrete types that inherit from '{nameof(GraphDirective)}'.");
             }
         }

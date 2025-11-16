@@ -18,11 +18,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Schema;
@@ -95,9 +95,9 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // theoretically it can't not be found, but you never know
             if (graphType == null)
             {
-                var msg = $"Internal Server Error. When processing the results of '{context.Field.Route.Path}' no graph type on the target schema " +
-                    $"could be found for the type name '{context.Field.TypeExpression.TypeName}'. " +
-                    $"Unable to process the {allSourceItems.Count} item(s) generated.";
+                var msg = $"Internal Server Error. When processing the results of '{context.Field.SchemaCoordinate}' no graph type on the target schema " +
+                          $"could be found for the type name '{context.Field.TypeExpression.TypeName}'. " +
+                          $"Unable to process the {allSourceItems.Count} item(s) generated.";
 
                 context.Messages.Add(
                     GraphMessageSeverity.Critical,

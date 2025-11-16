@@ -107,8 +107,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.VariableDataValidation.O
                         this.ValidationError(
                             context,
                             owner.SourceLocation,
-                            $"Invalid variable usage. The variable '{resolvedVariable.Name}' supplied for the input object supplied argument '{inputValue.Name}' " +
-                            $"of type '{graphType.Name}' could not be coerced correctly. '{graphType.Name}' is declared as an input union (i.e. '@oneOf') and exactly one field must " +
+                            $"Invalid variable usage. The variable, '{resolvedVariable.Name}', used for the input object supplied argument '{inputValue.Name}' " +
+                            $"of type '{graphType.NameOrCoordinate()}' could not be coerced correctly. '{graphType.NameOrCoordinate()}' is declared as an input union (i.e. '@oneOf') and exactly one field must " +
                             $"be supplied. Received {allFields.Count} fields{indexCounter}. ({string.Join(", ", allFields.Select(x => x.Key))})");
 
                         return false;
@@ -122,8 +122,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.VariableDataValidation.O
                         this.ValidationError(
                             context,
                             owner.SourceLocation,
-                            $"Invalid variable usage. The variable '{resolvedVariable.Name}' supplied for the input argument '{inputValue.Name}' could " +
-                            $"not be coerced correctly. The argument's graph type, '{owner.GraphType.Name}', is declared as an input union (i.e. '@oneOf') and the supplied " +
+                            $"Invalid variable usage. The variable '{resolvedVariable.Name}' could " +
+                            $"not be coerced correctly. The argument's graph type, '{owner.GraphType.NameOrCoordinate()}', is declared as an input union (i.e. '@oneOf') and the supplied " +
                             $"field must be non-null. Received field {allFields[0].Key} as null.");
 
                         return false;
@@ -261,8 +261,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.VariableDataValidation.O
                     this.ValidationError(
                         context,
                         owner.SourceLocation,
-                        $"Invalid variable usage. The variable '{resolvedVariable.Name}' supplied for the input field '{fieldDocumentPart.Name}' could " +
-                        $"not be coerced correctly. The graph type that owns the field, '{owner.GraphType.Name}', is declared as an input union (i.e. '@oneOf') and the supplied " +
+                        $"Invalid variable usage. The variable '{resolvedVariable.Name}' supplied for the input field '{fieldDocumentPart.Field.SchemaCoordinate}' could " +
+                        $"not be coerced correctly. The graph type that owns the field is declared as an input union (i.e. '@oneOf') and the supplied " +
                         $"field must be non-null.");
 
                     return false;
@@ -300,7 +300,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.VariableDataValidation.O
                 // this should not be possible, but stop the query dead if so
                 throw new GraphExecutionException(
                     $"Unable to inspect variable contents for variable object of type '{obj.GetType().FriendlyName()}'" +
-                    $"supplied to field '{field.Name}'.");
+                    $"supplied to field '{field.SchemaCoordinate}'.");
             }
 
             // extract a value

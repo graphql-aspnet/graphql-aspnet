@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
                     this.ValidationError(
                         context,
                         fieldSelection.SourceLocation,
-                        $"Missing Input Argument. The field '{fieldSelection.Name}' requires an input argument named '{argument.Name}'");
+                        $"Missing Input Argument. The field '{fieldSelection.Field.SchemaCoordinate}' requires an input argument named '{argument.SchemaCoordinate}'");
                     allArgsValid = false;
                 }
             }

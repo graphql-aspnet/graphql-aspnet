@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// Ensures that any field parsed from an object literal actual exists on the INPUT_OBJECT and that no extra fields are
@@ -39,7 +40,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
             {
                 this.ValidationError(
                  context,
-                 $"The {docPart.GraphType.Kind} type '{docPart.GraphType.Name}' cannot contain any fields.");
+                 $"The {docPart.GraphType.Kind} type '{docPart.GraphType.NameOrCoordinate()}' cannot contain any fields.");
 
                 return false;
             }
@@ -52,7 +53,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
                 {
                     this.ValidationError(
                         context,
-                        $"The {targetGraphType.Kind} type '{targetGraphType.Name}' does not " +
+                        $"The {targetGraphType.Kind} type '{targetGraphType.SchemaCoordinate}' does not " +
                         $"define a field named '{field.Name}'.");
 
                     isSuccessful = false;

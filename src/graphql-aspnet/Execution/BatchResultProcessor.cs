@@ -14,10 +14,10 @@ namespace GraphQL.AspNet.Execution
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;
@@ -57,10 +57,10 @@ namespace GraphQL.AspNet.Execution
             if (batch == null)
             {
                 this.Messages.Critical(
-                    $"Unable to process the batch field '{this._field.Name}'. The result of the batch operation was improperly formatted.",
+                    $"Unable to process the batch field '{_field.SchemaCoordinate}'. The result of the batch operation was improperly formatted.",
                     Constants.ErrorCodes.INVALID_BATCH_RESULT,
                     _origin,
-                    new GraphExecutionException($"Invalid batch operation result for field '{this._field.Name}'. A batch result must be a " +
+                    new GraphExecutionException($"Invalid batch operation result for field '{_field.SchemaCoordinate}'. A batch result must be a " +
                                                 $"'{nameof(IDictionary)}' keyed on the source items provided for the batch. Consider using the action helper methods " +
                                                 $"of '{nameof(GraphController)}' when applicable to properly generate a batch."));
                 yield break;

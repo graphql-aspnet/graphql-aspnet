@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
                 this.ValidationError(
                         context,
                         $"Invalid field reference. The field name requested '{docPart.Name.ToString()}' does not match the field " +
-                        $"assigned to fulfill the request '{docPart.Field.Name}'");
+                        $"assigned to fulfill the request '{docPart.Field.SchemaCoordinate}'");
             }
             else
             {
@@ -115,8 +115,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
                 {
                     this.ValidationError(
                         context,
-                        $"Invalid field reference. The document field '{docPart.Name.ToString()}' references a field that belongs " +
-                        $"to '{docPart.Field.Parent.Name}'. It should reference the field belonging to '{selectionSetGraphType.Name}' ");
+                        $"Invalid field reference. The field reference '{docPart.Field.SchemaCoordinate}' on the query document belongs" +
+                        $"to an incorrect graph type. It should reference the field belonging to '{selectionSetGraphType.Name}' ");
                 }
             }
 
