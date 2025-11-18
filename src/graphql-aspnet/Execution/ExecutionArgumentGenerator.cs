@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
-    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -86,10 +85,6 @@ namespace GraphQL.AspNet.Execution
                     // its also highly likely that at this stage there is no value resolver issue
                     // just a flat out failure. As a result append a semi-helpful message to the begining
                     // of the message.
-                    var parentType = arg.Argument.Parent is IInputGraphField
-                        ? "input field"
-                        : "field";
-
                     messages.Critical(
                         $"The value supplied to argument '{arg.Argument.SchemaCoordinate}' was " +
                         $"not valid for the invocation. {uve.Message}",
@@ -108,6 +103,7 @@ namespace GraphQL.AspNet.Execution
                         arg.Origin,
                         ex);
 
+                    messages.Add(message);
                     successful = false;
                 }
             }

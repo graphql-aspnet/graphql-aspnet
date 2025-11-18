@@ -10,11 +10,11 @@
 namespace GraphQL.AspNet.Tests.Execution.Parsing
 {
     using System;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.Parsing.Helpers;
     using NUnit.Framework;
@@ -269,6 +269,76 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
             var source = new SourceText(sourceText.AsSpan());
             var tokenSet = Lexer.Tokenize(source);
             var allTokens = tokenSet.ToList();
+        }
+
+        [Test]
+        public void Lexer_Tokenize_SimpleQuery_WithQueryDescription_ReturnsExpectedTokens()
+        {
+            // document descriptions are just strings when the lexer is concerned
+            var qualifiedQuery = @"
+                    ""This is a single line description""
+                    query AValidQuery{
+                          createHero() {
+                            name
+                          }
+                    }";
+
+            var source = new SourceText(qualifiedQuery.AsSpan());
+            var tokenSet = Lexer.Tokenize(source);
+
+            // first two tokens should be control parens
+            HelperAsserts.AssertTokenChain(
+                tokenSet,
+                new LexicalTokenTestCase(TokenType.String, "\"This is a single line description\"", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "query", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "AValidQuery", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceLeft, "{", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "createHero", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.ParenLeft, "(", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.ParenRight, ")", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceLeft, "{", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "name", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceRight, "}", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceRight, "}", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.EndOfFile));
+        }
+
+        [Test]
+        public void Lexer_Tokenize_SimpleQuery_WithMultilineQueryDescription_ReturnsExpectedTokens()
+        {
+            // document descriptions are just strings when the lexer is concerned
+            var qualifiedQuery = @"
+                    """"""
+                    This is a multiline description
+                    it spans many lines
+                    """"""
+                    query AValidQuery{
+                          createHero() {
+                            name
+                          }
+                    }";
+
+            // multiline nesss matters on this test, make sure we account for OS differences
+            qualifiedQuery = qualifiedQuery.Replace("\r", string.Empty);
+
+            var source = new SourceText(qualifiedQuery.AsSpan());
+            var tokenSet = Lexer.Tokenize(source);
+
+            // first two tokens should be control parens
+            HelperAsserts.AssertTokenChain(
+                tokenSet,
+                new LexicalTokenTestCase(TokenType.String, "\"\"\"\n                    This is a multiline description\n                    it spans many lines\n                    \"\"\"", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "query", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "AValidQuery", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceLeft, "{", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "createHero", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.ParenLeft, "(", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.ParenRight, ")", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceLeft, "{", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "name", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceRight, "}", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceRight, "}", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.EndOfFile));
         }
     }
 }
