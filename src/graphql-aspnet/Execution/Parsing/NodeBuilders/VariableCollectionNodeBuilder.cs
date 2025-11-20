@@ -50,6 +50,11 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
 
                 do
                 {
+                    // As of GraphQL Spec (Sept 2025), descriptions can appear before variable declarations.
+                    // We skip them here as they are not processed for execution.
+                    if (tokenStream.Match(TokenType.String))
+                        tokenStream.Next();
+
                     variableBuilder.BuildNode(ref synTree, ref variableCollectionNode, ref tokenStream);
                 }
                 while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.ParenRight));

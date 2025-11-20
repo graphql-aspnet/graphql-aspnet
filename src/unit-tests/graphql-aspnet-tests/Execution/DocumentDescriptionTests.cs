@@ -13,18 +13,37 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Tests.Execution.TestData.DocumentDescriptionTestData;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]
     public class DocumentDescriptionTests
     {
-        private async Task<IQueryExecutionResult> ExecuteQuery(string queryText)
+        private async Task<string> RenderQuery(string queryText, string variableJsonDoc = null)
         {
             var server = new TestServerBuilder()
                 .AddController<DocumentController>()
                 .Build();
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(queryText);
+
+            if (!string.IsNullOrWhiteSpace(variableJsonDoc))
+                builder.AddVariableData(variableJsonDoc);
+
+
+            return await server.RenderResult(builder);
+        }
+
+        private async Task<IQueryExecutionResult> ExecuteQuery(string queryText, string variableJsonDoc = null)
+        {
+            var server = new TestServerBuilder()
+                .AddController<DocumentController>()
+                .Build();
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(queryText);
+
+            if (!string.IsNullOrWhiteSpace(variableJsonDoc))
+                builder.AddVariableData(variableJsonDoc);
 
             return await server.ExecuteQuery(builder);
         }
@@ -145,12 +164,12 @@ namespace GraphQL.AspNet.Tests.Execution
                 ){
                     doThingWithVars(var1: $arg1, var2: 15)
                     {
-                        Property1
-                        Property2
+                        property1
+                        property2
                     }
                 }";
 
-            var reslt = await this.ExecuteQuery(queryText);
+            var reslt = await this.ExecuteQuery(queryText, $"{{\"arg1\": \"val1\"}}");
             Assert.That(reslt.Messages.IsSucessful, Is.True);
         }
 
@@ -167,12 +186,12 @@ namespace GraphQL.AspNet.Tests.Execution
                 ){
                     doThingWithVars(var1: $arg1, var2: 15)
                     {
-                        Property1
-                        Property2
+                        property1
+                        property2
                     }
                 }";
 
-            var reslt = await this.ExecuteQuery(queryText);
+            var reslt = await this.ExecuteQuery(queryText, $"{{\"arg1\": \"val1\"}}");
             Assert.That(reslt.Messages.IsSucessful, Is.True);
         }
 
@@ -243,7 +262,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var queryText = @"
                 ""This is a single line comment on a query""
-                query DoAThingWithObject{
+                query {
                    doThingWithObject(){
                        ...objfrag
                    }
@@ -259,7 +278,6 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.That(reslt.Messages[0].Code, Is.EqualTo(Constants.ErrorCodes.SYNTAX_ERROR));
         }
 
-
         [Test]
         public async Task ShorthandQueryDocument_WithFragment_ShouldBeRejected_WhenSuppliedWithAMultilineDescription()
         {
@@ -268,7 +286,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 This is a multi-line comment on a query
                 it spans many lines
                 """"""
-                query DoAThingWithObject{
+                query {
                    doThingWithObject(){
                        ...objfrag
                    }
@@ -288,46 +306,155 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task ShorthandQueryDocument_ShouldBeRejected_WhenSuppliedWithASingleLineVariableComment()
+        public async Task ShorthandQueryDocument_ShouldBeExecuteCorrectly_WhenSuppliedWithASingleLineVariableComment()
         {
             var queryText = @"
-                query DoAThingWithObject(
+                query (
                     ""this is an arg1 desc""
                     $arg1: String
                 ){
                     doThingWithVars(var1: $arg1, var2: 15)
                     {
-                        Property1
-                        Property2
+                        property1
+                        property2
                     }
                 }";
 
-            var reslt = await this.ExecuteQuery(queryText);
-            Assert.That(reslt.Messages.IsSucessful, Is.False);
-            Assert.That(reslt.Messages[0].Code, Is.EqualTo(Constants.ErrorCodes.SYNTAX_ERROR));
+            var reslt = await this.ExecuteQuery(queryText, $"{{\"arg1\": \"val1\"}}");
+            Assert.That(reslt.Messages.IsSucessful, Is.True);
         }
 
         [Test]
-        public async Task ShorthandQueryDocument_ShouldBeRejected_WhenSuppliedWithAMultieLineVariableComment()
+        public async Task ShorthandQueryDocument_ShouldBeExecuteCorrectly_WhenSuppliedWithAMultieLineVariableComment()
         {
             var queryText = @"
-                query DoAThingWithObject(
+                query (
                     """"""
                        this is an arg1 desc
-                       it spans multiple lines 
+                       it spans multiple lines
                     """"""
                     $arg1: String
                 ){
                     doThingWithVars(var1: $arg1, var2: 15)
                     {
-                        Property1
-                        Property2
+                        property1
+                        property2
+                    }
+                }";
+
+            var reslt = await this.ExecuteQuery(queryText, $"{{\"arg1\": \"val1\"}}");
+            Assert.That(reslt.Messages.IsSucessful, Is.True);
+        }
+
+        [Test]
+        public async Task FullQueryDocument_ShouldExecuteCorrectly_WhenSuppliedWithVariableDescriptionAndStringDefaultValue()
+        {
+            var queryText = @"
+                query DoAThingWithObject(
+                    ""this is a variable description""
+                    $arg1: String = ""default value""
+                ){
+                    doThingWithVars(var1: $arg1, var2: 15)
+                    {
+                        property1
+                        property2
                     }
                 }";
 
             var reslt = await this.ExecuteQuery(queryText);
-            Assert.That(reslt.Messages.IsSucessful, Is.False);
-            Assert.That(reslt.Messages[0].Code, Is.EqualTo(Constants.ErrorCodes.SYNTAX_ERROR));
+            Assert.That(reslt.Messages.IsSucessful, Is.True);
+        }
+
+        [Test]
+        public async Task FullQueryDocument_ShouldExecuteCorrectly_WhenSuppliedWithVariableDescriptionAndMultiLineStringDefaultValue()
+        {
+            var queryText = @"
+                query DoAThingWithObject(
+                    """"""
+                    Multi-line variable description
+                    with details
+                    """"""
+                    $arg1: String = """"""
+                    Multi-line default
+                    value string
+                    """"""
+                ){
+                    doThingWithVars(var1: $arg1, var2: 15)
+                    {
+                        property1
+                        property2
+                    }
+                }";
+
+            var reslt = await this.ExecuteQuery(queryText);
+            Assert.That(reslt.Messages.IsSucessful, Is.True);
+        }
+
+        [Test]
+        public async Task ShorthandQueryDocument_ShouldExecuteCorrectly_WhenSuppliedWithVariableDescriptionAndStringDefaultValue()
+        {
+            var queryText = @"
+                query (
+                    ""this is a variable description""
+                    $arg1: String = ""default value""
+                ){
+                    doThingWithVars(var1: $arg1, var2: 15)
+                    {
+                        property1
+                        property2
+                    }
+                }";
+
+            var reslt = await this.RenderQuery(queryText);
+
+            var expectedResult = @"
+                {
+                    ""data"": {
+                        ""doThingWithVars"" : { 
+                            ""property1"": ""default value"",
+                            ""property2"": 15
+                        }
+                    }  
+                }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResult, reslt);
+        }
+
+        [Test]
+        public async Task ShorthandQueryDocument_ShouldExecuteCorrectly_WhenSuppliedWithVariableDescriptionAndMultiLineStringDefaultValue()
+        {
+            var queryText = @"
+                query (
+                    """"""
+                    Multi-line variable description
+                    with details
+                    """"""
+                    $arg1: String = """"""
+                    Multi-line default
+                    value string
+                    """"""
+                ){
+                    doThingWithVars(var1: $arg1, var2: 15)
+                    {
+                        property1
+                        property2
+                    }
+                }";
+
+
+            var reslt = await this.RenderQuery(queryText);
+
+            var expectedResult = @"
+                {
+                    ""data"": {
+                        ""doThingWithVars"" : { 
+                            ""property1"": ""\n                    Multi-line default\n                    value string\n                    "",
+                            ""property2"": 15
+                        }
+                    }  
+                }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResult, reslt);
         }
     }
 }
