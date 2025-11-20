@@ -9,10 +9,12 @@
 
 namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
 {
+    using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
     /// A node builder that will build out a top level operation
@@ -36,7 +38,36 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
             // check to see if this is qualified operation root
             // default to "query" as per the specification if not
             tokenStream.Prime();
+
+            // As of GraphQL Spec (Sept 2025), descriptions can appear before operations.
+            // Descriptions are ONLY allowed on named operations, not anonymous ones.
+            bool hasDescription = false;
+            SourceLocation descriptionLocation = default;
+
+            if (tokenStream.Match(TokenType.String))
+            {
+                hasDescription = true;
+                descriptionLocation = tokenStream.Location;
+                tokenStream.Next(); // consume description
+            }
+
             var operationNode = this.CreateNode(ref tokenStream);
+
+            // Validate: if we had a description, the operation must be named
+            if (hasDescription)
+            {
+                // Check if the operation is named by examining the secondary value in the node
+                // (PrimaryValue = operation type, SecondaryValue = operation name)
+                // Spec: https://spec.graphql.org/September2025/#sec-Descriptions
+                var secondName = operationNode.SecondaryValue.TextBlock;
+                if (secondName == SourceTextBlockPointer.None)
+                {
+                    GraphQLSyntaxException.ThrowFromExpectation(
+                        descriptionLocation,
+                        "a named operation",
+                        "an anonymous operation with a description (descriptions are only allowed on named operations)");
+                }
+            }
 
             SyntaxTreeOperations.AddChildNode(ref synTree, ref parentNode, ref operationNode);
 

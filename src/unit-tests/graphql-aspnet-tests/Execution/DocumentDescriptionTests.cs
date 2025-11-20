@@ -30,7 +30,6 @@ namespace GraphQL.AspNet.Tests.Execution
             if (!string.IsNullOrWhiteSpace(variableJsonDoc))
                 builder.AddVariableData(variableJsonDoc);
 
-
             return await server.RenderResult(builder);
         }
 
@@ -440,7 +439,6 @@ namespace GraphQL.AspNet.Tests.Execution
                         property2
                     }
                 }";
-
 
             var reslt = await this.RenderQuery(queryText);
 

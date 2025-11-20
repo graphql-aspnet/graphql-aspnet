@@ -368,5 +368,137 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
             Assert.IsTrue(syntaxTree.BlockLength > 0);
             Assert.AreEqual(SyntaxNodeType.Document, syntaxTree.RootNode.NodeType);
         }
+
+        [Test]
+        public void ParseDocument_OperationWithDuplicateSingleLineDescriptions_ThrowsSyntaxException()
+        {
+            var query = @"
+                ""First description""
+                ""Second description""
+                query MyQuery {
+                    field1
+                }";
+
+            // Duplicate descriptions are not allowed
+            Assert.Throws<GraphQLSyntaxException>(() =>
+            {
+                var parser = new GraphQLParser();
+                var sourceText = new SourceText(query);
+                var syntaxTree = SyntaxTree.WithDocumentRoot();
+                parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
+            });
+        }
+
+        [Test]
+        public void ParseDocument_OperationWithDuplicateMultiLineDescriptions_ThrowsSyntaxException()
+        {
+            var query = @"
+                """"""
+                First description
+                """"""
+                """"""
+                Second description
+                """"""
+                query MyQuery {
+                    field1
+                }";
+
+            // Duplicate descriptions are not allowed
+            Assert.Throws<GraphQLSyntaxException>(() =>
+            {
+                var parser = new GraphQLParser();
+                var sourceText = new SourceText(query);
+                var syntaxTree = SyntaxTree.WithDocumentRoot();
+                parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
+            });
+        }
+
+        [Test]
+        public void ParseDocument_OperationWithMixedDuplicateDescriptions_ThrowsSyntaxException()
+        {
+            var query = @"
+                ""Single line description""
+                """"""
+                Multi-line description
+                """"""
+                query MyQuery {
+                    field1
+                }";
+
+            // Duplicate descriptions are not allowed
+            Assert.Throws<GraphQLSyntaxException>(() =>
+            {
+                var parser = new GraphQLParser();
+                var sourceText = new SourceText(query);
+                var syntaxTree = SyntaxTree.WithDocumentRoot();
+                parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
+            });
+        }
+
+        [Test]
+        public void ParseDocument_FragmentWithDuplicateSingleLineDescriptions_ThrowsSyntaxException()
+        {
+            var query = @"
+                ""First description""
+                ""Second description""
+                fragment MyFragment on SomeType {
+                    field1
+                }";
+
+            // Duplicate descriptions are not allowed
+            Assert.Throws<GraphQLSyntaxException>(() =>
+            {
+                var parser = new GraphQLParser();
+                var sourceText = new SourceText(query);
+                var syntaxTree = SyntaxTree.WithDocumentRoot();
+                parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
+            });
+        }
+
+        [Test]
+        public void ParseDocument_FragmentWithDuplicateMultiLineDescriptions_ThrowsSyntaxException()
+        {
+            var query = @"
+                """"""
+                First description
+                """"""
+                """"""
+                Second description
+                """"""
+                fragment MyFragment on SomeType {
+                    field1
+                }";
+
+            // Duplicate descriptions are not allowed
+            Assert.Throws<GraphQLSyntaxException>(() =>
+            {
+                var parser = new GraphQLParser();
+                var sourceText = new SourceText(query);
+                var syntaxTree = SyntaxTree.WithDocumentRoot();
+                parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
+            });
+        }
+
+        [Test]
+        public void ParseDocument_FragmentWithMixedDuplicateDescriptions_ThrowsSyntaxException()
+        {
+            var query = @"
+                """"""
+                Multi-line description
+                """"""
+                ""Single line description""
+                fragment MyFragment on SomeType {
+                    field1
+                }";
+
+            // Duplicate descriptions are not allowed
+            Assert.Throws<GraphQLSyntaxException>(() =>
+            {
+                var parser = new GraphQLParser();
+                var sourceText = new SourceText(query);
+                var syntaxTree = SyntaxTree.WithDocumentRoot();
+                parser.FillSyntaxTree(ref syntaxTree, ref sourceText);
+            });
+        }
     }
 }

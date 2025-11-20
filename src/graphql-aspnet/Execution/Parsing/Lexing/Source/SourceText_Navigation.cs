@@ -72,6 +72,19 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
         }
 
         /// <summary>
+        /// Moves the cursor to the specified absolute position in the source text. Cursor can be placed 1 index value beyond
+        /// the end of the encapsulated source text to indicate EoF; otherwise an out of bounds exception will be thrown.
+        /// </summary>
+        /// <param name="cursor">The absolute cursor position to move to.</param>
+        public void SetPosition(int cursor)
+        {
+            if (cursor < 0 || cursor > _sourceText.Length)
+                throw new ArgumentOutOfRangeException(nameof(cursor), cursor, "The cursor position is outside the range of this text.");
+
+            this.Cursor = cursor;
+        }
+
+        /// <summary>
         /// Begins processing characters, building a span of text until the predicate condition is not met
         /// at which point the characters are returned and the cursor advanced to the character that did not meet the condition.
         /// </summary>

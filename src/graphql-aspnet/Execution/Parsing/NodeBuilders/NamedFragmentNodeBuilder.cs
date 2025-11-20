@@ -36,7 +36,16 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
         /// <inheritdoc />
         public void BuildNode(ref SyntaxTree synTree, ref SyntaxNode parentNode, ref TokenStream tokenStream)
         {
+            tokenStream.Prime();
+
             // a root fragment must be in the form of keywords:  fragment on TargetType{}
+            //
+            // As of GraphQL Spec (Sept 2025), descriptions can appear before fragments.
+            // Fragments are always named, so descriptions are always allowed - just skip if present.
+
+            // Skip description string if present
+            if (tokenStream.Match(TokenType.String))
+                tokenStream.Next();
 
             // "fragment" keyword
             var startLocation = tokenStream.Location;

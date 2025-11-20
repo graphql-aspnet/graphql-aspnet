@@ -11,10 +11,10 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Source;
     using CHARS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Characters;
     using SR = GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.GraphQLSourceRule;
 
@@ -103,6 +103,44 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing
         {
             return this.ActiveToken.TokenType == tokenType
                 || (otherType.HasValue && this.ActiveToken.TokenType == otherType.Value);
+        }
+
+        /// <summary>
+        /// Peeks ahead at the next token after the current <see cref="ActiveToken"/> without consuming it to see if its type matches that provided.
+        /// </summary>
+        /// <param name="tokenType">The type to check the next token for.</param>
+        /// <param name="otherType">Another type of token to check, if any.</param>
+        /// <returns><c>true</c> if the next token type matches, <c>false</c> otherwise.</returns>
+        public bool PeekMatch(TokenType tokenType, TokenType? otherType = null)
+        {
+            var savedCursor = _sourceText.Cursor;
+            var peekToken = this.FetchNextTokenFromStream();
+            _sourceText.SetPosition(savedCursor);
+
+            return peekToken.TokenType == tokenType
+                   || (otherType.HasValue && peekToken.TokenType == otherType.Value);
+        }
+
+        /// <summary>
+        /// Peeks ahead at the token directly after the current <see cref="ActiveToken" /> without consuming it to see if it matches the given text.
+        /// Will always return false if the next token is not a name token.
+        /// </summary>
+        /// <param name="textToMatch">The text value to match against.</param>
+        /// <returns><c>true</c> if the next token text matches the given text value, <c>false</c> otherwise.</returns>
+        public bool PeekMatch(ReadOnlySpan<char> textToMatch)
+        {
+            var savedCursor = _sourceText.Cursor;
+            var peekToken = this.FetchNextTokenFromStream();
+            _sourceText.SetPosition(savedCursor);
+
+            if (peekToken.TokenType == TokenType.Name)
+            {
+                var actualText = _sourceText.Slice(peekToken.Block);
+                if (actualText.Equals(textToMatch, StringComparison.Ordinal))
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
