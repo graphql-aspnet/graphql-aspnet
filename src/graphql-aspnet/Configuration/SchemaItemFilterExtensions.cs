@@ -327,8 +327,10 @@ namespace GraphQL.AspNet.Configuration
             if (item == null)
                 return true;
 
+            // graph operations are inheritantly virtual but
+            // are considered "real" as far as teh type system is concerned
             if (item is IGraphType gt)
-                return gt.IsVirtual;
+                return gt.IsVirtual && gt is not IGraphOperation;
 
             if (item is IGraphFieldBase gf)
                 return gf.Parent.IsVirtualItem();

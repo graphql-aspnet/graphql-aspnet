@@ -60,6 +60,21 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "defaultValue"),
                 (inputField) => inputField.DefaultValue.AsCompletedTask(),
                 "(optional) A default value that will be used if this input field is not provided in a query.");
+
+            this.GraphFieldCollection.AddField<IntrospectedInputValueType, bool>(
+                "isDeprecated",
+                new GraphTypeExpression(Constants.ScalarNames.BOOLEAN, MetaGraphTypes.IsNotNull),
+                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "isDeprecated"),
+                (inputField) => inputField.IsDeprecated.AsCompletedTask(),
+                "Indicates if this input value is deprecated. Any deprecated input value should not be used and " +
+                "may be removed at a future date.");
+
+            this.GraphFieldCollection.AddField<IntrospectedInputValueType, string>(
+                "deprecationReason",
+                new GraphTypeExpression(Constants.ScalarNames.STRING),
+                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "deprecationReason"),
+                (inputField) => inputField.DeprecationReason.AsCompletedTask(),
+                "A human-friendly reason as to why this input value has been deprecated.");
         }
     }
 }

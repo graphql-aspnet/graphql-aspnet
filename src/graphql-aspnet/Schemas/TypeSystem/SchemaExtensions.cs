@@ -29,16 +29,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             // schema first
             yield return schema;
 
-            // all declared operations
-            foreach (var operationEntry in schema.Operations)
-                yield return operationEntry.Value;
+            // line up operations first!
+            var allGraphTypes = new List<IGraphType>(schema.Operations.Count + schema.KnownTypes.Count);
+            allGraphTypes.AddRange(schema.Operations.Values);
 
-            // process each graph item except directives
-            var graphTypesToProcess = schema.KnownTypes.Where(x =>
+            // all other graph types next
+            allGraphTypes.AddRange(schema.KnownTypes.Where(x =>
                 (includeDirectives || x.Kind != TypeKind.DIRECTIVE)
-                && !(x is IGraphOperation)); // dont let operations get included twice
+                && !(x is IGraphOperation))); // dont let operations get included twice
 
-            foreach (var graphType in graphTypesToProcess)
+            foreach (var graphType in allGraphTypes)
             {
                 yield return graphType;
 
@@ -52,7 +52,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 {
                     // each input field
                     foreach (var inputField in inputObject.Fields)
+                    {
                         yield return inputField;
+                    }
                 }
                 else if (graphType is IGraphFieldContainer fieldContainer)
                 {

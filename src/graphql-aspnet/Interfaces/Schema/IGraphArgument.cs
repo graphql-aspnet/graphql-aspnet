@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
     /// <summary>
     /// An argument/input value that can be applied to a field.
     /// </summary>
-    public interface IGraphArgument : ITypedSchemaItem, IDefaultValueSchemaItem, ISchemaItem, ISchemaCoordinateItem
+    public interface IGraphArgument : ITypedSchemaItem, IDefaultValueSchemaItem, ISchemaItem, ISchemaCoordinateItem, IDeprecatable
     {
         /// <summary>
         /// Clones this instance to a new argument.

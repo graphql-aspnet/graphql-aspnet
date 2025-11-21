@@ -114,5 +114,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public bool IsRequired => !this.HasDefaultValue;
+
+        /// <inheritdoc />
+        public bool IsDeprecated { get; set; }
+
+        /// <inheritdoc />
+        public string DeprecationReason { get; set; }
     }
 }

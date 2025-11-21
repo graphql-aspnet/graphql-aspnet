@@ -109,12 +109,23 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
             this.GraphFieldCollection.AddField(enumValuesField);
 
             // inputFields
-            this.GraphFieldCollection.AddField<IntrospectedType, IReadOnlyList<IntrospectedInputValueType>>(
+            var inputFieldsField = new MethodGraphField(
                 "inputFields",
                 new GraphTypeExpression(Constants.ReservedNames.INPUT_VALUE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "inputFields"),
-                (gt) => Task.FromResult(gt?.InputFields),
-                $"For {TypeKind.INPUT_OBJECT} types, declares the fields that need to be supplied when submitting an object on a query; otherwise null.");
+                mode: FieldResolutionMode.PerSourceItem,
+                resolver: new Type_InputFieldsGraphFieldResolver())
+            {
+                Description = $"For {TypeKind.INPUT_OBJECT} types, declares the fields that need to be supplied when submitting an object on a query; otherwise null.",
+            };
+
+            inputFieldsField.Arguments.AddArgument(
+                Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME,
+                Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME,
+                new GraphTypeExpression(Constants.ScalarNames.BOOLEAN),
+                typeof(bool),
+                false);
+            this.GraphFieldCollection.AddField(inputFieldsField);
 
             // isOneOf
             this.GraphFieldCollection.AddField<IntrospectedType, bool>(

@@ -15,12 +15,12 @@ namespace GraphQL.AspNet.Attributes
 
     /// <summary>
     /// A specialized attribute that applies the built in @deprecated directive to
-    /// the target field or enum value. Indicates that the target is deprecated and should not be
-    /// used for any future query creation. This information will be exposed on any
-    /// introspection queries targeting the field or enum value.
+    /// the target field, enum value, input field, or argument. Indicates that the target is deprecated
+    /// and should not be used for any future query creation. This information will be exposed on any
+    /// introspection queries targeting the item.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
-    [DebuggerDisplay("{Reason}")]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter)]
+    [DebuggerDisplay("Deprecated: {Reason}")]
     public class DeprecatedAttribute : ApplyDirectiveAttribute
     {
         /// <summary>

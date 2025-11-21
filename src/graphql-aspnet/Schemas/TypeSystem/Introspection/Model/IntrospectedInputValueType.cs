@@ -28,6 +28,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         private readonly object _rawDefaultValue;
         private readonly GraphTypeExpression _inputValueTypeExpression;
         private readonly SchemaItemPath _inputValuePath;
+        private readonly IDeprecatable _deprecatableItem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedInputValueType" /> class.
@@ -43,6 +44,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             _rawDefaultValue = argument.HasDefaultValue ? argument.DefaultValue : IntrospectionNoDefaultValue.Instance;
             _inputValueTypeExpression = argument.TypeExpression;
             _inputValuePath = argument.Route;
+            _deprecatableItem = argument;
         }
 
         /// <summary>
@@ -58,6 +60,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             _rawDefaultValue = IntrospectionNoDefaultValue.Instance;
             _inputValueTypeExpression = inputField.TypeExpression;
             _inputValuePath = inputField.Route;
+            _deprecatableItem = inputField;
         }
 
         /// <summary>
@@ -75,6 +78,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             _rawDefaultValue = rawDefaultValue;
             _inputValueTypeExpression = inputField.TypeExpression;
             _inputValuePath = inputField.Route;
+            _deprecatableItem = inputField;
         }
 
         /// <summary>
@@ -189,5 +193,17 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         /// </summary>
         /// <value>The default value.</value>
         public string DefaultValue { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this input value is deprecated.
+        /// </summary>
+        /// <value><c>true</c> if this instance is deprecated; otherwise, <c>false</c>.</value>
+        public bool IsDeprecated => _deprecatableItem?.IsDeprecated ?? false;
+
+        /// <summary>
+        /// Gets the reason, if any, why this input value was deprecated.
+        /// </summary>
+        /// <value>The reason the input value was deprecated.</value>
+        public string DeprecationReason => _deprecatableItem?.DeprecationReason;
     }
 }
