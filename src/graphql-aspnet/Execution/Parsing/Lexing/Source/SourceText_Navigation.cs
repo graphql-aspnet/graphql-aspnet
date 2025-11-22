@@ -242,7 +242,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
                 this.Cursor += slice.Length + 1;
             }
 
-            // \r\n is considered a new line: https://graphql.github.io/graphql-spec/October2021/#sec-Line-Terminators
+            // \r\n is considered a new line: https://spec.graphql.org/September2025/#sec-Source-Text.Line-Terminators
             return this.TrimTrailingCarriageReturnFromBlock(new SourceTextBlockPointer(startIndex, slice.Length));
         }
 

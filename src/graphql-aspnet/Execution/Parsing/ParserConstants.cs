@@ -76,21 +76,46 @@ namespace GraphQL.AspNet.Execution.Parsing
             public const char NUL = '\0'; // 0x0000
             public const char DOUBLE_QUOTE = '"'; // 0x0022
             public const char ESCAPED_CHAR_INDICATOR = '\\'; // 0x005C
+            public const char OPEN_BRACE = '{'; // 0x007B
+            public const char CLOSE_BRACE = '}'; // 0x007D
             public const int NO_INDEX = -1;
+
+            // Unicode scalar value validation constants.
+            public const int MIN_SCALAR_VALUE = 0x0000;
+            public const int MAX_SCALAR_VALUE = 0x10FFFF;
+            public const int SURROGATE_MIN = 0xD800;
+            public const int SURROGATE_MAX = 0xDFFF;
+            public const int HIGH_SURROGATE_MIN = 0xD800;
+            public const int HIGH_SURROGATE_MAX = 0xDBFF;
+            public const int LOW_SURROGATE_MIN = 0xDC00;
+            public const int LOW_SURROGATE_MAX = 0xDFFF;
+            public const int CONTROL_CHAR_MIN = 0x007F;
+            public const int CONTROL_CHAR_MAX = 0x009F;
 
             /// <summary>
             /// Gets the set of characters that can be preceeded by a '\' and will be considered escaped
             /// and in need of translation. All other characters are not valid.
-            /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Appendix-Grammar-Summary.Lexical-Tokens" /> .
+            /// Note: 'u' is NOT included here because \u requires hex digits (handled separately).
+            /// Spec: <see href="https://spec.graphql.org/September2025/#sec-String-Value" /> .
             /// </summary>
             /// <value>The valid escapable characters.</value>
             public static ReadOnlyMemory<char> ValidEscapableCharacters { get; } = "/bfnrt\\\"".AsMemory();
 
             /// <summary>
             /// Gets a set of characters that mark an escaped unicode character in a string.
+            /// Fixed-width format: \uXXXX (4 hex digits).
+            /// Spec: <see href="https://spec.graphql.org/September2025/#sec-String-Value" /> .
             /// </summary>
             /// <value>The unicode prefix.</value>
             public static ReadOnlyMemory<char> UnicodePrefix { get; } = (ESCAPED_CHAR_INDICATOR + "u").AsMemory();
+
+            /// <summary>
+            /// Gets a set of characters that mark an escaped unicode character in a string.
+            /// Variable-width format: \u{X} to \u{XXXXXX} (1-6 hex digits).
+            /// Spec: <see href="https://spec.graphql.org/September2025/#sec-String-Value" /> .
+            /// </summary>
+            /// <value>The variable-width unicode prefix.</value>
+            public static ReadOnlyMemory<char> VariableWidthUnicodePrefix { get; } = (ESCAPED_CHAR_INDICATOR + "u" + OPEN_BRACE).AsMemory();
 
             /// <summary>
             /// Gets a set of known white space characters.

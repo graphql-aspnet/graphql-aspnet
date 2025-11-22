@@ -10,14 +10,14 @@
 namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
 {
     using System;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Source;
 
     /// <summary>
     /// A validator that will inspect a span to ensure its characters
     /// are valid for a name in graphql
-    /// Spec: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Names" /> .
+    /// Spec: <see href="https://spec.graphql.org/September2025/#sec-Names" /> .
     /// </summary>
     internal class NameValidator
     {
@@ -29,6 +29,13 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
         /// </summary>
         /// <value>The instance.</value>
         public static NameValidator Instance { get; } = new NameValidator();
+
+        /// <summary>
+        /// Gets a delegate that points to a source text filter to validate
+        /// if the token is a letter or not.
+        /// </summary>
+        /// <value>The valid name character delegate.</value>
+        public static SourceTextNextCharacterFilterDelegate IsValidNameCharacterDelegate { get; } = IsValidNameCharacter;
 
         /// <summary>
         /// Prevents a default instance of the <see cref="NameValidator"/> class from being created.
@@ -48,43 +55,46 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
             if (phrase.Length == 0)
                 throw new GraphQLSyntaxException(location, ERROR_EMPTY);
 
-            // must start with underscore or letter
-            if (!char.IsLetter(phrase[0]) && phrase[0] != '_')
+            // must start with underscore or letter (A-Z, a-z)
+            if (!IsAsciiLetter(phrase[0]) && phrase[0] != '_')
             {
                 throw new GraphQLSyntaxException(
                     location,
                     string.Format(INVALID_NAME, "[_a-zA-Z]", phrase[0]));
             }
 
-            // letters must be [_a-zA-Z0-9]
+            // subsequent characters must be letter, digit (0-9), or underscore
             for (var i = 1; i < phrase.Length; i++)
             {
-                if (char.IsLetterOrDigit(phrase[i]))
+                if (IsAsciiLetterOrDigit(phrase[i]))
                     continue;
                 if (phrase[i] == '_')
                     continue;
 
                 throw new GraphQLSyntaxException(
                     source.OffsetLocation(location, i),
-                    string.Format(INVALID_NAME, "[_a-zA-Z]", phrase[i]));
+                    string.Format(INVALID_NAME, "[_a-zA-Z0-9]", phrase[i]));
             }
         }
 
         /// <summary>
-        /// Gets a delegate that points to a source text filter to validate
-        /// if the token is a letter or not.
-        /// </summary>
-        /// <value>The valid name character delegate.</value>
-        public static SourceTextNextCharacterFilterDelegate IsValidNameCharacterDelegate { get; } = IsValidNameCharacter;
-
-        /// <summary>
-        /// Determines whether the given character is valid in a graphql name..
+        /// Determines whether the given character is valid in a graphql name.
         /// </summary>
         /// <param name="c">The c.</param>
         /// <returns><c>true</c> if the character is valid; otherwise, <c>false</c>.</returns>
         public static bool IsValidNameCharacter(char c)
         {
-            return char.IsLetterOrDigit(c) || c == '_';
+            return IsAsciiLetterOrDigit(c) || c == '_';
+        }
+
+        private static bool IsAsciiLetter(char c)
+        {
+            return c is >= 'A' and <= 'Z' or >= 'a' and <= 'z';
+        }
+
+        private static bool IsAsciiLetterOrDigit(char c)
+        {
+            return c is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or >= '0' and <= '9';
         }
     }
 }
