@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31825.309
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -34,7 +34,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-tests-common
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-testframework-tests", "unit-tests\graphql-aspnet-testframework-tests\graphql-aspnet-testframework-tests.csproj", "{E67D4FB2-73FF-4EC1-80F8-5D4DEC57F5AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starwars-api90", "ancillary-projects\starwars\starwars-api90\starwars-api90.csproj", "{E7EE5851-57F1-4E20-B4BA-06902C77E83A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starwars-api10", "ancillary-projects\starwars\starwars-api10\starwars-api10.csproj", "{E7EE5851-57F1-4E20-B4BA-06902C77E83A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

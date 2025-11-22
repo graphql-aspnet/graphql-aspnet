@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.StarWarsAPI6X
+namespace GraphQL.AspNet.StarWarsAPI
 {
     using System;
     using GraphQL.AspNet.Configuration;
