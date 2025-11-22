@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/libraries/">
+    <Project Path="graphql-aspnet-subscriptions/graphql-aspnet-subscriptions.csproj" />
+    <Project Path="graphql-aspnet/graphql-aspnet.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="ancillary-projects/benchmarking/README.md" />
+  </Folder>
+  <Project Path="ancillary-projects/benchmarking/graphql-aspnet-load-console/graphql-aspnet-load-console.csproj" />
+  <Project Path="ancillary-projects/benchmarking/graphql-aspnet-load-models/graphql-aspnet-load-models.csproj" />
+  <Project Path="ancillary-projects/benchmarking/graphql-aspnet-load-server/graphql-aspnet-load-server.csproj" />
+</Solution>

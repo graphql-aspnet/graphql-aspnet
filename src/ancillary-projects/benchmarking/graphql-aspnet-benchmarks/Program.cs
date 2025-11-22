@@ -27,8 +27,8 @@ namespace GraphQL.AspNet.Benchmarks
         /// <returns>System.Int32.</returns>
         public static int Main(string[] args)
         {
-            // quick tetsers to ensure processing before
-            // unleasing the beast. keep commented out when executing benchmark run
+            // quick tests to ensure processing before
+            // unleashing the beast. keep commented out when executing benchmark run
             // ****************************************
 #if DEBUG
             var item = new ExecuteQueries();

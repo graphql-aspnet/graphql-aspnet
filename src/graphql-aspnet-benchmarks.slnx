@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="stylecop.json" />
+    <File Path="styles.ruleset" />
+  </Folder>
+  <Project Path="ancillary-projects/benchmarking/graphql-aspnet-benchmarks/graphql-aspnet-benchmarks.csproj" />
+  <Project Path="graphql-aspnet/graphql-aspnet.csproj" />
+</Solution>
