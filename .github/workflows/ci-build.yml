@@ -19,7 +19,7 @@ on:
       - master
       
 env: 
-  SLN_PATH: ./src/graphql-aspnet.sln
+  SLN_PATH: ./src/graphql-aspnet.slnx
 
 jobs:
   build:

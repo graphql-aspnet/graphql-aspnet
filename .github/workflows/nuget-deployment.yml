@@ -15,7 +15,7 @@ on:
         type: string
       
 env: 
-  SLN_PATH: ./src/graphql-aspnet.sln  
+  SLN_PATH: ./src/graphql-aspnet.slnx
   PRIMARY_LIB_PATH: ./src/graphql-aspnet/graphql-aspnet.csproj
   SUBSCRIPTIONS_LIB_PATH: ./src/graphql-aspnet-subscriptions/graphql-aspnet-subscriptions.csproj
   TEST_FRAMEWORK_LIB_PATH: ./src/unit-tests/graphql-aspnet-testframework/graphql-aspnet-testframework.csproj
