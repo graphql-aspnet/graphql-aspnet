@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Execution
                         // its possible for a non-nullable variable to receive a
                         // null value due to a variable supplying null
                         // trap it and fail out the execution if so
-                        // see: https://spec.graphql.org/October2021/#sel-GALbLHNCCBCGIp9O
+                        // see: https://spec.graphql.org/September2025/#sel-GALbLHNCCBCIIj8Y
                         if (resolvedValue == null && argDefinition.TypeExpression.IsNonNullable)
                         {
                             messages.Critical(

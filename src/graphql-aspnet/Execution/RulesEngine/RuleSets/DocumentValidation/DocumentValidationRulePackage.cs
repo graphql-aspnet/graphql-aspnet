@@ -141,8 +141,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_1_1_ExecutableOperationDefinition());
             steps.Add(new Rule_5_2_1_1_OperationTypeMustBeDefinedOnTheSchema());
-            steps.Add(new Rule_5_2_3_1_SubscriptionsRequire1RootField());
-            steps.Add(new Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField());
+            steps.Add(new Rule_5_2_4_1_SubscriptionsRequire1RootField());
+            steps.Add(new Rule_5_2_4_1_SubscriptionsRequire1EncounteredSubscriptionField());
 
             // variable checks, the 5.8 series, are evaluated together,in context of the operation,
             // due to the nature of fragment spreads and variables used
@@ -185,7 +185,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
             steps.Add(new Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs());
             steps.Add(new Rule_5_3_3_A_LeafFieldMustNotHaveChildFields());
             steps.Add(new Rule_5_3_3_B_NonLeafFieldMustHaveChildField());
-            steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField());
+            steps.Add(new Rule_5_4_3_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField());
 
             _stepCollection.Add(DocumentPartType.Field, steps);
         }
@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
         private void BuildDirectiveSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
-            steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
+            steps.Add(new Rule_5_4_3_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
             steps.Add(new Rule_5_7_1_DirectiveMustBeDefinedInTheSchema());
             steps.Add(new Rule_5_7_2_DirectiveMustBeUsedInValidLocation());
             steps.Add(new Rule_5_7_3_NonRepeatableDirectiveIsDefinedNoMoreThanOncePerLocation());
