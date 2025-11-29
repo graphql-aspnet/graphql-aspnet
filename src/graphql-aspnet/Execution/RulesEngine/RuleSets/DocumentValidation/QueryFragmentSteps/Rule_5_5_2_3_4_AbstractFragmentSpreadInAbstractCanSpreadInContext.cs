@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         /// Gets the rule number being validated in this instance (e.g. "X.Y.Z"), if any.
         /// </summary>
         /// <value>The rule number.</value>
-        public override string RuleNumber => "5.5.2.3.4";
+        public override string RuleNumber => "5.5.2.3";
 
         /// <summary>
         /// Gets an anchor tag, pointing to a specific location on the webpage identified
@@ -68,6 +68,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         /// this value is ignored.
         /// </summary>
         /// <value>The rule anchor tag.</value>
-        protected override string RuleAnchorTag => "#sec-Abstract-Spreads-in-Abstract-Scope";
+        protected override string RuleAnchorTag => "#sec-Fragment-Spread-Is-Possible";
     }
 }

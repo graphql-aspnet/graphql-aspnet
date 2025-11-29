@@ -15,9 +15,10 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A rule to validate that a subscription operation has 1 and only 1 root level field declaration.
+    /// <para>(5.2.4.1) A rule to validate that a subscription operation has 1 and only 1 root level field declaration.</para>
+    /// <para>Reference: <see href="https://spec.graphql.org/September2025/#sec-Single-Root-Field" /> .</para>
     /// </summary>
-    internal class Rule_5_2_3_1_SubscriptionsRequire1RootField
+    internal class Rule_5_2_4_1_SubscriptionsRequire1RootField
         : DocumentPartValidationRuleStep<IOperationDocumentPart>
     {
         /// <inheritdoc />
@@ -47,9 +48,9 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         }
 
         /// <inheritdoc />
-        public override string RuleNumber => "5.2.3.1";
+        public override string RuleNumber => "5.2.4.1";
 
         /// <inheritdoc />
-        protected override string RuleAnchorTag => "#sec-Single-root-field";
+        protected override string RuleAnchorTag => "#sec-Single-Root-Field";
     }
 }

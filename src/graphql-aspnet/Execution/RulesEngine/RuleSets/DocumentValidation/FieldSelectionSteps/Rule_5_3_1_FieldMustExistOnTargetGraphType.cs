@@ -127,6 +127,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
         public override string RuleNumber => "5.3.1";
 
         /// <inheritdoc />
-        protected override string RuleAnchorTag => "#sec-Field-Selections-on-Objects-Interfaces-and-Unions-Types";
+        protected override string RuleAnchorTag => "#sec-Field-Selections";
     }
 }

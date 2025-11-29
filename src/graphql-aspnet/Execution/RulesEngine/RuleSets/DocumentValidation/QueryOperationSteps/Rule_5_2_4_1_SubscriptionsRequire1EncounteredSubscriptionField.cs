@@ -16,10 +16,11 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// An extension on 5.2.3.1 to ensure that the virtual fields registered by controllers and routes
-    /// can exist along side the first "top-level" encountered subscription field.
+    /// <para>(5.2.4.1) An extension on 5.2.4.1 to ensure that the virtual fields registered by controllers and routes
+    /// can exist along side the first "top-level" encountered subscription field.</para>
+    /// <para>Reference: <see href="https://spec.graphql.org/September2025/#sec-Single-Root-Field" /> .</para>
     /// </summary>
-    internal class Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField
+    internal class Rule_5_2_4_1_SubscriptionsRequire1EncounteredSubscriptionField
         : DocumentPartValidationRuleStep<IOperationDocumentPart>
     {
         /// <inheritdoc />
@@ -33,7 +34,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         public override bool Execute(DocumentValidationContext context)
         {
             // due to the use of virtual fields used by controllers to make a dynamic schema,
-            // this rule extends rule 5.2.3.1 to include the top-level operation and each virtual child field
+            // this rule extends rule 5.2.4.1 to include the top-level operation and each virtual child field
             // has 1 and only 1 child field declaration up to and including a subscription action being located.
             // that is to say the nested fieldsets must not branch until AFTER a subscription field is encountered
             // as its this field that is registered as the subscription, not the virtual field paths
@@ -129,9 +130,9 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         }
 
         /// <inheritdoc />
-        public override string RuleNumber => "5.2.3.1.1";
+        public override string RuleNumber => "5.2.4.1";
 
         /// <inheritdoc />
-        protected override string RuleAnchorTag => "#sec-Single-root-field";
+        protected override string RuleAnchorTag => "#sec-Single-Root-Field";
     }
 }

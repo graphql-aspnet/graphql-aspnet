@@ -16,10 +16,10 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Docum
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
-    /// <para>(5.2.2.1) Validate that when an anon operation is included it exists by itself.</para>
-    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Operation-Name-Uniqueness" /> .</para>
+    /// <para>(5.2.3.1) Validate that when an anon operation is included it exists by itself.</para>
+    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/September2025/#sec-Lone-Anonymous-Operation" /> .</para>
     /// </summary>
-    internal class Rule_5_2_2_1_LoneAnonymousOperation
+    internal class Rule_5_2_3_1_LoneAnonymousOperation
         : DocumentPartValidationRuleStep<IQueryDocument>
     {
         /// <inheritdoc />
@@ -52,18 +52,10 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Docum
             return true;
         }
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z").
-        /// </summary>
-        /// <value>The rule number.</value>
-        public override string RuleNumber => "5.2.2.1";
+        /// <inheritdoc />
+        public override string RuleNumber => "5.2.3.1";
 
-        /// <summary>
-        /// Gets an anchor tag, pointing to a specific location on the webpage identified
-        /// as the specification supported by this library. If ReferenceUrl is overriden
-        /// this value is ignored.
-        /// </summary>
-        /// <value>The rule anchor tag.</value>
+        /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Lone-Anonymous-Operation";
     }
 }

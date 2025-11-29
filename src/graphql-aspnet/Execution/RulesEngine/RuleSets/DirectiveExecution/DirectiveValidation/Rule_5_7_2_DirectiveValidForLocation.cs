@@ -39,6 +39,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Direc
         public override string RuleNumber => "5.7.2";
 
         /// <inheritdoc />
-        protected override string RuleAnchorTag => "#sec-Directives-Are-In-Valid-Locations";
+        protected override string RuleAnchorTag => "#sec-Directives-Are-in-Valid-Locations";
     }
 }

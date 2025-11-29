@@ -17,10 +17,10 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Docum
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
 
     /// <summary>
-    /// <para>(5.2.1.1) Validate that each top level operation has a unique name within the document scope.</para>
-    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/October2021/#sec-Operation-Name-Uniqueness" /> .</para>
+    /// <para>(5.2.2.1) Validate that each top level operation has a unique name within the document scope.</para>
+    /// <para>Reference: <see href="https://graphql.github.io/graphql-spec/September2025/#sec-Operation-Name-Uniqueness" /> .</para>
     /// </summary>
-    internal class Rule_5_2_1_1_OperationNamesMustBeUnique
+    internal class Rule_5_2_2_1_OperationNamesMustBeUnique
         : DocumentPartValidationRuleStep<IQueryDocument>
     {
         /// <inheritdoc/>
@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Docum
         }
 
         /// <inheritdoc/>
-        public override string RuleNumber => "5.2.1.1";
+        public override string RuleNumber => "5.2.2.1";
 
         /// <inheritdoc/>
         protected override string RuleAnchorTag => "#sec-Operation-Name-Uniqueness";

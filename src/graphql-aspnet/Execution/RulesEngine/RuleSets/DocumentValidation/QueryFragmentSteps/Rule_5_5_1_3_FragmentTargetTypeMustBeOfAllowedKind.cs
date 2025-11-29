@@ -61,6 +61,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         public override string RuleNumber => "5.5.1.3";
 
         /// <inheritdoc />
-        protected override string RuleAnchorTag => "#sec-Fragments-On-Composite-Types";
+        protected override string RuleAnchorTag => "#sec-Fragments-on-Object-Interface-or-Union-Types";
     }
 }

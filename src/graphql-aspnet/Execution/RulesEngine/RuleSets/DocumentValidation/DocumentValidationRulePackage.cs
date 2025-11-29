@@ -97,8 +97,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_1_1_OnlyExecutableDefinition());
-            steps.Add(new Rule_5_2_1_1_OperationNamesMustBeUnique());
-            steps.Add(new Rule_5_2_2_1_LoneAnonymousOperation());
+            steps.Add(new Rule_5_2_2_1_OperationNamesMustBeUnique());
+            steps.Add(new Rule_5_2_3_1_LoneAnonymousOperation());
 
             _stepCollection.Add(DocumentPartType.Document, steps);
         }
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_1_1_ExecutableOperationDefinition());
-            steps.Add(new Rule_5_2_OperationTypeMustBeDefinedOnTheSchema());
+            steps.Add(new Rule_5_2_1_1_OperationTypeMustBeDefinedOnTheSchema());
             steps.Add(new Rule_5_2_3_1_SubscriptionsRequire1RootField());
             steps.Add(new Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField());
 
