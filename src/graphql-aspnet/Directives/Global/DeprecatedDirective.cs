@@ -37,9 +37,12 @@ namespace GraphQL.AspNet.Directives.Global
             [Description("An optional human-friendly reason explaining why the schema item is being deprecated.")]
             string reason = "No longer supported")
         {
-            reason = reason?.Trim();
-            var item = this.DirectiveTarget as ISchemaItem;
+            // minor work around. Technically it is in error to supply a null reason
+            // as of Sept' 2025 specification. However, to keep backwards compatability with v1.x we
+            // set it to an empty string instead.
+            reason = reason?.Trim() ?? string.Empty;
 
+            var item = this.DirectiveTarget as ISchemaItem;
             if (item is null || (item is not IGraphField && item is not IEnumValue && item is not IInputGraphField && item is not IGraphArgument))
             {
                 throw new GraphTypeDeclarationException(
