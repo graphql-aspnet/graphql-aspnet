@@ -31,19 +31,29 @@ namespace GraphQL.AspNet.Directives.Global
         /// </summary>
         /// <param name="reason">An optional reason for the deprecation.</param>
         /// <returns>IGraphActionResult.</returns>
-        [DirectiveLocations(DirectiveLocation.FIELD_DEFINITION | DirectiveLocation.ENUM_VALUE)]
+        [DirectiveLocations(DirectiveLocation.FIELD_DEFINITION | DirectiveLocation.ENUM_VALUE | DirectiveLocation.INPUT_FIELD_DEFINITION | DirectiveLocation.ARGUMENT_DEFINITION)]
         public IGraphActionResult Execute(
-            [FromGraphQL("reason")]
+            [FromGraphQL("reason", TypeExpression = "Type!")]
             [Description("An optional human-friendly reason explaining why the schema item is being deprecated.")]
             string reason = "No longer supported")
         {
-            reason = reason?.Trim();
+            // minor work around. Technically it is in error to supply a null reason
+            // as of Sept' 2025 specification. However, to keep backwards compatability with v1.x we
+            // set it to an empty string instead.
+            reason = reason?.Trim() ?? string.Empty;
+
             var item = this.DirectiveTarget as ISchemaItem;
-            if (item == null || (!(item is IGraphField) && !(item is IEnumValue)))
+            if (item is null || (item is not IGraphField && item is not IEnumValue && item is not IInputGraphField && item is not IGraphArgument))
             {
                 throw new GraphTypeDeclarationException(
-                    $"Invalid schema item. The directive @{Constants.ReservedNames.DEPRECATED_DIRECTIVE} must target " +
-                    $"an object that implements {typeof(IGraphField).FriendlyName()} or {typeof(IEnumValue).FriendlyName()}. (Current Target: {this.DirectiveTarget?.GetType().FriendlyName()})");
+                    $"Invalid schema item. The @{Constants.ReservedNames.DEPRECATED_DIRECTIVE} directive  must target " +
+                    $"an object that implements {typeof(IGraphField).FriendlyName()}, {typeof(IEnumValue).FriendlyName()}, {typeof(IInputGraphField).FriendlyName()} or {typeof(IGraphArgument).FriendlyName()}. (Current Target: {this.DirectiveTarget?.GetType().FriendlyName()})");
+            }
+
+            if (reason is null)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"Invalid schema item. Use of the @{Constants.ReservedNames.DEPRECATED_DIRECTIVE} directive requires a non-null reason.");
             }
 
             if (this.DirectiveTarget is IDeprecatable deprecatable)

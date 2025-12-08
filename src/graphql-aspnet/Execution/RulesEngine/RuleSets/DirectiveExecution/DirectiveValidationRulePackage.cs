@@ -9,9 +9,10 @@
 namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
     /// A rule package for validating a request to execute a directive against
@@ -42,10 +43,26 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution
             _ruleSet.Add(new Rule_5_7_ArgumentsMustbeValid());
         }
 
+        /// <summary>
+        /// Allow for addition of custom validation rules targeting directives. Rules added via this method
+        /// will be executed in the order they are supplied and AFTER all baseline rules are executed.
+        /// </summary>
+        /// <param name="rule">The rule to be invoked.</param>
+        public void AddCustomRule(IRuleStep<GraphDirectiveExecutionContext> rule)
+        {
+            Validation.ThrowIfNull(rule, nameof(rule));
+
+            // insert the rule just before finalize data item (which must be last)
+            _ruleSet.Add(rule);
+        }
+
         /// <inheritdoc />
         public IEnumerable<IRuleStep<GraphDirectiveExecutionContext>> FetchRules(GraphDirectiveExecutionContext context)
         {
             return _ruleSet;
         }
+
+        /// <inheritdoc />
+        public bool HasAnyRules => _ruleSet.Count > 0;
     }
 }

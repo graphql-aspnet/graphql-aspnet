@@ -18,6 +18,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
@@ -69,7 +71,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 // class objects MUST declare a default constructor
                 // so it can be used in a 'new T()' operation when generating
                 // input params
-                var constructor = objectType.GetConstructor(new Type[0]);
+                var constructor = objectType.GetConstructor([]);
                 if (constructor == null || !constructor.IsPublic)
                 {
                     rejectionReason =
@@ -85,7 +87,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             else if (objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
             {
                 // since KeyValuePair<,> is pretty common
-                // and a specific error message for the type
+                // add a specific error message for the type
                 rejectionReason =
                     $"The type '{objectType.FriendlyName()}' cannot be used as an {nameof(TypeKind.INPUT_OBJECT)} graph type. '{typeof(KeyValuePair<,>).FriendlyName()}' does not " +
                     $"declare public setters for its Key and Value properties.";
@@ -107,9 +109,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // ------------------------------------
             // Common Metadata
             // ------------------------------------
-            this.Route = new SchemaItemPath(SchemaItemPath.Join(
-                SchemaItemCollections.Types,
-                GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT)));
+            var name = GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT);
+            this.Route = new SchemaItemPath(SchemaItemPath.Join(SchemaItemCollections.Types, name));
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
             // ------------------------------------
@@ -150,6 +151,34 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
         }
 
+        /// <inheritdoc />
+        protected override IEnumerable<IAppliedDirectiveTemplate> ParseAppliedDirectives()
+        {
+            // if the user declared their type as GraphInputUnion
+            // ensure that the oneOf directive template is applied to the class
+            // this is a feature of GraphInputUnion that we have to account for in business code
+            // since, when using the generic version, the user has no way to supply the appropriate attributes
+            // nor should they be forced to double declare.
+            var foundDirectives = base.ParseAppliedDirectives()?.ToList();
+
+            if (Validation.IsCastable<GraphInputUnion>(this.ObjectType))
+            {
+                // it is possible, and acceptable, that they did not add [OneOf] to their custom object inheriting from
+                // GraphInputUnion. If this happens we need to make sure that the input object does apply the directive.
+                foundDirectives = foundDirectives ?? [];
+                if (foundDirectives.All(x => x.DirectiveType != typeof(OneOfDirective)))
+                {
+                    foundDirectives.Add(new AppliedDirectiveTemplate(
+                        this,
+                        typeof(OneOfDirective),
+                        [TypeKind.INPUT_OBJECT],
+                        []));
+                }
+            }
+
+            return foundDirectives;
+        }
+
         private bool CanBeInputField(PropertyInfo propInfo)
         {
             if (propInfo == null)
@@ -186,7 +215,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.ObjectType);
             }
 
-            if (_invalidFields != null && _invalidFields.Count > 0)
+            if (_invalidFields is { Count: > 0 })
             {
                 var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalFullName} ({x.Route.RootCollection.ToString()})'"));
                 throw new GraphTypeDeclarationException(
@@ -197,10 +226,54 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.ObjectType);
             }
 
+            this.ValidateOneOfOrThrow();
+
             if (validateChildren)
             {
                 foreach (var field in this.FieldTemplates.Values)
                     field.ValidateOrThrow(validateChildren);
+            }
+        }
+
+        /// <summary>
+        /// Validates @oneOf template requirements, if applicable and throws an exception when invalid.
+        /// </summary>
+        protected virtual void ValidateOneOfOrThrow()
+        {
+            // only applicable to @oneOf unions
+            var oneOfDirectiveTemplate = this.AppliedDirectives.FirstOrDefault(x => x.DirectiveType == typeof(OneOfDirective));
+            if (oneOfDirectiveTemplate is null)
+                return;
+
+            var instance = InstanceFactory.CreateInstance(this.ObjectType);
+            var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(this.ObjectType);
+
+            if (instance is null || propGetters is null)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"Unable to validate '{this.InternalName}'. The templating engine was unable to create an instance of the input object " +
+                    $"to validate default values related to @oneOf directive requirements.");
+            }
+
+            var nonNullableFields = new List<IInputGraphFieldTemplate>(_fields.Count);
+            foreach (var field in this.FieldTemplates.Values)
+            {
+                if (field.TypeExpression.IsNonNullable)
+                    nonNullableFields.Add(field);
+
+                var value = propGetters[field.InternalName].Invoke(ref instance);
+                if (value is not null)
+                    nonNullableFields.Add(field);
+            }
+
+            if (nonNullableFields.Count > 0)
+            {
+                var fieldNames = string.Join("\n", nonNullableFields.Select(x => $"Field: '{x.InternalFullName}'"));
+                throw new GraphTypeDeclarationException(
+                    $"Invalid input field declaration.  The type '{this.InternalFullName}' is declared as an input union (@oneOf directive) " +
+                    $"and as a requirement all fields must be nullable. The following fields are 'not nullable' by way of type expression or " +
+                    $"object type declaration. \n---------\n " + fieldNames,
+                    this.ObjectType);
             }
         }
 

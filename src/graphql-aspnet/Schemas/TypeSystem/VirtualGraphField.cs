@@ -32,6 +32,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     public class VirtualGraphField : IGraphField, IGraphItemDependencies
     {
         private static readonly IList<DependentType> REQUIRED_TYPES;
+        private IGraphType _parent;
 
         /// <summary>
         /// Initializes static members of the <see cref="VirtualGraphField"/> class.
@@ -58,7 +59,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             Validation.ThrowIfNull(route, nameof(route));
             parentTypeName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentTypeName, nameof(parentTypeName));
 
-            this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
+            _parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
 
@@ -77,6 +78,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Publish = true;
             this.IsDeprecated = false;
             this.DeprecationReason = null;
+
+            this.SchemaCoordinate = _parent is ISchemaCoordinateItem coordItem
+                ? $"{coordItem.SchemaCoordinate}.{this.Name}"
+                : $"UNKNOWN.{this.Name}";
         }
 
         /// <inheritdoc />
@@ -88,13 +93,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <inheritdoc />
         public void AssignParent(IGraphType parent)
         {
-            this.Parent = this.Parent;
+            _parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
+            this.SchemaCoordinate = _parent is ISchemaCoordinateItem coordItem
+                ? $"{coordItem.SchemaCoordinate}.{this.Name}"
+                : $"UNKNOWN.{this.Name}";
         }
 
         /// <inheritdoc />
         public IGraphField Clone(IGraphType parent)
         {
-            throw new NotImplementedException("Virtual Fields cannot be cloned.");
+            throw new NotSupportedException("Virtual Fields cannot be cloned.");
         }
 
         /// <inheritdoc />
@@ -125,6 +133,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public string Name { get; set; }
+
+        /// <inheritdoc />
+        public string SchemaCoordinate { get; private set; }
 
         /// <inheritdoc />
         public SchemaItemPath Route { get; }
@@ -188,7 +199,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Type DeclaredReturnType => null;
 
         /// <inheritdoc />
-        public ISchemaItem Parent { get; private set; }
+        public ISchemaItem Parent => _parent;
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }

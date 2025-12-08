@@ -23,5 +23,10 @@ namespace GraphQL.AspNet.Interfaces.Execution.RulesEngine
         /// <param name="context">The context.</param>
         /// <returns>IEnumerable&lt;IRuleStep&lt;TContext&gt;&gt;.</returns>
         IEnumerable<IRuleStep<TContext>> FetchRules(TContext context);
+
+        /// <summary>
+        /// Gets a value indicating if this rule package has at least one defined rule.
+        /// </summary>
+        bool HasAnyRules { get; }
     }
 }

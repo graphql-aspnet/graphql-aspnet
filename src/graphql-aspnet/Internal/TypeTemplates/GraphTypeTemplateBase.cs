@@ -9,6 +9,8 @@
 
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
@@ -51,6 +53,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     _fieldDeclarationOverrides = graphTypeDeclaration.FieldDeclarationRequirements;
                 }
             }
+        }
+
+        /// <inheritdoc />
+        protected override IEnumerable<IAppliedDirectiveTemplate> ParseAppliedDirectives()
+        {
+            // apply typekind specific filtering for parsed directives
+            return this.ExtractAppliedDirectiveTemplates()
+                .Where(x => x.CanBeApplied(this.Kind));
         }
 
         /// <inheritdoc />

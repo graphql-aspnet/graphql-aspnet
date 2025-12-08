@@ -53,6 +53,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     template = new AppliedDirectiveTemplate(
                         owner,
                         directiveAttrib.DirectiveType,
+                        directiveAttrib.AppliesToTypes,
                         directiveAttrib.Arguments);
                 }
                 else
@@ -60,6 +61,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     template = new AppliedDirectiveTemplate(
                         owner,
                         directiveAttrib.DirectiveName,
+                        directiveAttrib.AppliesToTypes,
                         directiveAttrib.Arguments);
                 }
 

@@ -96,6 +96,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual IEnumValueCollection Values => _options;
 
         /// <inheritdoc />
+        public string SchemaCoordinate => this.Name;
+
+        /// <inheritdoc />
         public virtual string Name { get; set; }
 
         /// <inheritdoc />

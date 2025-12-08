@@ -62,6 +62,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         /// this value is ignored.
         /// </summary>
         /// <value>The rule anchor tag.</value>
-        protected override string RuleAnchorTag => "#sec-Object-Spreads-In-Object-Scope";
+        protected override string RuleAnchorTag => "#sec-Object-Spreads-in-Object-Scope";
     }
 }

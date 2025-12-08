@@ -11,8 +11,6 @@ namespace GraphQL.AspNet.Execution.Variables
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
-    using GraphQL.AspNet.Execution.QueryPlans;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
@@ -101,7 +99,7 @@ namespace GraphQL.AspNet.Execution.Variables
 
                     object resolvedValue = resolver.Resolve(resolvableItem);
 
-                    var resolvedVariable = new ResolvedVariable(variable.Name, variable.TypeExpression, resolvedValue, !found);
+                    var resolvedVariable = new ResolvedVariable(variable.Name, variable.TypeExpression, resolvableItem, resolvedValue, !found);
 
                     // validate nullability of the provided value against the TypeExpression of the declaration
                     // on the operation

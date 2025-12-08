@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders
                     new SynNodeTestCase(
                         SyntaxNodeType.InputItemCollection,
                         new SynNodeTestCase(
-                            SyntaxNodeType.InputItem,
+                            SyntaxNodeType.InputArgument,
                             "if",
                             new SynNodeTestCase(
                                 SyntaxNodeType.ScalarValue,
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders
                     new SynNodeTestCase(
                         SyntaxNodeType.InputItemCollection,
                         new SynNodeTestCase(
-                            SyntaxNodeType.InputItem,
+                            SyntaxNodeType.InputArgument,
                             "if",
                             new SynNodeTestCase(
                                 SyntaxNodeType.ScalarValue,

@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
     /// <summary>
     /// A base set of items common between all field types (input, interface or object based fields).
     /// </summary>
-    public interface IGraphFieldBase : ISchemaItem
+    public interface IGraphFieldBase : ISchemaItem, ISchemaCoordinateItem
     {
         /// <summary>
         /// Updates the known graph type this field belongs to.

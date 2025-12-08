@@ -1,0 +1,30 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="CodeMaid.config" />
+    <File Path="library-common.props" />
+    <File Path="library-tests.props" />
+    <File Path="stylecop.json" />
+    <File Path="styles.ruleset" />
+  </Folder>
+  <Folder Name="/starwars/">
+    <Project Path="ancillary-projects/starwars/starwars-api10/starwars-api10.csproj" />
+    <Project Path="ancillary-projects/starwars/starwars-common/starwars-common.csproj" />
+  </Folder>
+  <Folder Name="/unit-tests/">
+    <Project Path="unit-tests/graphql-aspnet-subscriptions-tests/graphql-aspnet-subscriptions-tests.csproj">
+      <Build Solution="Release|*" Project="false" />
+    </Project>
+    <Project Path="unit-tests/graphql-aspnet-testframework-tests/graphql-aspnet-testframework-tests.csproj" />
+    <Project Path="unit-tests/graphql-aspnet-testframework/graphql-aspnet-testframework.csproj" />
+    <Project Path="unit-tests/graphql-aspnet-tests-common/graphql-aspnet-tests-common.csproj" />
+    <Project Path="unit-tests/graphql-aspnet-tests-thirdpartydll/graphql-aspnet-tests-thirdpartydll.csproj">
+      <Build Solution="Release|*" Project="false" />
+    </Project>
+    <Project Path="unit-tests/graphql-aspnet-tests/graphql-aspnet-tests.csproj">
+      <Build Solution="Release|*" Project="false" />
+    </Project>
+  </Folder>
+  <Project Path="graphql-aspnet-subscriptions/graphql-aspnet-subscriptions.csproj" />
+  <Project Path="graphql-aspnet/graphql-aspnet.csproj" />
+</Solution>

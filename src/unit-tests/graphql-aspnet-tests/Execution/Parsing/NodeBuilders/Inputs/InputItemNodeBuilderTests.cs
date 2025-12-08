@@ -10,16 +10,16 @@
 namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
 {
     using System;
-    using GraphQL.AspNet.Tests.CommonHelpers;
-    using NUnit.Framework;
-    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs;
     using GraphQL.AspNet.Execution.Parsing;
-    using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
+    using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
-    using GraphQL.AspNet.Tests.Execution.Parsing.Helpers;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
+    using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Execution.Parsing.Helpers;
+    using NUnit.Framework;
 
     [TestFixture]
     public class InputItemNodeBuilderTests
@@ -41,9 +41,9 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
               tree,
               docNode,
               new SynNodeTestCase(
-                    SyntaxNodeType.InputItem,
-                    "arg1",
-                    new SynNodeTestCase(
+                  SyntaxNodeType.InputArgument,
+                  "arg1",
+                  new SynNodeTestCase(
                         SyntaxNodeType.ScalarValue,
                         "123",
                         ScalarValueType.Number)));
@@ -67,13 +67,13 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
               tree,
               docNode,
               new SynNodeTestCase(
-                    SyntaxNodeType.InputItem,
-                    "arg1",
-                    new SynNodeTestCase(
+                  SyntaxNodeType.InputArgument,
+                  "arg1",
+                  new SynNodeTestCase(
                         SyntaxNodeType.ScalarValue,
                         "5",
                         ScalarValueType.Number),
-                    new SynNodeTestCase(
+                  new SynNodeTestCase(
                         SyntaxNodeType.Directive,
                         "someDirective")));
             SyntaxTreeOperations.Release(ref tree);
@@ -96,11 +96,11 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
               tree,
               docNode,
               new SynNodeTestCase(
-                    SyntaxNodeType.InputItem,
-                    "arg1",
-                    new SynNodeTestCase(
-                        SyntaxNodeType.VariableValue,
-                        "variable1")));
+                  SyntaxNodeType.InputArgument,
+                  "arg1",
+                  new SynNodeTestCase(
+                      SyntaxNodeType.VariableValue,
+                      "variable1")));
             SyntaxTreeOperations.Release(ref tree);
         }
 

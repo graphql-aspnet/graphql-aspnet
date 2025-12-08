@@ -263,7 +263,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
                         new SynNodeTestCase(
                             SyntaxNodeType.InputItemCollection,
                             new SynNodeTestCase(
-                                SyntaxNodeType.InputItem,
+                                SyntaxNodeType.InputArgument,
                                 "param1",
                                 new SynNodeTestCase(
                                     SyntaxNodeType.ScalarValue,
@@ -302,7 +302,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
                         new SynNodeTestCase(
                             SyntaxNodeType.InputItemCollection,
                             new SynNodeTestCase(
-                                SyntaxNodeType.InputItem,
+                                SyntaxNodeType.InputArgument,
                                 "param1",
                                 new SynNodeTestCase(
                                     SyntaxNodeType.ScalarValue,

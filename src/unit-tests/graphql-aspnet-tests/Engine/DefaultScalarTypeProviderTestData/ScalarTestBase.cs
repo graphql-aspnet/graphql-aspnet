@@ -60,6 +60,8 @@ namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
 
         public string Name { get; set; }
 
+        public string SchemaCoordinate => this.Name;
+
         public string Description { get; set; }
 
         public string SpecifiedByUrl { get; set; }

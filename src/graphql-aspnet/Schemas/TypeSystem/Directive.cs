@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -69,7 +68,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public string Name { get; set; }
+        public string SchemaCoordinate { get; private set; }
+
+        /// <inheritdoc />
+        public string Name
+        {
+            get;
+            set
+            {
+                field = value;
+                this.SchemaCoordinate = $"@{field ?? string.Empty}";
+            }
+        }
 
         /// <inheritdoc />
         public string Description { get; set; }

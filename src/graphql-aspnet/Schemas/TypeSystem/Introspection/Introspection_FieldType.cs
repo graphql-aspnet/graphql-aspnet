@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Internal.Resolvers.Introspeection;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
@@ -47,12 +48,24 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 "Indiates if this field is deprecated. Any deprecated field should not be used and " +
                 "may be removed at a future date.");
 
-            this.GraphFieldCollection.AddField<IntrospectedField, IReadOnlyList<IntrospectedInputValueType>>(
+            // args
+            var argsField = new MethodGraphField(
                 "args",
                 new GraphTypeExpression(Constants.ReservedNames.INPUT_VALUE_TYPE, GraphTypeExpression.RequiredListRequiredItem),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "args"),
-                (field) => field.Arguments.AsCompletedTask(),
-                "A collection of input values that can be passed to this field to alter its behavior when used in a query.");
+                mode: FieldResolutionMode.PerSourceItem,
+                resolver: new Field_ArgsGraphFieldResolver())
+            {
+                Description = "A collection of input values that can be passed to this field to alter its behavior when used in a query.",
+            };
+
+            argsField.Arguments.AddArgument(
+                Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME,
+                Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME,
+                new GraphTypeExpression(Constants.ScalarNames.BOOLEAN),
+                typeof(bool),
+                false);
+            this.GraphFieldCollection.AddField(argsField);
 
             this.GraphFieldCollection.AddField<IntrospectedField, IntrospectedType>(
                 "type",

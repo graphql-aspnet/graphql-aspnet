@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 if (!(graphType is IExtendableGraphType))
                 {
                     throw new GraphTypeDeclarationException(
-                        $"Fatal error. The graph type '{graphType.Name}' (Kind: '{graphType.Kind}') does not implement '{typeof(IExtendableGraphType).FriendlyName()}' " +
+                        $"Fatal error. The graph type '{graphType.NameOrCoordinate()}' (Kind: '{graphType.Kind}') does not implement '{typeof(IExtendableGraphType).FriendlyName()}' " +
                         $"and cannot be extended with the new field '{field.Name}'.");
                 }
 

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     /// A rule to ensure the operation type defined on the document is one thats handlable
     /// by the schema.
     /// </summary>
-    internal class Rule_5_2_OperationTypeMustBeDefinedOnTheSchema
+    internal class Rule_5_2_1_1_OperationTypeMustBeDefinedOnTheSchema
         : DocumentPartValidationRuleStep<IOperationDocumentPart>
     {
         /// <inheritdoc />
@@ -53,9 +53,9 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         }
 
         /// <inheritdoc />
-        public override string RuleNumber => "5.2";
+        public override string RuleNumber => "5.2.1.1";
 
         /// <inheritdoc />
-        protected override string RuleAnchorTag => "#sec-Validation.Operations";
+        protected override string RuleAnchorTag => "#sec-Operation-Type-Existence";
     }
 }

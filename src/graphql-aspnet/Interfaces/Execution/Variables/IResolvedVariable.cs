@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution.Variables
 {
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Schemas;
 
     /// <summary>
@@ -28,6 +29,11 @@ namespace GraphQL.AspNet.Interfaces.Execution.Variables
         /// </summary>
         /// <value>The value.</value>
         object Value { get; }
+
+        /// <summary>
+        /// Gets the metadata item that was used to successfully resolve the variable <see cref="Value" />.
+        /// </summary>
+        IResolvableValueItem ResovableItem { get; }
 
         /// <summary>
         /// Gets the type expression this variable represents.

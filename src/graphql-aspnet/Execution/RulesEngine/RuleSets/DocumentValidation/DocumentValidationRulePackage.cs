@@ -10,9 +10,9 @@
 namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
 {
     using System.Collections.Generic;
-    using System.Linq;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
+    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSetSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSteps;
@@ -22,14 +22,14 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputValueSteps;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.DocumentParts;
-    using GraphQL.AspNet.Execution.QueryPlans.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
-    /// A rule package for doing a wholistic validation pass at parsed query document before the final
+    /// A rule package for doing a holistic validation pass at a parsed query document before the final
     /// <see cref="IQueryDocument"/> is generated. Performs deeper validations (such as no unused variables) across
     /// the fully parsed operations.
     /// </summary>
-    internal sealed class DocumentValidationRulePackage : IRulePackage<DocumentValidationContext>
+    public sealed class DocumentValidationRulePackage : IRulePackage<DocumentValidationContext>
     {
         /// <summary>
         /// Gets the singleton instance of this rule package.
@@ -60,6 +60,26 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
         }
 
         /// <summary>
+        /// Allow for addition of custom validation rules for a given document part. Rules added via this method
+        /// will be executed against the document part in the order they are supplied and AFTER all baseline rules
+        /// are executed.
+        /// </summary>
+        /// <param name="documentPart">The document part targetd by the rule</param>
+        /// <param name="rule">The rule to be invoked.</param>
+        public void AddCustomRule(DocumentPartType documentPart, IRuleStep<DocumentValidationContext> rule)
+        {
+            Validation.ThrowIfNull(rule, nameof(rule));
+
+            if (!_stepCollection.TryGetValue(documentPart, out var steps))
+            {
+                steps = [];
+                _stepCollection.Add(documentPart, steps);
+            }
+
+            steps.Add(rule);
+        }
+
+        /// <summary>
         /// Fetches the rules that should be executed, in order, for the given context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -67,18 +87,18 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
         public IEnumerable<IRuleStep<DocumentValidationContext>> FetchRules(DocumentValidationContext context)
         {
             var type = context?.ActivePart?.PartType ?? DocumentPartType.Unknown;
-            if (!_stepCollection.ContainsKey(type))
-                return Enumerable.Empty<IRuleStep<DocumentValidationContext>>();
+            if (!_stepCollection.TryGetValue(type, out var rules))
+                return [];
 
-            return _stepCollection[type];
+            return rules;
         }
 
         private void BuildDocumentSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_1_1_OnlyExecutableDefinition());
-            steps.Add(new Rule_5_2_1_1_OperationNamesMustBeUnique());
-            steps.Add(new Rule_5_2_2_1_LoneAnonymousOperation());
+            steps.Add(new Rule_5_2_2_1_OperationNamesMustBeUnique());
+            steps.Add(new Rule_5_2_3_1_LoneAnonymousOperation());
 
             _stepCollection.Add(DocumentPartType.Document, steps);
         }
@@ -120,9 +140,9 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_1_1_ExecutableOperationDefinition());
-            steps.Add(new Rule_5_2_OperationTypeMustBeDefinedOnTheSchema());
-            steps.Add(new Rule_5_2_3_1_SubscriptionsRequire1RootField());
-            steps.Add(new Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField());
+            steps.Add(new Rule_5_2_1_1_OperationTypeMustBeDefinedOnTheSchema());
+            steps.Add(new Rule_5_2_4_1_SubscriptionsRequire1RootField());
+            steps.Add(new Rule_5_2_4_1_SubscriptionsRequire1EncounteredSubscriptionField());
 
             // variable checks, the 5.8 series, are evaluated together,in context of the operation,
             // due to the nature of fragment spreads and variables used
@@ -165,7 +185,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
             steps.Add(new Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs());
             steps.Add(new Rule_5_3_3_A_LeafFieldMustNotHaveChildFields());
             steps.Add(new Rule_5_3_3_B_NonLeafFieldMustHaveChildField());
-            steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField());
+            steps.Add(new Rule_5_4_3_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField());
 
             _stepCollection.Add(DocumentPartType.Field, steps);
         }
@@ -173,7 +193,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
         private void BuildDirectiveSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
-            steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
+            steps.Add(new Rule_5_4_3_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
             steps.Add(new Rule_5_7_1_DirectiveMustBeDefinedInTheSchema());
             steps.Add(new Rule_5_7_2_DirectiveMustBeUsedInValidLocation());
             steps.Add(new Rule_5_7_3_NonRepeatableDirectiveIsDefinedNoMoreThanOncePerLocation());
@@ -198,5 +218,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation
 
             _stepCollection.Add(DocumentPartType.InputField, steps);
         }
+
+        /// <inheritdoc />
+        public bool HasAnyRules => _stepCollection.Count > 0;
     }
 }

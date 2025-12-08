@@ -288,7 +288,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task NonNullableInputFieldWithDefaultValue_WhenVariableSuppliedViaDefaultNull_UsesDefaultValueOfField()
         {
             // Direct Test of:
-            // https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed.Allowing-optional-variables-when-default-values-exist
+            // https://spec.graphql.org/September2025/#sec-All-Variable-Usages-Are-Allowed.Allowing-optional-variables-when-default-values-exist
             var server = new TestServerBuilder()
                   .AddGraphQL(o =>
                   {

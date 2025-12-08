@@ -82,8 +82,8 @@ namespace GraphQL.AspNet.Tests.Parsing
         [TestCase(false, "\"abc123\"bob", 0, "\"abc123\"", 8, 8)] // regular string
         [TestCase(false, "\"abc1\\\"23\"bob", 0, "\"abc1\\\"23\"", 10, 10)] // regular string with escaped quote
         [TestCase(false, @"""bo\r\tb""", 0, @"""bo\r\tb""", 9, 9)] // contains escaped chars
-        [TestCase(false, @"""bo\u123Aqeqwe""", 0, @"""bo\u123Aqeqwe""", 15, 15)] // contains unicode escaped char '\u123'
-        [TestCase(false, @"""bo\u123Aq\r\t\\\fe\u12Q\u1\u1F\u1f\ue\n\r\u34 qwe""", 0, @"""bo\u123Aq\r\t\\\fe\u12Q\u1\u1F\u1f\ue\n\r\u34 qwe""", 51, 51)] // contains unicode escaped char '\u123'
+        [TestCase(false, @"""bo\u123Aqeqwe""", 0, @"""bo\u123Aqeqwe""", 15, 15)] // contains unicode escaped char '\u123A'
+        [TestCase(false, @"""bo\u123Aq\r\t\\\fe\u1212Q\u1234\u1FAB\u1fbC\ueac9\n\r\u342f qwe""", 0, @"""bo\u123Aq\r\t\\\fe\u1212Q\u1234\u1FAB\u1fbC\ueac9\n\r\u342f qwe""", 65, 65)] // contains multiple escaped chars of varing cases
         [TestCase(true, "LongStringNoExtra.txt", 0, null, 325, 325)]
         [TestCase(true, "LongStringWithExtra.txt", 0, null, 313, 313)]
         [TestCase(true, "LongStringFromOffSet.txt", 6, null, 313, 319)]
@@ -279,6 +279,14 @@ namespace GraphQL.AspNet.Tests.Parsing
         [TestCase("2abc", 0, 0, 1, 0)]
         [TestCase("a!bc", 0, 1, 1, 1)]
         [TestCase("abc\nabd!bc", 4, 7, 2, 3)]
+
+        // Unicode letters should be rejected
+        [TestCase("café", 0, 3, 1, 3)] // é (U+00E9) is not valid
+        [TestCase("naïve", 0, 2, 1, 2)] // ï (U+00EF) is not valid
+        [TestCase("αβγ", 0, 0, 1, 0)] // Greek letters not valid (starts with α)
+        [TestCase("hello_世界", 0, 6, 1, 6)] // Chinese characters not valid
+        [TestCase("test₁", 0, 4, 1, 4)] // Subscript digit (U+2081) not valid
+        [TestCase("café123", 0, 3, 1, 3)] // é followed by digits still invalid
         public void SourceText_NextName_InvalidNames(
         string text,
         int offset,

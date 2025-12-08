@@ -12,15 +12,19 @@ namespace GraphQL.AspNet.Tests.Directives
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Source;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Execution.Source;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
@@ -28,11 +32,6 @@ namespace GraphQL.AspNet.Tests.Directives
     using Microsoft.Extensions.DependencyInjection;
     using NSubstitute;
     using NUnit.Framework;
-    using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
-    using GraphQL.AspNet.Interfaces.Execution.Variables;
-    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
@@ -143,17 +142,17 @@ namespace GraphQL.AspNet.Tests.Directives
         }
 
         [Test]
-        public async Task NullReasonGiven_ReasonIsSetToNull()
+        public async Task NullReasonGiven_ThrowsException()
         {
             _directiveLocation = DirectiveLocation.FIELD_DEFINITION;
             _reason = null;
             _directiveTarget = _schema.AllSchemaItems().First(x => x.IsField<TwoPropertyObject>("property1"));
-
             var context = await this.ExecuteRequest();
 
-            var item = _directiveTarget as IGraphField;
-            Assert.IsTrue(item.IsDeprecated);
-            Assert.IsNull(item.DeprecationReason);
+            // type expression on reason should force a null check during validation, not directive execution
+            Assert.AreEqual(GraphMessageSeverity.Critical, context.Messages.Severity);
+            Assert.AreEqual(1, context.Messages.Count);
+            Assert.IsNotNull(context.Messages[0].MetaData["Rule"].ToString() == "5.7");
         }
 
         [Test]

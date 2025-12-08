@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Internal.Resolvers.Introspeection;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
 
     /// <summary>
@@ -79,7 +78,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "interfaces"),
                 (gt) => Task.FromResult(gt?.Interfaces),
-                $"For {TypeKind.OBJECT.ToString()} types, contains a list of interface this type implements; otherwise null.");
+                $"For {TypeKind.OBJECT} types, contains a list of interface this type implements; otherwise null.");
 
             // possibleTypes
             this.GraphFieldCollection.AddField<IntrospectedType, IReadOnlyList<IntrospectedType>>(
@@ -110,12 +109,31 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
             this.GraphFieldCollection.AddField(enumValuesField);
 
             // inputFields
-            this.GraphFieldCollection.AddField<IntrospectedType, IReadOnlyList<IntrospectedInputValueType>>(
+            var inputFieldsField = new MethodGraphField(
                 "inputFields",
                 new GraphTypeExpression(Constants.ReservedNames.INPUT_VALUE_TYPE, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "inputFields"),
-                (gt) => Task.FromResult(gt?.InputFields),
-                $"For {TypeKind.INPUT_OBJECT.ToString()} types, declares the fields that need to be supplied when submitting an object on a query; otherwise null.");
+                mode: FieldResolutionMode.PerSourceItem,
+                resolver: new Type_InputFieldsGraphFieldResolver())
+            {
+                Description = $"For {TypeKind.INPUT_OBJECT} types, declares the fields that need to be supplied when submitting an object on a query; otherwise null.",
+            };
+
+            inputFieldsField.Arguments.AddArgument(
+                Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME,
+                Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME,
+                new GraphTypeExpression(Constants.ScalarNames.BOOLEAN),
+                typeof(bool),
+                false);
+            this.GraphFieldCollection.AddField(inputFieldsField);
+
+            // isOneOf
+            this.GraphFieldCollection.AddField<IntrospectedType, bool>(
+                "isOneOf",
+                new GraphTypeExpression(Constants.ScalarNames.BOOLEAN),
+                new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "isOneOf"),
+                (gt) => Task.FromResult(gt?.IsOneOf ?? false),
+                $"A boolean value indicating if a given {TypeKind.INPUT_OBJECT} type is declared as an input union. This value is always false for non {TypeKind.INPUT_OBJECT} types");
 
             // ofType
             this.GraphFieldCollection.AddField<IntrospectedType, IntrospectedType>(
@@ -123,7 +141,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
                 new GraphTypeExpression(Constants.ReservedNames.TYPE_TYPE),
                 new IntrospectedRoutePath(SchemaItemCollections.Types, this.Name, "ofType"),
                 (gt) => Task.FromResult(gt?.OfType),
-                $"For {TypeKind.NON_NULL.ToString()} and {TypeKind.LIST.ToString()} meta types, declares the underlying type that is " +
+                $"For {TypeKind.NON_NULL} and {TypeKind.LIST} meta types, declares the underlying type that is " +
                 "wrapped by this type; otherwise null.");
 
             // specifiedByURL

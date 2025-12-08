@@ -117,7 +117,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add((new Uri("/relativeUri/path1", UriKind.Relative), "\"/relativeUri/path1\""));
 
             _testValues.Add(("test string", "\"test string\""));
-            _testValues.Add(("   white\tspace   ", "\"   white\tspace   \""));
+            _testValues.Add(("   white\tspace   ", "\"   white\\tspace   \""));
             _testValues.Add(("test string", "\"test string\""));
             _testValues.Add(("있지", "\"\\uc788\\uc9c0\""));
             _testValues.Add((string.Empty, "\"\""));
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add((new TwoPropertyObject(), "{ property1: null property2: 0 }"));
             _testValues.Add((new TwoPropertyObject() { Property1 = "str", Property2 = 5 }, "{ property1: \"str\" property2: 5 }"));
             _testValues.Add((new TwoPropertyObject() { Property1 = "null", Property2 = 99 }, "{ property1: \"null\" property2: 99 }"));
-            _testValues.Add((new TwoPropertyObject() { Property1 = "st\"ring", Property2 = -5 }, "{ property1: \"st\\u0022ring\" property2: -5 }"));
+            _testValues.Add((new TwoPropertyObject() { Property1 = "st\"ring", Property2 = -5 }, "{ property1: \"st\\\"ring\" property2: -5 }"));
 
             var parent = new Person("StandardPerson") { Name = "Bob", Child = new Person("standardChild") { Name = "Jane" } };
             _testValues.Add((parent, "{ name: \"Bob\" child: { name: \"Jane\" child: null } }"));

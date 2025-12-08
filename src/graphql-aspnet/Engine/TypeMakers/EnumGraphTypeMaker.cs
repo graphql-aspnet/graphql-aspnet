@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
 
             var graphType = new EnumGraphType(
                 _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(template.Name),
-                concreteType,
+                template.ObjectType,
                 template.Route,
                 enumDirectives)
             {

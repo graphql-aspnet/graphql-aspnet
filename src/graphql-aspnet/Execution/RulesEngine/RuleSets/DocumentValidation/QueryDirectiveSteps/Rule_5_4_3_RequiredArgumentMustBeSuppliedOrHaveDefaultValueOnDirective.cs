@@ -17,10 +17,11 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// All required input arguments for all fields/directives must be supplied on the document or declare a default
-    /// value in the target schema.
+    /// <para>(5.4.3) All required input arguments for all fields/directives must be supplied on the document or declare a default
+    /// value in the target schema.</para>
+    /// <para>Reference: <see href="https://spec.graphql.org/September2025/#sec-Required-Arguments" /> .</para>
     /// </summary>
-    internal class Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective
+    internal class Rule_5_4_3_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective
         : DocumentPartValidationRuleStep<IDirectiveDocumentPart>
     {
         /// <inheritdoc />
@@ -60,7 +61,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         }
 
         /// <inheritdoc />
-        public override string RuleNumber => "5.4.2.1";
+        public override string RuleNumber => "5.4.3";
 
         /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Required-Arguments";

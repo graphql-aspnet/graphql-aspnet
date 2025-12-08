@@ -10,14 +10,15 @@
 namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldValidation;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
-    /// A rule package for performing final validation checks of a rule and all its children.
+    /// A rule package defining the rules to perform final validation checks of a field value and its children.
     /// </summary>
-    internal sealed class FieldValidationRulePackage : IRulePackage<FieldValidationContext>
+    public sealed class FieldValidationRulePackage : IRulePackage<FieldValidationContext>
     {
         /// <summary>
         /// Gets the singleton instance of this rule package.
@@ -37,10 +38,27 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution
             _ruleSet.Add(new GraphDataItem_FinalizeDataItem());
         }
 
+        /// <summary>
+        /// Allow for addition of custom validation rules for a given document part. Rules added via this method
+        /// will be executed against the document part in the order they are supplied and AFTER all baseline rules
+        /// are executed.
+        /// </summary>
+        /// <param name="rule">The rule to be invoked.</param>
+        public void AddCustomRule(IRuleStep<FieldValidationContext> rule)
+        {
+            Validation.ThrowIfNull(rule, nameof(rule));
+
+            // insert the rule just before finalize data item (which must be last)
+            _ruleSet.Insert(_ruleSet.Count - 2, rule);
+        }
+
         /// <inheritdoc/>
         public IEnumerable<IRuleStep<FieldValidationContext>> FetchRules(FieldValidationContext context)
         {
             return _ruleSet;
         }
+
+        /// <inheritdoc />
+        public bool HasAnyRules => _ruleSet.Count > 0;
     }
 }

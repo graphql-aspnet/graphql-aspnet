@@ -24,7 +24,8 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     [Serializable]
     [DebuggerDisplay("{Name}")]
     public class InputArgument
-    { /// <summary>
+    {
+        /// <summary>
       /// Initializes a new instance of the <see cref="InputArgument" /> class.
       /// </summary>
       /// <param name="argument">The field argument defined in a schema.</param>

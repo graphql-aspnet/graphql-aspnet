@@ -157,7 +157,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
             // Directive order matters we can only execute one at a time
             // to ensure predicatable execution order
-            // https://spec.graphql.org/October2021/#sec-Language.Directives
+            // https://spec.graphql.org/September2025/#sec-Language.Directives
             var totalApplied = 0;
             foreach (var directiveDocumentPart in directivesToExecute)
             {

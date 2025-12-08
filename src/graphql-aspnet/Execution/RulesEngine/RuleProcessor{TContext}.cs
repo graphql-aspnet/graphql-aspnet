@@ -23,7 +23,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine
     {
         private static readonly int _maxDepth;
 
-        private readonly IRulePackage<TContext> _rulePackage;
         private readonly bool _childrenFirst;
 
         /// <summary>
@@ -46,7 +45,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine
             IRulePackage<TContext> rulePackage,
             bool childrenFirst = false)
         {
-            _rulePackage = Validation.ThrowIfNullOrReturn(rulePackage, nameof(rulePackage));
+            this.RulePackage = Validation.ThrowIfNullOrReturn(rulePackage, nameof(rulePackage));
             _childrenFirst = childrenFirst;
         }
 
@@ -56,8 +55,11 @@ namespace GraphQL.AspNet.Execution.RulesEngine
         /// <param name="initialContext">The initial, "Top level" context to execute against the rule
         /// set this instance contains.</param>
         /// <returns><c>true</c> if the context, at all levels, completed all steps successfully, <c>false</c> otherwise.</returns>
-        public bool Execute(TContext initialContext)
+        public virtual bool Execute(TContext initialContext)
         {
+            if (!this.RulePackage.HasAnyRules)
+                return true;
+
             return this.Execute(initialContext.AsEnumerable());
         }
 
@@ -67,8 +69,11 @@ namespace GraphQL.AspNet.Execution.RulesEngine
         /// <param name="initialContexts">The initial, "Top level" set of contexts to execute against the rule
         /// set this instance contains.</param>
         /// <returns><c>true</c> if all contexts at all levels completed all steps successfully, <c>false</c> otherwise.</returns>
-        public bool Execute(IEnumerable<TContext> initialContexts)
+        public virtual bool Execute(IEnumerable<TContext> initialContexts)
         {
+            if (!this.RulePackage.HasAnyRules)
+                return true;
+
             var completedAllSteps = true;
             foreach (var context in initialContexts)
             {
@@ -103,7 +108,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine
                     completedAllSteps = this.ProcessChildContexts(context, currentDepth);
 
                 var allowChildrenToExecute = true;
-                foreach (var step in _rulePackage.FetchRules(context))
+                foreach (var step in this.RulePackage.FetchRules(context))
                 {
                     if (step.ShouldExecute(context))
                     {
@@ -140,5 +145,11 @@ namespace GraphQL.AspNet.Execution.RulesEngine
 
             return completedAllSteps;
         }
+
+        /// <summary>
+        /// Gets the complete set of rules this processor has at its disposal to be executed as a
+        /// document is processed.
+        /// </summary>
+        protected IRulePackage<TContext> RulePackage { get; }
     }
 }

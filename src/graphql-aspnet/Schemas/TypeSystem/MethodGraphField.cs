@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -83,8 +82,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <inheritdoc/>
         public void AssignParent(IGraphType parent)
         {
-            Validation.ThrowIfNull(parent, nameof(parent));
-            _parent = parent;
+            _parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
+            this.SchemaCoordinate = _parent is ISchemaCoordinateItem coordItem
+                ? $"{coordItem.SchemaCoordinate}.{this.Name}"
+                : $"UNKNOWN.{this.Name}";
         }
 
         /// <inheritdoc/>
@@ -160,6 +161,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc/>
         public string Name { get; protected set; }
+
+        /// <inheritdoc />
+        public string SchemaCoordinate { get; protected set; }
 
         /// <inheritdoc />
         public Type ObjectType { get; }

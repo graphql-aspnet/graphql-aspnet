@@ -13,10 +13,12 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Execution.Variables.ResolvedVariableTestData;
     using GraphQL.AspNet.Tests.Framework;
+    using NSubstitute;
     using NUnit.Framework;
 
     [TestFixture]
@@ -479,9 +481,12 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
         [Test]
         public void KeysReturnsExpectedKeys()
         {
+            var itemSet1 = Substitute.For<IResolvableValueItem>();
+            var itemSet2 = Substitute.For<IResolvableValueItem>();
+
             var collection = new ResolvedVariableCollection();
-            collection.AddVariable(new ResolvedVariable("key1", new GraphTypeExpression("BOB"), "bob"));
-            collection.AddVariable(new ResolvedVariable("key2", new GraphTypeExpression("BOB"), "bob2"));
+            collection.AddVariable(new ResolvedVariable("key1", new GraphTypeExpression("BOB"), itemSet1, "bob"));
+            collection.AddVariable(new ResolvedVariable("key2", new GraphTypeExpression("BOB"), itemSet2, "bob2"));
 
             var keys = collection.Keys;
             Assert.AreEqual(2, Enumerable.Count<string>(keys));
@@ -492,8 +497,10 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
         [Test]
         public void ContainsKey_ReturnsExpectedTruthiness()
         {
+            var itemSet1 = Substitute.For<IResolvableValueItem>();
+
             var collection = new ResolvedVariableCollection();
-            collection.AddVariable(new ResolvedVariable("key1", new GraphTypeExpression("BOB"), "bob"));
+            collection.AddVariable(new ResolvedVariable("key1", new GraphTypeExpression("BOB"), itemSet1, "bob"));
 
             Assert.IsTrue((bool)collection.ContainsKey("key1"));
             Assert.IsFalse((bool)collection.ContainsKey("key2"));
@@ -502,9 +509,12 @@ namespace GraphQL.AspNet.Tests.Execution.Variables
         [Test]
         public void ValuesReturnsExpectedValues()
         {
+            var itemSet1 = Substitute.For<IResolvableValueItem>();
+            var itemSet2 = Substitute.For<IResolvableValueItem>();
+
             var collection = new ResolvedVariableCollection();
-            var val1 = new ResolvedVariable("key1", new GraphTypeExpression("BOB"), "bob");
-            var val2 = new ResolvedVariable("key2", new GraphTypeExpression("BOB"), "bob2");
+            var val1 = new ResolvedVariable("key1", new GraphTypeExpression("BOB"), itemSet1, "bob");
+            var val2 = new ResolvedVariable("key2", new GraphTypeExpression("BOB"), itemSet2, "bob2");
             collection.AddVariable(val1);
             collection.AddVariable(val2);
 

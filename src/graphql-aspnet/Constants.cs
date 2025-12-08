@@ -90,7 +90,7 @@ namespace GraphQL.AspNet
 
         /// <summary>
         /// Gets a collection of globally known directives that will be added to all schema's by default.
-        /// This is the @skip, @include and @deprecated directives required by graphql.
+        /// This is the @skip, @include, @deprecated, @specifiedBy and @oneOf directives required by graphql.
         /// </summary>
         /// <value>The global directives.</value>
         public static IReadOnlyList<Type> GlobalDirectives { get; } = new List<Type>()
@@ -99,6 +99,7 @@ namespace GraphQL.AspNet
             typeof(IncludeDirective),
             typeof(DeprecatedDirective),
             typeof(SpecifiedByDirective),
+            typeof(OneOfDirective),
         };
 
         /// <summary>
@@ -152,6 +153,12 @@ namespace GraphQL.AspNet
             /// The prefix applied, by default, to any class used as an INPUT_OBJECT.
             /// </summary>
             public const string INPUT_OBJECT_NAME_PREFIX = "Input_";
+
+            /// <summary>
+            /// The prefix applied, by default, to any class used as an INPUT_OBJECT with the
+            /// '@oneOf' directive applied.
+            /// </summary>
+            public const string INPUT_OBJECT_UNION_NAME_PREFIX = "Oneof_";
         }
 
         /// <summary>
@@ -282,6 +289,7 @@ namespace GraphQL.AspNet
             public const string INCLUDE_DIRECTIVE = "include";
             public const string DEPRECATED_DIRECTIVE = "deprecated";
             public const string SPECIFIED_BY_DIRECTIVE = "specifiedBy";
+            public const string ONEOF_DIRECTIVE = "oneOf";
 
             // type names for top level operation types
             public const string QUERY_TYPE_NAME = "Query";
@@ -620,6 +628,6 @@ namespace GraphQL.AspNet
         /// targets. This value is used as a base url for most validation rules to generate
         /// a link pointing to a violated rule.
         /// </summary>
-        public const string SPECIFICATION_URL = "https://spec.graphql.org/October2021/";
+        public const string SPECIFICATION_URL = "https://spec.graphql.org/September2025/";
     }
 }

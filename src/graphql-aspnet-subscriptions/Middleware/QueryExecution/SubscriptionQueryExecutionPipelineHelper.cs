@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
             this.AddQueryDocumentParsingMiddleware()
                 .AddValidateQueryDocumentMiddleware()
                 .AddAssignOperationMiddleware()
-                .AddValidateOperationVariableDataMiddleware();
+                .AddResolveVariableDataMiddleware();
 
             var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerRequest;
             if (authOption == AuthorizationMethod.PerRequest)

@@ -24,24 +24,34 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
             var invocationCount = 5 * unrollFactor;
 
             this.AddJob(Job.InProcess
-                    .WithPlatform(Platform.X64)
-                    .WithRuntime(CoreRuntime.Core60)
-                    .WithUnrollFactor(unrollFactor)
-                    .WithLaunchCount(launchCount)
-                    .WithWarmupCount(warmupCount)
-                    .WithInvocationCount(invocationCount)
-                    .WithIterationTime(TimeInterval.Millisecond * 200)
-                    .WithId("x64 .NET 6"));
+                .WithPlatform(Platform.X64)
+                .WithRuntime(CoreRuntime.Core80)
+                .WithUnrollFactor(unrollFactor)
+                .WithLaunchCount(launchCount)
+                .WithWarmupCount(warmupCount)
+                .WithInvocationCount(invocationCount)
+                .WithIterationTime(TimeInterval.Millisecond * 200)
+                .WithId("x64 .NET 8"));
 
             this.AddJob(Job.InProcess
                     .WithPlatform(Platform.X64)
-                    .WithRuntime(CoreRuntime.Core70)
+                    .WithRuntime(CoreRuntime.Core90)
                     .WithUnrollFactor(unrollFactor)
                     .WithLaunchCount(launchCount)
                     .WithWarmupCount(warmupCount)
                     .WithInvocationCount(invocationCount)
                     .WithIterationTime(TimeInterval.Millisecond * 200)
-                    .WithId("x64 .NET 7"));
+                    .WithId("x64 .NET 9"));
+
+            this.AddJob(Job.InProcess
+                    .WithPlatform(Platform.X64)
+                    .WithRuntime(CoreRuntime.Core10_0)
+                    .WithUnrollFactor(unrollFactor)
+                    .WithLaunchCount(launchCount)
+                    .WithWarmupCount(warmupCount)
+                    .WithInvocationCount(invocationCount)
+                    .WithIterationTime(TimeInterval.Millisecond * 200)
+                    .WithId("x64 .NET 10"));
         }
     }
 }

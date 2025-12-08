@@ -17,14 +17,14 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Execution.Source;
     using GraphQL.AspNet.Execution.Response;
+    using GraphQL.AspNet.Execution.Source;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Internal;
 
     /// <summary>
     /// An ecapsulation of a piece of real data supplied to, or resolved from, a graph field.
@@ -490,15 +490,15 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                     if (fieldSet.Fields.ContainsKey(field.FieldContext.Name))
                     {
                         throw new GraphExecutionException(
-                            $"Duplicate field name. The field '{field.Name}'  at '{this.Origin.Path.ToDotString()}' was resolved " +
+                            $"Duplicate field name. The field '{field.FieldContext.Field.SchemaCoordinate}' at '{this.Origin.Path.ToDotString()}' was resolved " +
                             "more than once for a source object, unable to generate a valid output. " +
                             $"Field collections require unique names. An attempt was made to add the field '{field.Name}', " +
                             $"for target type '{field.FieldContext.ExpectedSourceType?.FriendlyName() ?? "-all-"}' when the field " +
                             "name was already present in the output dictionary.",
                             this.Origin,
                             new InvalidOperationException(
-                                $"The source object '{this.SourceData}' successfully resolved a field name of '{field.Name}' more than once when it shouldn't. This may occur if a source " +
-                                "object type is referenced to to multiple target graph types in fragment references. Ensure that your source data uniquely maps to one fragment per field collection " +
+                                $"The source object '{this.SourceData}' successfully resolved a field name of '{field.FieldContext.Field.SchemaCoordinate}' more than once when it shouldn't. This may occur if a source " +
+                                "object type is referenced to multiple target graph types in fragment references. Ensure that your source data uniquely maps to one fragment per field collection " +
                                 "or that the fragments do not share property names."));
                     }
 

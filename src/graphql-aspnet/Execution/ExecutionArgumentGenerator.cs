@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
-    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -61,14 +60,14 @@ namespace GraphQL.AspNet.Execution
                         // its possible for a non-nullable variable to receive a
                         // null value due to a variable supplying null
                         // trap it and fail out the execution if so
-                        // see: https://spec.graphql.org/October2021/#sel-GALbLHNCCBCGIp9O
+                        // see: https://spec.graphql.org/September2025/#sel-GALbLHNCCBCIIj8Y
                         if (resolvedValue == null && argDefinition.TypeExpression.IsNonNullable)
                         {
                             messages.Critical(
-                              $"The value supplied to argument '{argDefinition.Name}' was <null> but its expected type expression " +
-                              $"is {argDefinition.TypeExpression}.",
-                              Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
-                              arg.Origin);
+                                $"The value supplied to argument '{argDefinition.SchemaCoordinate}' was <null> but its expected type expression " +
+                                $"is {argDefinition.TypeExpression}.",
+                                Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
+                                arg.Origin);
 
                             successful = false;
                             continue;
@@ -86,16 +85,12 @@ namespace GraphQL.AspNet.Execution
                     // its also highly likely that at this stage there is no value resolver issue
                     // just a flat out failure. As a result append a semi-helpful message to the begining
                     // of the message.
-                    var parentType = arg.Argument.Parent is IInputGraphField
-                        ? "input field"
-                        : "field";
-
                     messages.Critical(
-                      $"The value supplied to argument '{arg.Name}' for {parentType} '{arg.Argument.Parent.Name}' was " +
-                      $"not valid for the invocation. {uve.Message}",
-                      Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
-                      arg.Origin,
-                      uve);
+                        $"The value supplied to argument '{arg.Argument.SchemaCoordinate}' was " +
+                        $"not valid for the invocation. {uve.Message}",
+                        Constants.ErrorCodes.INVALID_ARGUMENT_VALUE,
+                        arg.Origin,
+                        uve);
 
                     successful = false;
                 }
@@ -108,6 +103,7 @@ namespace GraphQL.AspNet.Execution
                         arg.Origin,
                         ex);
 
+                    messages.Add(message);
                     successful = false;
                 }
             }

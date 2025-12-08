@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
     /// A representation of an enumeration, a fixed set of possible values.
     /// </summary>
     /// <seealso cref="IGraphType" />
-    public interface IEnumGraphType : IGraphType, ITypedSchemaItem
+    public interface IEnumGraphType : IGraphType, ITypedSchemaItem, ISchemaCoordinateItem
     {
         /// <summary>
         /// Adds a new value options to this ENUM graph type. If an enum with the given name

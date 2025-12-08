@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
     /// <summary>
     /// A field of data on an INPUT_OBJECT graph type.
     /// </summary>
-    public interface IInputGraphField : IGraphFieldBase, IDefaultValueSchemaItem, ITypedSchemaItem
+    public interface IInputGraphField : IGraphFieldBase, IDefaultValueSchemaItem, ITypedSchemaItem, IDeprecatable
     {
     }
 }

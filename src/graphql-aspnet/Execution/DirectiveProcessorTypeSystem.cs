@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Execution
                     {
                         throw new SchemaConfigurationException(
                             $"Unable to construct the schema '{schema.Name}'. " +
-                            $"The non-repeatable directive @{targetDirective.Name} is repeated on the schema item '{item.Name}'. (Target: '{item.Route.Path}', Schema: {schema.Name})");
+                            $"The non-repeatable directive {targetDirective.SchemaCoordinate} is repeated on the schema item '{item.Name}'. (Target: '{item.Route.Path}', Schema: {schema.Name})");
                     }
                 }
 

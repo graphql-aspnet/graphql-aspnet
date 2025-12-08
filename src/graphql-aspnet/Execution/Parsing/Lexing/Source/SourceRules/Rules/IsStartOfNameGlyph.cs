@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
     /// <summary>
     /// Validates that a source text is currently pointed at a character that can be the start
     /// of a name block.
+    /// Spec: <see href="https://spec.graphql.org/September2025/#sec-Names" />.
     /// </summary>
     /// <seealso cref="ISourceRule" />
     internal class IsStartOfNameGlyph : ISourceRule
@@ -39,7 +40,8 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
         {
             var c = text.Peek();
 
-            return c == '_' || char.IsLetter(c);
+            // NameStart: underscore or ASCII letter (A-Z, a-z) only
+            return c == '_' || c is >= 'A' and <= 'Z' || c is >= 'a' and <= 'z';
         }
     }
 }

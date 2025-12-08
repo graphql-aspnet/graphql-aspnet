@@ -11,8 +11,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCompletion;
+    using GraphQL.AspNet.Interfaces.Execution.RulesEngine;
 
     /// <summary>
     /// A rule package with the necessary rules to completion the execution of a single field context.
@@ -47,5 +47,8 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution
         {
             return _ruleSet;
         }
+
+        /// <inheritdoc />
+        public bool HasAnyRules => _ruleSet.Count > 0;
     }
 }

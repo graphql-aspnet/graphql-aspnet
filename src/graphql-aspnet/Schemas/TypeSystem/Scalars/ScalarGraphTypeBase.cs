@@ -103,6 +103,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public virtual string Name { get; set; }
 
         /// <inheritdoc />
+        public virtual string SchemaCoordinate => this.Name;
+
+        /// <inheritdoc />
         public virtual Type ObjectType { get; }
 
         /// <inheritdoc />

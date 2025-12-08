@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         private const string AnchorTag_582 = "#sec-Variables-Are-Input-Types";
         private const string AnchorTag_583 = "#sec-All-Variable-Uses-Defined";
         private const string AnchorTag_584 = "#sec-All-Variables-Used";
-        private const string AnchorTag_585 = "#sec-All-Variable-Usages-are-Allowed";
+        private const string AnchorTag_585 = "#sec-All-Variable-Usages-Are-Allowed";
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
@@ -276,7 +276,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
         /// defined on section 5.8.5 of the specification.
         /// </summary>
         /// <remarks>
-        /// Spec: <see href="https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed" />.
+        /// Spec: <see href="https://spec.graphql.org/September2025/#sec-All-Variable-Usages-Are-Allowed" />.
         /// </remarks>
         /// <param name="context">The context being evaluated.</param>
         /// <param name="variableUsage">The variable usage where the variable

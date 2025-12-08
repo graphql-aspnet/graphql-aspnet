@@ -70,6 +70,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <inheritdoc />
         public virtual string Name { get; set; }
 
+        /// <inheritdoc cref="ISchemaCoordinateItem.SchemaCoordinate" />
+        public string SchemaCoordinate => this.Name;
+
         /// <inheritdoc />
         public virtual string Description { get; set; }
 

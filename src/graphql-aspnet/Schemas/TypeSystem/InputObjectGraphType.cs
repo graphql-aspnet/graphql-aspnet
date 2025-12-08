@@ -84,6 +84,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IInputGraphField this[string fieldName] => this.Fields[fieldName];
 
         /// <inheritdoc />
+        public string SchemaCoordinate => this.Name;
+
+        /// <inheritdoc />
         public string Name { get; set; }
 
         /// <inheritdoc />

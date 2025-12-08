@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.Schema
     /// Represents a scalar supported by a schema.
     /// </summary>
     /// <seealso cref="ISchemaItem" />
-    public interface IScalarGraphType : IGraphType, ITypedSchemaItem
+    public interface IScalarGraphType : IGraphType, ITypedSchemaItem, ISchemaCoordinateItem
     {
         /// <summary>
         /// Gets a collection of other types that this scalar may be declared as. Scalars maybe

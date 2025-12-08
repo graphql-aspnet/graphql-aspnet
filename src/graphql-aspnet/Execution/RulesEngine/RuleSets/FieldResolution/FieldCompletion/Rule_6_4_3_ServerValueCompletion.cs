@@ -93,24 +93,24 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
                 if (!analysisResult.FoundTypes.Any())
                 {
                     var allowedGraphTypes = context.Schema.KnownTypes.FindConcreteTypes(expectedGraphType)?
-                        .Select(x => $"'{x.Name}'");
+                        .Select(x => $"'{x.Name}'") ?? [];
 
-                    exceptionText = $"For target field of '{context.FieldPath}' (Graph Type: {expectedGraphType.Name}, Kind: {expectedGraphType.Kind}), a supplied object " +
-                        $"of type '{rootSourceType.FriendlyName()}' attempted to fill the request but graphql was not able to coerce the result " +
-                        $"into any allowed type. Allowed Types [{string.Join(", ", allowedGraphTypes)}].";
+                    exceptionText = $"For target field of '{context.Field.SchemaCoordinate}', a supplied object " +
+                                    $"of type '{rootSourceType.FriendlyName()}' attempted to fill the request but graphql was not able to coerce the result " +
+                                    $"into any allowed type. Allowed Types [{string.Join(", ", allowedGraphTypes)}].";
                 }
                 else
                 {
                     var foundTypeNames = string.Join(", ", analysisResult.FoundTypes.Select(x => $"'{x.FriendlyName()}'"));
 
-                    exceptionText = $"For target field of '{context.FieldPath}' (Graph Type: {expectedGraphType.Name}, Kind: {expectedGraphType.Kind}), a supplied object " +
-                        $"of type '{rootSourceType.FriendlyName()}' attempted to fill the request but graphql was not able to coerce the result " +
-                        $"into a single allowed .NET type. Matched .NET Types [{string.Join(", ", foundTypeNames)}].";
+                    exceptionText = $"For target field of '{context.Field.SchemaCoordinate}', a supplied object " +
+                                    $"of type '{rootSourceType.FriendlyName()}' attempted to fill the request but graphql was not able to coerce the result " +
+                                    $"into a single allowed .NET type. Matched .NET Types [{string.Join(", ", foundTypeNames)}].";
                 }
 
                 this.ValidationError(
                     context,
-                    $"A field resolver for '{context.Field.Route.Path}' generated a result " +
+                    $"A field resolver for '{context.Field.SchemaCoordinate}' generated a result " +
                     "not compatible with the field's allowed graph types. See exception for details.",
                     new GraphExecutionException(exceptionText));
 
@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
                 var isValidValue = expectedGraphType.ValidateObject(dataObject);
                 if (!isValidValue)
                 {
-                    string actual = string.Empty;
+                    string actual;
                     if (expectedGraphType is ObjectGraphType)
                         actual = dataObject?.GetType().FriendlyName();
                     else
@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCom
 
                     this.ValidationError(
                         context,
-                        $"A resolved value for field '{context.FieldPath}' does not match the required graph type. " +
+                        $"A resolved value for field '{context.Field.SchemaCoordinate}' does not match the required graph type. " +
                         $"Expected '{expectedGraphType.Name}' but got '{actual}'.");
 
                     context.DataItem.InvalidateResult();

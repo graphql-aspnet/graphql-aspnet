@@ -53,18 +53,18 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             AddQueryFailure("5.1.1", "fakeOperationType Operation1{ peopleMovers { elevator(id: 5){id, name} } }");
 
             // mutation is not valid in this schema
-            AddQueryFailure("5.2", "mutation Operation1{ peopleMovers { elevator(id: 5){id, name } } }");
+            AddQueryFailure("5.2.1.1", "mutation Operation1{ peopleMovers { elevator(id: 5){id, name } } }");
 
             // duplciate named operations
-            AddQueryFailure("5.2.1.1", "query Operation1{ peopleMovers { elevator(id: 5){id, name } } }" +
-                                "query Operation1{ peopleMovers { elevator(id: 8){id, name } } }");
+            AddQueryFailure("5.2.2.1", "query Operation1{ peopleMovers { elevator(id: 5){id, name } } }" +
+                                       "query Operation1{ peopleMovers { elevator(id: 8){id, name } } }");
 
             // Anonymous operation must be declared alone
-            AddQueryFailure("5.2.2.1", "{ peopleMovers { elevator(id: 5){id, name} } }" +
-                                "query Operation1{ peopleMovers { elevator(id: 8){id, name } } }");
+            AddQueryFailure("5.2.3.1", "{ peopleMovers { elevator(id: 5){id, name} } }" +
+                                       "query Operation1{ peopleMovers { elevator(id: 8){id, name } } }");
 
-            AddQueryFailure("5.2.2.1", "query { peopleMovers { elevator(id: 5){id, name} } }" +
-                                "query { peopleMovers { elevator(id: 8){id, name } } }");
+            AddQueryFailure("5.2.3.1", "query { peopleMovers { elevator(id: 5){id, name} } }" +
+                                       "query { peopleMovers { elevator(id: 8){id, name } } }");
 
             // field "search" not declared on "query"
             AddQueryFailure("5.3.1", "{ search { " +
@@ -140,10 +140,10 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             AddQueryFailure("5.4.2", "query Operation1{ peopleMovers @restrict(someValue: 1, someValue: 2) { elevator(id: 5){ id name } } }");
 
             // required argument must be provided (id is required on elevator but not provided)
-            AddQueryFailure("5.4.2.1", "query Operation1{ peopleMovers { elevator(){ id name } } }");
+            AddQueryFailure("5.4.3", "query Operation1{ peopleMovers { elevator(){ id name } } }");
 
             // required argument must be provided ("someValue" required on @Restrict but not provided)
-            AddQueryFailure("5.4.2.1", "query Operation1{ peopleMovers @restrict { elevator (id: 5) { id name } } }");
+            AddQueryFailure("5.4.3", "query Operation1{ peopleMovers @restrict { elevator (id: 5) { id name } } }");
 
             // argument "e" representing ElevatorBindingModel is nullable on the "matchElevator" field
             // and was not supplied. This is allowed, "e" should be interpreted as null

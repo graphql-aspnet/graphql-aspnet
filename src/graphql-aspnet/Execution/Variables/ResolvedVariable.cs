@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Execution.Variables
 {
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Schemas;
 
@@ -24,19 +25,26 @@ namespace GraphQL.AspNet.Execution.Variables
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="typeExpression">The type expression.</param>
+        /// <param name="resolvableItem">The resolvable item that was parsed to produce the <paramref name="value" />.</param>
         /// <param name="value">The value.</param>
-        /// <param name="isDefaultValue">if set to <c>true</c>, indicates that <paramref name="value"/>
-        /// is the default value declared on the original variable definition..</param>
-        public ResolvedVariable(string name, GraphTypeExpression typeExpression, object value, bool isDefaultValue = false)
+        /// <param name="isDefaultValue">
+        /// if set to <c>true</c>, indicates that <paramref name="value" />
+        /// is the default value declared on the original variable definition..
+        /// </param>
+        public ResolvedVariable(string name, GraphTypeExpression typeExpression, IResolvableValueItem resolvableItem, object value, bool isDefaultValue = false)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
+            this.ResovableItem = Validation.ThrowIfNullOrReturn(resolvableItem, nameof(resolvableItem));
             this.Value = value;
             this.IsDefaultValue = isDefaultValue;
         }
 
         /// <inheritdoc />
         public string Name { get; }
+
+        /// <inheritdoc />
+        public IResolvableValueItem ResovableItem { get; }
 
         /// <inheritdoc />
         public object Value { get; }

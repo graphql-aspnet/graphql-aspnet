@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
         /// Initializes a new instance of the <see cref="InputArgument_B_AssignInputArgumentForDirective"/> class.
         /// </summary>
         public InputArgument_B_AssignInputArgumentForDirective()
-            : base(SyntaxNodeType.InputItem)
+            : base(SyntaxNodeType.InputArgument)
         {
         }
 

@@ -16,10 +16,11 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// All required input arguments for all fields/directives must be supplied on the document or declare a default
-    /// value in the target schema.
+    /// <para>(5.4.3) All required input arguments for all fields/directives must be supplied on the document or declare a default
+    /// value in the target schema.</para>
+    /// <para>Reference: <see href="https://spec.graphql.org/September2025/#sec-Required-Arguments" /> .</para>
     /// </summary>
-    internal class Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField
+    internal class Rule_5_4_3_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField
         : DocumentPartValidationRuleStep<IFieldDocumentPart>
     {
         /// <inheritdoc />
@@ -46,7 +47,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
                     this.ValidationError(
                         context,
                         fieldSelection.SourceLocation,
-                        $"Missing Input Argument. The field '{fieldSelection.Name}' requires an input argument named '{argument.Name}'");
+                        $"Missing Input Argument. The field '{fieldSelection.Field.SchemaCoordinate}' requires an input argument named '{argument.SchemaCoordinate}'");
                     allArgsValid = false;
                 }
             }
@@ -55,7 +56,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
         }
 
         /// <inheritdoc />
-        public override string RuleNumber => "5.4.2.1";
+        public override string RuleNumber => "5.4.3";
 
         /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Required-Arguments";

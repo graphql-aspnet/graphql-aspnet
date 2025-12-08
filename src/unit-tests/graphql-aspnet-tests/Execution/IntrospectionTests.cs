@@ -49,8 +49,8 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNotNull(schema.DeclaredDirectives);
             Assert.AreEqual(server.Schema.Description, schema.Description);
 
-            // skip , include, deprecated, specifiedBy
-            Assert.AreEqual(4, schema.DeclaredDirectives.Count());
+            // skip , include, deprecated, specifiedBy, oneOf
+            Assert.AreEqual(5, schema.DeclaredDirectives.Count());
         }
 
         [Test]
@@ -1474,6 +1474,10 @@ namespace GraphQL.AspNet.Tests.Execution
                                     {
                                       ""name"": ""include"",
                                       ""isRepeatable"": false
+                                    },
+                                    {
+                                      ""name"" : ""oneOf"",
+                                      ""isRepeatable"" : false
                                     },
                                     {
                                       ""name"": ""skip"",

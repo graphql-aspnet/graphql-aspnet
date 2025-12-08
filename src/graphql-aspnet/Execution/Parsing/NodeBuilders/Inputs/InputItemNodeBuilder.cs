@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
 {
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
-    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
@@ -48,7 +47,7 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
             tokenStream.Next();
 
             var inputItemNode = new SyntaxNode(
-                SyntaxNodeType.InputItem,
+                SyntaxNodeType.InputArgument,
                 startLocation,
                 new SyntaxNodeValue(name));
 

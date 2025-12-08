@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 {
                     resolvedValue = variableValue.Value;
 
-                    // A note exists on rule 5.8.5 (https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed.Allowing-optional-variables-when-default-values-exist)
+                    // A note exists on rule 5.8.5 (https://spec.graphql.org/September2025/#sec-All-Variable-Usages-Are-Allowed)
                     // saying that IF a variable is not supplied (meaning default value was used) and IF the default value that was used for the variable is
                     // null and IF the target location defines a default value
                     // the default value of the target location should be used instead

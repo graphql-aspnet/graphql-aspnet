@@ -259,7 +259,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <remarks>This method is a direct implementation of the "ArtTypesCompatiable"
         /// algorithm defined in the graphql spec rule 5.8.5.<br/>
-        /// Spect: <see href="https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed" />.
+        /// Spect: <see href="https://spec.graphql.org/September2025/#sec-All-Variable-Usages-Are-Allowed" />.
         /// </remarks>
         /// <param name="target">The target expression to which a value is being given.</param>
         /// <param name="supplied">The expression of the value to be supplied to the target.</param>

@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Execution.Parsing
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using KEYWORDS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Keywords;
@@ -103,8 +104,16 @@ namespace GraphQL.AspNet.Execution.Parsing
                 // a query or mutation MAY start with a keyword declaration
                 // or skipping all that and variables, just be an open brace
                 // see spec: section 2.3 "query shorthand"
+                // ---------
+                // as of GraphQL Spec - Sept 2025, descriptions can appear before
+                // operations and fragments. Use PeekMatch to look ahead when a string
+                // token is encountered to determine the correct builder to use.
                 ISyntaxNodeBuilder builder;
                 if (tokenStream.Match(KEYWORDS.Fragment.Span))
+                {
+                    builder = NodeBuilderFactory.CreateBuilder(SyntaxNodeType.NamedFragment);
+                }
+                else if (tokenStream.Match(TokenType.String) && tokenStream.PeekMatch(KEYWORDS.Fragment.Span))
                 {
                     builder = NodeBuilderFactory.CreateBuilder(SyntaxNodeType.NamedFragment);
                 }

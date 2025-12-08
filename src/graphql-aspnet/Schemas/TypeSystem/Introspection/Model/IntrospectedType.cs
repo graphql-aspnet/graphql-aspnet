@@ -14,10 +14,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Schema;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A model object representing the introspected data of a graph type declared on a schema.
@@ -60,6 +59,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             this.EnumValues = null;
             this.InputFields = null;
             this.SpecifiedByUrl = null;
+            this.IsOneOf = false;
         }
 
         /// <summary>
@@ -81,6 +81,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
             this.InputFields = null;
             this.OfType = null;
             this.SpecifiedByUrl = null;
+            this.IsOneOf = this.GraphType.Kind == TypeKind.INPUT_OBJECT
+                           && this.GraphType.AppliedDirectives is not null
+                           && this.GraphType.AppliedDirectives.Any(x => x.DirectiveType == typeof(OneOfDirective));
         }
 
         /// <summary>
@@ -293,5 +296,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
         /// </summary>
         /// <value>The specified by URL for a scalar, otherwise null.</value>
         public string SpecifiedByUrl { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the INPUT OBJECT is a "one of" input union.
+        /// <c>true</c> if the introspected type is an INPUT OBJECT and an input union; otherwise, <c>false</c>.
+        /// </summary>
+        public bool IsOneOf { get; private set; }
     }
 }

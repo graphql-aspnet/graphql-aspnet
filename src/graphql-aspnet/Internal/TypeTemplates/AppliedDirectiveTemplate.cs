@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Directives;
@@ -24,6 +25,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// </summary>
     public class AppliedDirectiveTemplate : IAppliedDirectiveTemplate
     {
+        private readonly HashSet<TypeKind> _appliesTo;
         private object _owner = null;
 
         /// <summary>
@@ -31,8 +33,27 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="owner">The owner to which the directive would be applied.</param>
         /// <param name="type">The class reference supplied to the <see cref="ApplyDirectiveAttribute"/>.</param>
+        /// <param name="appliesTo">
+        /// A set of graphql types to restrict the direct to. If the type being created
+        /// does not match one of the supplied types, the directive is not applied. Pass null to indicate no type restrictions.
+        /// </param>
+        /// <param name="arguments">The arguments supplied along with the declaration.</param>
+        public AppliedDirectiveTemplate(object owner, Type type, TypeKind[] appliesTo, params object[] arguments)
+        {
+            _owner = owner;
+            this.DirectiveType = type;
+            this.Arguments = arguments;
+            _appliesTo = appliesTo is not null ? [..appliesTo] : null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AppliedDirectiveTemplate" /> class.
+        /// </summary>
+        /// <param name="owner">The owner to which the directive would be applied.</param>
+        /// <param name="type">The class reference supplied to the <see cref="ApplyDirectiveAttribute" />.</param>
         /// <param name="arguments">The arguments supplied along with the declaration.</param>
         public AppliedDirectiveTemplate(object owner, Type type, params object[] arguments)
+            : this(owner, type, null as TypeKind[], arguments)
         {
             _owner = owner;
             this.DirectiveType = type;
@@ -45,8 +66,30 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <param name="owner">The owner to which the directive would be applied.</param>
         /// <param name="directiveName">Name of the directive as it will appear in the target schema, as
         /// declared on the <see cref="ApplyDirectiveAttribute"/>.</param>
+        /// <param name="appliesTo">
+        /// A set of graphql types to restrict the direct to. If the type being created
+        /// does not match one of the supplied types, the directive is not applied. Pass null to indicate no type restrictions.
+        /// </param>
+        /// <param name="arguments">The arguments supplied along with the declaration.</param>
+        public AppliedDirectiveTemplate(object owner, string directiveName, TypeKind[] appliesTo, params object[] arguments)
+        {
+            _owner = owner;
+            this.DirectiveName = directiveName;
+            this.Arguments = arguments;
+            _appliesTo = appliesTo is not null ? [..appliesTo] : null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AppliedDirectiveTemplate" /> class.
+        /// </summary>
+        /// <param name="owner">The owner to which the directive would be applied.</param>
+        /// <param name="directiveName">
+        /// Name of the directive as it will appear in the target schema, as
+        /// declared on the <see cref="ApplyDirectiveAttribute" />.
+        /// </param>
         /// <param name="arguments">The arguments supplied along with the declaration.</param>
         public AppliedDirectiveTemplate(object owner, string directiveName, params object[] arguments)
+            : this(owner, directiveName, null as TypeKind[], arguments)
         {
             _owner = owner;
             this.DirectiveName = directiveName;
@@ -79,9 +122,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     "Invalid Applied Directive. A directive was assigned to " +
-                    $"the item {this.RetrieveOwnerName()} but the supplied type '{this.DirectiveType?.GetType().FriendlyGraphTypeName() ?? "-null-"}' " +
+                    $"the item {this.RetrieveOwnerName()} but the supplied type '{this.DirectiveType?.FriendlyGraphTypeName() ?? "-null-"}' " +
                     $"is not a valid directive. All applied directive must inherit from {nameof(GraphDirective)}.");
             }
+        }
+
+        /// <inheritdoc />
+        public bool CanBeApplied(TypeKind typeKind)
+        {
+            if (_appliesTo is null)
+                return true;
+
+            return _appliesTo.Contains(typeKind);
         }
 
         private string RetrieveOwnerName()
@@ -90,7 +142,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 return nti.Name;
             if (_owner is INamedItem ni)
                 return ni.Name;
-
             if (_owner != null)
                 return _owner.ToString();
 

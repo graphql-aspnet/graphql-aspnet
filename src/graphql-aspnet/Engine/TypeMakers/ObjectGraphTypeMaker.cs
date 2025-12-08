@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
 
             var objectType = new ObjectGraphType(
                 formatter.FormatGraphTypeName(template.Name),
-                concreteType,
+                template.ObjectType,
                 template.Route,
                 directives)
             {
@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Engine.TypeMakers
             result.AddDependentRange(template.RetrieveRequiredTypes());
 
             var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
-            var templatesToRender = ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema);
+            var templatesToRender = GatherFieldTemplates(template, _schema);
             foreach (var fieldTemplate in templatesToRender)
             {
                 var fieldResult = fieldMaker.CreateField(fieldTemplate);

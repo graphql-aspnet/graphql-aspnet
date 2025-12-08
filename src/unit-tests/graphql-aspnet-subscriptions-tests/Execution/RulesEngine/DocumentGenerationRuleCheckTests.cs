@@ -14,8 +14,8 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Execution.RulesEngine.RuleCheckTestData;
+    using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Mocks;
     using NUnit.Framework;
 
@@ -34,12 +34,12 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine
             TestQueries = new List<object>();
 
             // two top level fields in a subscription operation results in an error
-            AddQuery("5.2.3.1", "subscription {  elevatorMoved(id: 5) { id, name }   anyElevatorMoved { id, name }     } ");
+            AddQuery("5.2.4.1", "subscription {  elevatorMoved(id: 5) { id, name }   anyElevatorMoved { id, name }     } ");
 
             // one top level field, but the hierarchy splits before a non-virtual field
             // is encountered by itself at a level of the hierarchy (elevatorNested1, elevatorNested2)
             AddQuery(
-                "5.2.3.1.1",
+                "5.2.4.1",
                 @"subscription {
                             peopleMovers {
                                 elevatorNested1(id: 5) { id, name }
