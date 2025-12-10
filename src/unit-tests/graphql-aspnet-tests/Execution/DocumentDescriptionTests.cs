@@ -21,6 +21,10 @@ namespace GraphQL.AspNet.Tests.Execution
     {
         private async Task<string> RenderQuery(string queryText, string variableJsonDoc = null)
         {
+            // depending on environment (win vs. nix, CRLF vs LF) the tested query text may end in \r\n or \n
+            // the output will only be in \n, normalize hte input to ensure tests have a uniform start
+            // e.g. default values passed for multi-line string variables used in tests can be different based on line endings in the test file.
+            queryText = queryText.Replace("\r\n", "\n");
             var server = new TestServerBuilder()
                 .AddController<DocumentController>()
                 .Build();
